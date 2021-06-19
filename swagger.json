@@ -1,0 +1,362 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "CycloneDX Exchange API",
+    "version": "v1"
+  },
+  "paths": {
+    "/Bom": {
+      "get": {
+        "description": "Retrieve a BOM from the repository.",
+        "tags": [
+          "Bom"
+        ],
+        "parameters": [
+          {
+            "name": "serialNumber",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "version",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "bom-1.3.schema.json"
+                },
+                "example": {
+                  "externalValue": "examples/bom-1.3.json"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "bom-1.3.schema.json"
+                },
+                "example": {
+                  "externalValue": "examples/bom-1.3.json"
+                }
+              },
+              "application/vnd.cyclonedx+json": {
+                "schema": {
+                  "$ref": "bom-1.3.schema.json"
+                },
+                "example": {
+                  "externalValue": "examples/bom-1.3.json"
+                }
+              },
+              "application/vnd.cyclonedx+json; version=1.3": {
+                "schema": {
+                  "$ref": "bom-1.3.schema.json"
+                },
+                "example": {
+                  "externalValue": "examples/bom-1.3.json"
+                }
+              },
+              "application/vnd.cyclonedx+json; version=1.2": {
+                "schema": {
+                  "$ref": "bom-1.2.schema.json"
+                },
+                "example": {
+                  "externalValue": "examples/bom-1.2.json"
+                }
+              },
+              "text/xml": {
+                "schema": {
+                  "$ref": "schemas/bom-1.3.xsd"
+                },
+                "example": {
+                  "externalValue": "examples/bom-1.3.xml"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "schemas/bom-1.3.xsd"
+                },
+                "example": {
+                  "externalValue": "examples/bom-1.3.xml"
+                }
+              },
+              "application/vnd.cyclonedx+xml": {
+                "schema": {
+                  "$ref": "schemas/bom-1.3.xsd"
+                },
+                "example": {
+                  "externalValue": "examples/bom-1.3.xml"
+                }
+              },
+              "application/vnd.cyclonedx+xml; version=1.3": {
+                "schema": {
+                  "$ref": "schemas/bom-1.3.xsd"
+                },
+                "example": {
+                  "externalValue": "examples/bom-1.3.xml"
+                }
+              },
+              "application/vnd.cyclonedx+xml; version=1.2": {
+                "schema": {
+                  "$ref": "schemas/bom-1.2.xsd"
+                },
+                "example": {
+                  "externalValue": "examples/bom-1.2.xml"
+                }
+              },
+              "application/vnd.cyclonedx+xml; version=1.1": {
+                "schema": {
+                  "$ref": "schemas/bom-1.1.xsd"
+                },
+                "example": {
+                  "externalValue": "examples/bom-1.1.xml"
+                }
+              },
+              "application/vnd.cyclonedx+xml; version=1.0": {
+                "schema": {
+                  "$ref": "schemas/bom-1.0.xsd"
+                },
+                "example": {
+                  "externalValue": "examples/bom-1.0.xml"
+                }
+              },
+              "application/octet-stream": {},
+              "application/x.vnd.cyclonedx+protobuf": {},
+              "application/x.vnd.cyclonedx+protobuf; version=1.3": {}
+            }
+          },
+          "404": {
+            "description": "The specified BOM could not be found"
+          }
+        }
+      },
+      "post": {
+        "description": "Store a BOM in the repository.",
+        "tags": [
+          "Bom"
+        ],
+        "requestBody": {
+        "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "bom-1.3.schema.json"
+              },
+              "example": {
+                "externalValue": "examples/bom-1.3.json"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "bom-1.3.schema.json"
+              },
+              "example": {
+                "externalValue": "examples/bom-1.3.json"
+              }
+            },
+            "application/vnd.cyclonedx+json": {
+              "schema": {
+                "$ref": "bom-1.3.schema.json"
+              },
+              "example": {
+                "externalValue": "examples/bom-1.3.json"
+              }
+            },
+            "application/vnd.cyclonedx+json; version=1.3": {
+              "schema": {
+                "$ref": "bom-1.3.schema.json"
+              },
+              "example": {
+                "externalValue": "examples/bom-1.3.json"
+              }
+            },
+            "application/vnd.cyclonedx+json; version=1.2": {
+              "schema": {
+                "$ref": "bom-1.2.schema.json"
+              },
+              "example": {
+                "externalValue": "examples/bom-1.2.json"
+              }
+            },
+            "text/xml": {
+              "schema": {
+                "$ref": "schemas/bom-1.3.xsd"
+              },
+              "example": {
+                "externalValue": "examples/bom-1.3.xml"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "schemas/bom-1.3.xsd"
+              },
+              "example": {
+                "externalValue": "examples/bom-1.3.xml"
+              }
+            },
+            "application/vnd.cyclonedx+xml": {
+              "schema": {
+                "$ref": "schemas/bom-1.3.xsd"
+              },
+              "example": {
+                "externalValue": "examples/bom-1.3.xml"
+              }
+            },
+            "application/vnd.cyclonedx+xml; version=1.3": {
+              "schema": {
+                "$ref": "schemas/bom-1.3.xsd"
+              },
+              "example": {
+                "externalValue": "examples/bom-1.3.xml"
+              }
+            },
+            "application/vnd.cyclonedx+xml; version=1.2": {
+              "schema": {
+                "$ref": "schemas/bom-1.2.xsd"
+              },
+              "example": {
+                "externalValue": "examples/bom-1.2.xml"
+              }
+            },
+            "application/vnd.cyclonedx+xml; version=1.1": {
+              "schema": {
+                "$ref": "schemas/bom-1.1.xsd"
+              },
+              "example": {
+                "externalValue": "examples/bom-1.1.xml"
+              }
+            },
+            "application/vnd.cyclonedx+xml; version=1.0": {
+              "schema": {
+                "$ref": "schemas/bom-1.0.xsd"
+              },
+              "example": {
+                "externalValue": "examples/bom-1.0.xml"
+              }
+            },
+            "application/octet-stream": {},
+            "application/x.vnd.cyclonedx+protobuf": {},
+            "application/x.vnd.cyclonedx+protobuf; version=1.3": {}
+          }
+      },
+        "responses": {
+          "201": {
+            "description": "The BOM has been stored in the repository. The response location header specifies the URL for retrieving the BOM."
+          },
+          "409": {
+            "description": "There is already a BOM with the specific serial number and version."
+          }
+        }
+      },
+      "delete": {
+        "description": "Delete a BOM from the repository. If version is omitted this will delete all versions of the specified BOM.",
+        "tags": [
+          "Bom"
+        ],
+        "parameters": [
+          {
+            "name": "serialNumber",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "version",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/Search": {
+      "get": {
+        "description": "Search for BOMs in the repository.",
+        "tags": [
+          "Search"
+        ],
+        "parameters": [
+          {
+            "name": "group",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "version",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BomIdentifier"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BomIdentifier"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "BomIdentifier": {
+        "type": "object",
+        "properties": {
+          "serialNumber": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "version": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}
