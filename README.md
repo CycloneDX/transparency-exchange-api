@@ -62,7 +62,8 @@ bom-identifier    = segment
 
 The HTTP request method MUST be `GET`.
 
-For CycloneDX BOMs the `bom-identifier` MUST be the BOM URN.
+For CycloneDX BOMs the `bom-identifier` MUST be either a CDX URN
+or a BOM serial number UUID URN.
 
 For SPDX documents the `bom-identifier` MUST be the DocumentNamespace
 
@@ -73,8 +74,8 @@ use the HTTP `Authorization` header. If a server requires authorization, and
 no `Authorization` request header is supplied by the client, the server
 MUST respond with a 401 Unauthorized response.
 
-Servers MUST honour the requested content type in the `Accept` header. If
-the server does not support the requested content type a HTTP 406 response
+Servers MUST honour the requested content types in the `Accept` header. If
+the server does not support any of the requested content types a HTTP 406 response
 MUST be returned. The 406 response body MUST contain a list of server supported
 content types in the below format with `text/plain` content type.
 
@@ -89,6 +90,9 @@ API servers MUST provide the correct `Content-Type` HTTP response header. For ex
 ```
 Content-Type: application/vnd.cyclonedx+xml; version=1.4
 ```
+
+If a BOM serial number UUID URN is used as the `bom-identifier`, the server
+MUST respond with the latest available version of the BOM.
 
 ### Client Requirements
 
