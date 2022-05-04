@@ -53,19 +53,20 @@ This method is for retrieving a BOM from a system.
 The BOM retrieval URL MUST comply with this syntax:
 
 ```
-bom-retrieval-url = system-url "/" bom-identifier
-bom-identifier    = segment
+bom-retrieval-url    = system-url "?" bom-identifier-query
+bom-identifier-query = "bomIdentifier=" bom-identifier
+bom-identifier       = *( pchar / "/" / "?" )
                         ; an identifier that uniquely identifies a BOM
-                        ; NOTE: MUST be appropriately URI encoded
-                        ; segment as defined in RFC3986
+                        ; pchar as defined in RFC3986
 ```
 
 The HTTP request method MUST be `GET`.
 
-For CycloneDX BOMs the `bom-identifier` MUST be either a CDX URN
-or a BOM serial number UUID URN.
+For CycloneDX BOMs the `bom-identifier` MUST be either a CDX URN (https://www.iana.org/assignments/urn-formal/cdx)
+or a BOM serial number UUID URN (https://cyclonedx.org/docs/1.4/json/#serialNumber).
 
-For SPDX documents the `bom-identifier` MUST be the DocumentNamespace
+For SPDX documents the `bom-identifier` MUST be the SPDX Document Namespace
+(https://spdx.github.io/spdx-spec/document-creation-information/#65-spdx-document-namespace-field).
 
 ### Server Requirements
 
