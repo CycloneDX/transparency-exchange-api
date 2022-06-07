@@ -147,3 +147,123 @@ Clients MUST provide the correct `Content-Type` HTTP request header. For example
 ```
 Content-Type: application/vnd.cyclonedx+xml; version=1.4
 ```
+
+## BOM Metadata Endpoint
+
+This method is for retrieving metadata about a BOM from a system.
+
+The BOM metadata URL MUST comply with this syntax:
+
+```
+bom-meta-url        = system-url "?" bom-identifier-query
+bom-identifier-query = "bomIdentifier=" bom-identifier
+bom-identifier       = *( pchar / "/" / "?" )
+                        ; an identifier that uniquely identifies a BOM
+                        ; pchar as defined in RFC3986
+```
+
+The HTTP request method MUST be `GET`.
+
+For CycloneDX BOMs the `bom-identifier` MUST be either a CDX URN (https://www.iana.org/assignments/urn-formal/cdx)
+or a BOM serial number UUID URN (https://cyclonedx.org/docs/1.4/json/#serialNumber).
+
+For SPDX documents the `bom-identifier` MUST be the SPDX Document Namespace
+(https://spdx.github.io/spdx-spec/document-creation-information/#65-spdx-document-namespace-field).
+
+### Server Requirements
+
+Servers MAY require authorization. If authorization is required it MUST
+use the HTTP `Authorization` header. If a server requires authorization, and
+no `Authorization` request header is supplied by the client, the server
+MUST respond with a 401 Unauthorized response.
+
+The server MUST respond with a JSON payload using the following syntax:
+
+```json
+{
+  "identifier": "",
+  "spec": {
+    "format": "",
+    "version": ""
+  },
+  "artifacts": [
+    {
+      "mime-type": "",
+      "checksum": [
+        { "alg":  "", "value":  ""}
+      ]
+    }
+  ],
+  "published": ""
+}
+```
+
+#### The IDENTIFIER property
+The "identifier" is a string value of the requested bom-identifier. This property is REQUIRED.
+
+#### The SPEC property
+The "spec" object is REQUIRED and MUST describe the "format" of a BOM. The "version" property is OPTIONAL and RECOMMENDED.
+
+##### The FORMAT property
+The "format" property is REQUIRED and MUST be a string. The value SHOULD be one of "CycloneDX" or "SPDX". 
+
+##### The VERSION property
+The "version" property is OPTIONAL. If specified, the property MUST be a string representation
+of the BOM specification version.
+
+#### The ARTIFACTS property
+The "artifacts" property describes an array of BOMs for the different serialization formats available for a bom-identifier.
+If no artifacts are available, the "artifacts" object MUST be an empty array.
+
+##### The MIME-TYPES property
+The "mime-type" property MUST be a string that conform to [RFC-2045](https://datatracker.ietf.org/doc/html/rfc2045).
+This property specifies the media type the underlying server maintains which can be requested.
+
+##### The CHECKSUM property
+The "checksum" property describes an array of objects, each MUST contain "alg" and "value". The "alg" property
+is a REQUIRED string and must be one of SHA-1, SHA-256, SHA-384, SHA-512, SHA3-256, SHA3-384, SHA3-512, BLAKE2b, or BLAKE3.
+The "value" property is a hexadecimal string derived from the hashing function. All values MUST be uppercase.
+
+In some cases, no checksums may be available. This may occur if a BOM is published in a single serialization format (e.g. JSON),
+but the underlying server can transform the BOM into other serialization formats (e.g. XML), but has not proactively
+done so. In this scenario, or whenever the checksum of a BOM artifact is not known, it MAY be omitted resulting in an 
+artifact object containing only a mime-type.
+
+##### The PUBLISHED property
+The "published" property is OPTIONAL but RECOMMENDED. The value MUST conform to [RFC-3339 Section 5.6](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
+
+For example:
+```json
+{
+  "identifier": "urn:cdx:f5375fa3-a234-4abc-b4d4-577583fc4d0f/1",
+  "spec": {
+    "format": "CycloneDX",
+    "version": "1.4"
+  },
+  "artifacts": [
+    {
+      "mime-type": "application/vnd.cyclonedx+json",
+      "checksum": [
+        {
+          "alg": "SHA-256",
+          "value": "8d9754db9759ab1785644440dbf19f88ab45ae326e421da6c1cb6e45140d534f"
+        }
+      ]
+    },
+    {
+      "mime-type": "application/vnd.cyclonedx+xml",
+      "checksum": [
+        {
+          "alg":  "SHA-256",
+          "value":  "cf80cd8aed482d5d1527d7dc72fceff84e6326592848447d2dc0b0e87dfc9a90"
+        }
+      ]
+    }
+  ],
+  "published": "2022-06-07T15:50+00Z"
+}
+```
+
+### Client Requirements
+
+Clients MUST support an optional `Authorization` header being specified.
