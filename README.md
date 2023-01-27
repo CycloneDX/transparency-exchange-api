@@ -8,6 +8,8 @@
 
 NOTICE: This standard is currently in draft pending feedback from the community.
 
+![](images/Project-Koala.svg)
+
 ## Introduction
 
 This specification defines a standard, format agnostic, API for the exchange of
