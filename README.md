@@ -4,7 +4,7 @@
 [![Group Discussion](https://img.shields.io/badge/discussion-groups.io-blue.svg)](https://groups.io/g/CycloneDX)
 [![Twitter](https://img.shields.io/twitter/url/http/shields.io.svg?style=social&label=Follow)](https://twitter.com/CycloneDX_Spec)
 
-# CycloneDX BOM Exchange API Standard
+# CycloneDX Transparency Exchange API Standard
 
 NOTICE: This standard is currently in draft pending feedback from the community.
 
