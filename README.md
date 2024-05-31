@@ -29,6 +29,13 @@ sending/receiving transparency artefacts between systems.
 This will enable more widespread
 "out of the box" integration support in the BOM ecosystem.
 
+## Use cases and requirements
+
+The working group has produced a list of use cases and requirements for the protocol.
+
+- [TEA requirements](doc/tea-requirements.md)
+- [TEA use cases](doc/tea-usecases.md)
+
 ## Elements of the API
 
 The Transparency Exchange API (TEA) supports publication and retrieval of a set of transparency exchange artefacts. A few examples:
