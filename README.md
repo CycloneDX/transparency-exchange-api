@@ -3,8 +3,8 @@
 [![Slack Invite](https://img.shields.io/badge/Slack-Join-blue?logo=slack&labelColor=393939)](https://cyclonedx.org/slack/invite)
 [![Group Discussion](https://img.shields.io/badge/discussion-groups.io-blue.svg)](https://groups.io/g/CycloneDX)
 [![Twitter](https://img.shields.io/twitter/url/http/shields.io.svg?style=social&label=Follow)](https://twitter.com/CycloneDX_Spec)
-[![ECMA TC54](https://img.shields.io/badge/ECMA-TC54-404040?labelColor=FC7C00)](https://tc54.org)
-[![ECMA TC54](https://img.shields.io/badge/ECMA-TC54--TG1-404040?labelColor=FC7C00)](https://ecma-international.org/task-groups/tc54-tg1/)
+[![ECMA TC54](https://img.shields.io/badge/ECMA-TC54-FC7C00?labelColor=404040)](https://tc54.org)
+[![ECMA TC54](https://img.shields.io/badge/ECMA-TC54--TG1-FC7C00?labelColor=404040)](https://ecma-international.org/task-groups/tc54-tg1/)
 
 # CycloneDX Transparency Exchange API Standard
 
