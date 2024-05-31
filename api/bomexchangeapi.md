@@ -1,3 +1,4 @@
+# CycloneDX BOM exchange API
 
 ## Conventions
 
@@ -13,7 +14,8 @@ ABNF syntax used as per
 ABNF rules are used from [RFC3986: Uniform Resource Identifier (URI): Generic Syntax - Appendix A. Collected ABNF for URI](https://datatracker.ietf.org/doc/html/rfc3986/#appendix-A).
 
 These additional rules are defined:
-```
+
+```text
 system-url       = supported-scheme ":" hier-part
                        ; a system defined URL
                        ; hier-part as defined in RFC3986
@@ -34,7 +36,7 @@ This method is for retrieving a BOM from a system.
 
 The BOM retrieval URL MUST comply with this syntax:
 
-```
+```text
 bom-retrieval-url    = system-url "?" bom-identifier-query
 bom-identifier-query = "bomIdentifier=" bom-identifier
 bom-identifier       = *( pchar / "/" / "?" )
@@ -62,7 +64,7 @@ the server does not support any of the requested content types a HTTP 406 respon
 MUST be returned. The 406 response body MUST contain a list of server supported
 content types in the below format with `text/plain` content type.
 
-```
+```text
 media-type *(", " media-type)
 ```
 
@@ -70,7 +72,7 @@ e.g. `application/vnd.cyclonedx+xml; version=1.4, application/vnd.cyclonedx+xml;
 
 API servers MUST provide the correct `Content-Type` HTTP response header. For example:
 
-```
+```text
 Content-Type: application/vnd.cyclonedx+xml; version=1.4
 ```
 
@@ -79,11 +81,10 @@ MUST respond with the latest available version of the BOM.
 
 ### Client Requirements
 
-Clients MUST support an optional `Authorization` header being specified.
+- Clients MUST support an optional `Authorization` header being specified.
+- Clients MUST provide a `Accept` HTTP request header. For example:
 
-Clients MUST provide a `Accept` HTTP request header. For example:
-
-```
+```text
 Accept: application/vnd.cyclonedx+xml; version=1.4, application/vnd.cyclonedx+xml; version=1.3
 ```
 
@@ -93,7 +94,7 @@ This method is for submitting a BOM to a system.
 
 The BOM submission URL MUST comply with this syntax:
 
-```
+```text
 bom-submission-url = system-url
 ```
 
@@ -126,6 +127,6 @@ Clients MUST support an optional `Authorization` header being specified.
 
 Clients MUST provide the correct `Content-Type` HTTP request header. For example:
 
-```
+```text
 Content-Type: application/vnd.cyclonedx+xml; version=1.4
 ```
