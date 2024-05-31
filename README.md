@@ -3,149 +3,85 @@
 [![Slack Invite](https://img.shields.io/badge/Slack-Join-blue?logo=slack&labelColor=393939)](https://cyclonedx.org/slack/invite)
 [![Group Discussion](https://img.shields.io/badge/discussion-groups.io-blue.svg)](https://groups.io/g/CycloneDX)
 [![Twitter](https://img.shields.io/twitter/url/http/shields.io.svg?style=social&label=Follow)](https://twitter.com/CycloneDX_Spec)
+[![ECMA TC54](https://tc54.org)](https://tc54.org)
 
 # CycloneDX Transparency Exchange API Standard
 
-NOTICE: This standard is currently in draft pending feedback from the community.
+The Transparency API Exchange API is being worked on within the CycloneDX community
+with the goal to standardise the API in ECMA. A working group within ECMA TC54 has been
+formed - TC54 TG1. The working group has a slack channel in the CycloneDX slack space.
 
 ![](images/Project-Koala.svg)
 
 ## Introduction
 
 This specification defines a standard, format agnostic, API for the exchange of
-BOMs between systems.
+product related artefacts, like BOMs, between systems. The work includes:
+
+- Discovery of servers
+- Retrieval of artefacts
+- Publication of artefacts
+- Authentication and authorization
+- Querying
 
 System and tooling implementors are encouraged to adopt this API standard for
-sending/receiving BOMs between systems. This will enable more widespread
+sending/receiving transparency artefacts between systems. 
+This will enable more widespread
 "out of the box" integration support in the BOM ecosystem.
 
-## Conventions
+## Use cases and requirements
 
-The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD",
-"SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be
-interpreted as described in [RFC2119](http://www.ietf.org/rfc/rfc2119.txt).
+The working group has produced a list of use cases and requirements for the protocol.
 
-### ABNF Syntax
+- [TEA requirements](doc/tea-requirements.md)
+- [TEA use cases](doc/tea-usecases.md)
 
-ABNF syntax used as per
-[RFC5234: Augmented BNF for Syntax Specifications: ABNF](https://datatracker.ietf.org/doc/html/rfc5234).
+## Elements of the API
 
-ABNF rules are used from [RFC3986: Uniform Resource Identifier (URI): Generic Syntax - Appendix A. Collected ABNF for URI](https://datatracker.ietf.org/doc/html/rfc3986/#appendix-A).
+The Transparency Exchange API (TEA) supports publication and retrieval of a set of transparency exchange artefacts. A few examples:
 
-These additional rules are defined:
-```
-system-url       = supported-scheme ":" hier-part
-                       ; a system defined URL
-                       ; hier-part as defined in RFC3986
-supported-scheme = "http" / "https"
-```
+### xBOM
 
-See also: [RFC7231: Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content](https://datatracker.ietf.org/doc/html/rfc7231)
+Bill of materials for any type of component and service are supported. This includes, but is not limited to, SBOM, HBOM, AI/ML-BOM, SaaSBOM, and CBOM. The API provides a BOM format agnostic way of publishing, searching, and retrieval of xBOM artifacts. 
 
-## Specification Compliance
+### CDXA
 
-An API server/client can be referred to as compliant if it correctly implements
-any of the methods described within this specification. It is not a
-requirement to implement all the methods described.
+Standards and requirements along with attestations to those standards and requirements are captured and supported by CycloneDX Attestations (CDXA). Much like xBOM, these are supply chain artifacts that are captured allowing for consistent publishing, searching, and retrieval.
 
-## BOM Retrieval
+### VDR/VEX
 
-This method is for retrieving a BOM from a system.
+Vulnerability Disclosure Reports (VDR) and Vulnerability Exploitability eXchange (VEX) are supported artifact types. Like the xBOM element, the VDR/VEX support is format agnostic. However, CSAF has its own distribution requirements that may not be compatible with APIs. Therefore, the initial focus will be on CycloneDX (VDR and VEX) and OpenVEX.
 
-The BOM retrieval URL MUST comply with this syntax:
+### CLE
 
-```
-bom-retrieval-url    = system-url "?" bom-identifier-query
-bom-identifier-query = "bomIdentifier=" bom-identifier
-bom-identifier       = *( pchar / "/" / "?" )
-                        ; an identifier that uniquely identifies a BOM
-                        ; pchar as defined in RFC3986
-```
+Product lifecycle events that are captured and communicated through the Common Lifecycle Enumeration will be supported. This includes product rebranding, repackaging, mergers and acquisitions, and product milestone events such as end-of-life and end-of-support.
 
-The HTTP request method MUST be `GET`.
+### Insights
 
-For CycloneDX BOMs the `bom-identifier` MUST be either a CDX URN (https://www.iana.org/assignments/urn-formal/cdx)
-or a BOM serial number UUID URN (https://cyclonedx.org/docs/1.4/json/#serialNumber).
+Much of the focus on Software Transparency from the U.S. Government and others center around the concept of “full transparency”. Consumers often need to ingest, process, and analyze SBOMs or VEXs just to be able to answer simple questions such as:
 
-For SPDX documents the `bom-identifier` MUST be the SPDX Document Namespace
-(https://spdx.github.io/spdx-spec/document-creation-information/#65-spdx-document-namespace-field).
+- Do any of my licensed products from Vendor A use Apache Struts?
+- Are any of my licensed products from Vendor A vulnerable to log4shell and is there any action I need to take?
 
-### Server Requirements
+Insights allows for “limited transparency” that can be asked and answered using an expression language that can be tightly scoped or outcome-driven. Insights also removes the complexities of BOM format conversion away from the consumers. An object model derived from CycloneDX will be an integral part of this API, since the objects within CycloneDX are self-contained (thus API friendly) and the specification supports all the necessary xBOM types along with CDXA.
 
-Servers MAY require authorization. If authorization is required it MUST
-use the HTTP `Authorization` header. If a server requires authorization, and
-no `Authorization` request header is supplied by the client, the server
-MUST respond with a 401 Unauthorized response.
+### Transparency Exchange Identifier (TEI)
+The TEI is a URN that is unique for a product. It can be resolved by DNS to locate a Collection
 
-Servers MUST honour the requested content types in the `Accept` header. If
-the server does not support any of the requested content types a HTTP 406 response
-MUST be returned. The 406 response body MUST contain a list of server supported
-content types in the below format with `text/plain` content type.
+## Terminology
 
-```
-media-type *(", " media-type)
-```
+- API: Application programming interface
+- Authorization (authz):
+- Authentication (authn):
+- Collection: A set of artifacts representing a version of a product
+- Product: An item sold or delivered under one name (?)
+- Product variant: A variant of a product
+- Version:
 
-e.g. `application/vnd.cyclonedx+xml; version=1.4, application/vnd.cyclonedx+xml; version=1.3`
 
-API servers MUST provide the correct `Content-Type` HTTP response header. For example:
 
-```
-Content-Type: application/vnd.cyclonedx+xml; version=1.4
-```
+## Previous work
 
-If a BOM serial number UUID URN is used as the `bom-identifier`, the server
-MUST respond with the latest available version of the BOM.
-
-### Client Requirements
-
-Clients MUST support an optional `Authorization` header being specified.
-
-Clients MUST provide a `Accept` HTTP request header. For example:
-
-```
-Accept: application/vnd.cyclonedx+xml; version=1.4, application/vnd.cyclonedx+xml; version=1.3
-```
-
-## BOM Submission Endpoint
-
-This method is for submitting a BOM to a system.
-
-The BOM submission URL MUST comply with this syntax:
-
-```
-bom-submission-url = system-url
-```
-
-The HTTP request method MUST be `POST`.
-
-### Server Requirements
-
-Servers MAY require authorization. If authorization is required it MUST
-use the HTTP `Authorization` header. If a server requires authorization, and
-no `Authorization` request header is supplied by the client, the server
-MUST respond with a 401 Unauthorized response.
-
-Servers MUST honour the specified content type in the `Content-Type` header. If
-the server does not support the supplied content type a HTTP 415 Unsupported
-Media Type response MUST be returned. The 415 response body MUST contain a list
-of server supported content types in the below format with `text/plain` content type.
-
-```
-media-type *(", " media-type)
-```
-
-e.g. `application/vnd.cyclonedx+xml; version=1.4, application/vnd.cyclonedx+xml; version=1.3`
-
-If the submitted BOM has been successfully submitted the API server MUST
-respond with an appropriate 2xx HTTP status code.
-
-### Client Requirements
-
-Clients MUST support an optional `Authorization` header being specified.
-
-Clients MUST provide the correct `Content-Type` HTTP request header. For example:
-
-```
-Content-Type: application/vnd.cyclonedx+xml; version=1.4
-```
+- [The CycloneDX BOM Exchange API](/api/bomexchangeapi.md)
+   Implemented in the [CycloneDX BOM Repo Server]
+   (https://github.com/CycloneDX/cyclonedx-bom-repo-server)
