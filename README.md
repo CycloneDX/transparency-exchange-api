@@ -19,7 +19,7 @@ formed - TC54 TG1. The working group has a slack channel in the CycloneDX slack 
 This specification defines a standard, format agnostic, API for the exchange of
 product related artefacts, like BOMs, between systems. The work includes:
 
-- Discovery of servers
+- [Discovery of servers](/discovery/readme.md)
 - Retrieval of artefacts
 - Publication of artefacts
 - Authentication and authorization
