@@ -8,7 +8,7 @@
 
 # CycloneDX Transparency Exchange API Standard
 
-The Transparency API Exchange API is being worked on within the CycloneDX community
+The Transparency Exchange API is being worked on within the CycloneDX community
 with the goal to standardise the API in ECMA. A working group within ECMA TC54 has been
 formed - TC54 TG1. The working group has a slack channel in the CycloneDX slack space.
 
