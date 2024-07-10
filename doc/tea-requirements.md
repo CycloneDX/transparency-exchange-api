@@ -13,8 +13,7 @@ Based on an identifier a repository URL needs to be found. The identifier can be
 At the base URL well known URLs (ref) needs to point to
 
 - A lifecycle status document
-- A version list
-  For each version, a URL will point to where a **collection** can be found
+- A version list. For each version, a URL will point to where a **collection** can be found
 - Vendor Discovery, returns a list of Vendors represented in the repository
    - Vendor Name
    - Vendor ID
