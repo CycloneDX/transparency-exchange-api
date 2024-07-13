@@ -8,15 +8,20 @@ signature files.
 
 - __Integrity__: Documents dowloaded needs to be the same
   as documents published
-- __Identity__: Customers needs to be able to verify the 
+- __Identity__: 
+  - Customers needs to be able to verify the 
   publisher of the documents and verify that it is
-  the expected publisher
+  the expected publisher.
+  - A TEA server may want to verify that published
+  documents are signed by the expected publisher
+  and that signatures are valid.
+  
 
 In order to sign, a pair of asymmetric keys will be needed.
 The public key is used to create a certificate, signed
 by a certificate authority (CA).
 
-A software publisher may bye CA services from a commercial vendors
+A software publisher may buy CA services from a commercial vendors
 or set up an internal solution. The issue with that is that external
 parties do not automatically trust that internal PKI.
 
