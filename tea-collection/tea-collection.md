@@ -42,6 +42,8 @@ The artifact object has the following parts
   * Optional BOM identifier
     * SPDX or CycloneDX reference to BOM
   * MIME media type
+  * Artifact category (enum)
+    * https://cyclonedx.org/docs/1.6/json/#externalReferences_items_type
   * Description in clear text
   * URL for downloads
   * Size in bytes
