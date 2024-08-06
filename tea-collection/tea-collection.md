@@ -37,7 +37,7 @@ The artifact object has the following parts
 
 * Artifact UUID
 * Artifact name
-* List of objects with the same content
+* List of objects with the same content. The order of the list has no significance.
   * UUID for subdoc
   * Optional BOM identifier
     * SPDX or CycloneDX reference to BOM
