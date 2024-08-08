@@ -104,7 +104,7 @@ Append the product part of the TEI to the URI found
 
 - TEI: `urn:tei:uuid:products.example.com:d4d9f54a-abcf-11ee-ac79-1a52914d44b1`
 - DNS record: `_tei._tcp.products.example.com`
-- URI in DNS: `://www.example.com/transparency/`
+- URI in DNS: `https://www.example.com/transparency/`
 - URL: `https://www.example.com/transparency/d4d9f54a-abcf-11ee-ac79-1a52914d44b1/`
 
 If no DNS URI records are found the resolution defaults to A and AAAA records.
