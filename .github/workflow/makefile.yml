@@ -1,0 +1,64 @@
+name: Makefile CI for creating PDF files from Markdown
+
+on:
+  push:
+    branches: [ "**" ]
+  pull_request:
+    branches: [ "**" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Ensure latest and greatest repos
+      run: sudo apt update && sudo apt upgrade -y
+
+    - name: Install basic pandoc and latex dependencies
+      run: sudo apt install -y pandoc texlive-latex-base texlive-latex-extra texlive-lang-european texlive-luatex librsvg2-bin
+
+    - name: Install requirements for mermaid
+      run: sudo apt install -y npm chromium-browser
+      
+    - name: Install mermaid
+      run: npm install -g @mermaid-js/mermaid-cli
+
+    - name: Clean project folder
+      run: make clean
+
+    - name: Try building project
+      run: make all
+
+    - uses: actions/upload-artifact@v4
+      id: artifact-upload-step
+      with:
+          name: TEA documentation
+          path: "*/*.pdf"
+    
+    - name: Output artifact ID
+      run:  echo 'Artifact ID is ${{ steps.artifact-upload-step.outputs.artifact-id }}'         
+
+  # build-in-container: 
+  #   runs-on: ubuntu-latest
+    
+  #   container:
+  #     image: pandoc/extra:latest-ubuntu
+      
+  #   steps:
+  #   - uses: actions/checkout@v3
+
+  #   - name: Install dependencies
+  #     run: apt update && apt install build-essential texlive-latex-extra -y
+
+  #   - name: Clean project folder
+  #     run: make clean
+
+  #   - name: Try building project
+  #     run: make all
+
+  #   - uses: actions/upload-artifact@v3
+  #     with:
+  #         name: Internetspecifikation
+  #         path: internetspecifikation/internetspecifikation.pdf
