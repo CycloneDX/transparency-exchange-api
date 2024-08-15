@@ -5,7 +5,8 @@ of available artifacts for this specific version. The TEA Index is a list of
 TEA collections.
 
 The TEA collection is normally created by the TEA application server at
-publication time of artifacts.
+publication time of artifacts. The publisher may sign the collection
+object as a JSON file at time of publication.
 
 If there are any updates of artifacts within a collection for the same
 version of a product, then a new TEA Collection object is created and signed.
