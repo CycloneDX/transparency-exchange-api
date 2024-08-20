@@ -1,7 +1,7 @@
 # Trusting digital signatures in TEA
 
 Software transparency is a lot about trust. Within the
-API documents needs to be signed with an electronic
+API documents need to be signed with an electronic
 signature. CycloneDX boms supports signatures within
 the JSON file, but other artefacts may need external
 signature files.
