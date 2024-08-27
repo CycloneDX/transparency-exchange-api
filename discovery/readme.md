@@ -60,10 +60,52 @@ urn:tei:<type>:<domain>:<data>
 
 ### TEI types
 
-- PURL
+#### PURL - Package URL
+
+Syntax:
+
+```text
+urn:tei:uuid:<domain or host>:<purl>
+````
+
+#### SWID
+
+Syntax:
+
+```text
+urn:tei:swid:<domain or host>:<swid>
+````
+
+Note that there is a TEI SWID type as well as a PURL SWID type.
+
+#### HASH
+
+Supports the following hash values:
+
+* SHA256
+* SHA384
+* SHA512
+
+```text
+urn:tei:hash:<domain or host>:<hashtype>:<hash>
+````
+
+The origin of the hash is up to the vendor to define.
+
+#### UUID
+
+Syntax:
+
+```text
+urn:tei:uuid:<domain or host>:<uuid>
+````
+
+Has to be a valid UUID.
+
+#### Other types to be defined
+
 - EAN
 - GS1
-- UUID
 - STD
 
 ### TEI resolution using DNS
