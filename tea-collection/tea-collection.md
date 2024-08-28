@@ -22,29 +22,32 @@ The TEA Collection object has the following parts
 
 * Preamble
   * UUID of collection object
+    * _Changes for every update_
   * Product name
   * Product version
   * Product Release date (timestamp)
   * TEA Collection object release date (timestamp)
+    * _Applies to the object identified by the unique UUID (see above)_
   * TEA Collection object version (integer starting with version 1)
   * Reason for update/release of TCO - clear text
     * "New product release"
     * "Corrected dependency in SBOM that was faulty"
     * "Added missing In-Toto build attestation"
 * List of artifact objects (see below)
-* Optional Signature
+* Optional Signature of the collection object
 
 The artifact object has the following parts
 
 * Artifact UUID
 * Artifact name
-* List of objects with the same content. The order of the list has no significance.
+* List of objects with the same content, but in different formats.
+  The order of the list has no significance.
   * UUID for subdoc
   * Optional BOM identifier
     * SPDX or CycloneDX reference to BOM
   * MIME media type
   * Artifact category (enum)
-    * https://cyclonedx.org/docs/1.6/json/#externalReferences_items_type
+    * <https://cyclonedx.org/docs/1.6/json/#externalReferences_items_type>
   * Description in clear text
   * URL for downloads
   * Size in bytes
