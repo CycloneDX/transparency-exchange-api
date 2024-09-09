@@ -1,4 +1,4 @@
-# The TEA Collection object
+# The TEA Collection object (TCO)
 
 For each product and version there is a Tea Collection object, which is a list
 of available artifacts for this specific version. The TEA Index is a list of
@@ -16,29 +16,32 @@ correct mistakes, spelling errors and similar things. If the product
 is modified, that is a new product version and that should generate
 a new collection object with a new UUID and updated metadata.
 
+## Dynamic or static Collection objects
+
+The TCO is produced by the TEA software platform. There are two ways
+to implement this:
+
+* __Dynamic__: The TCO is built for each API request and created
+  dynamically.
+* __Static__: The TCO is built at publication time as a static
+  object by the publisher. This object can be digitally signed at
+  publication time.
+
 ## Collection object
 
 The TEA Collection object has the following parts
 
 * Preamble
-  * UUID of collection object
-    * _Changes for every update_
+  * UUID of the TEA collection object (TCO)
   * Product name
   * Product version
   * Product Release date (timestamp)
-  * TEA Collection object release date (timestamp)
-    * _Applies to the object identified by the unique UUID (see above)_
-  * TEA Collection object version (integer starting with version 1)
   * Author of the collection object
     * Name
     * Email
     * Organisation
   * Reason for update/release of TCO
-    * ENUM to be defined. Some ideas:
-      * NEWVERSION - A new version of the product
-      * ADDITION - Adding an artifact
-      * REMOVE - Removing an artifact
-      * UPDATE - Update of artifacts (typos, faults)
+    * ENUM reason
     * clear text
       * "New product release"
       * "Corrected dependency in SBOM that was faulty"
@@ -67,3 +70,18 @@ The artifact object has the following parts
   * Direct URL for download of external signature
   * Size in bytes
   * SHA384 checksum
+
+
+
+## The reason for TCO update enum
+
+| ENUM | Explanation |
+| --- | --- |
+| VEXUPDATE | Updated the VEX artefact(s) |
+| SBOMUPDATE | Updated the SBOM artefacts |
+| OTHERUPDATE | Updated another artefact |
+| LCECHANGE | Updated Life cycle enumeration |
+      * NEWVERSION - A new version of the product
+      * ADDITION - Adding an artifact
+      * REMOVE - Removing an artifact
+      * UPDATE - Update of artifacts (typos, faults)
