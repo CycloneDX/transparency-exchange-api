@@ -19,7 +19,7 @@ formed - TC54 TG1. The working group has a slack channel in the CycloneDX slack 
 This specification defines a standard, format agnostic, API for the exchange of
 product related artefacts, like BOMs, between systems. The work includes:
 
-- [Discovery of servers](/discovery/readme.md)
+- [Discovery of servers](/discovery/readme.md): Describes discovery using the Transparency Exchange Identifier (TEI)
 - Retrieval of artefacts
 - Publication of artefacts
 - Authentication and authorization
@@ -37,9 +37,15 @@ The working group has produced a list of use cases and requirements for the prot
 - [TEA requirements](doc/tea-requirements.md)
 - [TEA use cases](doc/tea-usecases.md)
 
-## Elements of the API
+## Data model
 
-The Transparency Exchange API (TEA) supports publication and retrieval of a set of transparency exchange artefacts. A few examples:
+- [TEA Product index](tea-index/tea-index.md): This is the starting point. A "product" is something for sale. The |Transparency Exchange Identifier, TEI](/discovery/readme.md) points to a single product.
+- [TEA Leaf index](tea-leaf/tea-leaf.md): A leaf is a version entry. The leaf index has one entry per version of the product.
+- [TEA Collection](tea-collection/tea-collection.md): The collection is a list of artefacts for a specific version. The collection can be dynamic or static, depending on the implemenation.
+
+## Artefacts available of the API
+
+The Transparency Exchange API (TEA) supports publication and retrieval of a set of transparency exchange artefacts. The API itself should not be restricting the types of the artefacts. A few examples:
 
 ### xBOM
 
@@ -66,8 +72,6 @@ Much of the focus on Software Transparency from the U.S. Government and others c
 
 Insights allows for “limited transparency” that can be asked and answered using an expression language that can be tightly scoped or outcome-driven. Insights also removes the complexities of BOM format conversion away from the consumers. An object model derived from CycloneDX will be an integral part of this API, since the objects within CycloneDX are self-contained (thus API friendly) and the specification supports all the necessary xBOM types along with CDXA.
 
-### Transparency Exchange Identifier (TEI)
-The TEI is a URN that is unique for a product. It can be resolved by DNS to locate a Collection
 
 ## Terminology
 
