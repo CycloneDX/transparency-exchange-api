@@ -1,5 +1,8 @@
 # CycloneDX BOM exchange API
 
+__Note:__ this is an older version of the API not being worked on any more. This work
+will be replaced by the Transparency Exchange API.
+
 ## Conventions
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD",
