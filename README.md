@@ -39,7 +39,7 @@ The working group has produced a list of use cases and requirements for the prot
 
 ## Data model
 
-- [TEA Product index](tea-index/tea-index.md): This is the starting point. A "product" is something for sale. The |Transparency Exchange Identifier, TEI](/discovery/readme.md) points to a single product.
+- [TEA Product index](tea-index/tea-index.md): This is the starting point. A "product" is something for sale. The [Transparency Exchange Identifier, TEI](/discovery/readme.md) points to a single product.
 - [TEA Leaf index](tea-leaf/tea-leaf.md): A leaf is a version entry. The leaf index has one entry per version of the product.
 - [TEA Collection](tea-collection/tea-collection.md): The collection is a list of artefacts for a specific version. The collection can be dynamic or static, depending on the implemenation.
 
@@ -88,5 +88,4 @@ Insights allows for “limited transparency” that can be asked and answered us
 ## Previous work
 
 - [The CycloneDX BOM Exchange API](/api/bomexchangeapi.md)
-   Implemented in the [CycloneDX BOM Repo Server]
-   (https://github.com/CycloneDX/cyclonedx-bom-repo-server)
+   Implemented in the [CycloneDX BOM Repo Server](https://github.com/CycloneDX/cyclonedx-bom-repo-server)
