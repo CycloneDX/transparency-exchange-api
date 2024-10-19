@@ -65,7 +65,7 @@ urn:tei:<type>:<domain>:<data>
 Syntax:
 
 ```text
-urn:tei:uuid:<domain or host>:<purl>
+urn:tei:purl:<domain or host>:<purl>
 ````
 
 #### SWID
