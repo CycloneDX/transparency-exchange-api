@@ -11,8 +11,9 @@ object as a JSON file at time of publication.
 If there are any updates of artifacts within a collection for the same
 version of a product, then a new TEA Collection object is created and signed.
 This update will have the same UUID, but a new version number. A reason
-for the update will have to be provided. This shall only be used to
-correct mistakes, spelling errors and similar things. If the product
+for the update will have to be provided. This shall be used to
+correct mistakes, spelling errors as well as to provide new information
+on dynamic artifact types such as LCE or VEX. If the product
 is modified, that is a new product version and that should generate
 a new collection object with a new UUID and updated metadata.
 
@@ -71,17 +72,16 @@ The artifact object has the following parts
   * Size in bytes
   * SHA384 checksum
 
-
-
 ## The reason for TCO update enum
 
-| ENUM | Explanation |
-| --- | --- |
-| VEXUPDATE | Updated the VEX artefact(s) |
-| SBOMUPDATE | Updated the SBOM artefacts |
-| OTHERUPDATE | Updated another artefact |
-| LCECHANGE | Updated Life cycle enumeration |
-      * NEWVERSION - A new version of the product
-      * ADDITION - Adding an artifact
-      * REMOVE - Removing an artifact
-      * UPDATE - Update of artifacts (typos, faults)
+| ENUM        | Explanation                    |
+|-------------|--------------------------------|
+| VEXUPDATE   | Updated the VEX artefact(s)    |
+| SBOMUPDATE  | Updated the SBOM artefact(s)   |
+| OTHERUPDATE | Updated another artefact       |
+| LCECHANGE   | Updated Life cycle enumeration |
+
+    * NEWVERSION - A new version of the product
+    * ADDITION - Adding an artifact
+    * REMOVE - Removing an artifact
+    * UPDATE - Update of artifacts (typos, faults)
