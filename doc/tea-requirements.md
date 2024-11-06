@@ -79,7 +79,7 @@ PURL, CPE, SWID, GAV, GTIN, and GMN.
 For example:
 
 - Return the identity of all BOMs that have a vulnerable version of Apache Log4J: 
-  `pkg:maven/org.apache.logging.log4j/log4j-core@2.10.0``
+  `pkg:maven/org.apache.logging.log4j/log4j-core@2.10.0`
 
 The API MUST provide a way to search for the metadata component across all available BOMs. 
 The API SHOULD support multiple identity formats including PURL, CPE, SWID, GAV, GTIN, and GMN. 
