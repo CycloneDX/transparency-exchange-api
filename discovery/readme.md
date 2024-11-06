@@ -47,7 +47,7 @@ bar code and one with the vendor's product number.
 
 
 ```
-urn:tei:<type>:<domain>:<data>
+urn:tei:<type>:<domain>:<unique-identifier>
 ````
 
 **Note**: this requires a registration of the TEI URN schema with IANA.
@@ -114,7 +114,7 @@ The name part of the TEI is used in a DNS query to find one or multiple location
 At the URL we need a well-known name space to find out more
 
 - `urn:tei:uuid:products.example.com:d4d9f54a-abcf-11ee-ac79-1a52914d44b1`
-- Syntax: `urn:tei:uuid:<name based on domain>:<unique identifier>`
+- Syntax: `urn:tei:uuid:<name based on domain>:<unique-identifier>`
 
 The name in the DNS name part points to a set of DNS records.
 A TEI with name “tex.example.com" queries for `_tei._tcp.tex.example.com URI records`.
