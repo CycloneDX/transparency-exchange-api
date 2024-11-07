@@ -103,7 +103,7 @@ urn:tei:hash:<domain-name>:<hashtype>:<hash>
 
 Example:
 ```text
-urn:tei:org.cyclonedx:SAH256:fd44efd601f651c8865acf0dfeacb0df19a2b50ec69ead0262096fd2f67197b9
+urn:tei:org.cyclonedx:SHA256:fd44efd601f651c8865acf0dfeacb0df19a2b50ec69ead0262096fd2f67197b9
 ```
 
 The origin of the hash is up to the vendor to define.
