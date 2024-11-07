@@ -35,10 +35,9 @@ The TEI can be shown in the software itself, in shipping documentation, in web p
 TEI is unique for a product, not a version of a software. The TEI consist of three core parts
 
 - The **`type`** which defines the syntax of the unique identifier part
-- The **`domain-name`** part does not have to exist as a web server (HTTPS).
-  - The uniqueness of the name is the domain name part that has to be registred at creation of the TEI.
-- The **`unique-identifier`** has to be unique within the `domain-name`. 
-  - Recommendation is to use UUID, but it can be an existing article code too.
+- The **`domain-name`** part does not have to exist as a web server (HTTPS)
+  - The uniqueness of the name is the domain name part that has to be registred at creation of the TEI
+- The **`unique-identifier`** has to be unique within the `domain-name` - see [TEI Types](#tei-types)
 
 A TEI belongs to a single product. A product can have multiple TEIs - like one with a EAN
 bar code and one with the vendor's product number.
