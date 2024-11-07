@@ -34,20 +34,19 @@ to global uniqueness without new registries.
 The TEI can be shown in the software itself, in shipping documentation, in web pages and app stores.
 TEI is unique for a product, not a version of a software. The TEI consist of three core parts
 
-- The **type** which defines the syntax of the unique identifier part
-- The **domain name** part does not have to exist as a web server (HTTPS).
-- The uniqueness of the name is the domain name part that has to be registred at creation of the TEI.
-- The **unique identifier** has to be unique within the domain. Recommendation is to use UUID,
-  but it can be an existing article code too.
+- The **`type`** which defines the syntax of the unique identifier part
+- The **`domain-name`** part does not have to exist as a web server (HTTPS).
+  - The uniqueness of the name is the domain name part that has to be registred at creation of the TEI.
+- The **`unique-identifier`** has to be unique within the `domain-name`. 
+  - Recommendation is to use UUID, but it can be an existing article code too.
 
 A TEI belongs to a single product. A product can have multiple TEIs - like one with a EAN
 bar code and one with the vendor's product number.
 
 ### TEI syntax
 
-
 ```
-urn:tei:<type>:<domain>:<unique-identifier>
+urn:tei:<type>:<domain-name>:<unique-identifier>
 ````
 
 **Note**: this requires a registration of the TEI URN schema with IANA.
@@ -60,44 +59,64 @@ urn:tei:<type>:<domain>:<unique-identifier>
 
 ### TEI types
 
+The below show examples of TEI where the types are specific known formats or types.
+
+Reminder: the `unique-identifer` component of the TEI needs only be unique within the `domain-name`.
+
 #### PURL - Package URL
+
+Where the `unique-identifier` is a PURL in it's canonical string form.
 
 Syntax:
 
 ```text
-urn:tei:purl:<domain or host>:<purl>
+urn:tei:purl:<domain-name>:<purl>
 ````
+
+Example:
+```text
+urn:tei:org.cyclonedx:pkg:pypi/cyclonedx-python-lib@8.4.0?extension=whl&qualifier=py3-none-any
+```
 
 #### SWID
 
+Where the `unique-identifier` is a SWID.
+
 Syntax:
 
 ```text
-urn:tei:swid:<domain or host>:<swid>
+urn:tei:swid:<domain-name>:<swid>
 ````
 
 Note that there is a TEI SWID type as well as a PURL SWID type.
 
 #### HASH
 
-Supports the following hash values:
+Where the `unique-identifier` is a Hash. Supports the following hash types:
 
 * SHA256
 * SHA384
 * SHA512
 
 ```text
-urn:tei:hash:<domain or host>:<hashtype>:<hash>
+urn:tei:hash:<domain-name>:<hashtype>:<hash>
 ````
+
+Example:
+```text
+urn:tei:org.cyclonedx:SAH256:fd44efd601f651c8865acf0dfeacb0df19a2b50ec69ead0262096fd2f67197b9
+```
 
 The origin of the hash is up to the vendor to define.
 
 #### UUID
 
+Where the `unique-identifier` is a UUID.
+
 Syntax:
 
 ```text
-urn:tei:uuid:<domain or host>:<uuid>
+urn:tei:uuid:<domain-name>:<uuid>
 ````
 
 Has to be a valid UUID.
