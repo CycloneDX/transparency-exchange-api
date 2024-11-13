@@ -2,6 +2,17 @@
 
 **NOTE**: _This is a proposal for the WG_
 
+- [From product identifier to API endpoint](#from-product-identifier-to-api-endpoint)
+- [TEA Discovery - defining an extensible identifier](#tea-discovery---defining-an-extensible-identifier)
+- [The TEI URN: An extensible identifier](#the-tei-urn-an-extensible-identifier)
+  - [TEI syntax](#tei-syntax)
+  - [TEI types](#tei-types)
+  - [TEI resolution using DNS](#tei-resolution-using-dns)
+  - [Finding the Index using DNS result](#finding-the-index-using-dns-result)
+- [The TEA Version Index](#the-tea-version-index)
+- [References](#references)
+
+
 ## From product identifier to API endpoint
 
 TEA Discovery is the connection between a product identifier and the API endpoint.
@@ -19,11 +30,8 @@ TEA discovery is the process where a user with a product identifier can discover
 artifacts automatically, with or without authentication. A globally unique identifier is
 required for a given product. This identifier is called the Transparency Exchange Identifier (TEI).
 
-The TEI identifier is based on DNS, which assures a
-uniqueness per vendor (or open source project) and gives the vendor a name space to
-define product identifiers based on existing or new identifiers like EAN bar code,
-PURLs or other existing schemes. A given product may have multiple identifiers as long as
-they all resolve into the same destination.
+The TEI identifier is based on DNS, which assures a uniqueness per vendor (or open source project) 
+and gives the vendor a name space to define product identifiers based on existing or new identifiers like EAN bar code, PURLs or other existing schemes. A given product may have multiple identifiers as long as they all resolve into the same destination.
 
 ## The TEI URN: An extensible identifier
 
@@ -35,12 +43,12 @@ The TEI can be shown in the software itself, in shipping documentation, in web p
 TEI is unique for a product, not a version of a software. The TEI consist of three core parts
 
 - The **`type`** which defines the syntax of the unique identifier part
-- The **`domain-name`** part does not have to exist as a web server (HTTPS)
-  - The uniqueness of the name is the domain name part that has to be registred at creation of the TEI
-- The **`unique-identifier`** has to be unique within the `domain-name` - see [TEI Types](#tei-types)
+- The **`domain-name`** part does not have to exist as a web server (HTTPS), but may do
+  - The uniqueness of the name is the domain name part that has to be registred at creation of the TEI.
+- The **`unique-identifier`** has to be unique within the `domain-name`. Recommendation is to use a UUID but it can be an existing article code too
 
 A TEI belongs to a single product. A product can have multiple TEIs - like one with a EAN
-bar code and one with the vendor's product number.
+barcode and one with the vendor's product number.
 
 ### TEI syntax
 
@@ -48,13 +56,7 @@ bar code and one with the vendor's product number.
 urn:tei:<type>:<domain-name>:<unique-identifier>
 ````
 
-**Note**: this requires a registration of the TEI URN schema with IANA.
-
-### TEI examples
-
-- `urn:tei:uuid:`    for a company specific name and product identifier as UUID
-- Example: `urn:tei:uuid:products.example.com:d4d9f54a-abcf-11ee-ac79-1a52914d44b1`
-- Syntax: `urn:tei:uuid:<name based on domain>:<unique identifier>`
+**Note**: this requires a registration of the TEI URN schema with IANA - [see here](https://github.com/CycloneDX/transparency-exchange-api/issues/18)
 
 ### TEI types
 
@@ -103,7 +105,7 @@ urn:tei:hash:<domain-name>:<hashtype>:<hash>
 
 Example:
 ```text
-urn:tei:org.cyclonedx:SHA256:fd44efd601f651c8865acf0dfeacb0df19a2b50ec69ead0262096fd2f67197b9
+urn:tei:cyclonedx.org:SHA256:fd44efd601f651c8865acf0dfeacb0df19a2b50ec69ead0262096fd2f67197b9
 ```
 
 The origin of the hash is up to the vendor to define.
@@ -126,13 +128,14 @@ Has to be a valid UUID.
 - GS1
 - STD
 
+
 ### TEI resolution using DNS
 
 The name part of the TEI is used in a DNS query to find one or multiple locations for product transparency exchange information.
 At the URL we need a well-known name space to find out more
 
 - `urn:tei:uuid:products.example.com:d4d9f54a-abcf-11ee-ac79-1a52914d44b1`
-- Syntax: `urn:tei:uuid:<name based on domain>:<unique-identifier>`
+- Syntax: `urn:tei:uuid:<name based on domain>:<unique identifier>`
 
 The name in the DNS name part points to a set of DNS records.
 A TEI with name “tex.example.com" queries for `_tei._tcp.tex.example.com URI records`.
@@ -164,7 +167,7 @@ Append the product part of the TEI to the URI found
 
 - TEI: `urn:tei:uuid:products.example.com:d4d9f54a-abcf-11ee-ac79-1a52914d44b1`
 - DNS record: `_tei._tcp.products.example.com`
-- URI in DNS: `https://www.example.com/transparency/`
+- URI in DNS: `://www.example.com/transparency/`
 - URL: `https://www.example.com/transparency/d4d9f54a-abcf-11ee-ac79-1a52914d44b1/`
 
 If no DNS URI records are found the resolution defaults to A and AAAA records.
