@@ -23,7 +23,7 @@
         }
     ],
     "paths": {
-        "/index/{product-identifier}": {
+        "/product-index/{product-identifier}": {
             "get": {
                 "description": "Access the TEA Index for the supplied product identifier",
                 "operationId": "getTeaIndex",
@@ -38,7 +38,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/tea-index"
+                                    "$ref": "#/components/schemas/tea-product-index"
                                 }
                             }
                         }
@@ -54,16 +54,13 @@
                 ]
             }
         },
-        "/leaf/{product-identifier}/{product-version}": {
+        "/leaf/{tea-leaf-identifier}": {
             "get": {
                 "description": "Get the TEA Leaf that describes the Version of a Product",
                 "operationId": "getTeaLeaf",
                 "parameters": [
                     {
-                        "$ref": "#/components/parameters/product-identifier"
-                    },
-                    {
-                        "$ref": "#/components/parameters/product-version"
+                        "$ref": "#/components/parameters/tea-leaf-identifier"
                     }
                 ],
                 "responses": {
@@ -119,7 +116,7 @@
     "webhooks": {},
     "components": {
         "schemas": {
-            "tea-index": {
+            "tea-product-index": {
                 "type": "object",
                 "properties": {
                     "uuid": {
@@ -191,6 +188,13 @@
                     },
                     "reason": {
                         "$ref": "#/components/schemas/type-collection-reason"
+                    },
+                    "artifacts": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/tea-collection-artifact"
+                        },
+                        "minItems": 1
                     }
                 },
                 "reqiured": [
@@ -216,12 +220,58 @@
                     },
                     "author": {
                         "$ref": "#/components/schemas/type-author"
+                    },
+                    "objects": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/tea-collection-artifact-object"
+                        },
+                        "minItems": 1
                     }
                 },
                 "reqiured": [
                     "uuid",
                     "name",
-                    "author"
+                    "type",
+                    "author",
+                    "objects"
+                ]
+            },
+            "tea-collection-artifact-object": {
+                "type": "object",
+                "properties": {
+                    "uuid": {
+                        "$ref": "#/components/schemas/type-uuid"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "mime_type": {
+                        "type": "string"
+                    },
+                    "artifact_url": {
+                        "type": "string",
+                        "format": "uri"
+                    },
+                    "artifact_size_in_bytes": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "artifact_checksum": {
+                        "type": "string"
+                    },
+                    "signature_url": {
+                        "type": "string",
+                        "format": "uri"
+                    }
+                },
+                "reqiured": [
+                    "uuid",
+                    "description",
+                    "mime_type",
+                    "artifact_url",
+                    "artifact_size_in_bytes",
+                    "artifact_checksum"               
                 ]
             },
             "type-author": {
@@ -385,6 +435,15 @@
             "tea-collection-identifier": {
                 "name": "tea-collection-identifier",
                 "description": "TEA Collection Identifier",
+                "in": "path",
+                "required": true,
+                "schema": {
+                    "type": "string"
+                }
+            },
+            "tea-leaf-identifier": {
+                "name": "tea-leaf-identifier",
+                "description": "TEA Leaf Identifier",
                 "in": "path",
                 "required": true,
                 "schema": {
