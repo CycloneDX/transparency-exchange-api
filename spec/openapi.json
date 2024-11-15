@@ -38,7 +38,11 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/tea-product-index"
+                                    "type": "array",
+                                    "items:": {
+                                        "$ref": "#/components/schemas/tea-product-index"
+                                    },
+                                    "minItems": 1
                                 }
                             }
                         }
@@ -50,6 +54,7 @@
                 
                 },
                 "tags": [
+                    "Consumer",
                     "TEA Index"
                 ]
             }
@@ -79,6 +84,7 @@
                     }
                 },
                 "tags": [
+                    "Consumer",
                     "TEA Leaf"
                 ]
             }
@@ -108,7 +114,8 @@
                     }
                 },
                 "tags": [
-                    "TEA Leaf"
+                    "Consumer",
+                    "TEA Collection"
                 ]
             }
         }
@@ -454,6 +461,9 @@
     },
     "security": [],
     "tags": [
+        "Consumer",
+        "Producer",
+        "TEA Collection",
         "TEA Index",
         "TEA Leaf"
     ],
