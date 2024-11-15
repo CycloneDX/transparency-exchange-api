@@ -30,6 +30,12 @@
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/product-identifier"
+                    },
+                    {
+                        "$ref": "#/components/parameters/page-offset"
+                    },
+                    {
+                        "$ref": "#/components/parameters/page-size"
                     }
                 ],
                 "responses": {
@@ -38,11 +44,27 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "array",
-                                    "items:": {
-                                        "$ref": "#/components/schemas/tea-product-index"
-                                    },
-                                    "minItems": 1
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/type-pagination-details"
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "results": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/tea-product-index"
+                                                    },
+                                                    "minItems": 1
+                                                }
+                                            },
+                                            "required": [
+                                                "results"
+                                            ]
+                                        }
+                                    ]
+                                    
                                 }
                             }
                         }
@@ -311,6 +333,35 @@
                     "ATTESTATION_UPDATED"
                 ]
             },
+            "type-pagination-details": {
+                "type": "object",
+                "properties": {
+                    "timestamp": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "page_start_index": {
+                        "type": "number",
+                        "format": "int64",
+                        "default": 0
+                    },
+                    "page_size": {
+                        "type": "number",
+                        "format": "int64",
+                        "default": 100
+                    },
+                    "total_results": {
+                        "type": "number",
+                        "format": "int64"
+                    }
+                },
+                "required": [
+                    "timestamp",
+                    "page_start_index",
+                    "page_size",
+                    "total_results"
+                ]
+            },
             "type-tea-collection-artifact-type": {
                 "type": "string",
                 "title": "Type",
@@ -421,6 +472,27 @@
             }
         },
         "parameters": {
+            "page-offset": {
+                "name": "page-offset",
+                "description": "Pagination offset",
+                "in": "query",
+                "required": false,
+                "schema": {
+                    "type": "number",
+                    "format": "int64",
+                    "default": 0
+                }
+            },
+            "page-size": {
+                "name": "page-size",
+                "description": "Pagination offset",
+                "in": "query",
+                "required": false,
+                "schema": {
+                    "type": "number",
+                    "format": "int64"
+                }
+            },
             "product-identifier": {
                 "name": "product-identifier",
                 "description": "Product Identifier part of a TEI",
