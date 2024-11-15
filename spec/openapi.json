@@ -1,5 +1,5 @@
 {
-    "$schema": "https://spec.openapis.org/oas/3.1/dialect/base",
+    "jsonSchemaDialect": "https://spec.openapis.org/oas/3.1/dialect/base",
     "openapi": "3.1.1",
     "info": {
         "title": "Transparency Exchange API",
@@ -11,7 +11,7 @@
             "url": "https://github.com/CycloneDX/transparency-exchange-api"
         },
         "license": {
-            "identifier": "Apache-2.0",
+            "name": "Apache 2.0",
             "url": "https://github.com/CycloneDX/transparency-exchange-api/blob/main/LICENSE"
         },
         "version": "0.0.1"
@@ -459,8 +459,7 @@
             },
             "type-uuid": {
                 "type": "string",
-                "format": "uuid",
-                "required": true
+                "format": "uuid"
             }
         },
         "responses": {
@@ -507,7 +506,7 @@
                 "name": "product-version",
                 "description": "Product Version string",
                 "in": "path",
-                "reqiured": true,
+                "required": true,
                 "schema": {
                     "type": "string"
                 }

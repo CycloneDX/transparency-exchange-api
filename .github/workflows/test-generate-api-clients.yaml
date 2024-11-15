@@ -1,0 +1,165 @@
+name: Build & Test Generated API Clients
+
+on:
+    push:
+        branches: ['main']
+    workflow_dispatch:
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+env:
+    OPEN_API_GENERATOR_VERSION: 'v7.9.0'
+    PYTHON_VERSION_DEFAULT: '3.12'
+    POETRY_VERSION: '1.8.1'
+
+jobs:
+    generate-library-code:
+        name: Generate Library Code ${{ matrix.language }}
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                language: ['go', 'java-webclient', 'python', 'typescript']
+        steps:
+            - name: Checkout
+              # see https://github.com/actions/checkout
+              uses: actions/checkout@v4
+
+            - name: Create Output Directory
+              run: mkdir out/${{ matrix.language }}
+
+            - name: Run OpenAPI Generator
+              uses: addnab/docker-run-action@v3
+              with:
+                  image: openapitools/openapi-generator-cli:${{ env.OPEN_API_GENERATOR_VERSION }}
+                  options: -v ${{ github.workspace }}:/local
+                  run: /usr/local/bin/docker-entrypoint.sh batch --clean /local/spec/generators/${{ matrix.language }}.yaml
+
+            - name: Copy our scripts across too
+              run: cp spec/generators/*.sh ./out/${{ matrix.language }}
+
+            - name: Save to Cache
+              uses: actions/cache/save@v4
+              with:
+                  path: out/${{ matrix.language }}
+                  key: '${{ matrix.language }}-${{ github.run_id }}'
+
+    validate-go:
+        name: Validate Go Library
+        runs-on: ubuntu-latest
+        needs: generate-library-code
+
+        steps:
+            - name: Setup Go
+              uses: actions/setup-go@v5
+              with:
+                  go-version: 1.22
+
+            - name: Get generated code from cache
+              uses: actions/cache/restore@v4
+              with:
+                  path: out/go
+                  key: 'go-${{ github.run_id }}'
+                  fail-on-cache-miss: true
+
+            - name: Build Go API Client
+              run: go build -v ./
+              working-directory: out/go
+
+            - name: Install test dependencies & run generated tests
+              run: |
+                  go get github.com/stretchr/testify/assert
+                  go test -v ./test/
+              working-directory: out/go
+
+    validate-java-webclient:
+        name: Validate Java Webclient
+        runs-on: ubuntu-latest
+        needs: generate-library-code
+
+        steps:
+            - name: Set up JDK 17 for x64
+              uses: actions/setup-java@v4
+              with:
+                java-version: '17'
+                distribution: 'temurin'
+                architecture: x64
+
+            - name: Set up Maven
+              uses: stCarolas/setup-maven@v5
+              with:
+                maven-version: 3.9.4
+
+            - name: Get generated code from cache
+              uses: actions/cache/restore@v4
+              with:
+                  path: out/java-webclient
+                  key: 'java-webclient-${{ github.run_id }}'
+                  fail-on-cache-miss: true
+
+            - name: Build & Test Java Webclient API Client
+              run: |
+                ./update-pom.sh pom.xml
+                mvn clean test
+              working-directory: out/java-webclient
+
+    validate-python:
+        name: Validate Python Library
+        runs-on: ubuntu-latest
+        needs: generate-library-code
+
+        steps:
+            - name: Set up Python
+              uses: actions/setup-python@v5
+              with:
+                  python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
+
+            - name: Install poetry
+              # see https://github.com/marketplace/actions/setup-poetry
+              uses: Gr1N/setup-poetry@v9
+              with:
+                  poetry-version: ${{ env.POETRY_VERSION }}
+
+            - name: Get generated code from cache
+              uses: actions/cache/restore@v4
+              with:
+                  path: out/python
+                  key: 'python-${{ github.run_id }}'
+                  fail-on-cache-miss: true
+                  
+            - name: Install dependencies
+              run: poetry install --no-root
+              working-directory: out/python
+
+            - name: Ensure build successful
+              run: poetry build
+              working-directory: out/python
+
+            - name: Run Tests
+              run: |
+                  pip install -r test-requirements.txt
+                  poetry run pytest
+              working-directory: out/python
+
+    validate-typescript:
+        name: Validate Typescript Library
+        runs-on: ubuntu-latest
+        needs: generate-library-code
+
+        steps:
+            - name: Setup Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: latest
+
+            - name: Get generated code from cache
+              uses: actions/cache/restore@v4
+              with:
+                  path: out/typescript
+                  key: 'typescript-${{ github.run_id }}'
+                  fail-on-cache-miss: true
+                  
+            - name: Build Typescript API Client
+              run: npm i && npm run build
+              working-directory: out/typescript

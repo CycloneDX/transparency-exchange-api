@@ -1,0 +1,6 @@
+inputSpec: /local/spec/openapi.json
+gitUserId: CycloneDX
+gitRepoId: transparency-exchange-api
+
+globalProperties:
+  skipFormModel: false

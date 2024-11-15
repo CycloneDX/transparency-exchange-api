@@ -1,0 +1,7 @@
+'!include': 'common.yaml'
+outputDir: /local/out/go
+generatorName: go
+gitRepoId: transparency-exchange-api-go
+additionalProperties:
+  goImportAlias: tea_client
+  packageName: tea_client
