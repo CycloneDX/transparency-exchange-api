@@ -1,0 +1,27 @@
+'!include': 'common.yaml'
+outputDir: /local/out/java-webclient
+generatorName: java
+additionalProperties:
+  library: webclient
+  artifactDescription: Transparency Exchange API Java Webclient
+  artifactId: tea-api-webclient
+  artifactUrl: https://github.com/CycloneDX/transparency-exchange-api
+  invokerPackage: org.cyclonedx.tea.webclient
+  apiPackage: org.cyclonedx.tea.webclient.api
+  modelPackage: org.cyclonedx.tea.webclient.model
+  developerEmail: community@sonatype.com
+  developerName: OWASP Foundation
+  developerOrganization: OWASP Foundation
+  developerOrganizationUrl: https://cyclonedx.org/
+  groupId: org.cyclonedx.tea
+  licenseName: Apache-2.0
+  licenseUrl: https://github.com/CycloneDX/transparency-exchange-api/blob/main/LICENSE
+  scmConnection: scm:git:git@github.com:CycloneDX/transparency-exchange-api.git
+  scmDeveloperConnection: scm:git:git@github.com:CycloneDX/transparency-exchange-api.git
+  scmUrl: https://github.com/CycloneDX/transparency-exchange-api
+  useJakartaEe: true
+  asyncNative: true
+  generateBuilders: true
+  parentGroupId: org.sonatype.buildsupport
+  parentArtifactId: public-parent
+  parentVersion: 50

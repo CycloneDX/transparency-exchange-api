@@ -1,0 +1,8 @@
+'!include': 'common.yaml'
+outputDir: /local/out/python
+generatorName: python
+additionalProperties:
+  library: urllib3
+  licenseInfo: "Apache-2.0"
+  packageName: "tea-api-client"
+  projectName: "Transparency Exchange API (TEA)"
