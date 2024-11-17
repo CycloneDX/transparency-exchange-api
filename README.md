@@ -12,7 +12,7 @@ The Transparency Exchange API is being worked on within the CycloneDX community
 with the goal to standardise the API in ECMA. A working group within ECMA TC54 has been
 formed - TC54 TG1. The working group has a slack channel in the CycloneDX slack space.
 
-![](images/Project-Koala.svg)
+![](images/tealogo.png)
 
 ## Introduction
 
@@ -83,7 +83,7 @@ Insights allows for “limited transparency” that can be asked and answered us
 - Product variant: A variant of a product
 - Version:
 
-
+![](images/Project-Koala.svg)
 
 ## Previous work
 
