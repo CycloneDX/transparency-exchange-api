@@ -192,7 +192,19 @@ If they are not reachable, tea03 will be used for failover.
 
 It is recommended to have a third party external repository as the last priority.
 
-### Finding the Index using DNS result
+## Connecting to the API
+
+When connecting to the ".well-known/tea" URI with the unique identifier
+a HTTP redirect is **required**.
+
+The server MUST redirect HTTP requests for that resource
+to the actual "context path" using one of the available mechanisms
+provided by HTTP (e.g., using a 301, 303, or 307 response).  Clients
+MUST handle HTTP redirects on the ".well-known" URI.  Servers MUST
+NOT locate the actual TEA service endpoint at the
+".well-known" URI as per Section 1.1 of [RFC5785].
+
+### Overview: Finding the Index using DNS result
 
 Append the product part of the TEI to the URI found
 
