@@ -4,5 +4,5 @@ generatorName: python
 additionalProperties:
   library: urllib3
   licenseInfo: "Apache-2.0"
-  packageName: "tea-api-client"
+  packageName: "tea_api_client"
   projectName: "Transparency Exchange API (TEA)"
