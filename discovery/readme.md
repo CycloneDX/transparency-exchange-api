@@ -37,7 +37,7 @@ The TEI for a product can be communicated to the user in many ways.
 
 ## TEA Discovery - defining an extensible identifier
 
-TEA discovery is the process where a user with a product identifier can discover and downloadg
+TEA discovery is the process where a user with a product identifier can discover and download
 artifacts automatically, with or without authentication. A globally unique identifier is
 required for a given product. This identifier is called the Transparency Exchange Identifier (TEI).
 
