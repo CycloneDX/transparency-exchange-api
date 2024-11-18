@@ -55,7 +55,7 @@ to global uniqueness without new registries.
 The TEI can be shown in the software itself, in shipping documentation, in web pages and app stores.
 TEI is unique for a product, not a version of a software. The TEI consist of three core parts
 
-A TEI belongs to a single product. A product can have multiple TEIs - like one with a EAN
+A TEI belongs to a single product. A product can have multiple TEIs - like one with a EAN/UPC
 barcode and one with the vendor's product number.
 
 ### TEI syntax
