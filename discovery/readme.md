@@ -144,7 +144,7 @@ Has to be a valid UUID.
 
 ### TEI resolution using DNS
 
-The name part of the TEI is used in a DNS query to find one or multiple locations for
+The `domain-name` part of the TEI is used in a DNS query to find one or multiple locations for
 product transparency exchange information. DNS can deliver load balancing and
 failover functionality to make sure that the information is always reachable.
 
