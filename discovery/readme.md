@@ -199,7 +199,7 @@ to the actual "context path" using one of the available mechanisms
 provided by HTTP (e.g., using a 301, 303, or 307 response).  Clients
 MUST handle HTTP redirects on the ".well-known" URI.  Servers MUST
 NOT locate the actual TEA service endpoint at the
-".well-known" URI as per Section 1.1 of [RFC5785].
+`.well-known` URI as per Section 1.1 of [RFC5785].
 
 ### Overview: Finding the Index using DNS result
 
