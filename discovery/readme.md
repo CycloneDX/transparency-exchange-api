@@ -20,7 +20,7 @@ of many digital devices or software applications. A "product" normally also has 
 entry in a large corporation's asset inventory system.
 
 A product identifier is embedded in a URN where the identifier is one of many existing
-identifiers or a random string - like an EAN bar code, UUID, product
+identifiers or a random string - like an EAN or UPC bar code, UUID, product
 number or PURL.
 
 The goal is for a user to add this URN to the transparency platform (sometimes with an
@@ -37,13 +37,13 @@ The TEI for a product can be communicated to the user in many ways.
 
 ## TEA Discovery - defining an extensible identifier
 
-TEA discovery is the process where a user with a product identifier can discover and downloadg
+TEA discovery is the process where a user with a product identifier can discover and download
 artifacts automatically, with or without authentication. A globally unique identifier is
 required for a given product. This identifier is called the Transparency Exchange Identifier (TEI).
 
 The TEI identifier is based on DNS, which assures a uniqueness per vendor (or open source project)
 and gives the vendor a name space to define product identifiers based on existing or new identifiers
-ike EAN bar code, PURLs or other existing schemes. A given product may have multiple identifiers
+like EAN/UPC bar code, PURLs or other existing schemes. A given product may have multiple identifiers
 as long as they all resolve into the same destination.
 
 ## The TEI URN: An extensible identifier
@@ -55,7 +55,7 @@ to global uniqueness without new registries.
 The TEI can be shown in the software itself, in shipping documentation, in web pages and app stores.
 TEI is unique for a product, not a version of a software. The TEI consist of three core parts
 
-A TEI belongs to a single product. A product can have multiple TEIs - like one with a EAN
+A TEI belongs to a single product. A product can have multiple TEIs - like one with a EAN/UPC
 barcode and one with the vendor's product number.
 
 ### TEI syntax
@@ -148,7 +148,7 @@ urn:tei:uuid:cyclonedx.org:d4d9f54a-abcf-11ee-ac79-1a52914d44b1
 
 ### TEI resolution using DNS
 
-The name part of the TEI is used in a DNS query to find one or multiple locations for
+The `domain-name` part of the TEI is used in a DNS query to find one or multiple locations for
 product transparency exchange information. DNS can deliver load balancing and
 failover functionality to make sure that the information is always reachable.
 
@@ -159,16 +159,16 @@ This is solved by using the ".well-known" name space as defined by the IETF.
 - Syntax: `urn:tei:uuid:<name based on domain>:<unique identifier>`
 
 The name in the DNS name part points to a set of DNS records.
-A TEI with name “tea.example.com" queries for `tea.example.com HTTPS records.
+A TEI with name `tea.example.com` queries for `tea.example.com` `HTTPS` records.
 These point to the hosts available for the Transparency Exchange API.
-Note that "tea.example.com" may not have A/AAAA records at all if it
-points to other servers, like "tea01.example.org" and "teahost.example.net".
+Note that `tea.example.com` may not have `A`/`AAAA` records at all if it
+points to other servers, like `tea01.example.org` and `teahost.example.net`.
 
-If there are no HTTPS records, try to resolve the name (using AAAA and A DNS records).
+If there are no HTTPS records, try to resolve the name (using `AAAA` and `A` DNS records).
 
 After selecting a host and resolving that to IP address, the TEA client
 connects to the host using HTTPS with the original name, not the one found
-in DNS. The URI is composed of the name with the  "/.well-known/tea" prefix added.
+in DNS. The URI is composed of the name with the `/.well-known/tea` prefix added.
 
 ```text
 tea.example.com.   3600 IN HTTPS  1  tea01.prod.example.com.
@@ -176,7 +176,7 @@ tea.example.com.   3600 IN HTTPS  1  tea01.prod.example.com.
 
 Results in the base URI (without the product identifier) 
 `https://tea.example.com/.well-known/tea/` while connecting to
-the host tea01.prod.example.com.
+the host `tea01.prod.example.com`.
 
 ### Load balancing and fail over
 
@@ -188,22 +188,22 @@ tea.example.com.   3600 IN HTTPS  10  tea02.prod.example.com.
 tea.example.com.   3600 IN HTTPS  20  tea03.prod.example.com.
 ```
 
-In this case servers tea01 and tea02 will get 50% of the load each.
-If they are not reachable, tea03 will be used for failover.
+In this case servers `tea01`and `tea02` will get 50% of the load each.
+If they are not reachable, `tea03` will be used for failover.
 
 It is recommended to have a third party external repository as the last priority.
 
 ## Connecting to the API
 
-When connecting to the ".well-known/tea" URI with the unique identifier
+When connecting to the `.well-known/tea` URI with the unique identifier
 a HTTP redirect is **required**.
 
 The server MUST redirect HTTP requests for that resource
 to the actual "context path" using one of the available mechanisms
 provided by HTTP (e.g., using a 301, 303, or 307 response).  Clients
-MUST handle HTTP redirects on the ".well-known" URI.  Servers MUST
+MUST handle HTTP redirects on the `.well-known` URI.  Servers MUST
 NOT locate the actual TEA service endpoint at the
-".well-known" URI as per Section 1.1 of [RFC5785].
+`.well-known` URI as per Section 1.1 of [RFC5785].
 
 ### Overview: Finding the Index using DNS result
 
@@ -211,15 +211,15 @@ Append the product part of the TEI to the URI found
 
 - TEI: `urn:tei:uuid:products.example.com:d4d9f54a-abcf-11ee-ac79-1a52914d44b1`
 - DNS record: `products.example.com`
-- Server found in DNS HTTPS record: `teapot.prod.example.com`
+- Server found in DNS `HTTPS` record: `teapot.prod.example.com`
 - URL: `https://products.example.com/.well-known/tea/d4d9f54a-abcf-11ee-ac79-1a52914d44b1/`
 - HTTP 302 redirect to "https://teapot02.consumer.example.com/tea/v2/product-index/d4d9f54a-abcf-11ee-ac79-1a52914d44b1'
 
-The server at "teapot.prod.example.com" needs a TLS certificate including "products.example.com"
-in the subject alt name. "teapot02.consumer.example.com" needs a certificate with that
+The server at `teapot.prod.example.com` needs a TLS certificate that valid for `products.example.com` 
+ - e.g. with `products.example.com` in the subject alt name. `teapot02.consumer.example.com` needs a certificate with that
 host name.
 
-If no HTTPS records are found the resolution defaults to A and AAAA records.
+If no `HTTPS` records are found the resolution defaults to `A` and `AAAA` records.
 IP address is not valid in the domain name field.
 
 Append the URL prefix `/.well-known/tea/` of the TEI to the DNS name found
