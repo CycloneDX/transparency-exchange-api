@@ -211,7 +211,7 @@ Append the product part of the TEI to the URI found
 - URL: `https://products.example.com/.well-known/tea/d4d9f54a-abcf-11ee-ac79-1a52914d44b1/`
 - HTTP 302 redirect to "https://teapot02.consumer.example.com/tea/v2/product-index/d4d9f54a-abcf-11ee-ac79-1a52914d44b1'
 
-The server at "teapot.prod.example.com" needs a TLS certificate including "products.example.com"
+The server at `teapot.prod.example.com` needs a TLS certificate that valid for `products.example.com` 
 in the subject alt name. "teapot02.consumer.example.com" needs a certificate with that
 host name.
 
