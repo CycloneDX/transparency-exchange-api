@@ -43,7 +43,7 @@ required for a given product. This identifier is called the Transparency Exchang
 
 The TEI identifier is based on DNS, which assures a uniqueness per vendor (or open source project)
 and gives the vendor a name space to define product identifiers based on existing or new identifiers
-ike EAN bar code, PURLs or other existing schemes. A given product may have multiple identifiers
+like EAN/UPC bar code, PURLs or other existing schemes. A given product may have multiple identifiers
 as long as they all resolve into the same destination.
 
 ## The TEI URN: An extensible identifier
