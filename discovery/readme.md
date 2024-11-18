@@ -20,7 +20,7 @@ of many digital devices or software applications. A "product" normally also has 
 entry in a large corporation's asset inventory system.
 
 A product identifier is embedded in a URN where the identifier is one of many existing
-identifiers or a random string - like an EAN bar code, UUID, product
+identifiers or a random string - like an EAN or UPC bar code, UUID, product
 number or PURL.
 
 The goal is for a user to add this URN to the transparency platform (sometimes with an
