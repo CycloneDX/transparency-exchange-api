@@ -215,7 +215,7 @@ The server at `teapot.prod.example.com` needs a TLS certificate that valid for `
  - e.g. with `products.example.com` in the subject alt name. `teapot02.consumer.example.com` needs a certificate with that
 host name.
 
-If no HTTPS records are found the resolution defaults to A and AAAA records.
+If no `HTTPS` records are found the resolution defaults to `A` and `AAAA` records.
 IP address is not valid in the domain name field.
 
 Append the URL prefix `/.well-known/tea/` of the TEI to the DNS name found
