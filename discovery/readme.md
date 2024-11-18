@@ -37,7 +37,7 @@ The TEI for a product can be communicated to the user in many ways.
 
 ## TEA Discovery - defining an extensible identifier
 
-TEA discovery is the process where a user with a product identifier can discover and download
+TEA discovery is the process where a user with a product identifier can discover and downloadg
 artifacts automatically, with or without authentication. A globally unique identifier is
 required for a given product. This identifier is called the Transparency Exchange Identifier (TEI).
 
@@ -159,6 +159,7 @@ This is solved by using the ".well-known" name space as defined by the IETF.
 - Syntax: `urn:tei:uuid:<name based on domain>:<unique identifier>`
 
 The name in the DNS name part points to a set of DNS records.
+
 A TEI with name `tea.example.com` queries for `tea.example.com` `HTTPS` records.
 These point to the hosts available for the Transparency Exchange API.
 Note that `tea.example.com` may not have `A`/`AAAA` records at all if it
@@ -178,6 +179,9 @@ Results in the base URI (without the product identifier)
 `https://tea.example.com/.well-known/tea/` while connecting to
 the host `tea01.prod.example.com`.
 
+Results in `https://tea.example.com/.well-known/tea/<identifier>` while connecting to
+the host tea01.prod.example.com.
+
 ### Load balancing and fail over
 
 Example zone:
@@ -188,8 +192,8 @@ tea.example.com.   3600 IN HTTPS  10  tea02.prod.example.com.
 tea.example.com.   3600 IN HTTPS  20  tea03.prod.example.com.
 ```
 
-In this case servers `tea01`and `tea02` will get 50% of the load each.
-If they are not reachable, `tea03` will be used for failover.
+In this case servers tea01 and tea02 will get 50% of the load each.
+If they are not reachable, tea03 will be used for failover.
 
 It is recommended to have a third party external repository as the last priority.
 
