@@ -174,7 +174,8 @@ in DNS. The URI is composed of the name with the  "/.well-known/tea" prefix adde
 tea.example.com.   3600 IN HTTPS  1  tea01.prod.example.com.
 ```
 
-Results in `https://tea.example.com/.well-known/tea/<identifier>` while connecting to
+Results in the base URI (without the product identifier) 
+`https://tea.example.com/.well-known/tea/` while connecting to
 the host tea01.prod.example.com.
 
 ### Load balancing and fail over
