@@ -2,20 +2,43 @@
 
 * Note: Suggestion, input for the group
 
+## Bootstrapping
 
 ```mermaid
 sequenceDiagram
     participant Vendor
-    participant TEA_API
-    participant TEA_Index
-    participant TEA Product Index
+    participant TEA Product
+    participant TEA Leaf
+    participant TEA Collection
+
+    Vendor ->> TEA Product: POST to /v1/product to create new product
+    TEA Product -->> Vendor: Product is created and TEA Product Identifier (PI) returned
+
+    Vendor ->> TEA Leaf: POST to /v1/leaf with the TEA PI and leaf version as the payload
+    TEA Leaf ->> Vendor: Leaf is created and a TEA Leaf ID is returned
+
+    Vendor ->> TEA Collection: POST to /v1/collection with the TEA Leaf ID as the and the artifact as payload
+    TEA Collection ->> Vendor: Collection is created with the collection ID returned
+
+```
+
+
+## Adding a new artifact
+
+```mermaid
+sequenceDiagram
+    participant Vendor
+
+    participant TEA Product
+    participant TEA Leaf
+    participant TEA Collection
+
     participant SBOM_Generator
     participant VEX_Generator
     participant VDR_Generator
+
     participant Consumer
 
-    Vendor ->> TEA Product Index: POST to /v1/product-index to create new product
-    TEA Product Index -->> Vendor: Product version created and Tea Product Identifier returned
 
     Vendor->>TEA_API: POST /collection (Create new collection with FIRST_MENTION lifecycle event)
     TEA_API->>TEA_Index: Update index with new collection
