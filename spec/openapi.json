@@ -25,7 +25,7 @@
     "paths": {
         "/product-index/{product-identifier}": {
             "get": {
-                "description": "Access the TEA Index for the supplied product identifier",
+                "description": "Returns the corresponding leafs for a given TEA Product Identifier",
                 "operationId": "getTeaIndex",
                 "parameters": [
                     {
@@ -40,7 +40,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Requested TEA Index found and returned",
+                        "description": "Requested Product TEA Index found and returned",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -64,19 +64,112 @@
                                             ]
                                         }
                                     ]
-                                    
+
                                 }
                             }
                         }
                     },
-                
+
                     "404": {
                         "$ref": "#/components/responses/404-object-by-id-not-found"
                     }
-                
+
                 },
                 "tags": [
-                    "TEA Index"
+                    "TEA Product Index"
+                ]
+            },
+            "patch": {
+                "description": "Update an existing TEA Product Index entry",
+                "operationId": "updateTeaIndex",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/product-identifier"
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "product-name": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "product-name"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "TEA Index entry updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/tea-product-index"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404-object-by-id-not-found"
+                    }
+                },
+                "tags": [
+                    "TEA Product Index"
+                ]
+            }
+        },
+        "/product-index": {
+            "post": {
+                "description": "Create TEA Product Index entry for the supplied product identifier",
+                "operationId": "createTeaIndex",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/product-identifier"
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/tea-product-index"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "TEA Index entry created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/tea-product-index"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                },
+                "tags": [
+                    "TEA Product Index"
                 ]
             }
         },
@@ -150,15 +243,11 @@
                     },
                     "product-name": {
                         "type": "string"
-                    },
-                    "product-version": {
-                        "type": "string"
                     }
                 },
-                "reqiured": [
+                "required": [
                     "uuid",
-                    "product-name",
-                    "product-version"
+                    "product-name"
                 ]
             },
             "tea-leaf": {
@@ -177,19 +266,19 @@
                         "type": "string",
                         "format": "date-time"
                     },
-                    "prerelease": {
+                    "pre-release": {
                         "type": "boolean"
                     },
                     "tea-collection-uuid": {
                         "$ref": "#/components/schemas/type-uuid"
                     }
                 },
-                "reqiured": [
+                "required": [
                     "uuid",
                     "product-name",
                     "product-version",
                     "release-date",
-                    "prerelease",
+                    "pre-release",
                     "tea-collection-uuid"
                 ]
             },
@@ -223,7 +312,7 @@
                         "minItems": 1
                     }
                 },
-                "reqiured": [
+                "required": [
                     "uuid",
                     "product-name",
                     "product-version",
@@ -255,7 +344,7 @@
                         "minItems": 1
                     }
                 },
-                "reqiured": [
+                "required": [
                     "uuid",
                     "name",
                     "type",
@@ -291,13 +380,13 @@
                         "format": "uri"
                     }
                 },
-                "reqiured": [
+                "required": [
                     "uuid",
                     "description",
                     "mime_type",
                     "artifact_url",
                     "artifact_size_in_bytes",
-                    "artifact_checksum"               
+                    "artifact_checksum"
                 ]
             },
             "type-author": {
@@ -531,7 +620,7 @@
     "security": [],
     "tags": [
         "TEA Collection",
-        "TEA Index",
+        "TEA Product Index",
         "TEA Leaf"
     ],
     "externalDocs": {

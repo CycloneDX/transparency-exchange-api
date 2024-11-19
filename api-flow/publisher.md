@@ -8,14 +8,14 @@ sequenceDiagram
     participant Vendor
     participant TEA_API
     participant TEA_Index
-    participant Product_Repository
+    participant TEA Product Index
     participant SBOM_Generator
     participant VEX_Generator
     participant VDR_Generator
     participant Consumer
 
-    Vendor->>Product_Repository: Create new product version
-    Product_Repository-->>Vendor: Product version created
+    Vendor ->> TEA Product Index: POST to /v1/product-index to create new product
+    TEA Product Index -->> Vendor: Product version created and Tea Product Identifier returned
 
     Vendor->>TEA_API: POST /collection (Create new collection with FIRST_MENTION lifecycle event)
     TEA_API->>TEA_Index: Update index with new collection
