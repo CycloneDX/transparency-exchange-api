@@ -159,6 +159,18 @@
                     },
                     {
                         "$ref": "#/components/parameters/page-size"
+                    },
+                    {
+                        "$ref": "#/components/parameters/purl"
+                    },
+                    {
+                        "$ref": "#/components/parameters/ean"
+                    },
+                    {
+                        "$ref": "#/components/parameters/sku"
+                    },
+                    {
+                        "$ref": "#/components/parameters/vendor-uuid"
                     }
                 ],
                 "responses": {
@@ -891,6 +903,22 @@
                     "product-name": {
                         "type": "string"
                     },
+                    "purl": {
+                        "type": "string",
+                        "description": "Package URL (PURL)"
+                    },
+                    "ean": {
+                        "type": "string",
+                        "description": "EAN bar code"
+                    },
+                    "sku": {
+                        "type": "string",
+                        "description": "Product SKU"
+                    },
+                    "vendor-uuid": {
+                        "$ref": "#/components/schemas/type-uuid",
+                        "description": "Vendor UUID"
+                    },
                     "leaf-references": {
                         "type": "array",
                         "items": {
@@ -924,6 +952,12 @@
                     },
                     "pre-release": {
                         "type": "boolean"
+                    },
+                    "end-of-life": {
+                        "type": "string",
+                        "format": "date-time",
+                        "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:?\\d{2})$",
+                        "example": "2024-03-20T15:30:00Z"
                     },
                     "collection-references": {
                         "type": "array",
@@ -1285,6 +1319,42 @@
                 "required": true,
                 "schema": {
                     "type": "string"
+                }
+            },
+            "purl": {
+                "name": "purl",
+                "description": "Package URL (PURL)",
+                "in": "query",
+                "required": false,
+                "schema": {
+                    "type": "string"
+                }
+            },
+            "ean": {
+                "name": "ean",
+                "description": "EAN bar code",
+                "in": "query",
+                "required": false,
+                "schema": {
+                    "type": "string"
+                }
+            },
+            "sku": {
+                "name": "sku",
+                "description": "Product SKU",
+                "in": "query",
+                "required": false,
+                "schema": {
+                    "type": "string"
+                }
+            },
+            "vendor-uuid": {
+                "name": "vendor-uuid",
+                "description": "Vendor UUID",
+                "in": "query",
+                "required": false,
+                "schema": {
+                    "$ref": "#/components/schemas/type-uuid"
                 }
             }
         },
