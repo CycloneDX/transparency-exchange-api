@@ -956,18 +956,11 @@
     "webhooks": {},
     "components": {
         "schemas": {
-            "tea_product": {
+            "base_product_fields": {
                 "type": "object",
                 "properties": {
-                    "identifier": {
-                        "$ref": "#/components/schemas/type_uuid"
-                    },
                     "product_name": {
                         "type": "string"
-                    },
-                    "purl": {
-                        "type": "string",
-                        "description": "Package URL (PURL)"
                     },
                     "barcode": {
                         "type": "string",
@@ -981,59 +974,126 @@
                         "$ref": "#/components/schemas/type_uuid",
                         "description": "Vendor UUID"
                     },
-                    "leaf_references": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/type_uuid"
-                        },
-                        "description": "Array of UUIDs referencing TEA Leaf entries"
+                    "purl": {
+                        "type": "string",
+                        "description": "Package URL (PURL)"
                     }
-                },
-                "required": [
-                    "identifier",
-                    "product_name"
+                }
+            },
+            "base_versioned_product": {
+                "allOf": [
+                    { "$ref": "#/components/schemas/base_product_fields" },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "product_version": {
+                                "type": "string"
+                            },
+                            "release_date": {
+                                "type": "string",
+                                "format": "date-time",
+                                "example": "2024-03-20T15:30:00Z"
+                            }
+                        }
+                    }
                 ]
             },
-            "tea_leaf": {
+            "base_artifact_object": {
                 "type": "object",
                 "properties": {
                     "identifier": {
                         "$ref": "#/components/schemas/type_uuid"
                     },
-                    "product_name": {
+                    "description": {
                         "type": "string"
                     },
-                    "product_version": {
+                    "mime_type": {
                         "type": "string"
                     },
-                    "release_date": {
+                    "artifact_url": {
                         "type": "string",
-                        "format": "date-time",
-                        "example": "2024-03-20T15:30:00Z"
+                        "format": "uri"
                     },
-                    "pre_release": {
-                        "type": "boolean"
+                    "artifact_size_in_bytes": {
+                        "type": "integer",
+                        "format": "int64"
                     },
-                    "end_of_life": {
+                    "artifact_checksum": {
                         "type": "string",
-                        "format": "date-time",
-                        "example": "2024-03-20T15:30:00Z"
+                        "description": "The checksum value"
                     },
-                    "collection_references": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/type_uuid"
-                        },
-                        "description": "Array of UUIDs referencing TEA Collection entries",
-                        "default": []
+                    "artifact_checksum_type": {
+                        "type": "string",
+                        "description": "The algorithm used to generate the checksum",
+                        "enum": [
+                            "SHA512",
+                            "SHA384",
+                            "SHA256",
+                            "SHA224",
+                            "SHA1",
+                            "MD5",
+                            "BLAKE2b-512",
+                            "BLAKE2s-256",
+                            "BLAKE3"
+                        ],
+                        "default": "SHA256"
                     }
-                },
-                "required": [
-                    "identifier",
-                    "product_name",
-                    "product_version",
-                    "release_date",
-                    "pre_release"
+                }
+            },
+            "tea_product": {
+                "allOf": [
+                    { "$ref": "#/components/schemas/base_product_fields" },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "identifier": {
+                                "$ref": "#/components/schemas/type_uuid"
+                            },
+                            "leaf_references": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/components/schemas/type_uuid"
+                                },
+                                "description": "Array of UUIDs referencing TEA Leaf entries"
+                            }
+                        },
+                        "required": ["identifier", "product_name"]
+                    }
+                ]
+            },
+            "tea_leaf": {
+                "allOf": [
+                    { "$ref": "#/components/schemas/base_versioned_product" },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "identifier": {
+                                "$ref": "#/components/schemas/type_uuid"
+                            },
+                            "pre_release": {
+                                "type": "boolean"
+                            },
+                            "end_of_life": {
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            "collection_references": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/components/schemas/type_uuid"
+                                },
+                                "description": "Array of UUIDs referencing TEA Collection entries",
+                                "default": []
+                            }
+                        },
+                        "required": [
+                            "identifier",
+                            "product_name",
+                            "product_version",
+                            "release_date",
+                            "pre_release"
+                        ]
+                    }
                 ]
             },
             "tea_collection": {
@@ -1325,6 +1385,17 @@
             }
         },
         "responses": {
+            "base_error": {
+                "type": "object",
+                "properties": {
+                    "error": {
+                        "type": "string"
+                    },
+                    "message": {
+                        "type": "string"
+                    }
+                }
+            },
             "404-object-by-id-not-found": {
                 "description": "Object requested by identifier not found",
                 "content": {
