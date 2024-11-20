@@ -176,7 +176,7 @@
                                     "type": "object",
                                     "properties": {
                                         "pagination": {
-                                            "$ref": "#/components/schemas/type-pagination-details"
+                                            "$ref": "#/components/schemas/type_pagination_details"
                                         },
                                         "items": {
                                             "type": "array",
