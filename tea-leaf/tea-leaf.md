@@ -20,7 +20,7 @@ a timestamp for a release is required.
 - __Product name__: A text field
 - __Product version__: A text field, no required syntax
 - __Release date__: A unix timestamp
-- __Prerelease__: A boolean flag indicating a pre-release (beta, rc)
+- __Pre-Release__: A boolean flag indicating a pre-release (beta, rc)
 - __Tco_uuid__: A reference to the TEA Collection objet for this release
 
 ## Handling the Prerelease flag
