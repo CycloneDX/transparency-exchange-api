@@ -25,7 +25,7 @@ a timestamp for a release is required.
 
 ## Handling the Pre-Release flag
 
-The Prerelease flag is used to indicate that this is not a final release. For a given Leaf with a UUID, the flag
+The Pre-Release flag is used to indicate that this is not a final release. For a given Leaf with a UUID, the flag
 can be set to indicate a "test", "beta", "alfa" or similar non-deployed release. It can only be set when
 creating the LEAF. The TEA implementation may allow it to be unset (False) once. This is to support
 situations where a object is promoted as is after testing to production version. The flag can not
