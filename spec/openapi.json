@@ -215,6 +215,14 @@
                                 "required": [
                                     "product_name"
                                 ]
+                            },
+                            "examples": {
+                                "basic": {
+                                    "summary": "Basic product creation",
+                                    "value": {
+                                        "product_name": "Example Product"
+                                    }
+                                }
                             }
                         }
                     }
@@ -298,6 +306,17 @@
                                     "release_date",
                                     "pre_release"
                                 ]
+                            }
+                        },
+                        "examples": {
+                            "basic": {
+                                "summary": "Basic leaf creation",
+                                "value": {
+                                    "tea_product_identifier": "123e4567-e89b-12d3-a456-426614174000",
+                                    "product_version": "1.0.0",
+                                    "release_date": "2024-03-20T15:30:00Z",
+                                    "pre_release": false
+                                }
                             }
                         }
                     }
@@ -580,6 +599,44 @@
                                     "author",
                                     "reason"
                                 ]
+                            },
+                            "examples": {
+                                "basic": {
+                                    "summary": "Basic collection creation",
+                                    "value": {
+                                        "tea_leaf_identifier": "123e4567-e89b-12d3-a456-426614174000",
+                                        "product_name": "Example Product",
+                                        "product_version": "1.0.0",
+                                        "release_date": "2024-03-20T15:30:00Z",
+                                        "author": {
+                                            "name": "John Doe",
+                                            "email": "john.doe@example.com",
+                                            "organization": "Example Org"
+                                        },
+                                        "reason": "New Product Release",
+                                        "artifacts": [
+                                            {
+                                                "name": "Example Artifact",
+                                                "type": "bom",
+                                                "author": {
+                                                    "name": "John Doe",
+                                                    "email": "john.doe@example.com",
+                                                    "organization": "Example Org"
+                                                },
+                                                "objects": [
+                                                    {
+                                                        "description": "Example SBOM",
+                                                        "mime_type": "application/json",
+                                                        "artifact_url": "https://example.com/sbom.json",
+                                                        "artifact_size_in_bytes": 1024,
+                                                        "artifact_checksum": "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3",
+                                                        "artifact_checksum_type": "SHA256"
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                }
                             }
                         }
                     }
@@ -671,7 +728,6 @@
                                     "release_date": {
                                         "type": "string",
                                         "format": "date-time",
-                                        "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:?\\d{2})$",
                                         "example": "2024-03-20T15:30:00Z"
                                     },
                                     "author": {
@@ -890,7 +946,6 @@
                     "release_date": {
                         "type": "string",
                         "format": "date-time",
-                        "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:?\\d{2})$",
                         "example": "2024-03-20T15:30:00Z"
                     },
                     "pre_release": {
@@ -899,7 +954,6 @@
                     "end_of_life": {
                         "type": "string",
                         "format": "date-time",
-                        "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:?\\d{2})$",
                         "example": "2024-03-20T15:30:00Z"
                     },
                     "collection_references": {
@@ -934,7 +988,6 @@
                     "release_date": {
                         "type": "string",
                         "format": "date-time",
-                        "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:?\\d{2})$",
                         "example": "2024-03-20T15:30:00Z"
                     },
                     "author": {
@@ -1082,7 +1135,6 @@
                     "timestamp": {
                         "type": "string",
                         "format": "date-time",
-                        "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:?\\d{2})$",
                         "example": "2024-03-20T15:30:00Z"
                     },
                     "page_start_index": {
