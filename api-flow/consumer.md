@@ -1,7 +1,7 @@
 # Transparency Exchange API: Consumer access
 
 
-The consumer access starts with a TEI, A transparency Exchange Identifier. This is used to find the API server as 
+The consumer access starts with a TEI, A transparency Exchange Identifier. This is used to find the API server as
 described in the [discovery document](/discovery/readme.md).
 
 ## API usage
@@ -27,25 +27,26 @@ sequenceDiagram
     autonumber
     actor user
     participant discovery as TEA Discovery with TEI
-    box LightGrey TEA API service
-    participant teaindex as TEA Index
-    end
-   
-  
+
+    participant tea_product as TEA Product
+    participant tea_leaf as TEA Leaf
+    participant tea_collection as TEA Collection
+    participant tea_artifact as TEA Artefact
+
 
     user ->> discovery: Discovery using DNS
     discovery ->> user: List of API servers
 
-    user ->> teaindex: Finding all product parts
-    teaindex ->> user: List of product parts
-    create participant tealeaf as TEA Leaf Index
-    user ->> tealeaf: Finding all versions of a part
-    tealeaf ->> user: List of all available versions (paginated)
-    create  participant teacoll as TEA Collection
-    user ->> teacoll: Finding all artefacts for version in scope
-    teacoll ->> user: List of artefacts and formats available for each artefact
-    create participant artefact as Artefact
-    user ->> artefact: Download artefact
+    user ->> tea_product: Finding all product parts
+    tea_product ->> user: List of product parts
+
+    user ->> tea_leaf: Finding all versions of a part
+    tea_leaf ->> user: List of all available versions (paginated)
+
+    user ->> tea_collection: Finding all artefacts for version in scope
+    tea_collection ->> user: List of artefacts and formats available for each artefact
+
+    user ->> tea_artifact: Download artefact
 
 
 
