@@ -70,11 +70,36 @@
                                 "properties": {
                                     "product_name": {
                                         "type": "string"
+                                    },
+                                    "barcode": {
+                                        "type": "string",
+                                        "description": "Barcode"
+                                    },
+                                    "sku": {
+                                        "type": "string",
+                                        "description": "Product SKU"
+                                    },
+                                    "vendor_uuid": {
+                                        "$ref": "#/components/schemas/type_uuid",
+                                        "description": "Vendor UUID"
+                                    },
+                                    "purl": {
+                                        "type": "string",
+                                        "description": "Package URL (PURL)"
                                     }
-                                },
-                                "required": [
-                                    "product_name"
-                                ]
+                                }
+                            },
+                            "examples": {
+                                "basic": {
+                                    "summary": "Basic product update",
+                                    "value": {
+                                        "product_name": "Updated Product Name",
+                                        "barcode": "123456789012",
+                                        "sku": "PROD-001",
+                                        "vendor_uuid": "123e4567-e89b-12d3-a456-426614174000",
+                                        "purl": "pkg:generic/example@1.0.0"
+                                    }
+                                }
                             }
                         }
                     }
@@ -210,6 +235,22 @@
                                 "properties": {
                                     "product_name": {
                                         "type": "string"
+                                    },
+                                    "barcode": {
+                                        "type": "string",
+                                        "description": "Barcode"
+                                    },
+                                    "sku": {
+                                        "type": "string",
+                                        "description": "Product SKU"
+                                    },
+                                    "vendor_uuid": {
+                                        "$ref": "#/components/schemas/type_uuid",
+                                        "description": "Vendor UUID"
+                                    },
+                                    "purl": {
+                                        "type": "string",
+                                        "description": "Package URL (PURL)"
                                     }
                                 },
                                 "required": [
@@ -221,6 +262,16 @@
                                     "summary": "Basic product creation",
                                     "value": {
                                         "product_name": "Example Product"
+                                    }
+                                },
+                                "full": {
+                                    "summary": "Full product creation with all fields",
+                                    "value": {
+                                        "product_name": "Complete Product Example",
+                                        "barcode": "123456789012",
+                                        "sku": "PROD-001",
+                                        "vendor_uuid": "123e4567-e89b-12d3-a456-426614174000",
+                                        "purl": "pkg:generic/example@1.0.0"
                                     }
                                 }
                             }
@@ -239,6 +290,18 @@
                                             "$ref": "#/components/schemas/type_uuid"
                                         },
                                         "product_name": {
+                                            "type": "string"
+                                        },
+                                        "barcode": {
+                                            "type": "string"
+                                        },
+                                        "sku": {
+                                            "type": "string"
+                                        },
+                                        "vendor_uuid": {
+                                            "$ref": "#/components/schemas/type_uuid"
+                                        },
+                                        "purl": {
                                             "type": "string"
                                         }
                                     },
