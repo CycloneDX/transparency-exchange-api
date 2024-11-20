@@ -528,7 +528,24 @@
                                                                 "format": "int64"
                                                             },
                                                             "artifact_checksum": {
-                                                                "type": "string"
+                                                                "type": "string",
+                                                                "description": "The checksum value"
+                                                            },
+                                                            "artifact_checksum_type": {
+                                                                "type": "string",
+                                                                "description": "The algorithm used to generate the checksum",
+                                                                "enum": [
+                                                                    "SHA512",
+                                                                    "SHA384",
+                                                                    "SHA256",
+                                                                    "SHA224",
+                                                                    "SHA1",
+                                                                    "MD5",
+                                                                    "BLAKE2b-512",
+                                                                    "BLAKE2s-256",
+                                                                    "BLAKE3"
+                                                                ],
+                                                                "default": "SHA256"
                                                             },
                                                             "signature_url": {
                                                                 "type": "string",
@@ -540,7 +557,8 @@
                                                             "mime_type",
                                                             "artifact_url",
                                                             "artifact_size_in_bytes",
-                                                            "artifact_checksum"
+                                                            "artifact_checksum",
+                                                            "artifact_checksum_type"
                                                         ]
                                                     }
                                                 }
@@ -696,7 +714,24 @@
                                                                 "format": "int64"
                                                             },
                                                             "artifact_checksum": {
-                                                                "type": "string"
+                                                                "type": "string",
+                                                                "description": "The checksum value"
+                                                            },
+                                                            "artifact_checksum_type": {
+                                                                "type": "string",
+                                                                "description": "The algorithm used to generate the checksum",
+                                                                "enum": [
+                                                                    "SHA512",
+                                                                    "SHA384",
+                                                                    "SHA256",
+                                                                    "SHA224",
+                                                                    "SHA1",
+                                                                    "MD5",
+                                                                    "BLAKE2b-512",
+                                                                    "BLAKE2s-256",
+                                                                    "BLAKE3"
+                                                                ],
+                                                                "default": "SHA256"
                                                             },
                                                             "signature_url": {
                                                                 "type": "string",
@@ -708,7 +743,8 @@
                                                             "mime_type",
                                                             "artifact_url",
                                                             "artifact_size_in_bytes",
-                                                            "artifact_checksum"
+                                                            "artifact_checksum",
+                                                            "artifact_checksum_type"
                                                         ]
                                                     }
                                                 }
@@ -976,7 +1012,24 @@
                         "format": "int64"
                     },
                     "artifact_checksum": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "The checksum value"
+                    },
+                    "artifact_checksum_type": {
+                        "type": "string",
+                        "description": "The algorithm used to generate the checksum",
+                        "enum": [
+                            "SHA512",
+                            "SHA384",
+                            "SHA256",
+                            "SHA224",
+                            "SHA1",
+                            "MD5",
+                            "BLAKE2b-512",
+                            "BLAKE2s-256",
+                            "BLAKE3"
+                        ],
+                        "default": "SHA256"
                     },
                     "signature_url": {
                         "type": "string",
@@ -989,7 +1042,8 @@
                     "mime_type",
                     "artifact_url",
                     "artifact_size_in_bytes",
-                    "artifact_checksum"
+                    "artifact_checksum",
+                    "artifact_checksum_type"
                 ]
             },
             "type_author": {
