@@ -158,13 +158,13 @@
                         "$ref": "#/components/parameters/purl"
                     },
                     {
-                        "$ref": "#/components/parameters/ean"
+                        "$ref": "#/components/parameters/barcode"
                     },
                     {
                         "$ref": "#/components/parameters/sku"
                     },
                     {
-                        "$ref": "#/components/parameters/vendor-uuid"
+                        "$ref": "#/components/parameters/vendor_uuid"
                     }
                 ],
                 "responses": {
@@ -814,9 +814,9 @@
                         "type": "string",
                         "description": "Package URL (PURL)"
                     },
-                    "ean": {
+                    "barcode": {
                         "type": "string",
-                        "description": "EAN bar code"
+                        "description": "Barcode"
                     },
                     "sku": {
                         "type": "string",
@@ -1237,9 +1237,9 @@
                     "type": "string"
                 }
             },
-            "ean": {
-                "name": "ean",
-                "description": "EAN bar code",
+            "barcode": {
+                "name": "barcode",
+                "description": "Barcode",
                 "in": "query",
                 "required": false,
                 "schema": {
