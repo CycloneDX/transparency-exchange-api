@@ -3,7 +3,7 @@
 _Work in progress_
 
 The TEA LEAF is the object that indicates a product version. The API should be
-very agnostic to how a "version" is indicated - semver, vers, name, hash or anything else.
+very agnostic as to how a "version" is indicated - semver, vers, name, hash or anything else.
 
 ## Major and minor versions
 
