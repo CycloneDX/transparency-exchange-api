@@ -14,7 +14,7 @@
             "name": "Apache 2.0",
             "url": "https://github.com/CycloneDX/transparency-exchange-api/blob/main/LICENSE"
         },
-        "version": "0.0.1"
+        "version": "0.0.2"
     },
     "servers": [
         {
@@ -30,12 +30,6 @@
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/tea-product-identifier"
-                    },
-                    {
-                        "$ref": "#/components/parameters/page-offset"
-                    },
-                    {
-                        "$ref": "#/components/parameters/page-size"
                     }
                 ],
                 "responses": {
@@ -273,48 +267,6 @@
             }
         },
         "/leaf": {
-            "get": {
-                "description": "Returns a list of TEA Leaves",
-                "operationId": "listTeaLeaves",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/page-offset"
-                    },
-                    {
-                        "$ref": "#/components/parameters/page-size"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "List of TEA Leaves retrieved successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "pagination": {
-                                            "$ref": "#/components/schemas/type-pagination-details"
-                                        },
-                                        "items": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/components/schemas/tea-leaf"
-                                            }
-                                        }
-                                    },
-                                    "required": [
-                                        "pagination",
-                                        "items"
-                                    ]
-                                }
-                            }
-                        }
-                    }
-                },
-                "tags": [
-                    "TEA Leaf"
-                ]
-            },
             "post": {
                 "description": "Create a new TEA Leaf entry",
                 "operationId": "createTeaLeaf",
@@ -334,7 +286,6 @@
                                     "release-date": {
                                         "type": "string",
                                         "format": "date-time",
-                                        "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:?\\d{2})$",
                                         "example": "2024-03-20T15:30:00Z"
                                     },
                                     "pre-release": {
@@ -438,7 +389,6 @@
                                     "release-date": {
                                         "type": "string",
                                         "format": "date-time",
-                                        "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:?\\d{2})$",
                                         "example": "2024-03-20T15:30:00Z"
                                     },
                                     "pre-release": {
@@ -514,48 +464,6 @@
             }
         },
         "/collection": {
-            "get": {
-                "description": "Returns a list of TEA Collections",
-                "operationId": "listTeaCollections",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/page-offset"
-                    },
-                    {
-                        "$ref": "#/components/parameters/page-size"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "List of TEA Collections retrieved successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "pagination": {
-                                            "$ref": "#/components/schemas/type-pagination-details"
-                                        },
-                                        "items": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/components/schemas/tea-collection"
-                                            }
-                                        }
-                                    },
-                                    "required": [
-                                        "pagination",
-                                        "items"
-                                    ]
-                                }
-                            }
-                        }
-                    }
-                },
-                "tags": [
-                    "TEA Collection"
-                ]
-            },
             "post": {
                 "description": "Create a new TEA Collection",
                 "operationId": "createTeaCollection",
@@ -578,7 +486,6 @@
                                     "release-date": {
                                         "type": "string",
                                         "format": "date-time",
-                                        "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:?\\d{2})$",
                                         "example": "2024-03-20T15:30:00Z"
                                     },
                                     "author": {
