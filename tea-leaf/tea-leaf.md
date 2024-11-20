@@ -1,7 +1,5 @@
 # The TEA Leaf Object (TLO)
 
-_Work in progress_
-
 The TEA LEAF is the object that indicates a product version. The API should be
 very agnostic as to how a "version" is indicated - semver, vers, name, hash or anything else.
 
@@ -20,14 +18,15 @@ a timestamp for a release is required.
 - __Product name__: A text field
 - __Product version__: A text field, no required syntax
 - __Release date__: A unix timestamp
-- __Pre-Release__: A boolean flag indicating a pre-release (beta, rc)
+- __Pre-release__: A boolean flag indicating a pre-release (beta, rc)
 - __Tco_uuid__: A reference to the TEA Collection objet for this release
 
 ## Handling the Pre-Release flag
 
-The Pre-Release flag is used to indicate that this is not a final release. For a given Leaf with a UUID, the flag
-can be set to indicate a "test", "beta", "alfa" or similar non-deployed release. It can only be set when
-creating the LEAF. The TEA implementation may allow it to be unset (False) once. This is to support
+The "Pre-release" flag is used to indicate that this is not a final release.
+For a given Leaf with a UUID, the flag can be set to indicate a "test", "beta", "alpha"
+or similar non-deployed release. It can only be set when creating the LEAF. The TEA implementation
+may allow it to be unset (False) once. This is to support
 situations where a object is promoted as is after testing to production version. The flag can not
 be set after initial creation and publication of the leaf.
 
@@ -37,3 +36,4 @@ a new leaf with a new UUID and version needs to be created.
 ## References
 
 - Semantic versioning (Semver): <https://semver.org>
+- PURL VERS <https://github.com/package-url/purl-spec/blob/master/VERSION-RANGE-SPEC.rst>
