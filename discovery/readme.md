@@ -76,7 +76,7 @@ urn:tei:purl:<domain-name>:<purl>
 
 Example:
 ```text
-urn:tei:org.cyclonedx:pkg:pypi/cyclonedx-python-lib@8.4.0?extension=whl&qualifier=py3-none-any
+urn:tei:purl:org.cyclonedx:pkg:pypi/cyclonedx-python-lib@8.4.0?extension=whl&qualifier=py3-none-any
 ```
 
 #### SWID
@@ -105,7 +105,7 @@ urn:tei:hash:<domain-name>:<hashtype>:<hash>
 
 Example:
 ```text
-urn:tei:cyclonedx.org:SHA256:fd44efd601f651c8865acf0dfeacb0df19a2b50ec69ead0262096fd2f67197b9
+urn:tei:hash:cyclonedx.org:SHA256:fd44efd601f651c8865acf0dfeacb0df19a2b50ec69ead0262096fd2f67197b9
 ```
 
 The origin of the hash is up to the vendor to define.
@@ -120,7 +120,11 @@ Syntax:
 urn:tei:uuid:<domain-name>:<uuid>
 ````
 
-Has to be a valid UUID.
+Example:
+```text
+urn:tei:uuid:cyclonedx.org:d4d9f54a-abcf-11ee-ac79-1a52914d44b1
+```
+
 
 #### Other types to be defined
 
