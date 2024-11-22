@@ -76,7 +76,7 @@ urn:tei:purl:<domain-name>:<purl>
 
 Example:
 ```text
-urn:tei:purl:org.cyclonedx:pkg:pypi/cyclonedx-python-lib@8.4.0?extension=whl&qualifier=py3-none-any
+urn:tei:purl:cyclonedx.org:pkg:pypi/cyclonedx-python-lib@8.4.0?extension=whl&qualifier=py3-none-any
 ```
 
 #### SWID
