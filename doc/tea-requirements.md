@@ -12,16 +12,21 @@ Based on an identifier a repository URL needs to be found. The identifier can be
 
 At the base URL well known URLs (ref) needs to point to
 
-- A lifecycle status document
+- A lifecycle status document (using OWASP Common Lifecycle Enumeration, CLE)
 - A version list. For each version, a URL will point to where a **collection** can be found
 - Vendor Discovery, returns a list of Vendors represented in the repository
-   - Vendor Name
-   - Vendor ID
+  - Vendor Name
+  - Vendor ID
+
+As an alternative, discovery using a company's ordinary web site should be supported.
+This can be handled using the file security.txt (IETF RFC 9116)
 
 ## Artifact Discovery based on TEA collections
 
 The API MUST provide a way to discover the artifacts that are available for retrieval or further query.
-Discovery SHOULD group artifacts together that represent a **collection** that are directly applicable to a given product. Collections are OPTIONAL. For example, a medical device that has:
+Discovery SHOULD group artifacts together that represent a **collection**
+that are directly applicable to a given product with a given version.
+Collections are OPTIONAL.
 
 - SBOM - Software Bill of Material
 - CBOM - Cryptography Bill of Material
@@ -42,14 +47,16 @@ modifying collections, or deleting existing collections.
 ## Artifact Retrieval
 
 The API MUST provide a method in which to retrieve an artifact based on the identity of the artifact.
-For example, using CycloneDX BOM-Link to retrieve either the latest version or specific version of an artifact.
+For example, using CycloneDX BOM-Link to retrieve either the
+latest version or specific version of an artifact.
 
 ```text
 urn:cdx:serialNumber
 urn:cdx:serialNumber/version
 ```
 
-The API needs to provide support for update checks, i.e. to check if a document is updated without downloading. (possibly etag or HEAD method or similar)
+The API needs to provide support for update checks, i.e. to check if a document is
+updated without downloading. (possibly etag or HEAD method or similar)
 Authn/Authz MUST be supported
 
 ## Artifact Publishing
