@@ -170,7 +170,7 @@ After selecting a host and resolving that to IP address, the TEA client
 connects to the host using HTTPS with the original name, not the one found
 in DNS. The URI is composed of the name with the `/.well-known/tea` prefix added.
 
-```text
+```zone_file
 tea.example.com.   3600 IN HTTPS  1  tea01.prod.example.com.
 ```
 
