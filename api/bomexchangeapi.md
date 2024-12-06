@@ -67,7 +67,7 @@ the server does not support any of the requested content types a HTTP 406 respon
 MUST be returned. The 406 response body MUST contain a list of server supported
 content types in the below format with `text/plain` content type.
 
-```text
+```abnf
 media-type *(", " media-type)
 ```
 
@@ -75,7 +75,7 @@ e.g. `application/vnd.cyclonedx+xml; version=1.4, application/vnd.cyclonedx+xml;
 
 API servers MUST provide the correct `Content-Type` HTTP response header. For example:
 
-```httpspec
+```http
 Content-Type: application/vnd.cyclonedx+xml; version=1.4
 ```
 
@@ -87,7 +87,7 @@ MUST respond with the latest available version of the BOM.
 - Clients MUST support an optional `Authorization` header being specified.
 - Clients MUST provide a `Accept` HTTP request header. For example:
 
-```httpspec
+```http
 Accept: application/vnd.cyclonedx+xml; version=1.4, application/vnd.cyclonedx+xml; version=1.3
 ```
 
@@ -115,7 +115,7 @@ the server does not support the supplied content type a HTTP 415 Unsupported
 Media Type response MUST be returned. The 415 response body MUST contain a list
 of server supported content types in the below format with `text/plain` content type.
 
-```text
+```abnf
 media-type *(", " media-type)
 ```
 
@@ -130,6 +130,6 @@ Clients MUST support an optional `Authorization` header being specified.
 
 Clients MUST provide the correct `Content-Type` HTTP request header. For example:
 
-```httpspec
+```http
 Content-Type: application/vnd.cyclonedx+xml; version=1.4
 ```
