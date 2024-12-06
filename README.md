@@ -72,6 +72,11 @@ Much of the focus on Software Transparency from the U.S. Government and others c
 
 Insights allows for “limited transparency” that can be asked and answered using an expression language that can be tightly scoped or outcome-driven. Insights also removes the complexities of BOM format conversion away from the consumers. An object model derived from CycloneDX will be an integral part of this API, since the objects within CycloneDX are self-contained (thus API friendly) and the specification supports all the necessary xBOM types along with CDXA.
 
+## Presentations and videos
+
+- You can find presentations in the repository in the [Presentations](/presentations) directory
+- Our biweekly meetings are available on [YouTube playlist: Project Koala](https://www.youtube.com/playlist?list=PLqjEqUxHjy1XtSzGYL7Dj_WJbiLu_ty58)
+- KoalaCon 2024 - an introduction to the project - can be [viewed on YouTube](https://youtu.be/NStzYW4WnEE?si=ihLirpGVjHc7K4bL)
 
 ## Terminology
 
@@ -79,7 +84,7 @@ Insights allows for “limited transparency” that can be asked and answered us
 - Authorization (authz):
 - Authentication (authn):
 - Collection: A set of artifacts representing a version of a product
-- Product: An item sold or delivered under one name (?)
+- Product: An item sold or delivered under one name
 - Product variant: A variant of a product
 - Version:
 
