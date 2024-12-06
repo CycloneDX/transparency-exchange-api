@@ -143,13 +143,13 @@ These point to URIs for the transparency exchange data.
 If there are no records, try to resolve the name (using AAAA and A DNS records) and
 append the /.well-known/tei prefix
 
-```zone
+```dns
 _tei._tcp.tex.example.com.   3600 IN URI 10 1 “https://www.example.com/transparency“
 ```
 
 Example response of DNS query including multiple URIs with a priority
 
-```zone
+```dns
 _tei._tcp.tex.example.com.   3600 IN URI 10 1 “https://www.example.com/transparency“
 _tei._tcp.tex.example.com.   3600 IN URI 20 1 “https://backup.example.com/transparency“
 _tei._tcp.tex.example.com.   3600 IN URI 30 1 “https://thirdparty.example.org/example.com/transparency“
