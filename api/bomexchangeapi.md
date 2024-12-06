@@ -18,7 +18,7 @@ ABNF rules are used from [RFC3986: Uniform Resource Identifier (URI): Generic Sy
 
 These additional rules are defined:
 
-```text
+```abnf
 system-url       = supported-scheme ":" hier-part
                        ; a system defined URL
                        ; hier-part as defined in RFC3986
@@ -39,7 +39,7 @@ This method is for retrieving a BOM from a system.
 
 The BOM retrieval URL MUST comply with this syntax:
 
-```text
+```abnf
 bom-retrieval-url    = system-url "?" bom-identifier-query
 bom-identifier-query = "bomIdentifier=" bom-identifier
 bom-identifier       = *( pchar / "/" / "?" )
@@ -75,7 +75,7 @@ e.g. `application/vnd.cyclonedx+xml; version=1.4, application/vnd.cyclonedx+xml;
 
 API servers MUST provide the correct `Content-Type` HTTP response header. For example:
 
-```text
+```httpspec
 Content-Type: application/vnd.cyclonedx+xml; version=1.4
 ```
 
@@ -87,7 +87,7 @@ MUST respond with the latest available version of the BOM.
 - Clients MUST support an optional `Authorization` header being specified.
 - Clients MUST provide a `Accept` HTTP request header. For example:
 
-```text
+```httpspec
 Accept: application/vnd.cyclonedx+xml; version=1.4, application/vnd.cyclonedx+xml; version=1.3
 ```
 
@@ -97,7 +97,7 @@ This method is for submitting a BOM to a system.
 
 The BOM submission URL MUST comply with this syntax:
 
-```text
+```abnf
 bom-submission-url = system-url
 ```
 
@@ -115,7 +115,7 @@ the server does not support the supplied content type a HTTP 415 Unsupported
 Media Type response MUST be returned. The 415 response body MUST contain a list
 of server supported content types in the below format with `text/plain` content type.
 
-```
+```text
 media-type *(", " media-type)
 ```
 
@@ -130,6 +130,6 @@ Clients MUST support an optional `Authorization` header being specified.
 
 Clients MUST provide the correct `Content-Type` HTTP request header. For example:
 
-```text
+```httpspec
 Content-Type: application/vnd.cyclonedx+xml; version=1.4
 ```
