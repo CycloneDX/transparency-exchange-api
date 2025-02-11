@@ -37,7 +37,7 @@ The TEI for a product can be communicated to the user in many ways.
 
 ## TEA Discovery - defining an extensible identifier
 
-TEA discovery is the process where a user with a product identifier can discover and downloadg
+TEA discovery is the process where a user with a product identifier can discover and download
 artifacts automatically, with or without authentication. A globally unique identifier is
 required for a given product. This identifier is called the Transparency Exchange Identifier (TEI).
 
@@ -65,7 +65,7 @@ urn:tei:<type>:<domain-name>:<unique-identifier>
 ````
 
 - The **`type`** which defines the syntax of the unique identifier part
-- The **`domain-name`** part does not have to exist as a web server (HTTPS), but may do
+- The **`domain-name`** part resolves into a web server, which may not be the API host.
   - The uniqueness of the name is the domain name part that has to be registred at creation of the TEI.
 - The **`unique-identifier`** has to be unique within the `domain-name`.
   Recommendation is to use a UUID but it can be an existing article code too
@@ -89,6 +89,7 @@ urn:tei:purl:<domain-name>:<purl>
 ````
 
 Example:
+
 ```text
 urn:tei:purl:cyclonedx.org:pkg:pypi/cyclonedx-python-lib@8.4.0?extension=whl&qualifier=py3-none-any
 ```
@@ -109,9 +110,9 @@ Note that there is a TEI SWID type as well as a PURL SWID type.
 
 Where the `unique-identifier` is a Hash. Supports the following hash types:
 
-* SHA256
-* SHA384
-* SHA512
+- SHA256
+- SHA384
+- SHA512
 
 ```text
 urn:tei:hash:<domain-name>:<hashtype>:<hash>
@@ -149,10 +150,9 @@ urn:tei:uuid:cyclonedx.org:d4d9f54a-abcf-11ee-ac79-1a52914d44b1
 ### TEI resolution using DNS
 
 The `domain-name` part of the TEI is used in a DNS query to find one or multiple locations for
-product transparency exchange information. DNS can deliver load balancing and
-failover functionality to make sure that the information is always reachable.
+product transparency exchange information.
 
-At the URL we need a well-known name space to find out where the API endpoint is hosted.
+At the URL a well-known name space is used to find out where the API endpoint is hosted.
 This is solved by using the ".well-known" name space as defined by the IETF.
 
 - `urn:tei:uuid:products.example.com:d4d9f54a-abcf-11ee-ac79-1a52914d44b1`
@@ -160,42 +160,15 @@ This is solved by using the ".well-known" name space as defined by the IETF.
 
 The name in the DNS name part points to a set of DNS records.
 
-A TEI with name `tea.example.com` queries for `tea.example.com` `HTTPS` records.
+A TEI with name `tea.example.com` queries for `tea.example.com` `A` and `AAAA` records.
 These point to the hosts available for the Transparency Exchange API.
-Note that `tea.example.com` may not have `A`/`AAAA` records at all if it
-points to other servers, like `tea01.example.org` and `teahost.example.net`.
 
-If there are no HTTPS records, try to resolve the name (using `AAAA` and `A` DNS records).
+The TEA client connects to the host using HTTPS and validates the certificate.
+The URI is composed of the name with the `/.well-known/tea` prefix added.
 
-After selecting a host and resolving that to IP address, the TEA client
-connects to the host using HTTPS with the original name, not the one found
-in DNS. The URI is composed of the name with the `/.well-known/tea` prefix added.
+This results in the base URI (without the product identifier) 
+`https://tea.example.com/.well-known/tea/` 
 
-```zone_file
-tea.example.com.   3600 IN HTTPS  1  tea01.prod.example.com.
-```
-
-Results in the base URI (without the product identifier) 
-`https://tea.example.com/.well-known/tea/` while connecting to
-the host `tea01.prod.example.com`.
-
-Results in `https://tea.example.com/.well-known/tea/<identifier>` while connecting to
-the host tea01.prod.example.com.
-
-### Load balancing and fail over
-
-Example zone:
-
-```text
-tea.example.com.   3600 IN HTTPS  10  tea01.prod.example.com.
-tea.example.com.   3600 IN HTTPS  10  tea02.prod.example.com.
-tea.example.com.   3600 IN HTTPS  20  tea03.prod.example.com.
-```
-
-In this case servers tea01 and tea02 will get 50% of the load each.
-If they are not reachable, tea03 will be used for failover.
-
-It is recommended to have a third party external repository as the last priority.
 
 ## Connecting to the API
 
@@ -215,18 +188,9 @@ Append the product part of the TEI to the URI found
 
 - TEI: `urn:tei:uuid:products.example.com:d4d9f54a-abcf-11ee-ac79-1a52914d44b1`
 - DNS record: `products.example.com`
-- Server found in DNS `HTTPS` record: `teapot.prod.example.com`
 - URL: `https://products.example.com/.well-known/tea/d4d9f54a-abcf-11ee-ac79-1a52914d44b1/`
 - HTTP 302 redirect to "https://teapot02.consumer.example.com/tea/v2/product-index/d4d9f54a-abcf-11ee-ac79-1a52914d44b1'
 
-The server at `teapot.prod.example.com` needs a TLS certificate that valid for `products.example.com` 
- - e.g. with `products.example.com` in the subject alt name. `teapot02.consumer.example.com` needs a certificate with that
-host name.
-
-If no `HTTPS` records are found the resolution defaults to `A` and `AAAA` records.
-IP address is not valid in the domain name field.
-
-Append the URL prefix `/.well-known/tea/` of the TEI to the DNS name found
 Always prefix with the https:// scheme. http (unencrypted) is not valid.
 
 - TEI: `urn:tei:uuid:products.example.com:d4d9f54a-abcf-11ee-ac79-1a52914d44b1`
@@ -242,6 +206,5 @@ has many identifiers. The redirect should not lead to a separate web server.
 
 ## References
 
-- [RFC 9640 - Service Binding and Parameter Specification via the DNS (SVCB and HTTPS Resource Records)](https://datatracker.ietf.org/doc/html/rfc9640)
 - [IANA .well-known registry](https://www.iana.org/assignments/well-known-uris/well-known-uris.xhtml)
 - [IANA URI registry](https://www.iana.org/assignments/urn-namespaces/urn-namespaces.xhtml#urn-namespaces-1)
