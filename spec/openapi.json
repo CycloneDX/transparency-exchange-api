@@ -146,25 +146,9 @@
                         "$ref": "#/components/parameters/tea_product_identifier"
                     }
                 ],
-                "responses": {
-                    "204": {
-                        "description": "TEA Product successfully deleted"
-                    },
-                    "401": { "$ref": "#/components/responses/401-unauthorized" },
-                    "404": {
-                        "$ref": "#/components/responses/404-object-by-id-not-found"
-                    }
-                },
+                "$ref": "#/components/operations/standard_delete",
                 "tags": [
                     "TEA Product"
-                ],
-                "security": [
-                    {
-                        "bearerAuth": []
-                    },
-                    {
-                        "basicAuth": []
-                    }
                 ]
             }
         },
@@ -174,54 +158,22 @@
                 "operationId": "listTeaProducts",
                 "parameters": [
                     {
-                        "$ref": "#/components/parameters/page-offset"
-                    },
-                    {
-                        "$ref": "#/components/parameters/page-size"
-                    },
-                    {
-                        "$ref": "#/components/parameters/purl"
-                    },
-                    {
-                        "$ref": "#/components/parameters/barcode"
-                    },
-                    {
-                        "$ref": "#/components/parameters/sku"
-                    },
-                    {
-                        "$ref": "#/components/parameters/vendor_uuid"
+                        "$ref": "#/components/parameters/standard_pagination"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "List of TEA Products retrieved successfully",
+                        "description": "List retrieved successfully",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "pagination": {
-                                            "$ref": "#/components/schemas/type_pagination_details"
-                                        },
-                                        "items": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/components/schemas/tea_product"
-                                            }
-                                        }
-                                    },
-                                    "required": [
-                                        "pagination",
-                                        "items"
-                                    ]
+                                    "$ref": "#/components/schemas/paginated_product_list"
                                 }
                             }
                         }
-                    }
-                },
-                "tags": [
-                    "TEA Product"
-                ]
+                    },
+                    "$ref": "#/components/responses/standard_errors"
+                }
             },
             "post": {
                 "description": "Create TEA Product entry for the supplied product identifier",
@@ -523,25 +475,9 @@
                         "$ref": "#/components/parameters/tea_leaf_identifier"
                     }
                 ],
-                "responses": {
-                    "204": {
-                        "description": "TEA Leaf successfully deleted"
-                    },
-                    "401": { "$ref": "#/components/responses/401-unauthorized" },
-                    "404": {
-                        "$ref": "#/components/responses/404-object-by-id-not-found"
-                    }
-                },
+                "$ref": "#/components/operations/standard_delete",
                 "tags": [
                     "TEA Leaf"
-                ],
-                "security": [
-                    {
-                        "bearerAuth": []
-                    },
-                    {
-                        "basicAuth": []
-                    }
                 ]
             }
         },
@@ -930,25 +866,9 @@
                         "$ref": "#/components/parameters/tea_collection_identifier"
                     }
                 ],
-                "responses": {
-                    "204": {
-                        "description": "TEA Collection successfully deleted"
-                    },
-                    "401": { "$ref": "#/components/responses/401-unauthorized" },
-                    "404": {
-                        "$ref": "#/components/responses/404-object-by-id-not-found"
-                    }
-                },
+                "$ref": "#/components/operations/standard_delete",
                 "tags": [
                     "TEA Collection"
-                ],
-                "security": [
-                    {
-                        "bearerAuth": []
-                    },
-                    {
-                        "basicAuth": []
-                    }
                 ]
             }
         }
@@ -956,18 +876,11 @@
     "webhooks": {},
     "components": {
         "schemas": {
-            "tea_product": {
+            "base_product_fields": {
                 "type": "object",
                 "properties": {
-                    "identifier": {
-                        "$ref": "#/components/schemas/type_uuid"
-                    },
                     "product_name": {
                         "type": "string"
-                    },
-                    "purl": {
-                        "type": "string",
-                        "description": "Package URL (PURL)"
                     },
                     "barcode": {
                         "type": "string",
@@ -981,59 +894,126 @@
                         "$ref": "#/components/schemas/type_uuid",
                         "description": "Vendor UUID"
                     },
-                    "leaf_references": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/type_uuid"
-                        },
-                        "description": "Array of UUIDs referencing TEA Leaf entries"
+                    "purl": {
+                        "type": "string",
+                        "description": "Package URL (PURL)"
                     }
-                },
-                "required": [
-                    "identifier",
-                    "product_name"
+                }
+            },
+            "base_versioned_product": {
+                "allOf": [
+                    { "$ref": "#/components/schemas/base_product_fields" },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "product_version": {
+                                "type": "string"
+                            },
+                            "release_date": {
+                                "type": "string",
+                                "format": "date-time",
+                                "example": "2024-03-20T15:30:00Z"
+                            }
+                        }
+                    }
                 ]
             },
-            "tea_leaf": {
+            "base_artifact_object": {
                 "type": "object",
                 "properties": {
                     "identifier": {
                         "$ref": "#/components/schemas/type_uuid"
                     },
-                    "product_name": {
+                    "description": {
                         "type": "string"
                     },
-                    "product_version": {
+                    "mime_type": {
                         "type": "string"
                     },
-                    "release_date": {
+                    "artifact_url": {
                         "type": "string",
-                        "format": "date-time",
-                        "example": "2024-03-20T15:30:00Z"
+                        "format": "uri"
                     },
-                    "pre_release": {
-                        "type": "boolean"
+                    "artifact_size_in_bytes": {
+                        "type": "integer",
+                        "format": "int64"
                     },
-                    "end_of_life": {
+                    "artifact_checksum": {
                         "type": "string",
-                        "format": "date-time",
-                        "example": "2024-03-20T15:30:00Z"
+                        "description": "The checksum value"
                     },
-                    "collection_references": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/type_uuid"
-                        },
-                        "description": "Array of UUIDs referencing TEA Collection entries",
-                        "default": []
+                    "artifact_checksum_type": {
+                        "type": "string",
+                        "description": "The algorithm used to generate the checksum",
+                        "enum": [
+                            "SHA512",
+                            "SHA384",
+                            "SHA256",
+                            "SHA224",
+                            "SHA1",
+                            "MD5",
+                            "BLAKE2b-512",
+                            "BLAKE2s-256",
+                            "BLAKE3"
+                        ],
+                        "default": "SHA256"
                     }
-                },
-                "required": [
-                    "identifier",
-                    "product_name",
-                    "product_version",
-                    "release_date",
-                    "pre_release"
+                }
+            },
+            "tea_product": {
+                "allOf": [
+                    { "$ref": "#/components/schemas/base_product_fields" },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "identifier": {
+                                "$ref": "#/components/schemas/type_uuid"
+                            },
+                            "leaf_references": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/components/schemas/type_uuid"
+                                },
+                                "description": "Array of UUIDs referencing TEA Leaf entries"
+                            }
+                        },
+                        "required": ["identifier", "product_name"]
+                    }
+                ]
+            },
+            "tea_leaf": {
+                "allOf": [
+                    { "$ref": "#/components/schemas/base_versioned_product" },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "identifier": {
+                                "$ref": "#/components/schemas/type_uuid"
+                            },
+                            "pre_release": {
+                                "type": "boolean"
+                            },
+                            "end_of_life": {
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            "collection_references": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/components/schemas/type_uuid"
+                                },
+                                "description": "Array of UUIDs referencing TEA Collection entries",
+                                "default": []
+                            }
+                        },
+                        "required": [
+                            "identifier",
+                            "product_name",
+                            "product_version",
+                            "release_date",
+                            "pre_release"
+                        ]
+                    }
                 ]
             },
             "tea_collection": {
@@ -1325,6 +1305,17 @@
             }
         },
         "responses": {
+            "base_error": {
+                "type": "object",
+                "properties": {
+                    "error": {
+                        "type": "string"
+                    },
+                    "message": {
+                        "type": "string"
+                    }
+                }
+            },
             "404-object-by-id-not-found": {
                 "description": "Object requested by identifier not found",
                 "content": {
@@ -1442,6 +1433,57 @@
             "basicAuth": {
                 "type": "http",
                 "scheme": "basic"
+            }
+        },
+        "security_requirements": {
+            "standard_auth": [
+                {
+                    "bearerAuth": []
+                },
+                {
+                    "basicAuth": []
+                }
+            ]
+        },
+        "responses": {
+            "standard_errors": {
+                "400": {
+                    "description": "Invalid request body",
+                    "content": {
+                        "application/json": {}
+                    }
+                },
+                "401": {
+                    "$ref": "#/components/responses/401-unauthorized"
+                },
+                "404": {
+                    "$ref": "#/components/responses/404-object-by-id-not-found"
+                }
+            },
+            "standard_delete": {
+                "204": {
+                    "description": "Resource successfully deleted"
+                }
+            }
+        },
+        "parameters": {
+            "standard_pagination": {
+                "page_offset": {
+                    "$ref": "#/components/parameters/page-offset"
+                },
+                "page_size": {
+                    "$ref": "#/components/parameters/page-size"
+                }
+            }
+        },
+        "operations": {
+            "standard_delete": {
+                "responses": {
+                    "$ref": "#/components/responses/standard_delete"
+                },
+                "security": {
+                    "$ref": "#/components/security_requirements/standard_auth"
+                }
             }
         }
     },
