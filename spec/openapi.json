@@ -43,11 +43,9 @@
                             }
                         }
                     },
-
                     "404": {
                         "$ref": "#/components/responses/404-object-by-id-not-found"
                     }
-
                 },
                 "tags": [
                     "TEA Product"
@@ -121,21 +119,15 @@
                             "application/json": {}
                         }
                     },
-                    "401": { "$ref": "#/components/responses/401-unauthorized" },
+                    "401": {
+                        "$ref": "#/components/responses/401-unauthorized"
+                    },
                     "404": {
                         "$ref": "#/components/responses/404-object-by-id-not-found"
                     }
                 },
                 "tags": [
                     "TEA Product"
-                ],
-                "security": [
-                    {
-                        "bearerAuth": []
-                    },
-                    {
-                        "basicAuth": []
-                    }
                 ]
             },
             "delete": {
@@ -146,7 +138,11 @@
                         "$ref": "#/components/parameters/tea_product_identifier"
                     }
                 ],
-                "$ref": "#/components/operations/standard_delete",
+                "responses": {
+                    "204": {
+                        "description": "Resource successfully deleted"
+                    }
+                },
                 "tags": [
                     "TEA Product"
                 ]
@@ -158,7 +154,10 @@
                 "operationId": "listTeaProducts",
                 "parameters": [
                     {
-                        "$ref": "#/components/parameters/standard_pagination"
+                        "$ref": "#/components/parameters/page-offset"
+                    },
+                    {
+                        "$ref": "#/components/parameters/page-size"
                     }
                 ],
                 "responses": {
@@ -172,7 +171,18 @@
                             }
                         }
                     },
-                    "$ref": "#/components/responses/standard_errors"
+                    "400": {
+                        "description": "Invalid request body",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/401-unauthorized"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404-object-by-id-not-found"
+                    }
                 }
             },
             "post": {
@@ -271,21 +281,15 @@
                             "application/json": {}
                         }
                     },
-                    "401": { "$ref": "#/components/responses/401-unauthorized" },
+                    "401": {
+                        "$ref": "#/components/responses/401-unauthorized"
+                    },
                     "404": {
                         "$ref": "#/components/responses/404-object-by-id-not-found"
                     }
                 },
                 "tags": [
                     "TEA Product"
-                ],
-                "security": [
-                    {
-                        "bearerAuth": []
-                    },
-                    {
-                        "basicAuth": []
-                    }
                 ]
             }
         },
@@ -353,21 +357,15 @@
                             "application/json": {}
                         }
                     },
-                    "401": { "$ref": "#/components/responses/401-unauthorized" },
+                    "401": {
+                        "$ref": "#/components/responses/401-unauthorized"
+                    },
                     "404": {
                         "$ref": "#/components/responses/404-object-by-id-not-found"
                     }
                 },
                 "tags": [
                     "TEA Leaf"
-                ],
-                "security": [
-                    {
-                        "bearerAuth": []
-                    },
-                    {
-                        "basicAuth": []
-                    }
                 ]
             }
         },
@@ -450,21 +448,15 @@
                             "application/json": {}
                         }
                     },
-                    "401": { "$ref": "#/components/responses/401-unauthorized" },
+                    "401": {
+                        "$ref": "#/components/responses/401-unauthorized"
+                    },
                     "404": {
                         "$ref": "#/components/responses/404-object-by-id-not-found"
                     }
                 },
                 "tags": [
                     "TEA Leaf"
-                ],
-                "security": [
-                    {
-                        "bearerAuth": []
-                    },
-                    {
-                        "basicAuth": []
-                    }
                 ]
             },
             "delete": {
@@ -475,7 +467,11 @@
                         "$ref": "#/components/parameters/tea_leaf_identifier"
                     }
                 ],
-                "$ref": "#/components/operations/standard_delete",
+                "responses": {
+                    "204": {
+                        "description": "Resource successfully deleted"
+                    }
+                },
                 "tags": [
                     "TEA Leaf"
                 ]
@@ -657,21 +653,15 @@
                             "application/json": {}
                         }
                     },
-                    "401": { "$ref": "#/components/responses/401-unauthorized" },
+                    "401": {
+                        "$ref": "#/components/responses/401-unauthorized"
+                    },
                     "404": {
                         "$ref": "#/components/responses/404-object-by-id-not-found"
                     }
                 },
                 "tags": [
                     "TEA Collection"
-                ],
-                "security": [
-                    {
-                        "bearerAuth": []
-                    },
-                    {
-                        "basicAuth": []
-                    }
                 ]
             }
         },
@@ -841,21 +831,15 @@
                             "application/json": {}
                         }
                     },
-                    "401": { "$ref": "#/components/responses/401-unauthorized" },
+                    "401": {
+                        "$ref": "#/components/responses/401-unauthorized"
+                    },
                     "404": {
                         "$ref": "#/components/responses/404-object-by-id-not-found"
                     }
                 },
                 "tags": [
                     "TEA Collection"
-                ],
-                "security": [
-                    {
-                        "bearerAuth": []
-                    },
-                    {
-                        "basicAuth": []
-                    }
                 ]
             },
             "delete": {
@@ -866,14 +850,17 @@
                         "$ref": "#/components/parameters/tea_collection_identifier"
                     }
                 ],
-                "$ref": "#/components/operations/standard_delete",
+                "responses": {
+                    "204": {
+                        "description": "Resource successfully deleted"
+                    }
+                },
                 "tags": [
                     "TEA Collection"
                 ]
             }
         }
     },
-    "webhooks": {},
     "components": {
         "schemas": {
             "base_product_fields": {
@@ -902,7 +889,9 @@
             },
             "base_versioned_product": {
                 "allOf": [
-                    { "$ref": "#/components/schemas/base_product_fields" },
+                    {
+                        "$ref": "#/components/schemas/base_product_fields"
+                    },
                     {
                         "type": "object",
                         "properties": {
@@ -918,51 +907,30 @@
                     }
                 ]
             },
-            "base_artifact_object": {
+            "paginated_product_list": {
                 "type": "object",
-                "properties": {
-                    "identifier": {
-                        "$ref": "#/components/schemas/type_uuid"
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/type_pagination_details"
                     },
-                    "description": {
-                        "type": "string"
-                    },
-                    "mime_type": {
-                        "type": "string"
-                    },
-                    "artifact_url": {
-                        "type": "string",
-                        "format": "uri"
-                    },
-                    "artifact_size_in_bytes": {
-                        "type": "integer",
-                        "format": "int64"
-                    },
-                    "artifact_checksum": {
-                        "type": "string",
-                        "description": "The checksum value"
-                    },
-                    "artifact_checksum_type": {
-                        "type": "string",
-                        "description": "The algorithm used to generate the checksum",
-                        "enum": [
-                            "SHA512",
-                            "SHA384",
-                            "SHA256",
-                            "SHA224",
-                            "SHA1",
-                            "MD5",
-                            "BLAKE2b-512",
-                            "BLAKE2s-256",
-                            "BLAKE3"
-                        ],
-                        "default": "SHA256"
+                    {
+                        "type": "object",
+                        "properties": {
+                            "content": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/components/schemas/tea_product"
+                                }
+                            }
+                        }
                     }
-                }
+                ]
             },
             "tea_product": {
                 "allOf": [
-                    { "$ref": "#/components/schemas/base_product_fields" },
+                    {
+                        "$ref": "#/components/schemas/base_product_fields"
+                    },
                     {
                         "type": "object",
                         "properties": {
@@ -977,13 +945,18 @@
                                 "description": "Array of UUIDs referencing TEA Leaf entries"
                             }
                         },
-                        "required": ["identifier", "product_name"]
+                        "required": [
+                            "identifier",
+                            "product_name"
+                        ]
                     }
                 ]
             },
             "tea_leaf": {
                 "allOf": [
-                    { "$ref": "#/components/schemas/base_versioned_product" },
+                    {
+                        "$ref": "#/components/schemas/base_versioned_product"
+                    },
                     {
                         "type": "object",
                         "properties": {
@@ -1304,31 +1277,6 @@
                 "format": "uuid"
             }
         },
-        "responses": {
-            "base_error": {
-                "type": "object",
-                "properties": {
-                    "error": {
-                        "type": "string"
-                    },
-                    "message": {
-                        "type": "string"
-                    }
-                }
-            },
-            "404-object-by-id-not-found": {
-                "description": "Object requested by identifier not found",
-                "content": {
-                    "application/json": {}
-                }
-            },
-            "401-unauthorized": {
-                "description": "Authentication required",
-                "content": {
-                    "application/json": {}
-                }
-            }
-        },
         "parameters": {
             "page-offset": {
                 "name": "page-offset",
@@ -1429,60 +1377,19 @@
             "bearerAuth": {
                 "type": "http",
                 "scheme": "bearer"
-            },
-            "basicAuth": {
-                "type": "http",
-                "scheme": "basic"
             }
-        },
-        "security_requirements": {
-            "standard_auth": [
-                {
-                    "bearerAuth": []
-                },
-                {
-                    "basicAuth": []
-                }
-            ]
         },
         "responses": {
-            "standard_errors": {
-                "400": {
-                    "description": "Invalid request body",
-                    "content": {
-                        "application/json": {}
-                    }
-                },
-                "401": {
-                    "$ref": "#/components/responses/401-unauthorized"
-                },
-                "404": {
-                    "$ref": "#/components/responses/404-object-by-id-not-found"
+            "404-object-by-id-not-found": {
+                "description": "Object requested by identifier not found",
+                "content": {
+                    "application/json": {}
                 }
             },
-            "standard_delete": {
-                "204": {
-                    "description": "Resource successfully deleted"
-                }
-            }
-        },
-        "parameters": {
-            "standard_pagination": {
-                "page_offset": {
-                    "$ref": "#/components/parameters/page-offset"
-                },
-                "page_size": {
-                    "$ref": "#/components/parameters/page-size"
-                }
-            }
-        },
-        "operations": {
-            "standard_delete": {
-                "responses": {
-                    "$ref": "#/components/responses/standard_delete"
-                },
-                "security": {
-                    "$ref": "#/components/security_requirements/standard_auth"
+            "401-unauthorized": {
+                "description": "Authentication required",
+                "content": {
+                    "application/json": {}
                 }
             }
         }
@@ -1490,9 +1397,6 @@
     "security": [
         {
             "bearerAuth": []
-        },
-        {
-            "basicAuth": []
         }
     ],
     "tags": [
