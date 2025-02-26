@@ -1,0 +1,22 @@
+{
+  "product_uuid": "96575f2d-ec70-445c-957e-543de92b70b3",
+  "uuid": "1e7d13f3-4c65-40f1-a990-8b85079b2347",
+  "leaf_name": "Apache Log4j 2.23",
+  "leaf_version": "2.23",
+  "cle": [
+    {
+      "type": "generalAvailability",
+      "effective": "2024-02-17",
+      "ranges": [
+        "vers:maven/>=2.23|<2.24"
+      ]
+    },
+    {
+      "type": "endOfSupport",
+      "effective": "2024-09-03",
+      "ranges": [
+        "vers:maven/>=2.23|<2.24"
+      ]
+    }
+  ]
+}

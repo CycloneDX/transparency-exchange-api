@@ -1,0 +1,34 @@
+{
+  "uuid": "18736afd-7ac1-4b6b-b284-03495bf83289",
+  "product_name": "Apache Log4j 1",
+  "identifiers": [
+    {
+      "type": "tei",
+      "value": "urn:tei:dns:apache.org:logging-log4j1"
+    },
+    {
+      "type": "purl",
+      "value": "pkg:maven/log4j/log4j"
+    },
+    {
+      "type": "cpe",
+      "value": "cpe:2.3:a:apache:log4j:*:*:*:*:*:*:*:*"
+    }
+  ],
+  "cle": [
+    {
+      "type": "generalAvailability",
+      "effective": "2001-01-08",
+      "ranges": [
+        "vers:maven/>=1|<2"
+      ]
+    },
+    {
+      "type": "endOfLife",
+      "effective": "2015-08-15",
+      "ranges": [
+        "vers:maven/>=1|<2"
+      ]
+    }
+  ]
+}

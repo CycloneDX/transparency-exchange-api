@@ -1,0 +1,37 @@
+{
+  "leaf_uuid": "1e7d13f3-4c65-40f1-a990-8b85079b2347",
+  "uuid": "673c62c8-ea5b-4a70-9012-5a8c00aab1e1",
+  "collection_name": "Apache Log4j 2.23.0",
+  "collection_version": "1",
+  "release_date": "2024-02-17",
+  "author": {
+    "name": "John Doe",
+    "email": "john@example.com",
+    "organization": "The Apache Software Foundation"
+  },
+  "reason": "New Product Release",
+  "artifacts": [
+    {
+      "type": "bom",
+      "mime_type": "application/vnd.cyclonedx+xml",
+      "url": "https://repo.maven.apache.org/maven2/org/apache/logging/log4j/log4j-bom/2.23.0/log4j-bom-2.23.0-cyclonedx.xml",
+      "checksums": [
+        {
+          "type": "SHA1",
+          "value": "5f81bb0da6e60a3214b6eacdef3f697a5bb3fad0"
+        }
+      ]
+    },
+    {
+      "type": "vulnerability-assertion",
+      "mime_type": "application/vnd.cyclonedx+xml",
+      "url": "https://logging.apache.org/cyclonedx/urn:cdx:dfa35519-9734-4259-bba1-3e825cf4be06/2.xml",
+      "checksums": [
+        {
+          "type": "SHA256",
+          "value": "75b81020b3917cb682b1a7605ade431e062f7a4c01a412f0b87543b6e995ad2a"
+        }
+      ]
+    }
+  ]
+}

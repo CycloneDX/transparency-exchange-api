@@ -1,0 +1,29 @@
+{
+  "timestamp": "2024-03-20T15:30:00Z",
+  "page_start_index": 0,
+  "page_size": 2147483647,
+  "total_results": 3,
+  "content": [
+    {
+      "leaf_uuid": "b0d30215-04f0-462f-84d4-68fcff437f5e",
+      "uuid": "e697693d-2acf-42af-a0b9-6f85aa84ec10",
+      "collection_name": "Apache Log4j 1.2.17",
+      "collection_version": "1",
+      "release_date": "2015-08-15"
+    },
+    {
+      "leaf_uuid": "1e7d13f3-4c65-40f1-a990-8b85079b2347",
+      "uuid": "673c62c8-ea5b-4a70-9012-5a8c00aab1e1",
+      "collection_name": "Apache Log4j 2.23.0",
+      "collection_version": "1",
+      "release_date": "2024-02-17"
+    },
+    {
+      "leaf_uuid": "1e7d13f3-4c65-40f1-a990-8b85079b2347",
+      "uuid": "d750d933-38b2-46af-a8ad-71207ae2b56e",
+      "collection_name": "Apache Log4j 2.23.1",
+      "collection_version": "2",
+      "release_date": "2024-03-06"
+    }
+  ]
+}

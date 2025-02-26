@@ -1,0 +1,22 @@
+{
+  "product_uuid": "18736afd-7ac1-4b6b-b284-03495bf83289",
+  "uuid": "b0d30215-04f0-462f-84d4-68fcff437f5e",
+  "leaf_name": "Apache Log4j 1.2",
+  "leaf_version": "1.2",
+  "cle": [
+    {
+      "type": "generalAvailability",
+      "effective": "2002-05-01",
+      "ranges": [
+        "vers:maven/>=1.2|<1.3"
+      ]
+    },
+    {
+      "type": "endOfSupport",
+      "effective": "2015-08-15",
+      "ranges": [
+        "vers:maven/>=1.2|<1.3"
+      ]
+    }
+  ]
+}
