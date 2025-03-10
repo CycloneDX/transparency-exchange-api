@@ -23,10 +23,10 @@
         }
     ],
     "paths": {
-        "/product/{tei_urn}": {
+        "/product/uuid/{uuid}": {
             "get": {
-                "description": "Returns the corresponding leafs for a given TEI URN",
-                "operationId": "getTeaProduct",
+                "description": "Returns the corresponding leafs for a given product UUID.",
+                "operationId": "getTeaProductByUuid",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/tei_urn"
@@ -54,18 +54,33 @@
                 ]
             }
         },
-        "/product": {
+        "/product/type/{type_identifier}": {
             "get": {
-                "description": "Returns a list of TEA Products",
-                "operationId": "listTeaProducts",
+                "description": "Returns a list of TEA products. Note that multiple products may match.",
+                "operationId": "ProductByIdentifier",
                 "parameters": [
+                    { 
+                        "name": "type_identifier",
+                        "description": "The identifier type (enum)",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "$ref" : "#/components/schemas/prodid_type"
+                        }
+                    },
                     {
-                        "$ref": "#/components/stdparameters/standard_pagination"
+                        "name": "type_val",
+                        "description": "The actual identifier string",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "List retrieved successfully",
+                        "description": "Product retrieved successfully",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -140,17 +155,21 @@
     "webhooks": {},
     "components": {
         "schemas": {
+            "prodid_type": {
+                "type": "enum",
+                "description": "Identifier types",
+                    "enum": [
+                        "tei",
+                        "purl",
+                        "cpe"
+                    ]
+            },
             "type_identifier" : {
                 "type": "object",
                 "description": "Declaration of an identifier",
                 "properties": {
                     "idtype": {
-                        "description": "Identifier types",
-                        "enum": [
-                            "tei",
-                            "purl",
-                            "cpe"
-                        ],
+                        "$ref": "#/components/schemas/prodid_type",
                         "default": "tei"
                     },
                     "idvalue": {
