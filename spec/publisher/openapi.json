@@ -1,0 +1,1516 @@
+{
+    "jsonSchemaDialect": "https://spec.openapis.org/oas/3.1/dialect/base",
+    "openapi": "3.1.1",
+    "info": {
+        "title": "Transparency Exchange API",
+        "summary": "Transparency Exchange API specification for consumers and publishers",
+        "description": "TBC",
+        "contact": {
+            "name": "TEA Working Group",
+            "email": "TBC",
+            "url": "https://github.com/CycloneDX/transparency-exchange-api"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "https://github.com/CycloneDX/transparency-exchange-api/blob/main/LICENSE"
+        },
+        "version": "0.0.2"
+    },
+    "servers": [
+        {
+            "url": "http://localhost/tea/v1",
+            "description": "Local development"
+        }
+    ],
+    "paths": {
+        "/product/{tei_urn}": {
+            "get": {
+                "description": "Returns the corresponding leafs for a given TEI URN",
+                "operationId": "getTeaProduct",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/tei_urn"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Requested TEA Product found and returned",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/tea_product"
+                                }
+                            }
+                        }
+                    },
+
+                    "404": {
+                        "$ref": "#/components/responses/404-object-by-id-not-found"
+                    }
+
+                },
+                "tags": [
+                    "TEA Product"
+                ]
+            },
+            "patch": {
+                "description": "Update an existing TEA Product entry",
+                "operationId": "updateTeaProduct",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/tea_product_identifier"
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "product_name": {
+                                        "type": "string"
+                                    },
+                                    "barcode": {
+                                        "type": "string",
+                                        "description": "Barcode"
+                                    },
+                                    "sku": {
+                                        "type": "string",
+                                        "description": "Product SKU"
+                                    },
+                                    "vendor_uuid": {
+                                        "$ref": "#/components/schemas/type_uuid",
+                                        "description": "Vendor UUID"
+                                    },
+                                    "purl": {
+                                        "type": "string",
+                                        "description": "Package URL (PURL)"
+                                    }
+                                }
+                            },
+                            "examples": {
+                                "basic": {
+                                    "summary": "Basic product update",
+                                    "value": {
+                                        "product_name": "Updated Product Name",
+                                        "barcode": "123456789012",
+                                        "sku": "PROD-001",
+                                        "vendor_uuid": "123e4567-e89b-12d3-a456-426614174000",
+                                        "purl": "pkg:generic/example@1.0.0"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "TEA Product updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/tea_product"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "401": { "$ref": "#/components/responses/401-unauthorized" },
+                    "404": {
+                        "$ref": "#/components/responses/404-object-by-id-not-found"
+                    }
+                },
+                "tags": [
+                    "TEA Product"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "basicAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "description": "Delete a TEA Product entry",
+                "operationId": "deleteTeaProduct",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/tea_product_identifier"
+                    }
+                ],
+                "$ref": "#/components/operations/standard_delete",
+                "tags": [
+                    "TEA Product"
+                ]
+            }
+        },
+        "/product": {
+            "get": {
+                "description": "Returns a list of TEA Products",
+                "operationId": "listTeaProducts",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/standard_pagination"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/paginated_product_list"
+                                }
+                            }
+                        }
+                    },
+                    "$ref": "#/components/responses/standard_errors"
+                }
+            },
+            "post": {
+                "description": "Create TEA Product entry for the supplied product identifier",
+                "operationId": "createTeaProduct",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "product_name": {
+                                        "type": "string"
+                                    },
+                                    "barcode": {
+                                        "type": "string",
+                                        "description": "Barcode"
+                                    },
+                                    "sku": {
+                                        "type": "string",
+                                        "description": "Product SKU"
+                                    },
+                                    "vendor_uuid": {
+                                        "$ref": "#/components/schemas/type_uuid",
+                                        "description": "Vendor UUID"
+                                    },
+                                    "purl": {
+                                        "type": "string",
+                                        "description": "Package URL (PURL)"
+                                    }
+                                },
+                                "required": [
+                                    "product_name"
+                                ]
+                            },
+                            "examples": {
+                                "basic": {
+                                    "summary": "Basic product creation",
+                                    "value": {
+                                        "product_name": "Example Product"
+                                    }
+                                },
+                                "full": {
+                                    "summary": "Full product creation with all fields",
+                                    "value": {
+                                        "product_name": "Complete Product Example",
+                                        "barcode": "123456789012",
+                                        "sku": "PROD-001",
+                                        "vendor_uuid": "123e4567-e89b-12d3-a456-426614174000",
+                                        "purl": "pkg:generic/example@1.0.0"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "TEA Product created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "identifier": {
+                                            "$ref": "#/components/schemas/type_uuid"
+                                        },
+                                        "product_name": {
+                                            "type": "string"
+                                        },
+                                        "barcode": {
+                                            "type": "string"
+                                        },
+                                        "sku": {
+                                            "type": "string"
+                                        },
+                                        "vendor_uuid": {
+                                            "$ref": "#/components/schemas/type_uuid"
+                                        },
+                                        "purl": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "identifier",
+                                        "product_name"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "401": { "$ref": "#/components/responses/401-unauthorized" },
+                    "404": {
+                        "$ref": "#/components/responses/404-object-by-id-not-found"
+                    }
+                },
+                "tags": [
+                    "TEA Product"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "basicAuth": []
+                    }
+                ]
+            }
+        },
+        "/leaf": {
+            "post": {
+                "description": "Create a new TEA Leaf entry",
+                "operationId": "createTeaLeaf",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "tea_product_identifier": {
+                                        "type": "string"
+                                    },
+                                    "product_version": {
+                                        "type": "string"
+                                    },
+                                    "release_date": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "2024-03-20T15:30:00Z"
+                                    },
+                                    "pre_release": {
+                                        "type": "boolean"
+                                    }
+                                },
+                                "required": [
+                                    "tea_product_identifier",
+                                    "product_version",
+                                    "release_date",
+                                    "pre_release"
+                                ]
+                            },
+                            "examples": {
+                                "basic": {
+                                    "summary": "Basic leaf creation",
+                                    "value": {
+                                        "tea_product_identifier": "123e4567-e89b-12d3-a456-426614174000",
+                                        "product_version": "1.0.0",
+                                        "release_date": "2024-03-20T15:30:00Z",
+                                        "pre_release": false
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "TEA Leaf created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/tea_leaf"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid parameters",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "401": { "$ref": "#/components/responses/401-unauthorized" },
+                    "404": {
+                        "$ref": "#/components/responses/404-object-by-id-not-found"
+                    }
+                },
+                "tags": [
+                    "TEA Leaf"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "basicAuth": []
+                    }
+                ]
+            }
+        },
+        "/leaf/{tea_leaf_identifier}": {
+            "get": {
+                "description": "Get the TEA Leaf that describes the Version of a Product",
+                "operationId": "getTeaLeaf",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/tea_leaf_identifier"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Requested TEA Leaf found and returned",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/tea_leaf"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404-object-by-id-not-found"
+                    }
+                },
+                "tags": [
+                    "TEA Leaf"
+                ]
+            },
+            "patch": {
+                "description": "Update an existing TEA Leaf entry",
+                "operationId": "updateTeaLeaf",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/tea_leaf_identifier"
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "product_name": {
+                                        "type": "string"
+                                    },
+                                    "product_version": {
+                                        "type": "string"
+                                    },
+                                    "release_date": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "2024-03-20T15:30:00Z"
+                                    },
+                                    "pre_release": {
+                                        "type": "boolean"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "TEA Leaf updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/tea_leaf"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "401": { "$ref": "#/components/responses/401-unauthorized" },
+                    "404": {
+                        "$ref": "#/components/responses/404-object-by-id-not-found"
+                    }
+                },
+                "tags": [
+                    "TEA Leaf"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "basicAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "description": "Delete a TEA Leaf entry",
+                "operationId": "deleteTeaLeaf",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/tea_leaf_identifier"
+                    }
+                ],
+                "$ref": "#/components/operations/standard_delete",
+                "tags": [
+                    "TEA Leaf"
+                ]
+            }
+        },
+        "/collection": {
+            "post": {
+                "description": "Create a new TEA Collection",
+                "operationId": "createTeaCollection",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "tea_leaf_identifier": {
+                                        "$ref": "#/components/schemas/type_uuid"
+                                    },
+                                    "product_name": {
+                                        "type": "string"
+                                    },
+                                    "product_version": {
+                                        "type": "string"
+                                    },
+                                    "release_date": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "2024-03-20T15:30:00Z"
+                                    },
+                                    "author": {
+                                        "$ref": "#/components/schemas/type_author"
+                                    },
+                                    "reason": {
+                                        "$ref": "#/components/schemas/type_collection_reason"
+                                    },
+                                    "artifacts": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "name": {
+                                                    "type": "string"
+                                                },
+                                                "type": {
+                                                    "$ref": "#/components/schemas/type_tea_collection_artifact_type"
+                                                },
+                                                "author": {
+                                                    "$ref": "#/components/schemas/type_author"
+                                                },
+                                                "objects": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "description": {
+                                                                "type": "string"
+                                                            },
+                                                            "mime_type": {
+                                                                "type": "string"
+                                                            },
+                                                            "artifact_url": {
+                                                                "type": "string",
+                                                                "format": "uri"
+                                                            },
+                                                            "artifact_size_in_bytes": {
+                                                                "type": "integer",
+                                                                "format": "int64"
+                                                            },
+                                                            "artifact_checksum": {
+                                                                "type": "string",
+                                                                "description": "The checksum value"
+                                                            },
+                                                            "artifact_checksum_type": {
+                                                                "type": "string",
+                                                                "description": "The algorithm used to generate the checksum",
+                                                                "enum": [
+                                                                    "SHA512",
+                                                                    "SHA384",
+                                                                    "SHA256",
+                                                                    "SHA224",
+                                                                    "SHA1",
+                                                                    "MD5",
+                                                                    "BLAKE2b-512",
+                                                                    "BLAKE2s-256",
+                                                                    "BLAKE3"
+                                                                ],
+                                                                "default": "SHA256"
+                                                            },
+                                                            "signature_url": {
+                                                                "type": "string",
+                                                                "format": "uri"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "description",
+                                                            "mime_type",
+                                                            "artifact_url",
+                                                            "artifact_size_in_bytes",
+                                                            "artifact_checksum",
+                                                            "artifact_checksum_type"
+                                                        ]
+                                                    }
+                                                }
+                                            },
+                                            "required": [
+                                                "name",
+                                                "type",
+                                                "author",
+                                                "objects"
+                                            ]
+                                        }
+                                    }
+                                },
+                                "required": [
+                                    "tea_leaf_identifier",
+                                    "product_name",
+                                    "product_version",
+                                    "release_date",
+                                    "author",
+                                    "reason"
+                                ]
+                            },
+                            "examples": {
+                                "basic": {
+                                    "summary": "Basic collection creation",
+                                    "value": {
+                                        "tea_leaf_identifier": "123e4567-e89b-12d3-a456-426614174000",
+                                        "product_name": "Example Product",
+                                        "product_version": "1.0.0",
+                                        "release_date": "2024-03-20T15:30:00Z",
+                                        "author": {
+                                            "name": "John Doe",
+                                            "email": "john.doe@example.com",
+                                            "organization": "Example Org"
+                                        },
+                                        "reason": "New Product Release",
+                                        "artifacts": [
+                                            {
+                                                "name": "Example Artifact",
+                                                "type": "bom",
+                                                "author": {
+                                                    "name": "John Doe",
+                                                    "email": "john.doe@example.com",
+                                                    "organization": "Example Org"
+                                                },
+                                                "objects": [
+                                                    {
+                                                        "description": "Example SBOM",
+                                                        "mime_type": "application/json",
+                                                        "artifact_url": "https://example.com/sbom.json",
+                                                        "artifact_size_in_bytes": 1024,
+                                                        "artifact_checksum": "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3",
+                                                        "artifact_checksum_type": "SHA256"
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "TEA Collection created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/tea_collection"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "401": { "$ref": "#/components/responses/401-unauthorized" },
+                    "404": {
+                        "$ref": "#/components/responses/404-object-by-id-not-found"
+                    }
+                },
+                "tags": [
+                    "TEA Collection"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "basicAuth": []
+                    }
+                ]
+            }
+        },
+        "/collection/{tea_collection_identifier}": {
+            "get": {
+                "description": "Get a TEA Collection by it's Identifier",
+                "operationId": "getTeaCollection",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/tea_collection_identifier"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Requested TEA Collection found and returned",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/tea_collection"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404-object-by-id-not-found"
+                    }
+                },
+                "tags": [
+                    "TEA Collection"
+                ]
+            },
+            "patch": {
+                "description": "Update an existing TEA Collection",
+                "operationId": "updateTeaCollection",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/tea_collection_identifier"
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "product_name": {
+                                        "type": "string"
+                                    },
+                                    "product_version": {
+                                        "type": "string"
+                                    },
+                                    "release_date": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "2024-03-20T15:30:00Z"
+                                    },
+                                    "author": {
+                                        "$ref": "#/components/schemas/type_author"
+                                    },
+                                    "reason": {
+                                        "$ref": "#/components/schemas/type_collection_reason"
+                                    },
+                                    "artifacts": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "name": {
+                                                    "type": "string"
+                                                },
+                                                "type": {
+                                                    "$ref": "#/components/schemas/type_tea_collection_artifact_type"
+                                                },
+                                                "author": {
+                                                    "$ref": "#/components/schemas/type_author"
+                                                },
+                                                "objects": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "description": {
+                                                                "type": "string"
+                                                            },
+                                                            "mime_type": {
+                                                                "type": "string"
+                                                            },
+                                                            "artifact_url": {
+                                                                "type": "string",
+                                                                "format": "uri"
+                                                            },
+                                                            "artifact_size_in_bytes": {
+                                                                "type": "integer",
+                                                                "format": "int64"
+                                                            },
+                                                            "artifact_checksum": {
+                                                                "type": "string",
+                                                                "description": "The checksum value"
+                                                            },
+                                                            "artifact_checksum_type": {
+                                                                "type": "string",
+                                                                "description": "The algorithm used to generate the checksum",
+                                                                "enum": [
+                                                                    "SHA512",
+                                                                    "SHA384",
+                                                                    "SHA256",
+                                                                    "SHA224",
+                                                                    "SHA1",
+                                                                    "MD5",
+                                                                    "BLAKE2b-512",
+                                                                    "BLAKE2s-256",
+                                                                    "BLAKE3"
+                                                                ],
+                                                                "default": "SHA256"
+                                                            },
+                                                            "signature_url": {
+                                                                "type": "string",
+                                                                "format": "uri"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "description",
+                                                            "mime_type",
+                                                            "artifact_url",
+                                                            "artifact_size_in_bytes",
+                                                            "artifact_checksum",
+                                                            "artifact_checksum_type"
+                                                        ]
+                                                    }
+                                                }
+                                            },
+                                            "required": [
+                                                "name",
+                                                "type",
+                                                "author",
+                                                "objects"
+                                            ]
+                                        }
+                                    }
+                                },
+                                "required": [
+                                    "product_name",
+                                    "product_version",
+                                    "release_date",
+                                    "author",
+                                    "reason"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "TEA Collection updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/tea_collection"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "401": { "$ref": "#/components/responses/401-unauthorized" },
+                    "404": {
+                        "$ref": "#/components/responses/404-object-by-id-not-found"
+                    }
+                },
+                "tags": [
+                    "TEA Collection"
+                ],
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {
+                        "basicAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "description": "Delete a TEA Collection entry",
+                "operationId": "deleteTeaCollection",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/tea_collection_identifier"
+                    }
+                ],
+                "$ref": "#/components/operations/standard_delete",
+                "tags": [
+                    "TEA Collection"
+                ]
+            }
+        }
+    },
+    "webhooks": {},
+    "components": {
+        "schemas": {
+            "base_product_fields": {
+                "type": "object",
+                "properties": {
+                    "product_name": {
+                        "type": "string"
+                    },
+                    "barcode": {
+                        "type": "string",
+                        "description": "Barcode"
+                    },
+                    "sku": {
+                        "type": "string",
+                        "description": "Product SKU"
+                    },
+                    "vendor_uuid": {
+                        "$ref": "#/components/schemas/type_uuid",
+                        "description": "Vendor UUID"
+                    },
+                    "purl": {
+                        "type": "string",
+                        "description": "Package URL (PURL)"
+                    }
+                }
+            },
+            "base_versioned_product": {
+                "allOf": [
+                    { "$ref": "#/components/schemas/base_product_fields" },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "product_version": {
+                                "type": "string"
+                            },
+                            "release_date": {
+                                "type": "string",
+                                "format": "date-time",
+                                "example": "2024-03-20T15:30:00Z"
+                            }
+                        }
+                    }
+                ]
+            },
+            "base_artifact_object": {
+                "type": "object",
+                "properties": {
+                    "identifier": {
+                        "$ref": "#/components/schemas/type_uuid"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "mime_type": {
+                        "type": "string"
+                    },
+                    "artifact_url": {
+                        "type": "string",
+                        "format": "uri"
+                    },
+                    "artifact_size_in_bytes": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "artifact_checksum": {
+                        "type": "string",
+                        "description": "The checksum value"
+                    },
+                    "artifact_checksum_type": {
+                        "type": "string",
+                        "description": "The algorithm used to generate the checksum",
+                        "enum": [
+                            "SHA512",
+                            "SHA384",
+                            "SHA256",
+                            "SHA224",
+                            "SHA1",
+                            "MD5",
+                            "BLAKE2b-512",
+                            "BLAKE2s-256",
+                            "BLAKE3"
+                        ],
+                        "default": "SHA256"
+                    }
+                }
+            },
+            "tea_product": {
+                "allOf": [
+                    { "$ref": "#/components/schemas/base_product_fields" },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "identifier": {
+                                "$ref": "#/components/schemas/type_uuid"
+                            },
+                            "leaf_references": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/components/schemas/type_uuid"
+                                },
+                                "description": "Array of UUIDs referencing TEA Leaf entries"
+                            }
+                        },
+                        "required": ["identifier", "product_name"]
+                    }
+                ]
+            },
+            "tea_leaf": {
+                "allOf": [
+                    { "$ref": "#/components/schemas/base_versioned_product" },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "identifier": {
+                                "$ref": "#/components/schemas/type_uuid"
+                            },
+                            "pre_release": {
+                                "type": "boolean"
+                            },
+                            "end_of_life": {
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            "collection_references": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/components/schemas/type_uuid"
+                                },
+                                "description": "Array of UUIDs referencing TEA Collection entries",
+                                "default": []
+                            }
+                        },
+                        "required": [
+                            "identifier",
+                            "product_name",
+                            "product_version",
+                            "release_date",
+                            "pre_release"
+                        ]
+                    }
+                ]
+            },
+            "tea_collection": {
+                "type": "object",
+                "properties": {
+                    "identifier": {
+                        "$ref": "#/components/schemas/type_uuid"
+                    },
+                    "product_name": {
+                        "type": "string"
+                    },
+                    "product_version": {
+                        "type": "string"
+                    },
+                    "release_date": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-03-20T15:30:00Z"
+                    },
+                    "author": {
+                        "$ref": "#/components/schemas/type_author"
+                    },
+                    "reason": {
+                        "$ref": "#/components/schemas/type_collection_reason"
+                    },
+                    "artifacts": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/tea_collection_artifact"
+                        },
+                        "default": []
+                    }
+                },
+                "required": [
+                    "identifier",
+                    "product_name",
+                    "product_version",
+                    "release_date",
+                    "author",
+                    "reason"
+                ]
+            },
+            "tea_collection_artifact": {
+                "type": "object",
+                "properties": {
+                    "identifier": {
+                        "$ref": "#/components/schemas/type_uuid"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "$ref": "#/components/schemas/type_tea_collection_artifact_type"
+                    },
+                    "author": {
+                        "$ref": "#/components/schemas/type_author"
+                    },
+                    "objects": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/tea_collection_artifact_object"
+                        },
+                        "minItems": 1
+                    }
+                },
+                "required": [
+                    "identifier",
+                    "name",
+                    "type",
+                    "author",
+                    "objects"
+                ]
+            },
+            "tea_collection_artifact_object": {
+                "type": "object",
+                "properties": {
+                    "identifier": {
+                        "$ref": "#/components/schemas/type_uuid"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "mime_type": {
+                        "type": "string"
+                    },
+                    "artifact_url": {
+                        "type": "string",
+                        "format": "uri"
+                    },
+                    "artifact_size_in_bytes": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "artifact_checksum": {
+                        "type": "string",
+                        "description": "The checksum value"
+                    },
+                    "artifact_checksum_type": {
+                        "type": "string",
+                        "description": "The algorithm used to generate the checksum",
+                        "enum": [
+                            "SHA512",
+                            "SHA384",
+                            "SHA256",
+                            "SHA224",
+                            "SHA1",
+                            "MD5",
+                            "BLAKE2b-512",
+                            "BLAKE2s-256",
+                            "BLAKE3"
+                        ],
+                        "default": "SHA256"
+                    },
+                    "signature_url": {
+                        "type": "string",
+                        "format": "uri"
+                    }
+                },
+                "required": [
+                    "identifier",
+                    "description",
+                    "mime_type",
+                    "artifact_url",
+                    "artifact_size_in_bytes",
+                    "artifact_checksum",
+                    "artifact_checksum_type"
+                ]
+            },
+            "type_author": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "organization": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "name",
+                    "email",
+                    "organization"
+                ]
+            },
+            "type_collection_reason": {
+                "type": "string",
+                "description": "Event requiring this TEA Collection was published",
+                "enum": [
+                    "New Product Release",
+                    "BOM Updated",
+                    "Attestation Added",
+                    "Attestation Updated"
+                ]
+            },
+            "type_pagination_details": {
+                "type": "object",
+                "properties": {
+                    "timestamp": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-03-20T15:30:00Z"
+                    },
+                    "page_start_index": {
+                        "type": "number",
+                        "format": "int64",
+                        "default": 0
+                    },
+                    "page_size": {
+                        "type": "number",
+                        "format": "int64",
+                        "default": 100
+                    },
+                    "total_results": {
+                        "type": "number",
+                        "format": "int64"
+                    }
+                },
+                "required": [
+                    "timestamp",
+                    "page_start_index",
+                    "page_size",
+                    "total_results"
+                ]
+            },
+            "type_tea_collection_artifact_type": {
+                "type": "string",
+                "title": "Type",
+                "description": "Specifies the type of external reference.",
+                "enum": [
+                    "vcs",
+                    "issue-tracker",
+                    "website",
+                    "advisories",
+                    "bom",
+                    "mailing-list",
+                    "social",
+                    "chat",
+                    "documentation",
+                    "support",
+                    "source-distribution",
+                    "distribution",
+                    "distribution-intake",
+                    "license",
+                    "build-meta",
+                    "build-system",
+                    "release-notes",
+                    "security-contact",
+                    "model-card",
+                    "log",
+                    "configuration",
+                    "evidence",
+                    "formulation",
+                    "attestation",
+                    "threat-model",
+                    "adversary-model",
+                    "risk-assessment",
+                    "vulnerability-assertion",
+                    "exploitability-statement",
+                    "pentest-report",
+                    "static-analysis-report",
+                    "dynamic-analysis-report",
+                    "runtime-analysis-report",
+                    "component-analysis-report",
+                    "maturity-report",
+                    "certification-report",
+                    "codified-infrastructure",
+                    "quality-metrics",
+                    "poam",
+                    "electronic-signature",
+                    "digital-signature",
+                    "rfc-9116",
+                    "other"
+                ],
+                "meta:enum": {
+                    "vcs": "Version Control System",
+                    "issue-tracker": "Issue or defect tracking system, or an Application Lifecycle Management (ALM) system",
+                    "website": "Website",
+                    "advisories": "Security advisories",
+                    "bom": "Bill of Materials (SBOM, OBOM, HBOM, SaaSBOM, etc)",
+                    "mailing-list": "Mailing list or discussion group",
+                    "social": "Social media account",
+                    "chat": "Real-time chat platform",
+                    "documentation": "Documentation, guides, or how-to instructions",
+                    "support": "Community or commercial support",
+                    "source-distribution": {
+                        "description": "The location where the source code distributable can be obtained. This is often an archive format such as zip or tgz. The source-distribution type complements use of the version control (vcs) type."
+                    },
+                    "distribution": "Direct or repository download location",
+                    "distribution-intake": "The location where a component was published to. This is often the same as \"distribution\" but may also include specialized publishing processes that act as an intermediary.",
+                    "license": "The reference to the license file. If a license URL has been defined in the license node, it should also be defined as an external reference for completeness.",
+                    "build-meta": "Build-system specific meta file (i.e. pom.xml, package.json, .nuspec, etc)",
+                    "build-system": "Reference to an automated build system",
+                    "release-notes": "Reference to release notes",
+                    "security-contact": "Specifies a way to contact the maintainer, supplier, or provider in the event of a security incident. Common URIs include links to a disclosure procedure, a mailto (RFC-2368) that specifies an email address, a tel (RFC-3966) that specifies a phone number, or dns (RFC-4501) that specifies the records containing DNS Security TXT.",
+                    "model-card": "A model card describes the intended uses of a machine learning model, potential limitations, biases, ethical considerations, training parameters, datasets used to train the model, performance metrics, and other relevant data useful for ML transparency.",
+                    "log": "A record of events that occurred in a computer system or application, such as problems, errors, or information on current operations.",
+                    "configuration": "Parameters or settings that may be used by other components or services.",
+                    "evidence": "Information used to substantiate a claim.",
+                    "formulation": "Describes how a component or service was manufactured or deployed.",
+                    "attestation": "Human or machine-readable statements containing facts, evidence, or testimony.",
+                    "threat-model": "An enumeration of identified weaknesses, threats, and countermeasures, dataflow diagram (DFD), attack tree, and other supporting documentation in human-readable or machine-readable format.",
+                    "adversary-model": "The defined assumptions, goals, and capabilities of an adversary.",
+                    "risk-assessment": "Identifies and analyzes the potential of future events that may negatively impact individuals, assets, and/or the environment. Risk assessments may also include judgments on the tolerability of each risk.",
+                    "vulnerability-assertion": "A Vulnerability Disclosure Report (VDR) which asserts the known and previously unknown vulnerabilities that affect a component, service, or product including the analysis and findings describing the impact (or lack of impact) that the reported vulnerability has on a component, service, or product.",
+                    "exploitability-statement": "A Vulnerability Exploitability eXchange (VEX) which asserts the known vulnerabilities that do not affect a product, product family, or organization, and optionally the ones that do. The VEX should include the analysis and findings describing the impact (or lack of impact) that the reported vulnerability has on the product, product family, or organization.",
+                    "pentest-report": "Results from an authorized simulated cyberattack on a component or service, otherwise known as a penetration test.",
+                    "static-analysis-report": "SARIF or proprietary machine or human-readable report for which static analysis has identified code quality, security, and other potential issues with the source code.",
+                    "dynamic-analysis-report": "Dynamic analysis report that has identified issues such as vulnerabilities and misconfigurations.",
+                    "runtime-analysis-report": "Report generated by analyzing the call stack of a running application.",
+                    "component-analysis-report": "Report generated by Software Composition Analysis (SCA), container analysis, or other forms of component analysis.",
+                    "maturity-report": "Report containing a formal assessment of an organization, business unit, or team against a maturity model.",
+                    "certification-report": "Industry, regulatory, or other certification from an accredited (if applicable) certification body.",
+                    "codified-infrastructure": "Code or configuration that defines and provisions virtualized infrastructure, commonly referred to as Infrastructure as Code (IaC).",
+                    "quality-metrics": "Report or system in which quality metrics can be obtained.",
+                    "poam": "Plans of Action and Milestones (POAM) complement an \"attestation\" external reference. POAM is defined by NIST as a \"document that identifies tasks needing to be accomplished. It details resources required to accomplish the elements of the plan, any milestones in meeting the tasks and scheduled completion dates for the milestones\".",
+                    "electronic-signature": "An e-signature is commonly a scanned representation of a written signature or a stylized script of the person's name.",
+                    "digital-signature": "A signature that leverages cryptography, typically public/private key pairs, which provides strong authenticity verification.",
+                    "rfc-9116": "Document that complies with RFC-9116 (A File Format to Aid in Security Vulnerability Disclosure)",
+                    "other": "Use this if no other types accurately describe the purpose of the external reference."
+                }
+            },
+            "type_uuid": {
+                "type": "string",
+                "format": "uuid"
+            }
+        },
+        "responses": {
+            "base_error": {
+                "type": "object",
+                "properties": {
+                    "error": {
+                        "type": "string"
+                    },
+                    "message": {
+                        "type": "string"
+                    }
+                }
+            },
+            "404-object-by-id-not-found": {
+                "description": "Object requested by identifier not found",
+                "content": {
+                    "application/json": {}
+                }
+            },
+            "401-unauthorized": {
+                "description": "Authentication required",
+                "content": {
+                    "application/json": {}
+                }
+            }
+        },
+        "parameters": {
+            "page-offset": {
+                "name": "page-offset",
+                "description": "Pagination offset",
+                "in": "query",
+                "required": false,
+                "schema": {
+                    "type": "number",
+                    "format": "int64",
+                    "default": 0
+                }
+            },
+            "page-size": {
+                "name": "page-size",
+                "description": "Pagination offset",
+                "in": "query",
+                "required": false,
+                "schema": {
+                    "type": "number",
+                    "format": "int64",
+                    "default": 100
+                }
+            },
+            "tei_urn": {
+                "name": "tei_urn",
+                "description": "Transparency Exchange Identifier (URN)",
+                "in": "path",
+                "required": true,
+                "schema": {
+                    "type": "string"
+                }
+            },
+            "tea_product_identifier": {
+                "name": "tea_product_identifier",
+                "description": "TEA Product Identifier",
+                "in": "path",
+                "required": true,
+                "schema": {
+                    "type": "string"
+                }
+            },
+            "product_version": {
+                "name": "product_version",
+                "description": "Product Version string",
+                "in": "path",
+                "required": true,
+                "schema": {
+                    "type": "string"
+                }
+            },
+            "tea_collection_identifier": {
+                "name": "tea_collection_identifier",
+                "description": "TEA Collection Identifier",
+                "in": "path",
+                "required": true,
+                "schema": {
+                    "type": "string"
+                }
+            },
+            "tea_leaf_identifier": {
+                "name": "tea_leaf_identifier",
+                "description": "TEA Leaf Identifier",
+                "in": "path",
+                "required": true,
+                "schema": {
+                    "type": "string"
+                }
+            },
+            "purl": {
+                "name": "purl",
+                "description": "Package URL (PURL)",
+                "in": "query",
+                "required": false,
+                "schema": {
+                    "type": "string"
+                }
+            },
+            "barcode": {
+                "name": "barcode",
+                "description": "Barcode",
+                "in": "query",
+                "required": false,
+                "schema": {
+                    "type": "string"
+                }
+            },
+            "sku": {
+                "name": "sku",
+                "description": "Product SKU",
+                "in": "query",
+                "required": false,
+                "schema": {
+                    "type": "string"
+                }
+            },
+            "vendor_uuid": {
+                "name": "vendor_uuid",
+                "description": "Vendor UUID",
+                "in": "query",
+                "required": false,
+                "schema": {
+                    "$ref": "#/components/schemas/type_uuid"
+                }
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer"
+            },
+            "basicAuth": {
+                "type": "http",
+                "scheme": "basic"
+            }
+        },
+        "security_requirements": {
+            "standard_auth": [
+                {
+                    "bearerAuth": []
+                },
+                {
+                    "basicAuth": []
+                }
+            ]
+        },
+        "responses": {
+            "standard_errors": {
+                "400": {
+                    "description": "Invalid request body",
+                    "content": {
+                        "application/json": {}
+                    }
+                },
+                "401": {
+                    "$ref": "#/components/responses/401-unauthorized"
+                },
+                "404": {
+                    "$ref": "#/components/responses/404-object-by-id-not-found"
+                }
+            },
+            "standard_delete": {
+                "204": {
+                    "description": "Resource successfully deleted"
+                }
+            }
+        },
+        "parameters": {
+            "standard_pagination": {
+                "page_offset": {
+                    "$ref": "#/components/parameters/page-offset"
+                },
+                "page_size": {
+                    "$ref": "#/components/parameters/page-size"
+                }
+            }
+        },
+        "operations": {
+            "standard_delete": {
+                "responses": {
+                    "$ref": "#/components/responses/standard_delete"
+                },
+                "security": {
+                    "$ref": "#/components/security_requirements/standard_auth"
+                }
+            }
+        }
+    },
+    "security": [
+        {
+            "bearerAuth": []
+        },
+        {
+            "basicAuth": []
+        }
+    ],
+    "tags": [
+        "TEA Collection",
+        "TEA Product",
+        "TEA Leaf"
+    ],
+    "externalDocs": {
+        "description": "Transparency Exchange API specification",
+        "url": "https://github.com/CycloneDX/transparency-exchange-api"
+    }
+}
