@@ -1,0 +1,46 @@
+---
+"$schema": http://json-schema.org/draft-07/schema#
+"$id": https://raw.githubusercontent.com/CycloneDX/transparency-exchange-api/refs/heads/main/spec/tea.schema.yaml
+title: Transparency Exchange API Schema
+description: Schema for the domain objects of the Transparency Exchange API
+"$defs":
+  uuid:
+    type: string
+    description: A UUID
+    pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+  product:
+    type: object
+    description: A TEA product
+    properties:
+      uuid:
+        "$ref": "#/$defs/uuid"
+    required:
+      - uuid
+  leaf:
+    type: object
+    description: A TEA leaf
+    properties:
+      uuid:
+        "$ref": "#/$defs/uuid"
+    required:
+      - uuid
+  collection:
+    type: object
+    description: A TEA collection
+    properties:
+      uuid:
+        "$ref": "#/$defs/uuid"
+      version:
+        type: integer
+        default: 1
+        description: Collection version, incremented each time its content changes.
+    required:
+      - uuid
+  artifact:
+    type: object
+    description: A security-related document
+    properties:
+      uuid:
+        "$ref": "#/$defs/uuid"
+    required:
+      - uuid
