@@ -26,7 +26,7 @@ product related artefacts, like BOMs, between systems. The work includes:
 - Querying
 
 System and tooling implementors are encouraged to adopt this API standard for
-sending/receiving transparency artefacts between systems. 
+sending/receiving transparency artefacts between systems.
 This will enable more widespread
 "out of the box" integration support in the BOM ecosystem.
 
@@ -49,7 +49,7 @@ The Transparency Exchange API (TEA) supports publication and retrieval of a set 
 
 ### xBOM
 
-Bill of materials for any type of component and service are supported. This includes, but is not limited to, SBOM, HBOM, AI/ML-BOM, SaaSBOM, and CBOM. The API provides a BOM format agnostic way of publishing, searching, and retrieval of xBOM artifacts. 
+Bill of materials for any type of component and service are supported. This includes, but is not limited to, SBOM, HBOM, AI/ML-BOM, SaaSBOM, and CBOM. The API provides a BOM format agnostic way of publishing, searching, and retrieval of xBOM artifacts.
 
 ### CDXA
 
@@ -89,6 +89,34 @@ Insights allows for “limited transparency” that can be asked and answered us
 - Version:
 
 ![](images/Project-Koala.svg)
+
+## Contributing
+
+### Markdown Formatting
+
+This repository uses a Rust-based Markdown formatter (dprint) to ensure
+consistent documentation formatting. When submitting pull requests that include
+Markdown files, the formatter will automatically check for formatting issues.
+
+To run the formatter locally:
+
+1. Install dprint:
+   ```bash
+   cargo install dprint
+   ```
+
+2. Check for formatting issues:
+   ```bash
+   dprint check "**/*.md"
+   ```
+
+3. Automatically format all Markdown files:
+   ```bash
+   dprint fmt "**/*.md"
+   ```
+
+The formatter enforces a maximum line length of 80 characters and consistent
+formatting across all Markdown files.
 
 ## Previous work
 
