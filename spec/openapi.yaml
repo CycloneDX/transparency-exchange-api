@@ -341,7 +341,7 @@ components:
         - page_size
         - total_results
     type_product_identifier_type:
-      type: enum
+      type: string
       description: Identifier types
       enum:
         - tei
