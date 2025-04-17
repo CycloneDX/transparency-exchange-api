@@ -548,7 +548,7 @@ components:
       in: path
       required: true
       schema:
-        type: "#/components/schemas/type_uuid"
+        $ref: "#/components/schemas/type_uuid"
     leaf-identifier:
       name: leaf-identifier
       description: TEA Leaf Identifier
@@ -562,7 +562,7 @@ components:
       in: path
       required: true
       schema:
-        "$ref": "#/components/schemas/type_product_identifier_type"
+        $ref: "#/components/schemas/type_product_identifier_type"
     product-identifier:
       name: product-identifier
       description: The actual identifier string
