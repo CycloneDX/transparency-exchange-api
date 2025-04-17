@@ -3,7 +3,6 @@
 ## Bootstrapping
 
 ```mermaid
-
 sequenceDiagram
     autonumber
     actor Vendor
@@ -19,7 +18,6 @@ sequenceDiagram
 
     Vendor ->> tea_collection: POST to /v1/collection with the TEA Leaf ID as the and the artifact as payload
     tea_collection ->> Vendor: Collection is created with the collection ID returned
-
 ```
 
 ## Release life cycle
@@ -40,7 +38,6 @@ sequenceDiagram
     Note over Vendor,TEA Leaf: Add an artifact (e.g. SBOM)
     Vendor ->> tea_collection: POST to /v1/collection with the TEA Leaf ID as the and the artifact as payload
     tea_collection ->> Vendor: Collection is created with the collection ID returned
-
 ```
 
 ## Adding a new artifact
