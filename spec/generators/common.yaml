@@ -1,4 +1,4 @@
-inputSpec: /local/spec/openapi.json
+inputSpec: /local/spec/openapi.yaml
 gitUserId: CycloneDX
 gitRepoId: transparency-exchange-api
 
