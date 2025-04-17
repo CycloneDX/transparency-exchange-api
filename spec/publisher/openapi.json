@@ -23,13 +23,13 @@
         }
     ],
     "paths": {
-        "/product/{tea_product_identifier}": {
+        "/product/{tei_urn}": {
             "get": {
-                "description": "Returns the corresponding leafs for a given TEA Product Identifier",
+                "description": "Returns the corresponding leafs for a given TEI URN",
                 "operationId": "getTeaProduct",
                 "parameters": [
                     {
-                        "$ref": "#/components/parameters/tea_product_identifier"
+                        "$ref": "#/components/parameters/tei_urn"
                     }
                 ],
                 "responses": {
@@ -1350,6 +1350,15 @@
                     "type": "number",
                     "format": "int64",
                     "default": 100
+                }
+            },
+            "tei_urn": {
+                "name": "tei_urn",
+                "description": "Transparency Exchange Identifier (URN)",
+                "in": "path",
+                "required": true,
+                "schema": {
+                    "type": "string"
                 }
             },
             "tea_product_identifier": {
