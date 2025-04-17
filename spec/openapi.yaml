@@ -43,7 +43,7 @@ paths:
         match.
       operationId: getTeaProductByIdentifier
       parameters:
-        - $ref: "#/components/schemas/identifier-type"
+        - $ref: "#/components/parameters/product-identifier-type"
         - $ref: "#/components/parameters/product-identifier"
         - $ref: "#/components/parameters/page-offset"
         - $ref: "#/components/parameters/page-size"
@@ -62,7 +62,7 @@ paths:
       description: Get the TEA Leaf that describes the Version of a Product
       operationId: getTeaLeafById
       parameters:
-        - $ref: "#/components/schemas/uuid"
+        - $ref: "#/components/parameters/leaf-identifier"
       responses:
         200:
           description: Requested TEA Leaf found and returned
@@ -81,7 +81,7 @@ paths:
       description: Get a TEA Collection by it's Identifier
       operationId: getTeaCollectionById
       parameters:
-        - $ref: "#/components/schemas/uuid"
+        - $ref: "#/components/parameters/collection-identifier"
       responses:
         200:
           description: Requested TEA Collection found and returned
@@ -469,6 +469,33 @@ components:
         - BLAKE2b-384
         - BLAKE2b-512
         - BLAKE3
+
+    #
+    # Types used in API responses
+    #
+    pagination-details:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          example: '2024-03-20T15:30:00Z'
+        page_start_index:
+          type: number
+          format: int64
+          default: 0
+        page_size:
+          type: number
+          format: int64
+          default: 100
+        total_results:
+          type: number
+          format: int64
+      required:
+        - timestamp
+        - page_start_index
+        - page_size
+        - total_results
   responses:
     204-common-delete:
       description: Object deleted successfully
@@ -492,7 +519,7 @@ components:
         application/json:
           schema:
             allOf:
-              - $ref: "#/components/schemas/product"
+              - $ref: "#/components/schemas/pagination-details"
               - type: object
                 properties:
                   results:
