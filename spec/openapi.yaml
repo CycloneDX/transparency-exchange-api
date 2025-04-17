@@ -7,7 +7,7 @@ info:
   description: TBC
   contact:
     name: TEA Working Group
-    email: TBC
+    email: tbc@somewhere.tld
     url: https://github.com/CycloneDX/transparency-exchange-api
   license:
     name: Apache 2.0
@@ -17,103 +17,87 @@ servers:
   - url: http://localhost/tea/v1
     description: Local development
 paths:
-  "/product/uuid/{uuid}":
+  /product/uuid/{uuid}:
     get:
       description: Returns the corresponding leafs for a given product UUID.
       operationId: getTeaProductByUuid
       parameters:
-        - "$ref": "#/components/parameters/tei_urn"
+        # @todo
+        - $ref: "#/components/parameters/tei_urn"
       responses:
-        '200':
+        200:
           description: Requested TEA Product found and returned
           content:
             application/json:
               schema:
-                "$ref": "#/components/schemas/tea_product"
-        '404':
-          "$ref": "#/components/responses/404-object-by-id-not-found"
+                $ref: "#/components/schemas/tea_product"
+        400:
+          $ref: "#/components/responses/400-invalid-request"
+        404:
+          $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
         - TEA Product
-  "/product/type/{type_identifier}":
+  /product/{product-identifier-type}/{product-identifier}:
     get:
       description: Returns a list of TEA products. Note that multiple products may
         match.
-      operationId: ProductByIdentifier
+      operationId: getTeaProductByIdentifier
       parameters:
-        - name: type_identifier
-          description: The identifier type (enum)
-          in: path
-          required: true
-          schema:
-            "$ref": "#/components/schemas/prodid_type"
-        - name: type_val
-          description: The actual identifier string
-          in: query
-          required: true
-          schema:
-            type: string
+        - $ref: "#/components/parameters/product-identifier-type"
+        - $ref: "#/components/parameters/product-identifier"
+        - $ref: "#/components/parameters/page-offset"
+        - $ref: "#/components/parameters/page-size"
       responses:
-        '200':
+        200:
           description: Product retrieved successfully
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/paginated_product_list"
-        "$ref": "#/components/responses/standard_errors"
-  "/leaf/{tea_leaf_identifier}":
+          $ref: "#/components/responses/paginated-tea-product"
+        400:
+          $ref: "#/components/responses/400-invalid-request"
+        404:
+          $ref: "#/components/responses/404-object-by-id-not-found"
+      tags:
+        - TEA Product
+  /leaf/{leaf-identifier}:
     get:
       description: Get the TEA Leaf that describes the Version of a Product
-      operationId: getTeaLeaf
+      operationId: getTeaLeafById
       parameters:
-        - "$ref": "#/components/stdparameters/tea_leaf_identifier"
+        - $ref: "#/components/parameters/leaf-identifier"
       responses:
-        '200':
+        200:
           description: Requested TEA Leaf found and returned
           content:
             application/json:
               schema:
                 "$ref": "#/components/schemas/tea_leaf"
-        '404':
-          "$ref": "#/components/responses/404-object-by-id-not-found"
+        400:
+          $ref: "#/components/responses/400-invalid-request"
+        404:
+          $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
         - TEA Leaf
-  "/collection/{tea_collection_identifier}":
+  /collection/{collection-identifier}:
     get:
       description: Get a TEA Collection by it's Identifier
-      operationId: getTeaCollection
+      operationId: getTeaCollectionById
       parameters:
-        - "$ref": "#/components/stdparameters/tea_collection_identifier"
+        - $ref: "#/components/parameters/collection-identifier"
       responses:
-        '200':
+        200:
           description: Requested TEA Collection found and returned
           content:
             application/json:
               schema:
                 "$ref": "#/components/schemas/tea_collection"
-        '404':
-          "$ref": "#/components/responses/404-object-by-id-not-found"
+        400:
+          $ref: "#/components/responses/400-invalid-request"
+        404:
+          $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
         - TEA Collection
 webhooks: {}
 components:
   schemas:
-    prodid_type:
-      type: enum
-      description: Identifier types
-      enum:
-        - tei
-        - purl
-        - cpe
-    type_identifier:
-      type: object
-      description: Declaration of an identifier
-      properties:
-        idtype:
-          "$ref": "#/components/schemas/prodid_type"
-          default: tei
-        idvalue:
-          description: Value of the identifier
-          type: string
     base_product_fields:
       type: object
       properties:
@@ -121,12 +105,20 @@ components:
           type: string
           description: Product name in free text.
         uuid:
-          "$ref": "#/components/schemas/type_uuid"
+          $ref": "#/components/schemas/type_uuid"
           description: UUID
         identifiers:
           type: array
           items:
-            "$ref": "#/components/schemas/type_identifier"
+            type: object
+            properties:
+              type:
+                  $ref: "#/components/schemas/type_product_identifier_type"
+              id: 
+                type: string
+            required:
+              - type
+              - id
           description: Array of identifiers for this product (tei, cpe, purl)
     base_versioned_product:
       allOf:
@@ -302,6 +294,7 @@ components:
         - artifact_size_in_bytes
         - artifact_checksum
         - artifact_checksum_type
+    # Types
     type_author:
       type: object
       properties:
@@ -347,6 +340,13 @@ components:
         - page_start_index
         - page_size
         - total_results
+    type_product_identifier_type:
+      type: string
+      description: Identifier types
+      enum:
+        - tei
+        - purl
+        - cpe
     type_tea_collection_artifact_type:
       type: string
       title: Type
@@ -492,34 +492,37 @@ components:
       type: string
       format: uuid
   responses:
-    base_error:
-      type: object
-      properties:
-        error:
-          type: string
-        message:
-          type: string
-    404-object-by-id-not-found:
-      description: Object requested by identifier not found
+    204-common-delete:
+      description: Object deleted successfully
+      content:
+        application/json: {}
+    400-invalid-request:
+      description: Request was Invalid
       content:
         application/json: {}
     401-unauthorized:
       description: Authentication required
       content:
         application/json: {}
-    standard_errors:
-      '400':
-        description: Invalid request body
-        content:
-          application/json: {}
-      '401':
-        "$ref": "#/components/responses/401-unauthorized"
-      '404':
-        "$ref": "#/components/responses/404-object-by-id-not-found"
-    standard_delete:
-      '204':
-        description: Resource successfully deleted
+    404-object-by-id-not-found:
+      description: Object requested by identifier not found
+      content:
+        application/json: {}
+    paginated-tea-product:
+      description: A paginated response containing TEA Products
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/type_pagination_details"
+              - type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      "$ref": "#/components/schemas/tea_product"
   parameters:
+    # Pagination
     page-offset:
       name: page-offset
       description: Pagination offset
@@ -538,6 +541,36 @@ components:
         type: number
         format: int64
         default: 100
+    # Identifiers
+    collection-identifier:
+      name: collection-identifier
+      description: TEA Collection Identifier
+      in: path
+      required: true
+      schema:
+        $ref: "#/components/schemas/type_uuid"
+    leaf-identifier:
+      name: leaf-identifier
+      description: TEA Leaf Identifier
+      in: path
+      required: true
+      schema:
+        $ref: "#/components/schemas/type_uuid"
+    product-identifier-type:
+      name: product-identifier-type
+      description: The identifier type (enum)
+      in: path
+      required: true
+      schema:
+        $ref: "#/components/schemas/type_product_identifier_type"
+    product-identifier:
+      name: product-identifier
+      description: The actual identifier string
+      in: query
+      required: true
+      schema:
+        type: string
+    # @todo - REVIEW AS THIS IS USED AS A UUID in /product/uuid/{uuid} ??
     tei_urn:
       name: tei_urn
       description: Transparency Exchange Identifier (URN)
@@ -545,62 +578,6 @@ components:
       required: true
       schema:
         type: string
-    tea_product_identifier:
-      name: tea_product_identifier
-      description: TEA Product Identifier
-      in: path
-      required: true
-      schema:
-        type: string
-    product_version:
-      name: product_version
-      description: Product Version string
-      in: path
-      required: true
-      schema:
-        type: string
-    tea_collection_identifier:
-      name: tea_collection_identifier
-      description: TEA Collection Identifier
-      in: path
-      required: true
-      schema:
-        type: string
-    tea_leaf_identifier:
-      name: tea_leaf_identifier
-      description: TEA Leaf Identifier
-      in: path
-      required: true
-      schema:
-        type: string
-    purl:
-      name: purl
-      description: Package URL (PURL)
-      in: query
-      required: false
-      schema:
-        type: string
-    barcode:
-      name: barcode
-      description: Barcode
-      in: query
-      required: false
-      schema:
-        type: string
-    sku:
-      name: sku
-      description: Product SKU
-      in: query
-      required: false
-      schema:
-        type: string
-    vendor_uuid:
-      name: vendor_uuid
-      description: Vendor UUID
-      in: query
-      required: false
-      schema:
-        "$ref": "#/components/schemas/type_uuid"
   securitySchemes:
     bearerAuth:
       type: http
@@ -608,23 +585,13 @@ components:
     basicAuth:
       type: http
       scheme: basic
-  security_requirements:
-    standard_auth:
-      - bearerAuth: []
-      - basicAuth: []
-  operations:
-    standard_delete:
-      responses:
-        "$ref": "#/components/responses/standard_delete"
-      security:
-        "$ref": "#/components/security_requirements/standard_auth"
 security:
   - bearerAuth: []
   - basicAuth: []
 tags:
-  - TEA Collection
-  - TEA Product
-  - TEA Leaf
+  - name: TEA Collection
+  - name: TEA Product
+  - name: TEA Leaf
 externalDocs:
   description: Transparency Exchange API specification
   url: https://github.com/CycloneDX/transparency-exchange-api
