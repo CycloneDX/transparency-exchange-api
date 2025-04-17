@@ -43,7 +43,7 @@ paths:
         match.
       operationId: getTeaProductByIdentifier
       parameters:
-        - $ref: "#/components/schemas/identifier_type"
+        - $ref: "#/components/schemas/identifier-type"
         - $ref: "#/components/parameters/product-identifier"
         - $ref: "#/components/parameters/page-offset"
         - $ref: "#/components/parameters/page-size"
@@ -101,7 +101,7 @@ components:
     #
     # Definitions reused in multiple domain objects
     #
-    date_time:
+    date-time:
       type: string
       description: Timestamp
       format: date-time
@@ -111,10 +111,10 @@ components:
       description: An identifier with a specified type
       properties:
         idType:
-          "$ref": "#/components/schemas/identifier_type"
+          "$ref": "#/components/schemas/identifier-type"
         idValue:
           type: string
-    identifier_type:
+    identifier-type:
       type: string
       description: Enumeration of identifiers types
       enum:
@@ -176,13 +176,13 @@ components:
           type: array
           description: List of released versions for the component
           items:
-            "$ref": "#/components/schemas/component_version"
+            "$ref": "#/components/schemas/component-version"
       required:
         - uuid
         - name
         - identifiers
         - versions
-    component_version:
+    component-version:
       type: object
       description: A specific version of a TEA leaf
       properties:
@@ -197,7 +197,7 @@ components:
           items:
             "$ref": "#/components/schemas/identifier"
         release_date:
-          "$ref": "#/components/schemas/date_time"
+          "$ref": "#/components/schemas/date-time"
           description: Release date
         pre_release:
           type: boolean
@@ -227,17 +227,17 @@ components:
           default: 1
           description: Collection version, incremented each time its content changes.
         update_reason:
-          "$ref": "#/components/schemas/collection_update_reason"
-    collection_update_reason:
+          "$ref": "#/components/schemas/collection-update-reason"
+    collection-update-reason:
       type: object
       description: Reason for the last update to the TEA collection
       properties:
         type:
-          "$ref": "#/components/schemas/collection_update_reason_type"
+          "$ref": "#/components/schemas/collection-update-reason-type"
         comment:
           type: string
           description: Free text description
-    collection_update_reason_type:
+    collection-update-reason-type:
       type: string
       description: Type of TEA collection update
       enum:
@@ -259,14 +259,14 @@ components:
           type: string
           description: Artifact name
         author:
-          "$ref": "#/components/schemas/artifact_author"
+          "$ref": "#/components/schemas/artifact-author"
         type:
-          "$ref": "#/components/schemas/artifact_type"
+          "$ref": "#/components/schemas/artifact-type"
         formats:
           type: array
           items:
-            "$ref": "#/components/schemas/artifact_format"
-    artifact_author:
+            "$ref": "#/components/schemas/artifact-format"
+    artifact-author:
       type: object
       description: The author of a document.
       properties:
@@ -280,7 +280,7 @@ components:
         organization:
           type: string
           description: Organization
-    artifact_type:
+    artifact-type:
       type: string
       description: Specifies the type of external reference.
       enum:
@@ -420,7 +420,7 @@ components:
           Vulnerability Disclosure)
         other: Use this if no other types accurately describe the purpose of the external
           reference.
-    artifact_format:
+    artifact-format:
       type: object
       description: A security-related document in a specific format
       properties:
@@ -444,16 +444,16 @@ components:
           type: array
           description: List of checksums for the artifact
           items:
-            "$ref": "#/components/schemas/artifact_checksum"
-    artifact_checksum:
+            "$ref": "#/components/schemas/artifact-checksum"
+    artifact-checksum:
       type: object
       properties:
         algType:
-          "$ref": "#/components/schemas/artifact_checksum_alg"
+          "$ref": "#/components/schemas/artifact-checksum-type"
         algValue:
           type: string
           description: Checksum value
-    artifact_checksum_alg:
+    artifact-checksum-type:
       type: string
       description: Checksum algorithm
       enum:
@@ -540,7 +540,7 @@ components:
       in: path
       required: true
       schema:
-        $ref: "#/components/schemas/identifier_type"
+        $ref: "#/components/schemas/identifier-type"
     product-identifier:
       name: product-identifier
       description: The actual identifier string
