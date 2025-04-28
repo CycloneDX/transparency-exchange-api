@@ -83,7 +83,7 @@ paths:
           $ref: "#/components/responses/404_object_by_id_not_found"
       tags:
         - TEA Leaf
-  /tea-component/{uuid}/collections:
+  /component/{uuid}/collections:
     get:
       description: Get the TEA Leaf that describes the Version of a Product
       operationId: getCollectionsOfTeaComponentById
