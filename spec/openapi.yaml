@@ -86,7 +86,7 @@ paths:
   /component/{uuid}/collections:
     get:
       description: Get the TEA Leaf that describes the Version of a Product
-      operationId: getCollectionsOfTeaComponentById
+      operationId: getCollectionsByComponentId
       parameters:
         - name: uuid
           in: path
