@@ -17,7 +17,7 @@ The standard TEI points to a product.
 
 The user has to know product TEI and version of each component (TEA Component) to find the list of artefacts for the used version.
 
-## API flow
+## API flow based on TEI discovery
 
 ```mermaid
 
@@ -40,6 +40,44 @@ sequenceDiagram
     discovery ->> user: List of API servers
 
     user ->> tea_product: Finding all product parts (TEA Components) and facts about the product
+    tea_product ->> user: List of product parts
+
+    user ->> tea_component: Finding all versions of a TEA Component
+    tea_component ->> user: List of all available versions (paginated)
+
+    user ->> tea_collection: Finding all artefacts for version in scope
+    tea_collection ->> user: List of artefacts and formats available for each artefact
+
+    user ->> tea_artifact: Download artefact
+
+
+
+```
+
+## API flow based on direct access to API
+
+In this case, the client wants to search for a specific product using the API
+
+```mermaid
+
+---
+title: TEA client flow with search
+---
+
+sequenceDiagram
+    autonumber
+    actor user
+
+    participant tea_product as TEA Product
+    participant tea_component as TEA Component
+    participant tea_collection as TEA Collection
+    participant tea_artifact as TEA Artefact
+
+
+    user ->> tea_product: Search for product based on identifier (CPE, PURL, name)
+    tea_product ->> user: List of products
+
+    user ->> tea_product: Finding all product parts (TEA Components) and facts about choosen product
     tea_product ->> user: List of product parts
 
     user ->> tea_component: Finding all versions of a TEA Component
