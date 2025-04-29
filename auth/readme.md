@@ -5,7 +5,7 @@ of a TEA service - the discovery and download of software transparency artefacts
 
 ## Requirements
 
-__Authorization__: A user of a TEA service may get access to all objects (leaf, collections) and
+__Authorization__: A user of a TEA service may get access to all objects (components, collections) and
 artefacts or just a subset, depending on the publisher of the data. Authorization is connected
 to __authentication__. 
 
@@ -19,7 +19,7 @@ the user can access.
 
 As an example, one implementation may publish all information about existing artefacts and software
 versions openly, but restrict access to artefacts to those that match the customers installation.
-Another implementation can implement a filter that does not show products and versions ("leafs") that
+Another implementation can implement a filter that does not show products and versions ("components") that
 the customer has not aquired.
 
 For most Open Source projects, implementing authentication - setting up accounts and managing
