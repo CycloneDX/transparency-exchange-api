@@ -5,9 +5,9 @@ the TEI is used to query for data. The TEI marks the product sold,
 which can be a single unit or multiple units in a bundle.
 
 - For a single product, the output will be metadata about the
-  product and a TEA LEAF object.
+  product and a TEA COMPONENT object.
 - For a composed product consisting of a bundle, the response
-  will be multiple TEA LEAF objects.
+  will be multiple TEA COMPONENT objects.
 
 In addition, all known TEIs for the product will be returned,
 in order for a TEA client to avoid duplication.
@@ -35,10 +35,10 @@ same vendor.
    - __type__: Type of identifier - one of "tei", "purl", or "cpe"
    - __id__: The complete identifier (str)
 - __leaves__: A list of product leaves
-   - __uuid__: TEA LEAF UUID
+   - __uuid__: TEA COMPONENT UUID
 
-The TEA LEAF UUID is used in the LEAF API to find out which versions
-of the LEAF that exists.
+The TEA Component UUID is used in the Component API to find out which versions
+of the Component that exists.
 
 The goal of the TEA index is to provide a selection of product
 versions to assist the user software in finding a match for the
