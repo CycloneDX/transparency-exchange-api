@@ -213,11 +213,6 @@ components:
           description: List of identifiers for the component
           items:
             "$ref": "#/components/schemas/identifier"
-        versions:
-          type: array
-          description: List of released versions for the component
-          items:
-            "$ref": "#/components/schemas/component-version"
       required:
         - uuid
         - name
