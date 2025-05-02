@@ -1,5 +1,3 @@
----
-jsonSchemaDialect: https://spec.openapis.org/oas/3.1/dialect/base
 openapi: 3.1.1
 info:
   title: Transparency Exchange API
@@ -85,10 +83,10 @@ paths:
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
         - TEA Component
-  /component/{uuid}/versions:
+  /component/{uuid}/releases:
     get:
-      description: Get all TEA Component versions that match the given criteria
-      operationId: getCollectionsByComponentId
+      description: Get releases of the component
+      operationId: getReleasesByComponentId
       parameters:
         - name: uuid
           in: path
@@ -99,22 +97,74 @@ paths:
             format: uuid
       responses:
         '200':
-          description: Requested TEA Component found and returned
+          description: Requested Releases of TEA Component found and returned
           content:
             application/json:
               schema:
                 type: array
-                items:
-                  "$ref": "#/components/schemas/component-version"
+                items: 
+                  "$ref": "#/components/schemas/release"
         '400':
           $ref: "#/components/responses/400-invalid-request"
         '404':
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
-        - TEA Leaf
+        - TEA Component
+  /release/{uuid}/collection:
+    get:
+      description: Get the latest TEA Collection belonging to the TEA Release
+      operationId: getLatestCollectionByReleaseId
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          description: UUID of TEA Release in the TEA server
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Requested TEA Collection found and returned
+          content:
+            application/json:
+              schema: 
+                "$ref": "#/components/schemas/collection"
+        '400':
+          $ref: "#/components/responses/400-invalid-request"
+        '404':
+          $ref: "#/components/responses/404-object-by-id-not-found"
+      tags:
+        - TEA Release
+  /release/{uuid}/collections:
+    get:
+      description: Get the TEA Collections belonging to the TEA Release
+      operationId: getCollectionsByReleaseId
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          description: UUID of TEA Release in the TEA server
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Requested TEA Collection found and returned
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  "$ref": "#/components/schemas/collection"
+        '400':
+          $ref: "#/components/responses/400-invalid-request"
+        '404':
+          $ref: "#/components/responses/404-object-by-id-not-found"
+      tags:
+        - TEA Release
   /collection/{uuid}:
     get:
-      description: Get a TEA Collection by its identifier
+      description: Get all versions of a TEA Collection by its UUID
       operationId: getTeaCollectionById
       parameters:
         - name: uuid
@@ -127,6 +177,39 @@ paths:
       responses:
         '200':
           description: Requested TEA Collection found and returned
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  "$ref": "#/components/schemas/collection"
+        '400':
+          $ref: "#/components/responses/400-invalid-request"
+        '404':
+          $ref: "#/components/responses/404-object-by-id-not-found"
+      tags:
+        - TEA Collection
+  /collection/{uuid}/{version}:
+    get:
+      description: Get all versions of a TEA Collection by its UUID
+      operationId: getTeaCollectionVersionByCollectionIdAndVersion
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          description: UUID of TEA Collection in the TEA server
+          schema:
+            type: string
+            format: uuid
+        - name: version
+          in: path
+          required: true
+          description: Version of TEA Collection
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Requested TEA Collection Version found and returned
           content:
             application/json:
               schema:
@@ -218,36 +301,25 @@ components:
         - name
         - identifiers
         - versions
-    component-version:
+    #
+    # TEA Release and related objects
+    #
+    release:
       type: object
-      description: A specific version of a TEA component
       properties:
-        collection_uuid:
-          "$ref": "#/components/schemas/uuid"
+        uuid:
+          "$ref": "#/components/schemas/type_uuid"
         version:
           type: string
-          description: Version number of TEA component
-        identifiers:
-          type: array
-          description: List of identifiers for this component version
-          items:
-            "$ref": "#/components/schemas/identifier"
         release_date:
-          "$ref": "#/components/schemas/date-time"
-          description: Release date
-        pre_release:
-          type: boolean
-          description: Marks if the version is a pre-release version
-        classifier:
-          type: object
-          description: Optional classifier to distinguish between artifacts
+          type: string
+          format: date-time
+          example: '2024-03-20T15:30:00Z'
+        # add lifecycle here
       required:
         - uuid
         - version
-        - identifiers
-        - release_date
-        - pre_release
-
+        - release_date    
     #
     # TEA Collection and related objects
     #
@@ -260,8 +332,11 @@ components:
           description: Must match the UUID of the corresponding `component_version` object
         version:
           type: integer
-          default: 1
           description: Collection version, incremented each time its content changes.
+        release_date:
+          type: string
+          format: date-time
+          example: '2024-03-20T15:30:00Z'
         update_reason:
           "$ref": "#/components/schemas/collection-update-reason"
         artifacts:
@@ -270,7 +345,7 @@ components:
             "$ref": "#/components/schemas/artifact"
     collection-update-reason:
       type: object
-      description: Reason for the last update to the TEA collection
+      description: Reason for the update to the TEA collection
       properties:
         type:
           "$ref": "#/components/schemas/collection-update-reason-type"
@@ -281,10 +356,11 @@ components:
       type: string
       description: Type of TEA collection update
       enum:
-        - product_released
-        - vulnerability_disclosed
-        - attestation_added
-        - document_fixed
+        - INITIAL_RELEASE
+        - VEX_UPDATED
+        - ARTIFACT_UPDATED
+        - ARTIFACT_ADDED
+        - ARTIFACT_REMOVED
 
     #
     # TEA Artifact and related objects
@@ -367,99 +443,6 @@ components:
         - digital-signature
         - rfc-9116
         - other
-      meta:enum:
-        vcs: Version Control System
-        issue-tracker: Issue or defect tracking system, or an Application Lifecycle
-          Management (ALM) system
-        website: Website
-        advisories: Security advisories
-        bom: Bill of Materials (SBOM, OBOM, HBOM, SaaSBOM, etc)
-        mailing-list: Mailing list or discussion group
-        social: Social media account
-        chat: Real-time chat platform
-        documentation: Documentation, guides, or how-to instructions
-        support: Community or commercial support
-        source-distribution:
-          description: The location where the source code distributable can be obtained.
-            This is often an archive format such as zip or tgz. The source-distribution
-            type complements use of the version control (vcs) type.
-        distribution: Direct or repository download location
-        distribution-intake: The location where a component was published to. This
-          is often the same as "distribution" but may also include specialized publishing
-          processes that act as an intermediary.
-        license: The reference to the license file. If a license URL has been defined
-          in the license node, it should also be defined as an external reference
-          for completeness.
-        build-meta: Build-system specific meta file (i.e. pom.xml, package.json, .nuspec,
-          etc)
-        build-system: Reference to an automated build system
-        release-notes: Reference to release notes
-        security-contact: Specifies a way to contact the maintainer, supplier, or
-          provider in the event of a security incident. Common URIs include links
-          to a disclosure procedure, a mailto (RFC-2368) that specifies an email address,
-          a tel (RFC-3966) that specifies a phone number, or dns (RFC-4501) that specifies
-          the records containing DNS Security TXT.
-        model-card: A model card describes the intended uses of a machine learning
-          model, potential limitations, biases, ethical considerations, training parameters,
-          datasets used to train the model, performance metrics, and other relevant
-          data useful for ML transparency.
-        log: A record of events that occurred in a computer system or application,
-          such as problems, errors, or information on current operations.
-        configuration: Parameters or settings that may be used by other components
-          or services.
-        evidence: Information used to substantiate a claim.
-        formulation: Describes how a component or service was manufactured or deployed.
-        attestation: Human or machine-readable statements containing facts, evidence,
-          or testimony.
-        threat-model: An enumeration of identified weaknesses, threats, and countermeasures,
-          dataflow diagram (DFD), attack tree, and other supporting documentation
-          in human-readable or machine-readable format.
-        adversary-model: The defined assumptions, goals, and capabilities of an adversary.
-        risk-assessment: Identifies and analyzes the potential of future events that
-          may negatively impact individuals, assets, and/or the environment. Risk
-          assessments may also include judgments on the tolerability of each risk.
-        vulnerability-assertion: A Vulnerability Disclosure Report (VDR) which asserts
-          the known and previously unknown vulnerabilities that affect a component,
-          service, or product including the analysis and findings describing the impact
-          (or lack of impact) that the reported vulnerability has on a component,
-          service, or product.
-        exploitability-statement: A Vulnerability Exploitability eXchange (VEX) which
-          asserts the known vulnerabilities that do not affect a product, product
-          family, or organization, and optionally the ones that do. The VEX should
-          include the analysis and findings describing the impact (or lack of impact)
-          that the reported vulnerability has on the product, product family, or organization.
-        pentest-report: Results from an authorized simulated cyberattack on a component
-          or service, otherwise known as a penetration test.
-        static-analysis-report: SARIF or proprietary machine or human-readable report
-          for which static analysis has identified code quality, security, and other
-          potential issues with the source code.
-        dynamic-analysis-report: Dynamic analysis report that has identified issues
-          such as vulnerabilities and misconfigurations.
-        runtime-analysis-report: Report generated by analyzing the call stack of a
-          running application.
-        component-analysis-report: Report generated by Software Composition Analysis
-          (SCA), container analysis, or other forms of component analysis.
-        maturity-report: Report containing a formal assessment of an organization,
-          business unit, or team against a maturity model.
-        certification-report: Industry, regulatory, or other certification from an
-          accredited (if applicable) certification body.
-        codified-infrastructure: Code or configuration that defines and provisions
-          virtualized infrastructure, commonly referred to as Infrastructure as Code
-          (IaC).
-        quality-metrics: Report or system in which quality metrics can be obtained.
-        poam: Plans of Action and Milestones (POAM) complement an "attestation" external
-          reference. POAM is defined by NIST as a "document that identifies tasks
-          needing to be accomplished. It details resources required to accomplish
-          the elements of the plan, any milestones in meeting the tasks and scheduled
-          completion dates for the milestones".
-        electronic-signature: An e-signature is commonly a scanned representation
-          of a written signature or a stylized script of the person's name.
-        digital-signature: A signature that leverages cryptography, typically public/private
-          key pairs, which provides strong authenticity verification.
-        rfc-9116: Document that complies with RFC-9116 (A File Format to Aid in Security
-          Vulnerability Disclosure)
-        other: Use this if no other types accurately describe the purpose of the external
-          reference.
     artifact-format:
       type: object
       description: A security-related document in a specific format
@@ -510,6 +493,102 @@ components:
         - BLAKE2b-512
         - BLAKE3
 
+      # meta:enum:
+      #   vcs: Version Control System
+      #   issue-tracker: Issue or defect tracking system, or an Application Lifecycle
+      #     Management (ALM) system
+      #   website: Website
+      #   advisories: Security advisories
+      #   bom: Bill of Materials (SBOM, OBOM, HBOM, SaaSBOM, etc)
+      #   mailing-list: Mailing list or discussion group
+      #   social: Social media account
+      #   chat: Real-time chat platform
+      #   documentation: Documentation, guides, or how-to instructions
+      #   support: Community or commercial support
+      #   source-distribution:
+      #     description: The location where the source code distributable can be obtained.
+      #       This is often an archive format such as zip or tgz. The source-distribution
+      #       type complements use of the version control (vcs) type.
+      #   distribution: Direct or repository download location
+      #   distribution-intake: The location where a component was published to. This
+      #     is often the same as "distribution" but may also include specialized publishing
+      #     processes that act as an intermediary.
+      #   license: The reference to the license file. If a license URL has been defined
+      #     in the license node, it should also be defined as an external reference
+      #     for completeness.
+      #   build-meta: Build-system specific meta file (i.e. pom.xml, package.json, .nuspec,
+      #     etc)
+      #   build-system: Reference to an automated build system
+      #   release-notes: Reference to release notes
+      #   security-contact: Specifies a way to contact the maintainer, supplier, or
+      #     provider in the event of a security incident. Common URIs include links
+      #     to a disclosure procedure, a mailto (RFC-2368) that specifies an email address,
+      #     a tel (RFC-3966) that specifies a phone number, or dns (RFC-4501) that specifies
+      #     the records containing DNS Security TXT.
+      #   model-card: A model card describes the intended uses of a machine learning
+      #     model, potential limitations, biases, ethical considerations, training parameters,
+      #     datasets used to train the model, performance metrics, and other relevant
+      #     data useful for ML transparency.
+      #   log: A record of events that occurred in a computer system or application,
+      #     such as problems, errors, or information on current operations.
+      #   configuration: Parameters or settings that may be used by other components
+      #     or services.
+      #   evidence: Information used to substantiate a claim.
+      #   formulation: Describes how a component or service was manufactured or deployed.
+      #   attestation: Human or machine-readable statements containing facts, evidence,
+      #     or testimony.
+      #   threat-model: An enumeration of identified weaknesses, threats, and countermeasures,
+      #     dataflow diagram (DFD), attack tree, and other supporting documentation
+      #     in human-readable or machine-readable format.
+      #   adversary-model: The defined assumptions, goals, and capabilities of an adversary.
+      #   risk-assessment: Identifies and analyzes the potential of future events that
+      #     may negatively impact individuals, assets, and/or the environment. Risk
+      #     assessments may also include judgments on the tolerability of each risk.
+      #   vulnerability-assertion: A Vulnerability Disclosure Report (VDR) which asserts
+      #     the known and previously unknown vulnerabilities that affect a component,
+      #     service, or product including the analysis and findings describing the impact
+      #     (or lack of impact) that the reported vulnerability has on a component,
+      #     service, or product.
+      #   exploitability-statement: A Vulnerability Exploitability eXchange (VEX) which
+      #     asserts the known vulnerabilities that do not affect a product, product
+      #     family, or organization, and optionally the ones that do. The VEX should
+      #     include the analysis and findings describing the impact (or lack of impact)
+      #     that the reported vulnerability has on the product, product family, or organization.
+      #   pentest-report: Results from an authorized simulated cyberattack on a component
+      #     or service, otherwise known as a penetration test.
+      #   static-analysis-report: SARIF or proprietary machine or human-readable report
+      #     for which static analysis has identified code quality, security, and other
+      #     potential issues with the source code.
+      #   dynamic-analysis-report: Dynamic analysis report that has identified issues
+      #     such as vulnerabilities and misconfigurations.
+      #   runtime-analysis-report: Report generated by analyzing the call stack of a
+      #     running application.
+      #   component-analysis-report: Report generated by Software Composition Analysis
+      #     (SCA), container analysis, or other forms of component analysis.
+      #   maturity-report: Report containing a formal assessment of an organization,
+      #     business unit, or team against a maturity model.
+      #   certification-report: Industry, regulatory, or other certification from an
+      #     accredited (if applicable) certification body.
+      #   codified-infrastructure: Code or configuration that defines and provisions
+      #     virtualized infrastructure, commonly referred to as Infrastructure as Code
+      #     (IaC).
+      #   quality-metrics: Report or system in which quality metrics can be obtained.
+      #   poam: Plans of Action and Milestones (POAM) complement an "attestation" external
+      #     reference. POAM is defined by NIST as a "document that identifies tasks
+      #     needing to be accomplished. It details resources required to accomplish
+      #     the elements of the plan, any milestones in meeting the tasks and scheduled
+      #     completion dates for the milestones".
+      #   electronic-signature: An e-signature is commonly a scanned representation
+      #     of a written signature or a stylized script of the person's name.
+      #   digital-signature: A signature that leverages cryptography, typically public/private
+      #     key pairs, which provides strong authenticity verification.
+      #   rfc-9116: Document that complies with RFC-9116 (A File Format to Aid in Security
+      #     Vulnerability Disclosure)
+      #   other: Use this if no other types accurately describe the purpose of the external
+      #     reference.
+    type_uuid:
+      type: string
+      format: uuid
     #
     # Types used in API responses
     #
