@@ -17,85 +17,126 @@ servers:
   - url: http://localhost/tea/v1
     description: Local development
 paths:
-  /product/uuid/{uuid}:
+  /product/{uuid}:
     get:
       description: Returns the corresponding leafs for a given product UUID.
       operationId: getTeaProductByUuid
       parameters:
-        # @todo
-        - $ref: "#/components/parameters/tei_urn"
+        - name: uuid
+          in: path
+          required: true
+          description: UUID of product in the TEA server
+          schema:
+            type: string
+            format: uuid
       responses:
-        200:
+        '200':
           description: Requested TEA Product found and returned
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/product"
-        400:
+        '400':
           $ref: "#/components/responses/400-invalid-request"
-        404:
+        '404':
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
         - TEA Product
-  /product/{product-identifier-type}/{product-identifier}:
+  /products:
     get:
       description: Returns a list of TEA products. Note that multiple products may
         match.
       operationId: getTeaProductByIdentifier
       parameters:
-        - $ref: "#/components/parameters/product-identifier-type"
-        - $ref: "#/components/parameters/product-identifier"
-        - $ref: "#/components/parameters/page-offset"
-        - $ref: "#/components/parameters/page-size"
+        - $ref: "#/components/parameters/page_offset"
+        - $ref: "#/components/parameters/page_size"
+        - $ref: "#/components/parameters/tei_urn"
       responses:
-        200:
-          description: Product retrieved successfully
+        '200':
           $ref: "#/components/responses/paginated-product"
-        400:
+        '400':
           $ref: "#/components/responses/400-invalid-request"
-        404:
+        '404':
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
         - TEA Product
-  /leaf/{leaf-identifier}:
+  /tea-component/{uuid}:
     get:
       description: Get the TEA Leaf that describes the Version of a Product
-      operationId: getTeaLeafById
+      operationId: getTeaComponentById
       parameters:
-        - $ref: "#/components/parameters/leaf-identifier"
+        - name: uuid
+          in: path
+          required: true
+          description: UUID of TEA Component in the TEA server
+          schema:
+            type: string
+            format: uuid
       responses:
-        200:
-          description: Requested TEA Leaf found and returned
+        '200':
+          description: Requested TEA Component found and returned
           content:
             application/json:
               schema:
                 "$ref": "#/components/schemas/component"
-        400:
+        '400':
           $ref: "#/components/responses/400-invalid-request"
-        404:
+        '404':
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
         - TEA Leaf
-  /collection/{collection-identifier}:
+  /component/{uuid}/collections:
     get:
-      description: Get a TEA Collection by it's Identifier
+      description: Get the TEA Leaf that describes the Version of a Product
+      operationId: getCollectionsByComponentId
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          description: UUID of TEA Component in the TEA server
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Requested TEA Component found and returned
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/tea_collections_list_view"
+        '400':
+          $ref: "#/components/responses/400-invalid-request"
+        '404':
+          $ref: "#/components/responses/404-object-by-id-not-found"
+      tags:
+        - TEA Leaf
+  /collection/{uuid}:
+    get:
+      description: Get a TEA Component Version and Collection by its Identifier
       operationId: getTeaCollectionById
       parameters:
-        - $ref: "#/components/parameters/collection-identifier"
+        - name: uuid
+          in: path
+          required: true
+          description: UUID of TEA Collection in the TEA server
+          schema:
+            type: string
+            format: uuid
       responses:
-        200:
+        '200':
           description: Requested TEA Collection found and returned
           content:
             application/json:
               schema:
                 "$ref": "#/components/schemas/collection"
-        400:
+        '400':
           $ref: "#/components/responses/400-invalid-request"
-        404:
+        '404':
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
         - TEA Collection
-webhooks: {}
 components:
   schemas:
     #
@@ -547,42 +588,14 @@ components:
         format: int64
         default: 100
     # Identifiers
-    collection-identifier:
-      name: collection-identifier
-      description: TEA Collection Identifier
-      in: path
-      required: true
-      schema:
-        $ref: "#/components/schemas/uuid"
-    leaf-identifier:
-      name: leaf-identifier
-      description: TEA Leaf Identifier
-      in: path
-      required: true
-      schema:
-        $ref: "#/components/schemas/uuid"
-    product-identifier-type:
-      name: product-identifier-type
-      description: The identifier type (enum)
-      in: path
-      required: true
-      schema:
-        $ref: "#/components/schemas/identifier-type"
-    product-identifier:
-      name: product-identifier
-      description: The actual identifier string
+    tei_urn:
+      name: tei_urn
+      description: Transparency Exchange Identifier (URN)
       in: query
       required: true
       schema:
         type: string
-    # @todo - REVIEW AS THIS IS USED AS A UUID in /product/uuid/{uuid} ??
-    tei_urn:
-      name: tei_urn
-      description: Transparency Exchange Identifier (URN)
-      in: path
-      required: true
-      schema:
-        type: string
+        pattern: '^urn:tei:[a-z]+:[a-zA-Z0-9.-]+:[a-zA-Z0-9-]+$'
   securitySchemes:
     bearerAuth:
       type: http
