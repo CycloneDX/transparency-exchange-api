@@ -308,7 +308,7 @@ components:
       type: object
       properties:
         uuid:
-          "$ref": "#/components/schemas/type_uuid"
+          "$ref": "#/components/schemas/uuid"
         version:
           type: string
         release_date:
