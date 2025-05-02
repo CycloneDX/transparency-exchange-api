@@ -19,13 +19,13 @@ servers:
 paths:
   /product/{uuid}:
     get:
-      description: Returns the corresponding leafs for a given product UUID.
+      description: Returns the corresponding TEA components for a given TEA product UUID.
       operationId: getTeaProductByUuid
       parameters:
         - name: uuid
           in: path
           required: true
-          description: UUID of product in the TEA server
+          description: UUID of the TEA product in the TEA server
           schema:
             type: string
             format: uuid
@@ -62,7 +62,7 @@ paths:
         - TEA Product
   /component/{uuid}:
     get:
-      description: Get the TEA Leaf that describes the Version of a Product
+      description: Get a TEA Component
       operationId: getTeaComponentById
       parameters:
         - name: uuid
@@ -84,10 +84,10 @@ paths:
         '404':
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
-        - TEA Leaf
+        - TEA Component
   /component/{uuid}/versions:
     get:
-      description: Get the TEA Leaf that describes the Version of a Product
+      description: Get all TEA Component versions that match the given criteria
       operationId: getCollectionsByComponentId
       parameters:
         - name: uuid
@@ -114,7 +114,7 @@ paths:
         - TEA Leaf
   /collection/{uuid}:
     get:
-      description: Get a TEA Component Version and Collection by its Identifier
+      description: Get a TEA Collection by its identifier
       operationId: getTeaCollectionById
       parameters:
         - name: uuid
@@ -207,7 +207,7 @@ components:
           "$ref": "#/components/schemas/uuid"
         name:
           type: string
-          description: Leaf name
+          description: Component name
         identifiers:
           type: array
           description: List of identifiers for the component
@@ -225,13 +225,13 @@ components:
         - versions
     component-version:
       type: object
-      description: A specific version of a TEA leaf
+      description: A specific version of a TEA component
       properties:
         collection_uuid:
           "$ref": "#/components/schemas/uuid"
         version:
           type: string
-          description: Version number of TEA leaf
+          description: Version number of TEA component
         identifiers:
           type: array
           description: List of identifiers for this component version
