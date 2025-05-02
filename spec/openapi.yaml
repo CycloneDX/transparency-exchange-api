@@ -269,6 +269,10 @@ components:
           description: Collection version, incremented each time its content changes.
         update_reason:
           "$ref": "#/components/schemas/collection-update-reason"
+        artifacts:
+          type: array
+          items:
+            "$ref": "#/components/schemas/artifact"
     collection-update-reason:
       type: object
       description: Reason for the last update to the TEA collection
