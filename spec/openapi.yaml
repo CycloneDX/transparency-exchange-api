@@ -493,9 +493,6 @@ components:
         - BLAKE2b-384
         - BLAKE2b-512
         - BLAKE3
-    type_uuid:
-      type: string
-      format: uuid
     #
     # Types used in API responses
     #
