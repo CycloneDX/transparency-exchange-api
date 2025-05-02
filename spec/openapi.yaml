@@ -337,9 +337,7 @@ components:
           type: integer
           description: Collection version, incremented each time its content changes.
         release_date:
-          type: string
-          format: date-time
-          example: '2024-03-20T15:30:00Z'
+          "$ref": "#/components/schemas/date-time"
         update_reason:
           "$ref": "#/components/schemas/collection-update-reason"
         artifacts:
