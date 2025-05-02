@@ -48,8 +48,8 @@ paths:
         match.
       operationId: getTeaProductByIdentifier
       parameters:
-        - $ref: "#/components/parameters/page_offset"
-        - $ref: "#/components/parameters/page_size"
+        - $ref: "#/components/parameters/page-offset"
+        - $ref: "#/components/parameters/page-size"
         - $ref: "#/components/parameters/tei_urn"
       responses:
         '200':
@@ -60,7 +60,7 @@ paths:
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
         - TEA Product
-  /tea-component/{uuid}:
+  /component/{uuid}:
     get:
       description: Get the TEA Leaf that describes the Version of a Product
       operationId: getTeaComponentById
@@ -85,7 +85,7 @@ paths:
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
         - TEA Leaf
-  /component/{uuid}/collections:
+  /component/{uuid}/versions:
     get:
       description: Get the TEA Leaf that describes the Version of a Product
       operationId: getCollectionsByComponentId
@@ -105,7 +105,7 @@ paths:
               schema:
                 type: array
                 items:
-                  "$ref": "#/components/schemas/tea_collections_list_view"
+                  "$ref": "#/components/schemas/component-version"
         '400':
           $ref: "#/components/responses/400-invalid-request"
         '404':
@@ -227,7 +227,7 @@ components:
       type: object
       description: A specific version of a TEA leaf
       properties:
-        uuid:
+        collection_uuid:
           "$ref": "#/components/schemas/uuid"
         version:
           type: string
