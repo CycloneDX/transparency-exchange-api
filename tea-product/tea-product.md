@@ -36,6 +36,40 @@ The goal of the TEA Product API is to provide a selection of product
 versions to assist the user software in finding a match for the
 owned version.
 
+### Example
+
+An example of a product consisting of an OSS project and all its Maven artifacts:
+
+```json
+{
+  "uuid": "09e8c73b-ac45-4475-acac-33e6a7314e6d",
+  "name": "Apache Log4j 2",
+  "identifiers": [
+    {
+      "idType": "cpe",
+      "idValue": "cpe:2.3:a:apache:log4j"
+    },
+    {
+      "idType": "purl",
+      "idValue": "pkg:maven/org.apache.logging.log4j/log4j-api"
+    },
+    {
+      "idType": "purl",
+      "idValue": "pkg:maven/org.apache.logging.log4j/log4j-core"
+    },
+    {
+      "idType": "purl",
+      "idValue": "pkg:maven/org.apache.logging.log4j/log4j-layout-template-json"
+    }
+  ],
+  "components": [
+    "3910e0fd-aff4-48d6-b75f-8bf6b84687f0",
+    "b844c9bd-55d6-478c-af59-954a932b6ad3",
+    "d6d3f754-d4f4-4672-b096-b994b064ca2d"
+  ]
+}
+```
+
 ### API usage
 
 The user will find this API end point using TEA discovery.
