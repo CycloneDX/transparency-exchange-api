@@ -32,6 +32,40 @@ A TEA Component object has the following parts:
 Note: In coming versions, there may be a flag indicating lifecycle status
 for a component.
 
+### Examples
+
+Some examples of Maven artifacts as TEA Components:
+
+```json
+{
+  "uuid": "3910e0fd-aff4-48d6-b75f-8bf6b84687f0",
+  "name": "Apache Log4j API",
+  "identifiers": [
+    {
+      "idType": "purl",
+      "idValue": "pkg:maven/org.apache.logging.log4j/log4j-api"
+    }
+  ]
+}
+```
+
+```json
+{
+  "uuid": "b844c9bd-55d6-478c-af59-954a932b6ad3",
+  "name": "Apache Log4j Core",
+  "identifiers": [
+    {
+      "idType": "cpe",
+      "idValue": "cpe:2.3:a:apache:log4j"
+    },
+    {
+      "idType": "purl",
+      "idValue": "pkg:maven/org.apache.logging.log4j/log4j-core"
+    }
+  ]
+}
+```
+
 ## Handling the Pre-Release flag
 
 The "Pre-release" flag is used to indicate that this is not a final release.
