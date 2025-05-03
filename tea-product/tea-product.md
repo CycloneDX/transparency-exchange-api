@@ -17,30 +17,22 @@ in order for a TEA client to avoid duplication.
 Authorization can be done on multiple levels, including
 which products and versions are supported for a specific user.
 
-## Composite products
-
-If a product consists of a set of products, each with a different
-version number and update scheme, a TEA bundle will be the starting
-point of discovery. The TEA bundle will list all included parts
-and include pointers (URLs) to the TEA index for these.
-
-The URL can be to a different vendor or different site with the
-same vendor.
-
 ## TEA Product object
 
-- __uuid__: A unique identifier for this product
-- __name__: Product name in clear text (str)
-- __identifiers__: A list of TEIs that apply to this product
-   - __type__: Type of identifier - one of "tei", "purl", or "cpe"
-   - __id__: The complete identifier (str)
-- __leaves__: A list of product leaves
-   - __uuid__: TEA COMPONENT UUID
+A TEA Product object has the following parts:
+
+- __uuid__: A unique identifier for the TEA product
+- __name__: Product name
+- __identifiers__: List of identifiers for the product
+   - __idType__: Type of identifier, e.g. `tei`, `purl`, `cpe`
+   - __idValue__: Identifier value
+- __components__: List of TEA components for the product
+   - __uuid__: Unique identifier of the TEA component
 
 The TEA Component UUID is used in the Component API to find out which versions
 of the Component that exists.
 
-The goal of the TEA index is to provide a selection of product
+The goal of the TEA Product API is to provide a selection of product
 versions to assist the user software in finding a match for the
 owned version.
 
