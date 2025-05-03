@@ -1,6 +1,6 @@
-# The TEA Component Index Object (TCO)
+# The TEA Component API
 
-The TEA COMPONENT INDEX is the object that indicates a product component. The product may
+The TEA Component object is the object that indicates a product component. The product may
 be constructed with one or multiple Tea Components, each with their own set of
 related artefacts.
 
@@ -19,14 +19,15 @@ product object has one or multiple TEI URNs.
 For the API to be able to present a list of versions in a cronological order,
 a timestamp for a release is required.
 
-## The Tea Component Object
+## TEA Component Object
 
-- __Uuid__ unique for this object
-- __Product name__: A text field
-- __Product version__: A text field, no required syntax
-- __Release date__: A unix timestamp
-- __Pre-release__: A boolean flag indicating a pre-release (beta, rc)
-- __Tco_uuid__: A reference to the TEA Collection objet for this release
+A TEA Component object has the following parts:
+
+- __uuid__: A unique identifier for the TEA component
+- __name__: Component name
+- __identifiers__: List of identifiers for the component
+  - __idType__: Type of identifier, e.g. `tei`, `purl`, `cpe`
+  - __idValue__: Identifier value
 
 Note: In coming versions, there may be a flag indicating lifecycle status
 for a component.

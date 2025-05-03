@@ -152,8 +152,10 @@ components:
       description: An identifier with a specified type
       properties:
         idType:
+          description: Type of identifier, e.g. `tei`, `purl`, `cpe`
           "$ref": "#/components/schemas/identifier-type"
         idValue:
+          description: Identifier value
           type: string
     identifier-type:
       type: string
@@ -204,6 +206,7 @@ components:
       description: A TEA component
       properties:
         uuid:
+          description: A unique identifier for the TEA component
           "$ref": "#/components/schemas/uuid"
         name:
           type: string
