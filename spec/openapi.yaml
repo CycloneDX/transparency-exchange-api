@@ -103,7 +103,7 @@ paths:
             application/json:
               schema:
                 type: array
-                items: 
+                items:
                   "$ref": "#/components/schemas/release"
         '400':
           $ref: "#/components/responses/400-invalid-request"
@@ -128,7 +128,7 @@ paths:
           description: Requested TEA Collection found and returned
           content:
             application/json:
-              schema: 
+              schema:
                 "$ref": "#/components/schemas/collection"
         '400':
           $ref: "#/components/responses/400-invalid-request"
@@ -155,7 +155,7 @@ paths:
             application/json:
               schema:
                 type: array
-                items: 
+                items:
                   "$ref": "#/components/schemas/collection"
         '400':
           $ref: "#/components/responses/400-invalid-request"
@@ -304,6 +304,7 @@ components:
       description: A TEA component
       properties:
         uuid:
+          description: A unique identifier for the TEA component
           "$ref": "#/components/schemas/uuid"
         name:
           type: string
@@ -318,6 +319,20 @@ components:
         - name
         - identifiers
         - versions
+      examples:
+        - uuid: 3910e0fd-aff4-48d6-b75f-8bf6b84687f0
+          name: Apache Log4j API
+          identifiers:
+            - idType: purl
+              idValue: pkg:maven/org.apache.logging.log4j/log4j-api
+        - uuid: b844c9bd-55d6-478c-af59-954a932b6ad3
+          name: Apache Log4j Core
+          identifiers:
+            - idType: cpe
+              idValue: cpe:2.3:a:apache:log4j
+            - idType: purl
+              idValue: pkg:maven/org.apache.logging.log4j/log4j-core
+
     #
     # TEA Release and related objects
     #
@@ -342,7 +357,7 @@ components:
       required:
         - uuid
         - version
-        - release_date    
+        - release_date
     #
     # TEA Collection and related objects
     #
