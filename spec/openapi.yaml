@@ -280,8 +280,7 @@ components:
         - identifiers
         - components
       examples:
-        log4j2:
-          uuid: 09e8c73b-ac45-4475-acac-33e6a7314e6d
+        - uuid: 09e8c73b-ac45-4475-acac-33e6a7314e6d
           name: Apache Log4j 2
           identifiers:
             - idType: cpe
