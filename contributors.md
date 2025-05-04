@@ -5,7 +5,7 @@ interactions. A huge Thank You to everyone that has supported the work in
 this project!
 
 A few persons have contributed with documentation, API specifications and other
-work during our meetings and workshops. They are noted here in alfabetic order:
+work during our meetings and workshops. They are noted here in alphabetic order:
 
 * Anthony Harrison, APH10, United Kingdom
 * Olle E. Johansson, Project lead, Edvina AB, Sweden, oej@edvina.net
