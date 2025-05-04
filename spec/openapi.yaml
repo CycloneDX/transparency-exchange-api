@@ -566,9 +566,9 @@ security:
   - bearerAuth: []
   - basicAuth: []
 tags:
-  - name: TEA Collection
-  - name: TEA Component
   - name: TEA Product
+  - name: TEA Component
+  - name: TEA Release
 externalDocs:
   description: Transparency Exchange API specification
   url: https://github.com/CycloneDX/transparency-exchange-api
