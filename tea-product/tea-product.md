@@ -17,6 +17,16 @@ in order for a TEA client to avoid duplication.
 Authorization can be done on multiple levels, including
 which products and versions are supported for a specific user.
 
+## Composite products
+
+If a product consists of a set of products, each with a different
+version number and update scheme, a TEA bundle will be the starting
+point of discovery. The TEA bundle will list all included parts
+and include pointers (URLs) to the TEA index for these.
+
+The URL can be to a different vendor or different site with the
+same vendor.
+
 ## TEA Product object
 
 A TEA Product object has the following parts:
