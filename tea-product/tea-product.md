@@ -29,20 +29,56 @@ same vendor.
 
 ## TEA Product object
 
-- __uuid__: A unique identifier for this product
-- __name__: Product name in clear text (str)
-- __identifiers__: A list of TEIs that apply to this product
-   - __type__: Type of identifier - one of "tei", "purl", or "cpe"
-   - __id__: The complete identifier (str)
-- __leaves__: A list of product leaves
-   - __uuid__: TEA COMPONENT UUID
+A TEA Product object has the following parts:
+
+- __uuid__: A unique identifier for the TEA product
+- __name__: Product name
+- __identifiers__: List of identifiers for the product
+   - __idType__: Type of identifier, e.g. `tei`, `purl`, `cpe`
+   - __idValue__: Identifier value
+- __components__: List of TEA components for the product
+   - __uuid__: Unique identifier of the TEA component
 
 The TEA Component UUID is used in the Component API to find out which versions
 of the Component that exists.
 
-The goal of the TEA index is to provide a selection of product
+The goal of the TEA Product API is to provide a selection of product
 versions to assist the user software in finding a match for the
 owned version.
+
+### Example
+
+An example of a product consisting of an OSS project and all its Maven artifacts:
+
+```json
+{
+  "uuid": "09e8c73b-ac45-4475-acac-33e6a7314e6d",
+  "name": "Apache Log4j 2",
+  "identifiers": [
+    {
+      "idType": "cpe",
+      "idValue": "cpe:2.3:a:apache:log4j"
+    },
+    {
+      "idType": "purl",
+      "idValue": "pkg:maven/org.apache.logging.log4j/log4j-api"
+    },
+    {
+      "idType": "purl",
+      "idValue": "pkg:maven/org.apache.logging.log4j/log4j-core"
+    },
+    {
+      "idType": "purl",
+      "idValue": "pkg:maven/org.apache.logging.log4j/log4j-layout-template-json"
+    }
+  ],
+  "components": [
+    "3910e0fd-aff4-48d6-b75f-8bf6b84687f0",
+    "b844c9bd-55d6-478c-af59-954a932b6ad3",
+    "d6d3f754-d4f4-4672-b096-b994b064ca2d"
+  ]
+}
+```
 
 ### API usage
 
