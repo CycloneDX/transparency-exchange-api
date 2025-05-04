@@ -232,8 +232,10 @@ components:
       description: An identifier with a specified type
       properties:
         idType:
+          description: Type of identifier, e.g. `tei`, `purl`, `cpe`
           "$ref": "#/components/schemas/identifier-type"
         idValue:
+          description: Identifier value
           type: string
     identifier-type:
       type: string
@@ -256,6 +258,7 @@ components:
       description: A TEA product
       properties:
         uuid:
+          description: A unique identifier for the TEA product
           "$ref": "#/components/schemas/uuid"
         name:
           type: string
@@ -269,12 +272,30 @@ components:
           type: array
           description: List of TEA components for the product
           items:
+            description: Unique identifier of the TEA component
             "$ref": "#/components/schemas/uuid"
       required:
         - uuid
         - name
         - identifiers
         - components
+      examples:
+        log4j2:
+          uuid: 09e8c73b-ac45-4475-acac-33e6a7314e6d
+          name: Apache Log4j 2
+          identifiers:
+            - idType: cpe
+              idValue: cpe:2.3:a:apache:log4j
+            - idType: purl
+              idValue: pkg:maven/org.apache.logging.log4j/log4j-api
+            - idType: purl
+              idValue: pkg:maven/org.apache.logging.log4j/log4j-core
+            - idType: purl
+              idValue: pkg:maven/org.apache.logging.log4j/log4j-layout-template-json
+          components:
+            - 3910e0fd-aff4-48d6-b75f-8bf6b84687f0
+            - b844c9bd-55d6-478c-af59-954a932b6ad3
+            - d6d3f754-d4f4-4672-b096-b994b064ca2d
 
     #
     # TEA Component and related objects
