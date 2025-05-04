@@ -321,14 +321,12 @@ components:
         - identifiers
         - versions
       examples:
-        log4j-api:
-          uuid: 3910e0fd-aff4-48d6-b75f-8bf6b84687f0
+        - uuid: 3910e0fd-aff4-48d6-b75f-8bf6b84687f0
           name: Apache Log4j API
           identifiers:
             - idType: purl
               idValue: pkg:maven/org.apache.logging.log4j/log4j-api
-        log4j-core:
-          uuid: b844c9bd-55d6-478c-af59-954a932b6ad3
+        - uuid: b844c9bd-55d6-478c-af59-954a932b6ad3
           name: Apache Log4j Core
           identifiers:
             - idType: cpe
