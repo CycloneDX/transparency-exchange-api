@@ -314,6 +314,9 @@ components:
           type: string
         release_date:
           "$ref": "#/components/schemas/date-time"
+        pre_release:
+          type: boolean
+          description: Marks if the version is a pre-release version
         identifiers:
           type: array
           description: List of identifiers for the component
