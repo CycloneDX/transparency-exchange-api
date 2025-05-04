@@ -163,34 +163,7 @@ paths:
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
         - TEA Release
-  /collection/{uuid}:
-    get:
-      description: Get all versions of a TEA Collection by its UUID
-      operationId: getTeaCollectionById
-      parameters:
-        - name: uuid
-          in: path
-          required: true
-          description: UUID of TEA Collection in the TEA server
-          schema:
-            type: string
-            format: uuid
-      responses:
-        '200':
-          description: Requested TEA Collection found and returned
-          content:
-            application/json:
-              schema:
-                type: array
-                items: 
-                  "$ref": "#/components/schemas/collection"
-        '400':
-          $ref: "#/components/responses/400-invalid-request"
-        '404':
-          $ref: "#/components/responses/404-object-by-id-not-found"
-      tags:
-        - TEA Collection
-  /collection/{uuid}/{version}:
+  /release/{uuid}/collection/{version}:
     get:
       description: Get all versions of a TEA Collection by its UUID
       operationId: getTeaCollectionVersionByCollectionIdAndVersion
@@ -220,7 +193,7 @@ paths:
         '404':
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
-        - TEA Collection
+        - TEA Release
 components:
   schemas:
     #
@@ -336,7 +309,7 @@ components:
       properties:
         uuid:
           "$ref": "#/components/schemas/uuid"
-          description: Must match the UUID of the corresponding `component_version` object
+          description: Must match the UUID of the corresponding `release` object
         version:
           type: integer
           description: Collection version, incremented each time its content changes.
