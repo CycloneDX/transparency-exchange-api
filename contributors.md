@@ -11,7 +11,7 @@ work during our meetings and workshops. They are noted here in alphabetic order:
 * Olle E. Johansson, Project lead, Edvina AB, Sweden, oej@edvina.net
 * Mark Symons
 * Paul Horton
-* Pavel Shukhman
+* Pavel Shukhman, Reliza, Canada, pavel@reliza.io
 * Piotr P. Karwasz
 * Steve Springett
 * Valerio Mulas
