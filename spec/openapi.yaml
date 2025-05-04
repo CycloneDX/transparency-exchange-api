@@ -173,8 +173,7 @@ paths:
           required: true
           description: UUID of TEA Collection in the TEA server
           schema:
-            type: string
-            format: uuid
+            "$ref": "#/components/schemas/uuid"
         - name: version
           in: path
           required: true
@@ -194,6 +193,30 @@ paths:
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
         - TEA Release
+  /artifact/{uuid}:
+    get:
+      description: Get metadata for specific TEA artifact
+      operationId: getArtifact
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          description: UUID of TEA Artifact in the TEA server
+          schema:
+            "$ref": "#/components/schemas/uuid"
+      responses:
+        '200':
+          description: Requested TEA Artifact metadata found and returned
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/artifact"
+        '400':
+          $ref: "#/components/responses/400-invalid-request"
+        '404':
+          $ref: "#/components/responses/404-object-by-id-not-found"
+      tags:
+        - TEA Artifact
 components:
   schemas:
     #
@@ -425,8 +448,6 @@ components:
       type: object
       description: A security-related document in a specific format
       properties:
-        uuid:
-          "$ref": "#/components/schemas/uuid"
         mimeType:
           type: string
           description: The MIME type of the document
@@ -569,6 +590,7 @@ tags:
   - name: TEA Product
   - name: TEA Component
   - name: TEA Release
+  - name: TEA Artifact
 externalDocs:
   description: Transparency Exchange API specification
   url: https://github.com/CycloneDX/transparency-exchange-api
