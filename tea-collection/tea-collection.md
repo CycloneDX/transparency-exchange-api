@@ -58,8 +58,8 @@ The TEA Collection object has the following parts
   * Version of this collection object
   * Reason for update/release of TCO
     * ENUM reason
-      See OpenAPI spec
-    * clear text
+      See below
+    * clear text description of change
       * "New product release"
       * "Corrected dependency in SBOM that was faulty"
       * "Added missing In-Toto build attestation"
