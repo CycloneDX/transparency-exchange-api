@@ -1,4 +1,21 @@
-# The TEA Collection object (TCO)
+# TEA release and collections
+
+## The TEA release object (TRO)
+
+The TEA Component Release object is a list of releases (versions) of a component
+with a release identifier (string), release timestamp and a lifecycle
+enumeration for the release. Each release includes a UUID of a 
+TEA Collection object (TCO).
+
+* UUID: Release UUID
+* Version: Version (string)
+* Date: Timestamp of release (for sorting releases)
+* Prerelease: A flag indicating pre-release (or beta) status. May be disabled
+  after creation of release object, but can't be enabled after creation of
+  an object.
+* Lifecycle: An identifier indicating lifecycle status of a release
+
+## The TEA Collection object (TCO)
 
 For each product and version there is a Tea Collection object, which is a list
 of available artifacts for this specific version. The TEA Index is a list of
@@ -17,7 +34,10 @@ on dynamic artifact types such as LCE or VEX. If the product
 is modified, that is a new product version and that should generate
 a new collection object with a new UUID and updated metadata.
 
-## Dynamic or static Collection objects
+The API allows for retrieving the latest version of the collection,
+or a specific version.
+
+### Dynamic or static Collection objects
 
 The TCO is produced by the TEA software platform. There are two ways
 to implement this:
@@ -26,24 +46,23 @@ to implement this:
   dynamically.
 * __Static__: The TCO is built at publication time as a static
   object by the publisher. This object can be digitally signed at
-  publication time.
+  publication time and version controlled.
 
-## Collection object
+### Collection object
 
 The TEA Collection object has the following parts
 
 * Preamble
-  * UUID of the TEA collection object (TCO)
-  * Product name
-  * Product version
+  * UUID of the TEA collection release object (TCO). Note that this
+    is the same UUID as the release object for this version. When updating
+    a collection, the version is changed.
   * Product Release date (timestamp)
-  * Author of the collection object
-    * Name
-    * Email
-    * Organisation
+  * Collection version release date (timestamp)
+  * _Version_ of this collection object. Starting with 1.
   * Reason for update/release of TCO
     * ENUM reason
-    * clear text
+      See below
+    * clear text description of change
       * "New product release"
       * "Corrected dependency in SBOM that was faulty"
       * "Added missing In-Toto build attestation"
@@ -72,16 +91,15 @@ The artifact object has the following parts
   * Size in bytes
   * SHA384 checksum
 
-## The reason for TCO update enum
+### The reason for TCO update enum
 
 | ENUM        | Explanation                    |
 |-------------|--------------------------------|
-| VEXUPDATE   | Updated the VEX artefact(s)    |
-| SBOMUPDATE  | Updated the SBOM artefact(s)   |
-| OTHERUPDATE | Updated another artefact       |
-| LCECHANGE   | Updated Life cycle enumeration |
+| INITIAL_RELEASE | Initial release of the collection |
+| VEX_UPDATED   | Updated the VEX artifact(s)    |
+| ARTIFACT_UPDATED  | Updated the artifact(s) other than VEX |
+| ARTIFACT_REMOVED | Removal of artifact       |
+| ARTIFACT_ADDED | Addition of an artifact |
 
-    * NEWVERSION - A new version of the product
-    * ADDITION - Adding an artifact
-    * REMOVE - Removing an artifact
-    * UPDATE - Update of artifacts (typos, faults)
+Updates of VEX (CSAF) files may be handled in a different way by a TEA client,
+producing different alerts than other changes of a collection.
