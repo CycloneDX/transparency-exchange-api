@@ -53,9 +53,12 @@ to implement this:
 The TEA Collection object has the following parts
 
 * Preamble
-  * UUID of the TEA collection object (TCO)
+  * UUID of the TEA collection release object (TCO). Note that this
+    is the same UUID as the release object for this version. When updating
+    a collection, the version is changed.
   * Product Release date (timestamp)
-  * Version of this collection object
+  * Collection version release date (timestamp)
+  * _Version_ of this collection object. Starting with 1.
   * Reason for update/release of TCO
     * ENUM reason
       See below
