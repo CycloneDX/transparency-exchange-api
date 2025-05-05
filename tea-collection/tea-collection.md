@@ -2,7 +2,7 @@
 
 ## The TEA release object (TRO)
 
-The TEA release object is a list of releases (versions) of a component
+The TEA Component Release object is a list of releases (versions) of a component
 with a release identifier (string), release timestamp and a lifecycle
 enumeration for the release. Each release includes a UUID of a 
 TEA Collection object (TCO).
