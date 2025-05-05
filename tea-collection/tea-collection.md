@@ -92,10 +92,11 @@ The artifact object has the following parts
 
 | ENUM        | Explanation                    |
 |-------------|--------------------------------|
-| VEXUPDATE   | Updated the VEX artifact(s)    |
-| UPDATE  | Updated the artifact(s) other than VEX |
-| REMOVAL | Removal of artifact       |
-| ADDITION | Addition of an artifact |
+| INITIAL_RELEASE | Initial release of the collection |
+| VEX_UPDATED   | Updated the VEX artifact(s)    |
+| ARTIFACT_UPDATED  | Updated the artifact(s) other than VEX |
+| ARTIFACT_REMOVED | Removal of artifact       |
+| ARTIFACT_ADDED | Addition of an artifact |
 
 Updates of VEX (CSAF) files may be handled in a different way by a TEA client,
 producing different alerts than other changes of a collection.
