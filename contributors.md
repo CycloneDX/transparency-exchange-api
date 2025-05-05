@@ -12,7 +12,7 @@ work during our meetings and workshops. They are noted here in alphabetic order:
 * Mark Symons
 * Paul Horton
 * Pavel Shukhman, Reliza, Canada, pavel@reliza.io
-* Piotr P. Karwasz
+* Piotr P. Karwasz, The Apache Software Foundation, pkarwasz-ecma@apache.org
 * Steve Springett
 * Valerio Mulas
 * Viktor Peterson
