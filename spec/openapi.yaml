@@ -371,14 +371,6 @@ components:
           identifiers:
             - idType: purl
               idValue: pkg:maven/org.apache.maven/maven@11.0.6?type=zip
-        # Different packaging of Apache Tomcat 11.0.6
-        # Will have slightly different SBOM
-        - uuid: a9570065-9fc6-4d35-97b4-4bc67d68dbcd
-          version: "11.0.6"
-          release_date: 2025-04-01T15:43:00Z
-          identifiers:
-            - idType: purl
-              idValue: pkg:maven/org.apache.maven/maven@11.0.6?classifier=windows-x64&type=zip
         # Different release of Apache Tomcat
         - uuid: da89e38e-95e7-44ca-aa7d-f3b6b34c7fab
           version: "10.1.40"

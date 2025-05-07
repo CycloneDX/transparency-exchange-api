@@ -36,23 +36,6 @@ A TEA Component Release object of the binary distribution of Apache Tomcat 11.0.
 }
 ```
 
-The binary distribution for Windows should have a separate TEA Component Release object,
-because the associated TEA Collections might differ:
-
-```json
-{
-  "uuid": "a9570065-9fc6-4d35-97b4-4bc67d68dbcd",
-  "version": "11.0.6",
-  "release_date": "2025-04-01T15:43:00Z",
-  "identifiers": [
-    {
-      "idType": "purl",
-      "idValue": "pkg:maven/org.apache.maven/maven@11.0.6?classifier=windows-x64&type=zip"
-    }
-  ]
-}
-```
-
 Different versions of Apache Tomcat should have separate TEA Component Release objects:
 
 ```json
