@@ -30,7 +30,7 @@ A TEA Component Release object of the binary distribution of Apache Tomcat 11.0.
   "identifiers": [
     {
       "idType": "purl",
-      "idValue": "pkg:maven/org.apache.maven/maven@11.0.6?type=zip"
+      "idValue": "pkg:maven/org.apache.tomcat/tomcat@11.0.6?type=zip"
     }
   ]
 }
@@ -46,7 +46,7 @@ Different versions of Apache Tomcat should have separate TEA Component Release o
   "identifiers": [
     {
       "idType": "purl",
-      "idValue": "pkg:maven/org.apache.maven/maven@10.1.4?type=zip"
+      "idValue": "pkg:maven/org.apache.tomcat/tomcat@10.1.4?type=zip"
     }
   ]
 }
@@ -64,7 +64,7 @@ and does not require users to know the version naming scheme adopted by the proj
   "identifiers": [
     {
       "idType": "purl",
-      "idValue": "pkg:maven/org.apache.maven/maven@11.0.0-M26?type=zip"
+      "idValue": "pkg:maven/org.apache.tomcat/tomcat@11.0.0-M26?type=zip"
     }
   ]
 }
