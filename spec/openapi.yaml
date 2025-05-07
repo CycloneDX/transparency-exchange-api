@@ -366,17 +366,25 @@ components:
       description: A collection of security-related documents
       properties:
         uuid:
+          description: |
+            UUID of the TEA Collection object.
+            Note that this is equal to the UUID of the associated TEA Component Release object.
+            When updating a collection, only the `version` is changed.
           "$ref": "#/components/schemas/uuid"
-          description: Must match the UUID of the corresponding `release` object
         version:
           type: integer
-          description: Collection version, incremented each time its content changes.
+          description: |
+            TEA Collection version, incremented each time its content changes.
+            Versions start with 1.
         release_date:
+          description: TEA Collection version release date.
           "$ref": "#/components/schemas/date-time"
         update_reason:
+          description: Reason for the update/release of the TEA Collection object.
           "$ref": "#/components/schemas/collection-update-reason"
         artifacts:
           type: array
+          description: List of TEA artifact objects.
           items:
             "$ref": "#/components/schemas/artifact"
     collection-update-reason:
@@ -384,6 +392,7 @@ components:
       description: Reason for the update to the TEA collection
       properties:
         type:
+          description: Type of update reason.
           "$ref": "#/components/schemas/collection-update-reason-type"
         comment:
           type: string
@@ -406,16 +415,22 @@ components:
       description: A security-related document
       properties:
         uuid:
+          description: UUID of the TEA Artifact object.
           "$ref": "#/components/schemas/uuid"
         name:
           type: string
           description: Artifact name
         author:
+          description: Author of the TEA Artifact object
           "$ref": "#/components/schemas/artifact-author"
         type:
+          description: Type of artifact
           "$ref": "#/components/schemas/artifact-type"
         formats:
           type: array
+          description: |
+            List of objects with the same content, but in different formats.
+            The order of the list has no significance.
           items:
             "$ref": "#/components/schemas/artifact-format"
     artifact-author:
@@ -483,7 +498,7 @@ components:
       type: object
       description: A security-related document in a specific format
       properties:
-        mimeType:
+        mime_type:
           type: string
           description: The MIME type of the document
         description:
@@ -491,11 +506,11 @@ components:
           description: A free text describing the artifact
         url:
           type: string
-          description: A download URL for the artifact
+          description: Direct download URL for the artifact
           format: url
         signature_url:
           type: string
-          description: A download URL for an external signature of the artifact
+          description: Direct download URL for an external signature of the artifact
           format: url
         checksums:
           type: array
@@ -506,6 +521,7 @@ components:
       type: object
       properties:
         algType:
+          description: Checksum algorithm
           "$ref": "#/components/schemas/artifact-checksum-type"
         algValue:
           type: string
