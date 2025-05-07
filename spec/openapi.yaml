@@ -343,9 +343,9 @@ components:
           "$ref": "#/components/schemas/uuid"
         version:
           type: string
-        release_date:
+        releaseDate:
           "$ref": "#/components/schemas/date-time"
-        pre_release:
+        preRelease:
           type: boolean
           description: Marks if the version is a pre-release version
         identifiers:
@@ -371,9 +371,9 @@ components:
         version:
           type: integer
           description: Collection version, incremented each time its content changes.
-        release_date:
+        releaseDate:
           "$ref": "#/components/schemas/date-time"
-        update_reason:
+        updateReason:
           "$ref": "#/components/schemas/collection-update-reason"
         artifacts:
           type: array
@@ -493,7 +493,7 @@ components:
           type: string
           description: A download URL for the artifact
           format: url
-        signature_url:
+        signatureUrl:
           type: string
           description: A download URL for an external signature of the artifact
           format: url
@@ -536,22 +536,22 @@ components:
           type: string
           format: date-time
           example: '2024-03-20T15:30:00Z'
-        page_start_index:
+        pageStartIndex:
           type: number
           format: int64
           default: 0
-        page_size:
+        pageSize:
           type: number
           format: int64
           default: 100
-        total_results:
+        totalResults:
           type: number
           format: int64
       required:
         - timestamp
-        - page_start_index
-        - page_size
-        - total_results
+        - pageStartIndex
+        - pageSize
+        - totalResults
   responses:
     204-common-delete:
       description: Object deleted successfully
@@ -585,7 +585,7 @@ components:
   parameters:
     # Pagination
     page-offset:
-      name: page-offset
+      name: pageOffset
       description: Pagination offset
       in: query
       required: false
@@ -594,7 +594,7 @@ components:
         format: int64
         default: 0
     page-size:
-      name: page-size
+      name: pageSize
       description: Pagination offset
       in: query
       required: false
@@ -604,7 +604,7 @@ components:
         default: 100
     # Identifiers
     tei_urn:
-      name: tei_urn
+      name: teiUrn
       description: Transparency Exchange Identifier (URN)
       in: query
       required: true
