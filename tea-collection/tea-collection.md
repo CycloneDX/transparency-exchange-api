@@ -18,6 +18,75 @@ A TEA Component Release object has the following parts:
   - __idType__: Type of identifier, e.g. `tei`, `purl`, `cpe`
   - __idValue__: Identifier value
 
+### Examples
+
+A TEA Component Release object of the binary distribution of Apache Tomcat 11.0.6 will look like:
+
+```json
+{
+  "uuid": "605d0ecb-1057-40e4-9abf-c400b10f0345",
+  "version": "11.0.6",
+  "release_date": "2025-04-01T15:43:00Z",
+  "identifiers": [
+    {
+      "idType": "purl",
+      "idValue": "pkg:maven/org.apache.maven/maven@11.0.6?type=zip"
+    }
+  ]
+}
+```
+
+The binary distribution for Windows should have a separate TEA Component Release object,
+because the associated TEA Collections might differ:
+
+```json
+{
+  "uuid": "a9570065-9fc6-4d35-97b4-4bc67d68dbcd",
+  "version": "11.0.6",
+  "release_date": "2025-04-01T15:43:00Z",
+  "identifiers": [
+    {
+      "idType": "purl",
+      "idValue": "pkg:maven/org.apache.maven/maven@11.0.6?classifier=windows-x64&type=zip"
+    }
+  ]
+}
+```
+
+Different versions of Apache Tomcat should have separate TEA Component Release objects:
+
+```json
+{
+  "uuid": "da89e38e-95e7-44ca-aa7d-f3b6b34c7fab",
+  "version": "10.1.4",
+  "release_date": "2025-04-01T18:20:00Z",
+  "identifiers": [
+    {
+      "idType": "purl",
+      "idValue": "pkg:maven/org.apache.maven/maven@10.1.4?type=zip"
+    }
+  ]
+}
+```
+
+The pre-release flag is used to mark versions not production ready
+and does not require users to know the version naming scheme adopted by the project.
+
+```json
+{
+  "uuid": "95f481df-f760-47f4-b2f2-f8b76d858450",
+  "version": "11.0.0-M26",
+  "release_date": "2024-09-13T17:49:00Z",
+  "pre_release": true,
+  "identifiers": [
+    {
+      "idType": "purl",
+      "idValue": "pkg:maven/org.apache.maven/maven@11.0.0-M26?type=zip"
+    }
+  ]
+}
+```
+
 ## The TEA Collection object (TCO)
 
 For each product and version there is a Tea Collection object, which is a list
