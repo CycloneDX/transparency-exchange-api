@@ -387,6 +387,39 @@ components:
           description: List of TEA artifact objects.
           items:
             "$ref": "#/components/schemas/artifact"
+      examples:
+        # Documents in the latest release of Log4j Core
+        - uuid: 4c72fe22-9d83-4c2f-8eba-d6db484f32c8
+          version: 1
+          release_date: 2024-12-13T00:00:00Z
+          update_reason:
+            type: ARTIFACT_UPDATED
+            comment: VDR file updated
+          artifacts:
+            - uuid: 1cb47b95-8bf8-3bad-a5a4-0d54d86e10ce
+              name: Build SBOM
+              type: bom
+              formats:
+                - mime_type: application/vnd.cyclonedx+xml
+                  description: CycloneDX SBOM (XML)
+                  url: https://repo.maven.apache.org/maven2/org/apache/logging/log4j/log4j-core/2.24.3/log4j-core-2.24.3-cyclonedx.xml
+                  signature_url: https://repo.maven.apache.org/maven2/org/apache/logging/log4j/log4j-core/2.24.3/log4j-core-2.24.3-cyclonedx.xml.asc
+                  checksums:
+                    - algType: MD5
+                      algValue: 2e1a525afc81b0a8ecff114b8b743de9
+                    - algType: SHA-1
+                      algValue: 5a7d4caef63c5c5ccdf07c39337323529eb5a770
+            - uuid: dfa35519-9734-4259-bba1-3e825cf4be06
+              name: Vulnerability Disclosure Report
+              type: vulnerability-assertion
+              formats:
+                - mime_type: application/vnd.cyclonedx+xml
+                  description: CycloneDX VDR (XML)
+                  url: https://logging.apache.org/cyclonedx/vdr.xml
+                  checksums:
+                    - algType: SHA-256
+                      algValue: 75b81020b3917cb682b1a7605ade431e062f7a4c01a412f0b87543b6e995ad2a
+
     collection-update-reason:
       type: object
       description: Reason for the update to the TEA collection
