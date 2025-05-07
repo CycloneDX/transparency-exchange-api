@@ -2,18 +2,21 @@
 
 ## The TEA release object (TRO)
 
-The TEA Component Release object is a list of releases (versions) of a component
-with a release identifier (string), release timestamp and a lifecycle
-enumeration for the release. Each release includes a UUID of a 
-TEA Collection object (TCO).
+The TEA Component Release object corresponds to a specific variant
+(version and packaging) of a component with a release identifier (string),
+release timestamp and a lifecycle enumeration for the release.
+The UUID of the TEA Component Release object matches the UUID of the associated TEA Collection objects (TCO).
 
-* UUID: Release UUID
-* Version: Version (string)
-* Date: Timestamp of release (for sorting releases)
-* Prerelease: A flag indicating pre-release (or beta) status. May be disabled
-  after creation of release object, but can't be enabled after creation of
-  an object.
-* Lifecycle: An identifier indicating lifecycle status of a release
+A TEA Component Release object has the following parts:
+
+- __uuid__: A unique identifier for the TEA Component Release
+- __version__: Version number
+- __release_date__: Timestamp of the release (for sorting purposes)
+- __pre_release__: A flag indicating pre-release (or beta) status.
+  May be disabled after the creation of the release object, but can't be enabled after creation of an object.
+- __identifiers__: List of identifiers for the component
+  - __idType__: Type of identifier, e.g. `tei`, `purl`, `cpe`
+  - __idValue__: Identifier value
 
 ## The TEA Collection object (TCO)
 

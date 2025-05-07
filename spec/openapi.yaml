@@ -340,14 +340,19 @@ components:
       type: object
       properties:
         uuid:
+          description: A unique identifier for the TEA Component Release
           "$ref": "#/components/schemas/uuid"
         version:
+          description: Version number
           type: string
         release_date:
+          description: Timestamp of the release (for sorting purposes)
           "$ref": "#/components/schemas/date-time"
         pre_release:
           type: boolean
-          description: Marks if the version is a pre-release version
+          description: |
+            A flag indicating pre-release (or beta) status.
+            May be disabled after the creation of the release object, but can't be enabled after creation of an object.
         identifiers:
           type: array
           description: List of identifiers for the component
