@@ -2,18 +2,73 @@
 
 ## The TEA release object (TRO)
 
-The TEA Component Release object is a list of releases (versions) of a component
-with a release identifier (string), release timestamp and a lifecycle
-enumeration for the release. Each release includes a UUID of a 
-TEA Collection object (TCO).
+The TEA Component Release object corresponds to a specific variant
+(version) of a component with a release identifier (string),
+release timestamp and a lifecycle enumeration for the release.
+The UUID of the TEA Component Release object matches the UUID of the associated TEA Collection objects (TCO).
 
-* UUID: Release UUID
-* Version: Version (string)
-* Date: Timestamp of release (for sorting releases)
-* Prerelease: A flag indicating pre-release (or beta) status. May be disabled
-  after creation of release object, but can't be enabled after creation of
-  an object.
-* Lifecycle: An identifier indicating lifecycle status of a release
+A TEA Component Release object has the following parts:
+
+- __uuid__: A unique identifier for the TEA Component Release
+- __version__: Version number
+- __releaseDate__: Timestamp of the release (for sorting purposes)
+- __preRelease__: A flag indicating pre-release (or beta) status.
+  May be disabled after the creation of the release object, but can't be enabled after creation of an object.
+- __identifiers__: List of identifiers for the component
+  - __idType__: Type of identifier, e.g. `tei`, `purl`, `cpe`
+  - __idValue__: Identifier value
+
+### Examples
+
+A TEA Component Release object of the binary distribution of Apache Tomcat 11.0.6 will look like:
+
+```json
+{
+  "uuid": "605d0ecb-1057-40e4-9abf-c400b10f0345",
+  "version": "11.0.6",
+  "releaseDate": "2025-04-01T15:43:00Z",
+  "identifiers": [
+    {
+      "idType": "purl",
+      "idValue": "pkg:maven/org.apache.tomcat/tomcat@11.0.6"
+    }
+  ]
+}
+```
+
+Different versions of Apache Tomcat should have separate TEA Component Release objects:
+
+```json
+{
+  "uuid": "da89e38e-95e7-44ca-aa7d-f3b6b34c7fab",
+  "version": "10.1.4",
+  "releaseDate": "2025-04-01T18:20:00Z",
+  "identifiers": [
+    {
+      "idType": "purl",
+      "idValue": "pkg:maven/org.apache.tomcat/tomcat@10.1.4"
+    }
+  ]
+}
+```
+
+The pre-release flag is used to mark versions not production ready
+and does not require users to know the version naming scheme adopted by the project.
+
+```json
+{
+  "uuid": "95f481df-f760-47f4-b2f2-f8b76d858450",
+  "version": "11.0.0-M26",
+  "releaseDate": "2024-09-13T17:49:00Z",
+  "preRelease": true,
+  "identifiers": [
+    {
+      "idType": "purl",
+      "idValue": "pkg:maven/org.apache.tomcat/tomcat@11.0.0-M26"
+    }
+  ]
+}
+```
 
 ## The TEA Collection object (TCO)
 
