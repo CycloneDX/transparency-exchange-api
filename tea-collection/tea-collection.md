@@ -50,56 +50,111 @@ to implement this:
 
 ### Collection object
 
-The TEA Collection object has the following parts
+The TEA Collection object has the following parts:
 
-* Preamble
-  * UUID of the TEA collection release object (TCO). Note that this
-    is the same UUID as the release object for this version. When updating
-    a collection, the version is changed.
-  * Product Release date (timestamp)
-  * Collection version release date (timestamp)
-  * _Version_ of this collection object. Starting with 1.
-  * Reason for update/release of TCO
-    * ENUM reason
-      See below
-    * clear text description of change
-      * "New product release"
-      * "Corrected dependency in SBOM that was faulty"
-      * "Added missing In-Toto build attestation"
-* List of artifact objects (see below)
-* Optional Signature of the collection object
+- Preamble
+  - __uuid__: UUID of the TEA Collection object.
+    Note that this is equal to the UUID of the associated TEA Component Release object.
+    When updating a collection, only the `version` is changed.
+  - __version__: TEA Collection version, incremented each time its content changes.
+    Versions start with 1.
+  - __release_date__: TEA Collection version release date.
+  - __update_reason__: Reason for the update/release of the TEA Collection object.
+    - __type__: Type of update reason.
+      See [reasons for TEA Collection update](#the-reason-for-tco-update-enum) below.
+    - __comment__: Free text description.
+- __artifacts__: List of TEA artifact objects.
+  See [below](#artifact-object).
 
-The artifact object has the following parts
+### Artifact object
 
-* Artifact UUID
-* Artifact name
-* Author of the artifact object
-  * Name
-  * Email
-  * Organisation
-* List of objects with the same content, but in different formats.
+The TEA Artifact object has the following parts:
+
+- __uuid__: UUID of the TEA Artifact object.
+- __name__: Artifact name.
+- __author__: Author of the TEA Artifact object:
+  - __name__: The name of the author.
+  - __email__: The e-mail address of the author.
+  - __organization__: Organization
+- __type__: Type of artifact.
+  See [TEA Artifact types](../tea-artifact/tea-artifact.md) for a list.
+- __formats__: List of objects with the same content, but in different formats.
   The order of the list has no significance.
-  * UUID for subdoc
-  * Optional BOM identifier
-    * SPDX or CycloneDX reference to BOM
-  * MIME media type
-  * Artifact category (enum)
-    * <https://cyclonedx.org/docs/1.6/json/#externalReferences_items_type>
-  * Description in clear text
-  * Direct URL for downloads of artefact
-  * Direct URL for download of external signature
-  * Size in bytes
-  * SHA384 checksum
+  - __mime_type__: The MIME type of the document
+  - __description__: A free text describing the artifact
+  - __url__: Direct download URL for the artifact
+  - __signature_url__: Direct download URL for an external signature of the artifact
+  - __checksums__: List of checksums for the artifact
+    - __algType__: Checksum algorithm
+      See [CycloneDX checksum algorithms](https://cyclonedx.org/docs/1.6/json/#components_items_hashes_items_alg) for a list of supported values.
+    - __algValue__: Checksum value
 
 ### The reason for TCO update enum
 
-| ENUM        | Explanation                    |
-|-------------|--------------------------------|
-| INITIAL_RELEASE | Initial release of the collection |
-| VEX_UPDATED   | Updated the VEX artifact(s)    |
-| ARTIFACT_UPDATED  | Updated the artifact(s) other than VEX |
-| ARTIFACT_REMOVED | Removal of artifact       |
-| ARTIFACT_ADDED | Addition of an artifact |
+| ENUM             | Explanation                            |
+|------------------|----------------------------------------|
+| INITIAL_RELEASE  | Initial release of the collection      |
+| VEX_UPDATED      | Updated the VEX artifact(s)            |
+| ARTIFACT_UPDATED | Updated the artifact(s) other than VEX |
+| ARTIFACT_REMOVED | Removal of artifact                    |
+| ARTIFACT_ADDED   | Addition of an artifact                |
 
 Updates of VEX (CSAF) files may be handled in a different way by a TEA client,
 producing different alerts than other changes of a collection.
+
+### Examples
+
+```json
+{
+  "uuid": "4c72fe22-9d83-4c2f-8eba-d6db484f32c8",
+  "version": 1,
+  "release_date": "2024-12-13T00:00:00Z",
+  "update_reason": {
+    "type": "ARTIFACT_UPDATED",
+    "comment": "VDR file updated"
+  },
+  "artifacts": [
+    {
+      "uuid": "1cb47b95-8bf8-3bad-a5a4-0d54d86e10ce",
+      "name": "Build SBOM",
+      "type": "bom",
+      "formats": [
+        {
+          "mime_type": "application/vnd.cyclonedx+xml",
+          "description": "CycloneDX SBOM (XML)",
+          "url": "https://repo.maven.apache.org/maven2/org/apache/logging/log4j/log4j-core/2.24.3/log4j-core-2.24.3-cyclonedx.xml",
+          "signature_url": "https://repo.maven.apache.org/maven2/org/apache/logging/log4j/log4j-core/2.24.3/log4j-core-2.24.3-cyclonedx.xml.asc",
+          "checksums": [
+            {
+              "algType": "MD5",
+              "algValue": "2e1a525afc81b0a8ecff114b8b743de9"
+            },
+            {
+              "algType": "SHA-1",
+              "algValue": "5a7d4caef63c5c5ccdf07c39337323529eb5a770"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "uuid": "dfa35519-9734-4259-bba1-3e825cf4be06",
+      "name": "Vulnerability Disclosure Report",
+      "type": "vulnerability-assertion",
+      "formats": [
+        {
+          "mime_type": "application/vnd.cyclonedx+xml",
+          "description": "CycloneDX VDR (XML)",
+          "url": "https://logging.apache.org/cyclonedx/vdr.xml",
+          "checksums": [
+            {
+              "algType": "SHA-256",
+              "algValue": "75b81020b3917cb682b1a7605ade431e062f7a4c01a412f0b87543b6e995ad2a"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
