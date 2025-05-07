@@ -370,14 +370,14 @@ components:
           release_date: 2025-04-01T15:43:00Z
           identifiers:
             - idType: purl
-              idValue: pkg:maven/org.apache.tomcat/tomcat@11.0.6?type=zip
+              idValue: pkg:maven/org.apache.tomcat/tomcat@11.0.6
         # Different release of Apache Tomcat
         - uuid: da89e38e-95e7-44ca-aa7d-f3b6b34c7fab
           version: "10.1.40"
           release_date: 2025-04-01T18:20:00Z
           identifiers:
             - idType: purl
-              idValue: pkg:maven/org.apache.tomcat/tomcat@10.1.40?type=zip
+              idValue: pkg:maven/org.apache.tomcat/tomcat@10.1.40
         # A pre-release of Apache Tomcat
         - uuid: 95f481df-f760-47f4-b2f2-f8b76d858450
           version: "11.0.0-M26"
@@ -385,7 +385,7 @@ components:
           pre_release: true
           identifiers:
             - idType: purl
-              idValue: pkg:maven/org.apache.tomcat/tomcat@11.0.0-M26?type=zip
+              idValue: pkg:maven/org.apache.tomcat/tomcat@11.0.0-M26
 
     #
     # TEA Collection and related objects
