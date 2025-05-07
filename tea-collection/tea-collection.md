@@ -3,7 +3,7 @@
 ## The TEA release object (TRO)
 
 The TEA Component Release object corresponds to a specific variant
-(version and packaging) of a component with a release identifier (string),
+(version) of a component with a release identifier (string),
 release timestamp and a lifecycle enumeration for the release.
 The UUID of the TEA Component Release object matches the UUID of the associated TEA Collection objects (TCO).
 
