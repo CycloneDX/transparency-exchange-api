@@ -55,8 +55,6 @@ paths:
           $ref: "#/components/responses/paginated-product"
         '400':
           $ref: "#/components/responses/400-invalid-request"
-        '404':
-          $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
         - TEA Product
   /component/{uuid}:
@@ -227,6 +225,7 @@ components:
       description: Timestamp
       format: date-time
       pattern: "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+      example: '2024-03-20T15:30:00Z'
     identifier:
       type: object
       description: An identifier with a specified type
@@ -345,6 +344,7 @@ components:
         version:
           description: Version number
           type: string
+          example: 1.2.3
         releaseDate:
           description: Timestamp of the release (for sorting purposes)
           "$ref": "#/components/schemas/date-time"
@@ -405,8 +405,8 @@ components:
           description: |
             TEA Collection version, incremented each time its content changes.
             Versions start with 1.
-        releaseDate:
-          description: TEA Collection version release date.
+        date:
+          description: The date when the TEA Collection version was created.
           "$ref": "#/components/schemas/date-time"
         updateReason:
           description: Reason for the update/release of the TEA Collection object.
@@ -419,8 +419,8 @@ components:
       examples:
         # Documents in the latest release of Log4j Core
         - uuid: 4c72fe22-9d83-4c2f-8eba-d6db484f32c8
-          version: 1
-          releaseDate: 2024-12-13T00:00:00Z
+          version: 3
+          date: 2024-12-13T00:00:00Z
           updateReason:
             type: ARTIFACT_UPDATED
             comment: VDR file updated
