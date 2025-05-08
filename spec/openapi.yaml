@@ -421,7 +421,7 @@ components:
         - uuid: 4c72fe22-9d83-4c2f-8eba-d6db484f32c8
           version: 3
           date: 2024-12-13T00:00:00Z
-          update_reason:
+          updateReason:
             type: ARTIFACT_UPDATED
             comment: VDR file updated
           artifacts:
