@@ -685,7 +685,6 @@ components:
       name: teiUrn
       description: Transparency Exchange Identifier (URN)
       in: query
-      required: true
       schema:
         type: string
         pattern: '^urn:tei:[a-z]+:[a-zA-Z0-9.-]+:[a-zA-Z0-9-]+$'
