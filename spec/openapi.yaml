@@ -55,8 +55,6 @@ paths:
           $ref: "#/components/responses/paginated-product"
         '400':
           $ref: "#/components/responses/400-invalid-request"
-        '404':
-          $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
         - TEA Product
   /component/{uuid}:
