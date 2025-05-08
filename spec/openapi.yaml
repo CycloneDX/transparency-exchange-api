@@ -225,6 +225,7 @@ components:
       description: Timestamp
       format: date-time
       pattern: "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+      example: '2024-03-20T15:30:00Z'
     identifier:
       type: object
       description: An identifier with a specified type
@@ -343,6 +344,7 @@ components:
         version:
           description: Version number
           type: string
+          example: 1.2.3
         releaseDate:
           description: Timestamp of the release (for sorting purposes)
           "$ref": "#/components/schemas/date-time"
