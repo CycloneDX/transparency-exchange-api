@@ -419,9 +419,9 @@ components:
       examples:
         # Documents in the latest release of Log4j Core
         - uuid: 4c72fe22-9d83-4c2f-8eba-d6db484f32c8
-          version: 1
-          releaseDate: 2024-12-13T00:00:00Z
-          updateReason:
+          version: 3
+          date: 2024-12-13T00:00:00Z
+          update_reason:
             type: ARTIFACT_UPDATED
             comment: VDR file updated
           artifacts:
