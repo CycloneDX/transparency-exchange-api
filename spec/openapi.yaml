@@ -615,15 +615,15 @@ components:
           format: date-time
           example: '2024-03-20T15:30:00Z'
         pageStartIndex:
-          type: number
+          type: integer
           format: int64
           default: 0
         pageSize:
-          type: number
+          type: integer
           format: int64
           default: 100
         totalResults:
-          type: number
+          type: integer
           format: int64
       required:
         - timestamp
@@ -668,7 +668,7 @@ components:
       in: query
       required: false
       schema:
-        type: number
+        type: integer
         format: int64
         default: 0
     page-size:
@@ -677,7 +677,7 @@ components:
       in: query
       required: false
       schema:
-        type: number
+        type: integer
         format: int64
         default: 100
     # Identifiers
