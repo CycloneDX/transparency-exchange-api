@@ -405,8 +405,8 @@ components:
           description: |
             TEA Collection version, incremented each time its content changes.
             Versions start with 1.
-        releaseDate:
-          description: TEA Collection version release date.
+        date:
+          description: The date when the TEA Collection version was created.
           "$ref": "#/components/schemas/date-time"
         updateReason:
           description: Reason for the update/release of the TEA Collection object.
