@@ -1,3 +1,4 @@
+# $schema: https://spec.openapis.org/oas/3.1/schema-base/2025-02-13
 openapi: 3.1.1
 jsonSchemaDialect: https://spec.openapis.org/oas/3.1/dialect/base
 info:
@@ -49,7 +50,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/page-offset"
         - $ref: "#/components/parameters/page-size"
-        - $ref: "#/components/parameters/tei_urn"
+        - $ref: "#/components/parameters/id-type"
+        - $ref: "#/components/parameters/id-value"
       responses:
         '200':
           $ref: "#/components/responses/paginated-product"
@@ -680,14 +682,45 @@ components:
         type: integer
         format: int64
         default: 100
-    # Identifiers
-    tei_urn:
-      name: teiUrn
-      description: Transparency Exchange Identifier (URN)
+    #
+    # Query by identifier
+    #
+    # Since OpenAPI 3.0 it is possible to use RFC 6570-based serialization for JSON parameters of type array or object:
+    #   https://swagger.io/docs/specification/v3_0/serialization/
+    #
+    # Unfortunately many tools don't support it, for example,
+    # the `openapi-generator` for Java does not handle this correctly.
+    #   https://github.com/OpenAPITools/openapi-generator/issues/4808
+    #
+    # This can be uncommented, when RFC 6570-base serialization reaches a wider adoption:
+    #
+    # identifier-param:
+    #   name: identifierParam
+    #   description: If present, only the objects with the given identifier will be returned.
+    #   in: query
+    #   schema:
+    #     $ref: "#/components/schemas/identifier"
+    #   style: form
+    #   explode: true
+    #
+    # In the meantime we explode the object manually:
+    id-type:
+      # To allow RFC 6570 in the future without breaking changes to the HTTP API,
+      # the name of this parameter should be identical to the equivalent property in /components/schemas/identifier
+      name: idType
+      description: Type of identifier specified in the `idValue` parameter
+      in: query
+      schema:
+        $ref: "#/components/schemas/identifier-type"
+    id-value:
+      # To allow RFC 6570 in the future without breaking changes to the HTTP API,
+      # the name of this parameter should be identical to the equivalent property in /components/schemas/identifier
+      name: idValue
+      description: If present, only the objects with the given identifier value will be returned.
       in: query
       schema:
         type: string
-        pattern: '^urn:tei:[a-z]+:[a-zA-Z0-9.-]+:[a-zA-Z0-9-]+$'
+
   securitySchemes:
     bearerAuth:
       type: http
