@@ -127,10 +127,6 @@ The TEA Artifact object has the following parts:
 
 - __uuid__: UUID of the TEA Artifact object.
 - __name__: Artifact name.
-- __author__: Author of the TEA Artifact object:
-  - __name__: The name of the author.
-  - __email__: The e-mail address of the author.
-  - __organization__: Organization
 - __type__: Type of artifact.
   See [TEA Artifact types](../tea-artifact/tea-artifact.md) for a list.
 - __formats__: List of objects with the same content, but in different formats.
