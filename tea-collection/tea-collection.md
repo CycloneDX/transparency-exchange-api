@@ -11,8 +11,8 @@ A TEA Component Release object has the following parts:
 
 - __uuid__: A unique identifier for the TEA Component Release
 - __version__: Version number
-- __release_date__: Timestamp of the release (for sorting purposes)
-- __pre_release__: A flag indicating pre-release (or beta) status.
+- __releaseDate__: Timestamp of the release (for sorting purposes)
+- __preRelease__: A flag indicating pre-release (or beta) status.
   May be disabled after the creation of the release object, but can't be enabled after creation of an object.
 - __identifiers__: List of identifiers for the component
   - __idType__: Type of identifier, e.g. `tei`, `purl`, `cpe`
@@ -26,7 +26,7 @@ A TEA Component Release object of the binary distribution of Apache Tomcat 11.0.
 {
   "uuid": "605d0ecb-1057-40e4-9abf-c400b10f0345",
   "version": "11.0.6",
-  "release_date": "2025-04-01T15:43:00Z",
+  "releaseDate": "2025-04-01T15:43:00Z",
   "identifiers": [
     {
       "idType": "purl",
@@ -42,7 +42,7 @@ Different versions of Apache Tomcat should have separate TEA Component Release o
 {
   "uuid": "da89e38e-95e7-44ca-aa7d-f3b6b34c7fab",
   "version": "10.1.4",
-  "release_date": "2025-04-01T18:20:00Z",
+  "releaseDate": "2025-04-01T18:20:00Z",
   "identifiers": [
     {
       "idType": "purl",
@@ -59,8 +59,8 @@ and does not require users to know the version naming scheme adopted by the proj
 {
   "uuid": "95f481df-f760-47f4-b2f2-f8b76d858450",
   "version": "11.0.0-M26",
-  "release_date": "2024-09-13T17:49:00Z",
-  "pre_release": true,
+  "releaseDate": "2024-09-13T17:49:00Z",
+  "preRelease": true,
   "identifiers": [
     {
       "idType": "purl",
@@ -113,8 +113,8 @@ The TEA Collection object has the following parts:
     When updating a collection, only the `version` is changed.
   - __version__: TEA Collection version, incremented each time its content changes.
     Versions start with 1.
-  - __release_date__: TEA Collection version release date.
-  - __update_reason__: Reason for the update/release of the TEA Collection object.
+  - __releaseDate__: TEA Collection version release date.
+  - __updateReason__: Reason for the update/release of the TEA Collection object.
     - __type__: Type of update reason.
       See [reasons for TEA Collection update](#the-reason-for-tco-update-enum) below.
     - __comment__: Free text description.
@@ -163,8 +163,8 @@ producing different alerts than other changes of a collection.
 {
   "uuid": "4c72fe22-9d83-4c2f-8eba-d6db484f32c8",
   "version": 1,
-  "release_date": "2024-12-13T00:00:00Z",
-  "update_reason": {
+  "releaseDate": "2024-12-13T00:00:00Z",
+  "updateReason": {
     "type": "ARTIFACT_UPDATED",
     "comment": "VDR file updated"
   },

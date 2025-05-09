@@ -57,8 +57,6 @@ paths:
           $ref: "#/components/responses/paginated-product"
         '400':
           $ref: "#/components/responses/400-invalid-request"
-        '404':
-          $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
         - TEA Product
   /component/{uuid}:
@@ -229,6 +227,7 @@ components:
       description: Timestamp
       format: date-time
       pattern: "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+      example: '2024-03-20T15:30:00Z'
     identifier:
       type: object
       description: An identifier with a specified type
@@ -347,10 +346,11 @@ components:
         version:
           description: Version number
           type: string
-        release_date:
+          example: 1.2.3
+        releaseDate:
           description: Timestamp of the release (for sorting purposes)
           "$ref": "#/components/schemas/date-time"
-        pre_release:
+        preRelease:
           type: boolean
           description: |
             A flag indicating pre-release (or beta) status.
@@ -364,27 +364,27 @@ components:
       required:
         - uuid
         - version
-        - release_date
+        - releaseDate
       examples:
         # Apache Tomcat 11.0.6
         - uuid: 605d0ecb-1057-40e4-9abf-c400b10f0345
           version: "11.0.6"
-          release_date: 2025-04-01T15:43:00Z
+          releaseDate: 2025-04-01T15:43:00Z
           identifiers:
             - idType: purl
               idValue: pkg:maven/org.apache.tomcat/tomcat@11.0.6
         # Different release of Apache Tomcat
         - uuid: da89e38e-95e7-44ca-aa7d-f3b6b34c7fab
           version: "10.1.40"
-          release_date: 2025-04-01T18:20:00Z
+          releaseDate: 2025-04-01T18:20:00Z
           identifiers:
             - idType: purl
               idValue: pkg:maven/org.apache.tomcat/tomcat@10.1.40
         # A pre-release of Apache Tomcat
         - uuid: 95f481df-f760-47f4-b2f2-f8b76d858450
           version: "11.0.0-M26"
-          release_date: 2024-09-13T17:49:00Z
-          pre_release: true
+          releaseDate: 2024-09-13T17:49:00Z
+          preRelease: true
           identifiers:
             - idType: purl
               idValue: pkg:maven/org.apache.tomcat/tomcat@11.0.0-M26
@@ -407,10 +407,10 @@ components:
           description: |
             TEA Collection version, incremented each time its content changes.
             Versions start with 1.
-        release_date:
-          description: TEA Collection version release date.
+        date:
+          description: The date when the TEA Collection version was created.
           "$ref": "#/components/schemas/date-time"
-        update_reason:
+        updateReason:
           description: Reason for the update/release of the TEA Collection object.
           "$ref": "#/components/schemas/collection-update-reason"
         artifacts:
@@ -421,9 +421,9 @@ components:
       examples:
         # Documents in the latest release of Log4j Core
         - uuid: 4c72fe22-9d83-4c2f-8eba-d6db484f32c8
-          version: 1
-          release_date: 2024-12-13T00:00:00Z
-          update_reason:
+          version: 3
+          date: 2024-12-13T00:00:00Z
+          updateReason:
             type: ARTIFACT_UPDATED
             comment: VDR file updated
           artifacts:
@@ -572,7 +572,7 @@ components:
           type: string
           description: Direct download URL for the artifact
           format: url
-        signature_url:
+        signatureUrl:
           type: string
           description: Direct download URL for an external signature of the artifact
           format: url
@@ -616,22 +616,22 @@ components:
           type: string
           format: date-time
           example: '2024-03-20T15:30:00Z'
-        page_start_index:
-          type: number
+        pageStartIndex:
+          type: integer
           format: int64
           default: 0
-        page_size:
-          type: number
+        pageSize:
+          type: integer
           format: int64
           default: 100
-        total_results:
-          type: number
+        totalResults:
+          type: integer
           format: int64
       required:
         - timestamp
-        - page_start_index
-        - page_size
-        - total_results
+        - pageStartIndex
+        - pageSize
+        - totalResults
   responses:
     204-common-delete:
       description: Object deleted successfully
@@ -665,21 +665,21 @@ components:
   parameters:
     # Pagination
     page-offset:
-      name: page-offset
+      name: pageOffset
       description: Pagination offset
       in: query
       required: false
       schema:
-        type: number
+        type: integer
         format: int64
         default: 0
     page-size:
-      name: page-size
+      name: pageSize
       description: Pagination offset
       in: query
       required: false
       schema:
-        type: number
+        type: integer
         format: int64
         default: 100
     #
