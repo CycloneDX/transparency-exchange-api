@@ -6,7 +6,6 @@ info:
   description: The Transparency Exchange API (TEA) provides standardized access to software transparency artifacts such as SBOMs, VEX, VDR, and other attestations.
   contact:
     name: TEA Working Group
-    email: TBC
     url: https://github.com/CycloneDX/transparency-exchange-api
   license:
     name: Apache 2.0
@@ -619,6 +618,88 @@ paths:
       security:
         - bearerAuth: []
         - basicAuth: []
+  /release/{release_identifier}/collection:
+    get:
+      description: Get the latest TEA Collection belonging to the TEA Release
+      operationId: getLatestCollectionByReleaseId
+      parameters:
+        - name: release_identifier
+          in: path
+          required: true
+          description: UUID of TEA Release in the TEA server
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Requested TEA Collection found and returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tea_collection'
+        '400':
+          description: Invalid request
+          content:
+            application/json: {}
+        '404':
+          $ref: '#/components/responses/404-object-by-id-not-found'
+      tags:
+        - TEA Release
+  /release/{release_identifier}/collections:
+    get:
+      description: Get all TEA Collections belonging to the TEA Release
+      operationId: getCollectionsByReleaseId
+      parameters:
+        - name: release_identifier
+          in: path
+          required: true
+          description: UUID of TEA Release in the TEA server
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Requested TEA Collections found and returned
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/tea_collection'
+        '400':
+          description: Invalid request
+          content:
+            application/json: {}
+        '404':
+          $ref: '#/components/responses/404-object-by-id-not-found'
+      tags:
+        - TEA Release
+  /artifact/{artifact_identifier}:
+    get:
+      description: Get metadata for specific TEA artifact
+      operationId: getArtifact
+      parameters:
+        - name: artifact_identifier
+          in: path
+          required: true
+          description: UUID of TEA Artifact in the TEA server
+          schema:
+            $ref: '#/components/schemas/type_uuid'
+      responses:
+        '200':
+          description: Requested TEA Artifact metadata found and returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tea_artifact'
+        '400':
+          description: Invalid request
+          content:
+            application/json: {}
+        '404':
+          $ref: '#/components/responses/404-object-by-id-not-found'
+      tags:
+        - TEA Artifact
   /collection/{collection_identifier}:
     get:
       description: Get a TEA Collection by its Identifier
@@ -767,6 +848,11 @@ components:
           description: List of identifiers for the component
           items:
             $ref: '#/components/schemas/identifier'
+        versions:  # Added to match consumer schema requirements
+          type: array
+          description: List of available versions for this component
+          items:
+            type: string
         releases:
           type: array
           description: List of UUIDs referencing TEA Release entries
@@ -776,6 +862,7 @@ components:
         - uuid
         - name
         - identifiers
+        - versions
     tea_release:
       type: object
       description: A TEA release
@@ -894,29 +981,24 @@ components:
         description:
           type: string
           description: A free text describing the artifact
-        artifact_url:
+        url:  # Changed from artifact_url to match consumer
           type: string
           format: uri
           description: Direct download URL for the artifact
-        artifact_size_in_bytes:
-          type: integer
-          format: int64
-          description: Size of the artifact in bytes
-        artifact_checksums:
+        signature_url:  # Already matches consumer
+          type: string
+          format: uri
+          description: Direct download URL for an external signature of the artifact
+        checksums:  # Changed from artifact_checksums to match consumer
           type: array
           items:
             $ref: '#/components/schemas/artifact_checksum'
           description: List of checksums for the artifact
-        signature_url:
-          type: string
-          format: uri
-          description: Direct download URL for an external signature of the artifact
       required:
         - mime_type
         - description
-        - artifact_url
-        - artifact_size_in_bytes
-        - artifact_checksums
+        - url
+        - checksums
     type_author:
       type: object
       properties:
@@ -1085,6 +1167,22 @@ components:
       required: false
       schema:
         $ref: '#/components/schemas/type_uuid'
+    id-type:
+      name: idType
+      description: Type of identifier specified in the `idValue` parameter
+      in: query
+      schema:
+        type: string
+        enum:
+          - cpe
+          - tei
+          - purl
+    id-value:
+      name: idValue
+      description: If present, only the objects with the given identifier value will be returned
+      in: query
+      schema:
+        type: string
   securitySchemes:
     bearerAuth:
       type: http
