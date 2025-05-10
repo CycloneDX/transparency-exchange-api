@@ -128,7 +128,7 @@ The TEA Artifact object has the following parts:
 - __uuid__: UUID of the TEA Artifact object.
 - __name__: Artifact name.
 - __type__: Type of artifact.
-  See [TEA Artifact types](../tea-artifact/tea-artifact.md) for a list.
+  See [TEA Artifact types](#tea-artifact-types) for a list.
 - __formats__: List of objects with the same content, but in different formats.
   The order of the list has no significance.
   - __mime_type__: The MIME type of the document
@@ -142,7 +142,7 @@ The TEA Artifact object has the following parts:
 
 ### The reason for TCO update enum
 
-| ENUM             | Explanation                            |
+| ENUM             | Description                            |
 |------------------|----------------------------------------|
 | INITIAL_RELEASE  | Initial release of the collection      |
 | VEX_UPDATED      | Updated the VEX artifact(s)            |
@@ -152,6 +152,22 @@ The TEA Artifact object has the following parts:
 
 Updates of VEX (CSAF) files may be handled in a different way by a TEA client,
 producing different alerts than other changes of a collection.
+
+### TEA Artifact types
+
+| ENUM            | Description                                                                         |
+|-----------------|-------------------------------------------------------------------------------------|
+| ATTESTATION     | Machine-readable statements containing facts, evidence, or testimony.               |
+| BOM             | Bill of Materials: SBOM, OBOM, HBOM, SaaSBOM, etc.                                  |
+| BUILD_META      | Build-system specific metadata file: `pom.xml`, `package.json`, `.nuspec`, etc.     |
+| CERTIFICATION   | Industry, regulatory, or other certification from an accredited certification body. |
+| FORMULATION     | Describes how a component or service was manufactured or deployed.                  |
+| LICENSE         | License file                                                                        |
+| RELEASE_NOTES   | Release notes document                                                              |
+| SECURITY_TXT    | A `security.txt` file                                                               |
+| THREAT_MODEL    | A threat model                                                                      |
+| VULNERABILITIES | A list of vulnerabilities: VDR/VEX                                                  |
+| OTHER           | Document that does not fall into any of the above categories                        |
 
 ### Examples
 
