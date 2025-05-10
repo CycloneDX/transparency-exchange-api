@@ -15,6 +15,15 @@ servers:
   - url: http://localhost/tea/v1
     description: Local development
 paths:
+  /.well-known/tea/{tei_identifier}:
+    get:
+      description: TEI discovery endpoint that redirects to appropriate API endpoint
+      parameters:
+        - name: tei_identifier
+          in: path
+          required: true
+          schema:
+            type: string
   /product/{tei_urn}:
     get:
       description: Returns the corresponding releases for a given TEI URN
@@ -264,6 +273,123 @@ paths:
       security:
         - bearerAuth: []
         - basicAuth: []
+  /components: # Add advanced search capabilities
+    get:
+      description: Returns a list of TEA Components
+      operationId: listTeaComponents
+      parameters:
+        - $ref: '#/components/parameters/page-offset'
+        - $ref: '#/components/parameters/page-size'
+        - name: tea_product_identifier
+          in: query
+          required: false
+          description: TEA Product UUID
+          schema:
+            type: string
+            format: uuid
+        - name: purl
+          in: query
+          required: false
+          description: Package URL (PURL)
+          schema:
+            type: string
+        - name: barcode
+          in: query
+          required: false
+          description: Barcode
+          schema:
+            type: string
+        - name: sku
+          in: query
+          required: false
+          description: SKU of the product
+          schema:
+            type: string
+        - name: version
+          in: query
+          schema:
+            type: string
+        - name: preRelease
+          in: query
+          schema:
+            type: boolean
+        - name: releaseDate
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: vendor_uuid
+          in: query
+          required: false
+          description: Vendor UUID
+          schema:
+            type: string
+            format: uuid
+        - name: component_uuid
+          in: query
+          required: false
+          description: TEA Component UUID
+          schema:
+            type: string
+            format: uuid
+        - name: component_name
+          in: query
+          required: false
+          description: TEA Component name
+          schema:
+            type: string
+        - name: identifiers
+          in: query
+          required: false
+          description: TEA Component identifiers
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/identifier'
+      responses:
+        '200':
+          description: List retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/paginated_product_list'
+        '400':
+          description: Invalid request body
+          content:
+            application/json: {}
+        '401':
+          $ref: '#/components/responses/401-unauthorized'
+        '404':
+          $ref: '#/components/responses/404-object-by-id-not-found'
+      tags:
+        - TEA Component
+  /component/{component_id}/lifecycle:
+    get:
+      description: Get the lifecycle of a TEA Component
+      operationId: getTeaComponentLifecycle
+      parameters:
+        - name: component_id
+          in: path
+          required: true
+          description: UUID of TEA Component in the TEA server
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Requested TEA Component lifecycle found and returned
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  lifecycle:
+                    type: string
+                    description: Lifecycle status of the component
+        '404':
+          $ref: '#/components/responses/404-object-by-id-not-found'
+      tags:
+        - TEA Component Lifecycle
   /component/{component_identifier}:
     get:
       description: Get information about a TEA Component
@@ -1187,9 +1313,30 @@ components:
     bearerAuth:
       type: http
       scheme: bearer
+      bearerFormat: JWT
+      description: Bearer token authentication is a stateless authentication scheme where the client sends a token in the HTTP Authorization header. The server validates the token and grants access to the requested resource to anyone with the token without needing to authenticate again, and stolen tokens can be used by anyone.
     basicAuth:
       type: http
       scheme: basic
+      description: Basic authentication is a plaintext scheme built into the HTTP protocol and has been deemed insecure because headers are commonly logged in plaintext.
+    mutualTLS:
+      type: mutualTLS
+      description: Client certificate authentication is a secure authentication scheme where the client presents a valid certificate to the server for authentication. The server validates the certificate and grants access to the requested resource, but stolen certificates can be used by anyone.
+    pasetoAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: PASETO
+      description: Platform-Agnostic Security Tokens (PASETO) is a secure alternative to JWT that is resistant to many cryptographic vulnerabilities. PASETO tokens use versioned protocols that specify modern cryptographic algorithms.
+    verifiableCredentials:
+      type: http
+      scheme: bearer
+      bearerFormat: VC-JWT
+      description: W3C Verifiable Credentials 2.0 with proof field is a standard for expressing verifiable credentials as signed JWT tokens. The integrity and authenticity of the credential can be cryptographically verified.
+    hmacAuth:
+      type: apiKey
+      in: header
+      name: X-HMAC-Signature
+      description: HMAC authentication uses a shared secret key to create a signature of the request content using a secure hash algorithm (SHA256, SHA384, SHA512, SHA3-256, SHA3-384, or SHA3-512). The server verifies this signature to authenticate the request.
   operations:
     standard_delete:
       responses:
@@ -1205,6 +1352,10 @@ components:
 security:
   - bearerAuth: []
   - basicAuth: []
+  - mutualTLS: []
+  - pasetoAuth: []
+  - verifiableCredentials: []
+  - hmacAuth: []
 tags:
   - name: TEA Product
     description: Operations related to TEA Products
