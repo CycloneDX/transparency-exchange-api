@@ -11,12 +11,12 @@ by other means. It contains one or multiple components.
 
 - __List of TEA Components__: Components are components of something that is part of a product.
   Each Component has it's own versioning and it's own set of artifacts.
-- __List of TEA releases__: Each component has a list of releases where each release has a timestamp and
+- __List of TEA Releases__: Each component has a list of releases where each release has a timestamp and
   a lifecycle enumeration. They are normally sorted by timestamps. The TEA API has no requirements of
 type of version string (semantic or any other scheme) - it's just an identifier set by the manufacturer.
-- __List of TEA collections__: For each release, there is a list of TEA collections as indicated
+- __List of TEA Collections__: For each release, there is a list of TEA collections as indicated
   by release date and a version integer starting with collection version 1. 
-- __List of TEA artifacts__: The collection is unique for a version and contains a list of artifacts.
+- __List of TEA Artifacts__: The collection is unique for a version and contains a list of artifacts.
   This can be SBOM files, VEX, SCITT, IN-TOTO or other documents.  Note that a single artifact
   can belong to multiple versionsof a Component and multiple Components.
 - __List of artifact formats__: An artifact can be published in multiple formats.
@@ -105,6 +105,63 @@ sequenceDiagram
     user ->> tea_artifact: Request to download artifact
     tea_artifact ->> user: Artifact
 
+```
 
+## API flow based on cached data - checking for a new release
+
+In this case a TEA client knows the component UUID and wants to check the status of the
+used release and if there's a new release. The client may limit the query with a given date
+for a release.
+
+```mermaid
+
+---
+title: TEA client flow with direct query for release
+---
+
+sequenceDiagram
+    autonumber
+    actor user
+
+    participant tea_product as TEA Product
+    participant tea_component as TEA Component
+    participant tea_release as TEA Release
+    participant tea_collection as TEA Collection
+    participant tea_artifact as TEA Artefact
+
+    user ->> tea_release: Finding a specific version/release
+    tea_release ->> user: List of releases and collection id for each release
+
+```
+
+## API flow based on cached data  - checking if a collection changed
+
+In this case a TEA client knows the release UUID, the collection UUID, and the
+collection version from previous queries. If the given version is not the same,
+another query is done to get reason for update and new collection list of artifacts.
+
+
+```mermaid
+
+---
+title: TEA client collection query
+---
+
+sequenceDiagram
+    autonumber
+    actor user
+
+    participant tea_product as TEA Product
+    participant tea_component as TEA Component
+    participant tea_release as TEA Release
+    participant tea_collection as TEA Collection
+    participant tea_artifact as TEA Artefact
+
+
+    user ->> tea_collection: Finding the current collection, including version
+    tea_collection ->> user: List of artefacts and formats available for each artefact
+
+    user ->> tea_collection: Request to access previous version of the collection to compare
+    tea_collection ->> user: Previous version of collection
 
 ```

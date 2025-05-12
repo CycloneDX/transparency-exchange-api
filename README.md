@@ -8,11 +8,26 @@
 
 # CycloneDX Transparency Exchange API Standard
 
-The Transparency Exchange API is being worked on within the CycloneDX community
+The Transparency Exchange API (TEA) is being worked on within the CycloneDX community
 with the goal to standardise the API in ECMA. A working group within ECMA TC54 has been
 formed - TC54 TG1. The working group has a slack channel in the CycloneDX slack space.
 
 ![](images/tealogo.png)
+
+## Status of the standard: Beta 1
+
+TEA is now in beta 1. This beta focuses on the consumer side of the API. Work on the
+publisher API will start after the beta. The idea is to get implementation feedback
+early on the current specification in order to move forward towards a first official
+version of the standard. Feedback will be gathered in the Hackathon at OWASP AppSec
+Global in Barcelona May 28 as well as in the meetings and slack channel.
+
+We encourage developers to start with both client and server implementations of TEA and
+participate in interoperability tests. These will be organised both as hackathons and
+informally using the Slack channel.
+
+There will likely be multiple beta releases. We will announce these by adding new
+tags in the repository as well as in the slack channel.
 
 ## Introduction
 
@@ -77,6 +92,10 @@ Insights allows for “limited transparency” that can be asked and answered us
 - You can find presentations in the repository in the [Presentations](/presentations) directory
 - Our biweekly meetings are available on [YouTube playlist: Project Koala](https://www.youtube.com/playlist?list=PLqjEqUxHjy1XtSzGYL7Dj_WJbiLu_ty58)
 - KoalaCon 2024 - an introduction to the project - can be [viewed on YouTube](https://youtu.be/NStzYW4WnEE?si=ihLirpGVjHc7K4bL)
+
+## Contributors
+
+Contributors are listed in the [Contributors](contributors.md) file.
 
 ## Terminology
 

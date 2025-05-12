@@ -1,5 +1,7 @@
 # Overview of the TEA API from a producer standpoint
 
+This is input for the working group.
+
 ## Bootstrapping
 
 ```mermaid
