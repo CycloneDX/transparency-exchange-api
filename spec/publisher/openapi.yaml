@@ -21,7 +21,7 @@ paths:
       description: Update an existing TEA Product entry
       operationId: updateTeaProduct
       parameters:
-        - $ref: '#/components/parameters/teaProductIdentifier'
+        - $ref: '#/components/parameters/productIdentifier'
       requestBody:
         required: true
         content:
@@ -40,9 +40,26 @@ paths:
                 vendorUuid:
                   $ref: '#/components/schemas/typeUuid'
                   description: Vendor UUID
-                purl:
+                type:
                   type: string
-                  description: Package URL (PURL)
+                  description: Package type (required)
+                namespace:
+                  type: string
+                  description: Package namespace (optional)
+                name:
+                  type: string
+                  description: Package name (required)
+                version:
+                  type: string
+                  description: Package version (optional)
+                qualifiers:
+                  type: object
+                  additionalProperties:
+                    type: string
+                  description: Qualifiers as key-value pairs (optional)
+                subpath:
+                  type: string
+                  description: Subpath (optional)
             examples:
               basic:
                 summary: Basic product update
@@ -51,14 +68,31 @@ paths:
                   barcode: '123456789012'
                   sku: PROD-001
                   vendorUuid: 123e4567-e89b-12d3-a456-426614174000
-                  purl: pkg:generic/example@1.0.0
+                  type: generic
+                  name: example
+                  version: 1.0.0
+              full:
+                summary: Full product update with all PURL fields
+                value:
+                  productName: Updated Product Name
+                  barcode: '123456789012'
+                  sku: PROD-001
+                  vendorUuid: 123e4567-e89b-12d3-a456-426614174000
+                  type: maven
+                  namespace: org.example
+                  name: component
+                  version: 2.1.0
+                  qualifiers:
+                    classifier: sources
+                    repository_url: https://repo.example.com
+                  subpath: src/main
       responses:
         '200':
           description: TEA Product updated successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/teaProduct'
+                $ref: '#/components/schemas/product'
         '400':
           description: Invalid request body
           content:
@@ -73,7 +107,7 @@ paths:
       description: Delete a TEA Product entry
       operationId: deleteTeaProduct
       parameters:
-        - $ref: '#/components/parameters/teaProductIdentifier'
+        - $ref: '#/components/parameters/productIdentifier'
       $ref: '#/components/operations/standardDelete'
       tags:
         - TEA Product
@@ -99,9 +133,6 @@ paths:
                 vendorUuid:
                   $ref: '#/components/schemas/typeUuid'
                   description: Vendor UUID
-                purl:
-                  type: string
-                  description: Package URL (PURL)
                 teiUrns:
                   type: array
                   items:
@@ -109,6 +140,26 @@ paths:
                     description: Transparency Exchange Identifier URN
                     pattern: ^urn:tei:[a-zA-Z0-9]+:[a-zA-Z0-9\.-]+:.+$
                   description: List of TEI URNs associated with this product
+                type:
+                  type: string
+                  description: Package type (required)
+                namespace:
+                  type: string
+                  description: Package namespace (optional)
+                name:
+                  type: string
+                  description: Package name (required)
+                version:
+                  type: string
+                  description: Package version (optional)
+                qualifiers:
+                  type: object
+                  additionalProperties:
+                    type: string
+                  description: Qualifiers as key-value pairs (optional)
+                subpath:
+                  type: string
+                  description: Subpath (optional)
               required:
                 - productName
             examples:
@@ -116,6 +167,8 @@ paths:
                 summary: Basic product creation
                 value:
                   productName: Example Product
+                  type: generic
+                  name: example
               full:
                 summary: Full product creation with all fields
                 value:
@@ -123,12 +176,19 @@ paths:
                   barcode: '123456789012'
                   sku: PROD-001
                   vendorUuid: 123e4567-e89b-12d3-a456-426614174000
-                  purl: pkg:generic/example@1.0.0
                   teiUrns:
                     - urn:tei:uuid:example.com:d4d9f54a-abcf-11ee-ac79-1a52914d44b1
+                  type: maven
+                  namespace: org.example
+                  name: component
+                  version: 2.1.0
+                  qualifiers:
+                    classifier: sources
+                    repository_url: https://repo.example.com
+                  subpath: src/main
       responses:
         '201':
-          description: TEA Product created successfully
+          description: Product created successfully
           content:
             application/json:
               schema:
@@ -144,8 +204,6 @@ paths:
                     type: string
                   vendorUuid:
                     $ref: '#/components/schemas/typeUuid'
-                  purl:
-                    type: string
                   teiUrns:
                     type: array
                     items:
@@ -174,7 +232,7 @@ paths:
             schema:
               type: object
               properties:
-                teaProductIdentifier:
+                productIdentifier:
                   $ref: '#/components/schemas/typeUuid'
                 name:
                   type: string
@@ -185,13 +243,13 @@ paths:
                     $ref: '#/components/schemas/identifier'
                   description: List of identifiers for the component
               required:
-                - teaProductIdentifier
+                - productIdentifier
                 - name
             examples:
               basic:
                 summary: Basic component creation
                 value:
-                  teaProductIdentifier: 123e4567-e89b-12d3-a456-426614174000
+                  productIdentifier: 123e4567-e89b-12d3-a456-426614174000
                   name: Example Component
                   identifiers:
                     - idType: purl
@@ -202,7 +260,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/teaComponent'
+                $ref: '#/components/schemas/component'
         '400':
           description: Invalid parameters
           content:
@@ -246,7 +304,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/teaComponent'
+                $ref: '#/components/schemas/component'
         '400':
           description: Invalid request body
           content:
@@ -322,7 +380,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/teaRelease'
+                $ref: '#/components/schemas/release'
         '400':
           description: Invalid parameters
           content:
@@ -372,7 +430,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/teaRelease'
+                $ref: '#/components/schemas/release'
         '400':
           description: Invalid request body
           content:
@@ -423,7 +481,7 @@ paths:
                         type: string
                         description: Artifact name
                       type:
-                        $ref: '#/components/schemas/typeTeaCollectionArtifactType'
+                        $ref: '#/components/schemas/typeCollectionArtifactType'
                         description: Type of artifact
                       author:
                         $ref: '#/components/schemas/typeAuthor'
@@ -500,7 +558,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/teaCollection'
+                $ref: '#/components/schemas/collection'
         '400':
           description: Invalid request body
           content:
@@ -555,7 +613,7 @@ components:
       required:
         - algType
         - algValue
-    teaProduct:
+    product:
       type: object
       properties:
         identifier:
@@ -586,16 +644,7 @@ components:
         - name
         - identifiers
         - components
-    paginatedProductList:
-      allOf:
-        - $ref: '#/components/schemas/paginationDetails'
-        - type: object
-          properties:
-            results:
-              type: array
-              items:
-                $ref: '#/components/schemas/teaProduct'
-    teaComponent:
+    component:
       type: object
       description: A TEA component
       properties:
@@ -625,7 +674,7 @@ components:
         - name
         - identifiers
         - versions
-    teaRelease:
+    release:
       type: object
       description: A TEA release
       properties:
@@ -677,7 +726,7 @@ components:
           description: Free text description
       required:
         - type
-    teaCollection:
+    collection:
       type: object
       description: A collection of security-related documents
       properties:
@@ -701,13 +750,13 @@ components:
           type: array
           description: List of TEA artifact objects.
           items:
-            $ref: '#/components/schemas/teaArtifact'
+            $ref: '#/components/schemas/artifact'
       required:
         - uuid
         - version
         - releaseDate
         - updateReason
-    teaArtifact:
+    artifact:
       type: object
       description: A security-related document
       properties:
@@ -719,7 +768,7 @@ components:
           description: Artifact name
         type:
           description: Type of artifact
-          $ref: '#/components/schemas/typeTeaCollectionArtifactType'
+          $ref: '#/components/schemas/typeCollectionArtifactType'
         author:
           $ref: '#/components/schemas/typeAuthor'
           description: Author of the artifact
@@ -776,7 +825,7 @@ components:
         - name
         - email
         - organization
-    typeTeaCollectionArtifactType:
+    typeCollectionArtifactType:
       type: string
       title: Type
       description: Specifies the type of external reference.
@@ -827,29 +876,6 @@ components:
     typeUuid:
       type: string
       format: uuid
-    paginationDetails:
-      type: object
-      properties:
-        timestamp:
-          type: string
-          format: date-time
-          example: '2024-03-20T15:30:00Z'
-        pageStartIndex:
-          type: integer
-          format: int64
-          default: 0
-        pageSize:
-          type: integer
-          format: int64
-          default: 100
-        totalResults:
-          type: integer
-          format: int64
-      required:
-        - timestamp
-        - pageStartIndex
-        - pageSize
-        - totalResults
   responses:
     401-unauthorized:
       description: Authentication required
@@ -869,7 +895,7 @@ components:
         type: integer
         format: int64
         default: 0
-    page-size:
+    pageSize:
       name: pageSize
       description: Pagination size
       in: query
@@ -886,15 +912,15 @@ components:
       schema:
         type: string
         pattern: ^urn:tei:[a-zA-Z0-9]+:[a-zA-Z0-9\.-]+:.+$
-    teaProductIdentifier:
-      name: teaProductIdentifier
+    productIdentifier:
+      name: productIdentifier
       description: TEA Product Identifier
       in: path
       required: true
       schema:
         type: string
         format: uuid
-    teaCollectionIdentifier:
+    collectionIdentifier:
       name: collectionIdentifier
       description: TEA Collection Identifier
       in: path
@@ -902,13 +928,6 @@ components:
       schema:
         type: string
         format: uuid
-    purl:
-      name: purl
-      description: Package URL (PURL)
-      in: query
-      required: false
-      schema:
-        type: string
     barcode:
       name: barcode
       description: Barcode
@@ -930,7 +949,7 @@ components:
       required: false
       schema:
         $ref: '#/components/schemas/typeUuid'
-    id-type:
+    idType:
       name: idType
       description: Type of identifier specified in the `idValue` parameter
       in: query
