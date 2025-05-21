@@ -3,7 +3,8 @@ openapi: 3.1.1
 info:
   title: Transparency Exchange API
   summary: Transparency Exchange API specification for consumers and publishers
-  description: The Transparency Exchange API (TEA) provides standardized access to software transparency artifacts such as SBOMs, VEX, VDR, and other attestations.
+  description: |
+    The Transparency Exchange API (TEA) provides standardized access to software transparency artifacts such as SBOMs, VEX, VDR, and other attestations.
   contact:
     name: TEA Working Group
     url: https://github.com/CycloneDX/transparency-exchange-api
@@ -15,32 +16,7 @@ servers:
   - url: http://localhost/tea/v1
     description: Local development
 paths:
-  /.well-known/tea/{tei_identifier}:
-    get:
-      description: TEI discovery endpoint that redirects to appropriate API endpoint
-      parameters:
-        - name: tei_identifier
-          in: path
-          required: true
-          schema:
-            type: string
   /product/{tei_urn}:
-    get:
-      description: Returns the corresponding releases for a given TEI URN
-      operationId: getTeaProduct
-      parameters:
-        - $ref: '#/components/parameters/tei_urn'
-      responses:
-        '200':
-          description: Requested TEA Product found and returned
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/tea_product'
-        '404':
-          $ref: '#/components/responses/404-object-by-id-not-found'
-      tags:
-        - TEA Product
     patch:
       description: Update an existing TEA Product entry
       operationId: updateTeaProduct
@@ -105,33 +81,6 @@ paths:
       tags:
         - TEA Product
   /product:
-    get:
-      description: Returns a list of TEA Products
-      operationId: listTeaProducts
-      parameters:
-        - $ref: '#/components/parameters/page-offset'
-        - $ref: '#/components/parameters/page-size'
-        - $ref: '#/components/parameters/purl'
-        - $ref: '#/components/parameters/barcode'
-        - $ref: '#/components/parameters/sku'
-        - $ref: '#/components/parameters/vendor_uuid'
-      responses:
-        '200':
-          description: List retrieved successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/paginated_product_list'
-        '400':
-          description: Invalid request body
-          content:
-            application/json: {}
-        '401':
-          $ref: '#/components/responses/401-unauthorized'
-        '404':
-          $ref: '#/components/responses/404-object-by-id-not-found'
-      tags:
-        - TEA Product
     post:
       description: Create TEA Product entry for the supplied product identifier
       operationId: createTeaProduct
@@ -273,146 +222,7 @@ paths:
       security:
         - bearerAuth: []
         - basicAuth: []
-  /components: # Add advanced search capabilities
-    get:
-      description: Returns a list of TEA Components
-      operationId: listTeaComponents
-      parameters:
-        - $ref: '#/components/parameters/page-offset'
-        - $ref: '#/components/parameters/page-size'
-        - name: tea_product_identifier
-          in: query
-          required: false
-          description: TEA Product UUID
-          schema:
-            type: string
-            format: uuid
-        - name: purl
-          in: query
-          required: false
-          description: Package URL (PURL)
-          schema:
-            type: string
-        - name: barcode
-          in: query
-          required: false
-          description: Barcode
-          schema:
-            type: string
-        - name: sku
-          in: query
-          required: false
-          description: SKU of the product
-          schema:
-            type: string
-        - name: version
-          in: query
-          schema:
-            type: string
-        - name: preRelease
-          in: query
-          schema:
-            type: boolean
-        - name: releaseDate
-          in: query
-          schema:
-            type: string
-            format: date-time
-        - name: vendor_uuid
-          in: query
-          required: false
-          description: Vendor UUID
-          schema:
-            type: string
-            format: uuid
-        - name: component_uuid
-          in: query
-          required: false
-          description: TEA Component UUID
-          schema:
-            type: string
-            format: uuid
-        - name: component_name
-          in: query
-          required: false
-          description: TEA Component name
-          schema:
-            type: string
-        - name: identifiers
-          in: query
-          required: false
-          description: TEA Component identifiers
-          schema:
-            type: array
-            items:
-              $ref: '#/components/schemas/identifier'
-      responses:
-        '200':
-          description: List retrieved successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/paginated_product_list'
-        '400':
-          description: Invalid request body
-          content:
-            application/json: {}
-        '401':
-          $ref: '#/components/responses/401-unauthorized'
-        '404':
-          $ref: '#/components/responses/404-object-by-id-not-found'
-      tags:
-        - TEA Component
-  /component/{component_id}/lifecycle:
-    get:
-      description: Get the lifecycle of a TEA Component
-      operationId: getTeaComponentLifecycle
-      parameters:
-        - name: component_id
-          in: path
-          required: true
-          description: UUID of TEA Component in the TEA server
-          schema:
-            type: string
-            format: uuid
-      responses:
-        '200':
-          description: Requested TEA Component lifecycle found and returned
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  lifecycle:
-                    type: string
-                    description: Lifecycle status of the component
-        '404':
-          $ref: '#/components/responses/404-object-by-id-not-found'
-      tags:
-        - TEA Component Lifecycle
   /component/{component_identifier}:
-    get:
-      description: Get information about a TEA Component
-      operationId: getTeaComponent
-      parameters:
-        - name: component_identifier
-          in: path
-          required: true
-          description: UUID of TEA Component in the TEA server
-          schema:
-            type: string
-            format: uuid
-      responses:
-        '200':
-          description: Requested TEA Component found and returned
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/tea_component'
-        '404':
-          $ref: '#/components/responses/404-object-by-id-not-found'
-      tags:
-        - TEA Component
     patch:
       description: Update an existing TEA Component entry
       operationId: updateTeaComponent
@@ -539,28 +349,6 @@ paths:
         - bearerAuth: []
         - basicAuth: []
   /release/{release_identifier}:
-    get:
-      description: Get information about a TEA Release
-      operationId: getTeaRelease
-      parameters:
-        - name: release_identifier
-          in: path
-          required: true
-          description: UUID of TEA Release in the TEA server
-          schema:
-            type: string
-            format: uuid
-      responses:
-        '200':
-          description: Requested TEA Release found and returned
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/tea_release'
-        '404':
-          $ref: '#/components/responses/404-object-by-id-not-found'
-      tags:
-        - TEA Release
     patch:
       description: Update an existing TEA Release entry
       operationId: updateTeaRelease
@@ -744,137 +532,6 @@ paths:
       security:
         - bearerAuth: []
         - basicAuth: []
-  /release/{release_identifier}/collection:
-    get:
-      description: Get the latest TEA Collection belonging to the TEA Release
-      operationId: getLatestCollectionByReleaseId
-      parameters:
-        - name: release_identifier
-          in: path
-          required: true
-          description: UUID of TEA Release in the TEA server
-          schema:
-            type: string
-            format: uuid
-      responses:
-        '200':
-          description: Requested TEA Collection found and returned
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/tea_collection'
-        '400':
-          description: Invalid request
-          content:
-            application/json: {}
-        '404':
-          $ref: '#/components/responses/404-object-by-id-not-found'
-      tags:
-        - TEA Release
-  /release/{release_identifier}/collections:
-    get:
-      description: Get all TEA Collections belonging to the TEA Release
-      operationId: getCollectionsByReleaseId
-      parameters:
-        - name: release_identifier
-          in: path
-          required: true
-          description: UUID of TEA Release in the TEA server
-          schema:
-            type: string
-            format: uuid
-      responses:
-        '200':
-          description: Requested TEA Collections found and returned
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/tea_collection'
-        '400':
-          description: Invalid request
-          content:
-            application/json: {}
-        '404':
-          $ref: '#/components/responses/404-object-by-id-not-found'
-      tags:
-        - TEA Release
-  /artifact/{artifact_identifier}:
-    get:
-      description: Get metadata for specific TEA artifact
-      operationId: getArtifact
-      parameters:
-        - name: artifact_identifier
-          in: path
-          required: true
-          description: UUID of TEA Artifact in the TEA server
-          schema:
-            $ref: '#/components/schemas/type_uuid'
-      responses:
-        '200':
-          description: Requested TEA Artifact metadata found and returned
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/tea_artifact'
-        '400':
-          description: Invalid request
-          content:
-            application/json: {}
-        '404':
-          $ref: '#/components/responses/404-object-by-id-not-found'
-      tags:
-        - TEA Artifact
-  /collection/{collection_identifier}:
-    get:
-      description: Get a TEA Collection by its Identifier
-      operationId: getTeaCollection
-      parameters:
-        - $ref: '#/components/parameters/tea_collection_identifier'
-      responses:
-        '200':
-          description: Requested TEA Collection found and returned
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/tea_collection'
-        '404':
-          $ref: '#/components/responses/404-object-by-id-not-found'
-      tags:
-        - TEA Collection
-    delete:
-      description: Delete a TEA Collection entry
-      operationId: deleteTeaCollection
-      parameters:
-        - $ref: '#/components/parameters/tea_collection_identifier'
-      $ref: '#/components/operations/standard_delete'
-      tags:
-        - TEA Collection
-  /collection/{collection_identifier}/{version}:
-    get:
-      description: Get a specific version of a TEA Collection
-      operationId: getTeaCollectionVersion
-      parameters:
-        - $ref: '#/components/parameters/tea_collection_identifier'
-        - name: version
-          in: path
-          required: true
-          description: Version of the TEA Collection
-          schema:
-            type: integer
-            minimum: 1
-      responses:
-        '200':
-          description: Requested TEA Collection version found and returned
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/tea_collection'
-        '404':
-          $ref: '#/components/responses/404-object-by-id-not-found'
-      tags:
-        - TEA Collection
 components:
   schemas:
     identifier:
@@ -1046,7 +703,8 @@ components:
       description: A collection of security-related documents
       properties:
         uuid:
-          description: UUID of the TEA Collection object. Note that this is equal to the UUID of the associated TEA Release object.
+          description: |
+            UUID of the TEA Collection object. Note that this is equal to the UUID of the associated TEA Release object.
           $ref: '#/components/schemas/type_uuid'
         version:
           type: integer
@@ -1314,29 +972,43 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-      description: Bearer token authentication is a stateless authentication scheme where the client sends a token in the HTTP Authorization header. The server validates the token and grants access to the requested resource to anyone with the token without needing to authenticate again, and stolen tokens can be used by anyone.
+      description: |
+        Bearer token authentication is a stateless authentication scheme where the client sends a token in the HTTP Authorization header.
+        The server validates the token and grants access to the requested resource to anyone with the token without needing to authenticate
+        again, and stolen tokens can be used by anyone.
     basicAuth:
       type: http
       scheme: basic
-      description: Basic authentication is a plaintext scheme built into the HTTP protocol and has been deemed insecure because headers are commonly logged in plaintext.
+      description: |
+        Basic authentication is a plaintext scheme built into the HTTP protocol and has been deemed insecure because headers are commonly
+        logged in plaintext.
     mutualTLS:
       type: mutualTLS
-      description: Client certificate authentication is a secure authentication scheme where the client presents a valid certificate to the server for authentication. The server validates the certificate and grants access to the requested resource, but stolen certificates can be used by anyone.
+      description: |
+        Client certificate authentication is a secure authentication scheme where the client presents a valid certificate to the server
+        for authentication. The server validates the certificate and grants access to the requested resource, but stolen certificates can be
+        used by anyone.
     pasetoAuth:
       type: http
       scheme: bearer
       bearerFormat: PASETO
-      description: Platform-Agnostic Security Tokens (PASETO) is a secure alternative to JWT that is resistant to many cryptographic vulnerabilities. PASETO tokens use versioned protocols that specify modern cryptographic algorithms.
+      description: |
+        Platform-Agnostic Security Tokens (PASETO) is a secure alternative to JWT that is resistant to many cryptographic vulnerabilities.
+        PASETO tokens use versioned protocols that specify modern cryptographic algorithms.
     verifiableCredentials:
       type: http
       scheme: bearer
       bearerFormat: VC-JWT
-      description: W3C Verifiable Credentials 2.0 with proof field is a standard for expressing verifiable credentials as signed JWT tokens. The integrity and authenticity of the credential can be cryptographically verified.
+      description: |
+        W3C Verifiable Credentials 2.0 with proof field is a standard for expressing verifiable credentials as signed JWT tokens.
+        The integrity and authenticity of the credential can be cryptographically verified.
     hmacAuth:
       type: apiKey
       in: header
       name: X-HMAC-Signature
-      description: HMAC authentication uses a shared secret key to create a signature of the request content using a secure hash algorithm (SHA256, SHA384, SHA512, SHA3-256, SHA3-384, or SHA3-512). The server verifies this signature to authenticate the request.
+      description: |
+        HMAC authentication uses a shared secret key to create a signature of the request content using a secure hash algorithm (SHA256,
+        SHA384, SHA512, SHA3-256, SHA3-384, or SHA3-512). The server verifies this signature to authenticate the request.
   operations:
     standard_delete:
       responses:
