@@ -11,7 +11,7 @@ info:
   license:
     name: Apache 2.0
     url: https://github.com/CycloneDX/transparency-exchange-api/blob/main/LICENSE
-  version: 0.0.3
+  version: 0.1.0-beta.1
 servers:
   - url: http://localhost/tea/v1
     description: Local development
@@ -29,8 +29,9 @@ paths:
             schema:
               type: object
               properties:
-                productName:
+                name:
                   type: string
+                  description: Product name (required)
                 barcode:
                   type: string
                   description: Barcode
@@ -42,16 +43,13 @@ paths:
                   description: Vendor UUID
                 type:
                   type: string
-                  description: Package type (required)
+                  description: Product type (required)
                 namespace:
                   type: string
-                  description: Package namespace (optional)
-                name:
-                  type: string
-                  description: Package name (required)
+                  description: Product namespace (optional)
                 version:
                   type: string
-                  description: Package version (optional)
+                  description: Product version (optional)
                 qualifiers:
                   type: object
                   additionalProperties:
@@ -64,23 +62,21 @@ paths:
               basic:
                 summary: Basic product update
                 value:
-                  productName: Updated Product Name
+                  name: Updated Product Name
                   barcode: '123456789012'
                   sku: PROD-001
                   vendorUuid: 123e4567-e89b-12d3-a456-426614174000
                   type: generic
-                  name: example
                   version: 1.0.0
               full:
                 summary: Full product update with all PURL fields
                 value:
-                  productName: Updated Product Name
+                  name: Updated Product Name
                   barcode: '123456789012'
                   sku: PROD-001
                   vendorUuid: 123e4567-e89b-12d3-a456-426614174000
                   type: maven
                   namespace: org.example
-                  name: component
                   version: 2.1.0
                   qualifiers:
                     classifier: sources
@@ -122,7 +118,7 @@ paths:
             schema:
               type: object
               properties:
-                productName:
+                name:
                   type: string
                 barcode:
                   type: string
@@ -142,16 +138,13 @@ paths:
                   description: List of TEI URNs associated with this product
                 type:
                   type: string
-                  description: Package type (required)
+                  description: Product type (required)
                 namespace:
                   type: string
-                  description: Package namespace (optional)
-                name:
-                  type: string
-                  description: Package name (required)
+                  description: Product namespace (optional)
                 version:
                   type: string
-                  description: Package version (optional)
+                  description: Product version (optional)
                 qualifiers:
                   type: object
                   additionalProperties:
@@ -161,18 +154,17 @@ paths:
                   type: string
                   description: Subpath (optional)
               required:
-                - productName
+                - name
             examples:
               basic:
                 summary: Basic product creation
                 value:
-                  productName: Example Product
+                  name: Example Product
                   type: generic
-                  name: example
               full:
                 summary: Full product creation with all fields
                 value:
-                  productName: Complete Product Example
+                  name: Complete Product Example
                   barcode: '123456789012'
                   sku: PROD-001
                   vendorUuid: 123e4567-e89b-12d3-a456-426614174000
@@ -180,7 +172,6 @@ paths:
                     - urn:tei:uuid:example.com:d4d9f54a-abcf-11ee-ac79-1a52914d44b1
                   type: maven
                   namespace: org.example
-                  name: component
                   version: 2.1.0
                   qualifiers:
                     classifier: sources
@@ -497,15 +488,11 @@ paths:
                             mimeType:
                               type: string
                               description: The MIME type of the document
-                            artifactUrl:
+                            url:
                               type: string
                               format: uri
                               description: Direct download URL for the artifact
-                            artifactSizeInBytes:
-                              type: integer
-                              format: int64
-                              description: Size of the artifact in bytes
-                            artifactChecksums:
+                            checksums:
                               type: array
                               items:
                                 $ref: '#/components/schemas/artifactChecksum'
@@ -517,9 +504,8 @@ paths:
                           required:
                             - description
                             - mimeType
-                            - artifactUrl
-                            - artifactSizeInBytes
-                            - artifactChecksums
+                            - url
+                            - checksums
                     required:
                       - name
                       - type
@@ -546,9 +532,8 @@ paths:
                       formats:
                         - description: CycloneDX SBOM (XML)
                           mimeType: application/vnd.cyclonedx+xml
-                          artifactUrl: https://example.com/sbom.xml
-                          artifactSizeInBytes: 1024
-                          artifactChecksums:
+                          url: https://example.com/sbom.xml
+                          checksums:
                             - algType: SHA-256
                               algValue: a94a8fe5ccb19ba61c4c0873d391e987982fbbd3
                           signatureUrl: https://example.com/sbom.xml.sig
