@@ -1,0 +1,1005 @@
+jsonSchemaDialect: https://spec.openapis.org/oas/3.1/dialect/base
+openapi: 3.1.1
+info:
+  title: Transparency Exchange API
+  summary: Transparency Exchange API specification for consumers and publishers
+  description: |
+    The Transparency Exchange API (TEA) provides standardized access to software transparency artifacts such as SBOMs, VEX, VDR, and other attestations.
+  contact:
+    name: TEA Working Group
+    url: https://github.com/CycloneDX/transparency-exchange-api
+  license:
+    name: Apache 2.0
+    url: https://github.com/CycloneDX/transparency-exchange-api/blob/main/LICENSE
+  version: 0.1.0-beta.1
+servers:
+  - url: http://localhost/tea/v1
+    description: Local development
+paths:
+  /product/{teiUrn}:
+    patch:
+      description: Update an existing TEA Product entry
+      operationId: updateTeaProduct
+      parameters:
+        - $ref: '#/components/parameters/productIdentifier'
+      requestBody:
+        $ref: '#/components/requestBodies/UpdateTeaProduct'
+      responses:
+        '200':
+          description: TEA Product updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/product'
+        '400':
+          description: Invalid request body
+          content:
+            application/json: {}
+        '401':
+          $ref: '#/components/responses/401-unauthorized'
+        '404':
+          $ref: '#/components/responses/404-object-by-id-not-found'
+      tags:
+        - TEA Product
+    delete:
+      description: Delete a TEA Product entry
+      operationId: deleteTeaProduct
+      parameters:
+        - $ref: '#/components/parameters/productIdentifier'
+      $ref: '#/components/operations/standardDelete'
+      tags:
+        - TEA Product
+  /product:
+    post:
+      description: Create TEA Product entry for the supplied product identifier
+      operationId: createTeaProduct
+      requestBody:
+        $ref: '#/components/requestBodies/CreateTeaProduct'
+      responses:
+        '201':
+          description: Product created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  identifier:
+                    $ref: '#/components/schemas/typeUuid'
+                  productName:
+                    type: string
+                  barcode:
+                    type: string
+                  sku:
+                    type: string
+                  vendorUuid:
+                    $ref: '#/components/schemas/typeUuid'
+                  teiUrns:
+                    type: array
+                    items:
+                      type: string
+                required:
+                  - identifier
+                  - productName
+        '400':
+          description: Invalid request body
+          content:
+            application/json: {}
+        '401':
+          $ref: '#/components/responses/401-unauthorized'
+        '404':
+          $ref: '#/components/responses/404-object-by-id-not-found'
+      tags:
+        - TEA Product
+  /component:
+    post:
+      description: Create a new TEA Component entry
+      operationId: createTeaComponent
+      requestBody:
+        $ref: '#/components/requestBodies/CreateTeaComponent'
+      responses:
+        '201':
+          description: TEA Component created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/component'
+        '400':
+          description: Invalid parameters
+          content:
+            application/json: {}
+        '401':
+          $ref: '#/components/responses/401-unauthorized'
+        '404':
+          $ref: '#/components/responses/404-object-by-id-not-found'
+      tags:
+        - TEA Component
+  /component/{componentIdentifier}:
+    patch:
+      description: Update an existing TEA Component entry
+      operationId: updateTeaComponent
+      parameters:
+        - name: componentIdentifier
+          in: path
+          required: true
+          description: UUID of TEA Component in the TEA server
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        $ref: '#/components/requestBodies/UpdateTeaComponent'
+      responses:
+        '200':
+          description: TEA Component updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/component'
+        '400':
+          description: Invalid request body
+          content:
+            application/json: {}
+        '401':
+          $ref: '#/components/responses/401-unauthorized'
+        '404':
+          $ref: '#/components/responses/404-object-by-id-not-found'
+      tags:
+        - TEA Component
+    delete:
+      description: Delete a TEA Component entry
+      operationId: deleteTeaComponent
+      parameters:
+        - name: componentIdentifier
+          in: path
+          required: true
+          description: UUID of TEA Component in the TEA server
+          schema:
+            type: string
+            format: uuid
+      $ref: '#/components/operations/standardDelete'
+      tags:
+        - TEA Component
+  /release:
+    post:
+      description: Create a new TEA Release
+      operationId: createTeaRelease
+      requestBody:
+        $ref: '#/components/requestBodies/CreateTeaRelease'
+      responses:
+        '201':
+          description: TEA Release created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/release'
+        '400':
+          description: Invalid parameters
+          content:
+            application/json: {}
+        '401':
+          $ref: '#/components/responses/401-unauthorized'
+        '404':
+          $ref: '#/components/responses/404-object-by-id-not-found'
+      tags:
+        - TEA Release
+  /release/{releaseIdentifier}:
+    patch:
+      description: Update an existing TEA Release entry
+      operationId: updateTeaRelease
+      parameters:
+        - name: releaseIdentifier
+          in: path
+          required: true
+          description: UUID of TEA Release in the TEA server
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        $ref: '#/components/requestBodies/UpdateTeaRelease'
+      responses:
+        '200':
+          description: TEA Release updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/release'
+        '400':
+          description: Invalid request body
+          content:
+            application/json: {}
+        '401':
+          $ref: '#/components/responses/401-unauthorized'
+        '404':
+          $ref: '#/components/responses/404-object-by-id-not-found'
+      tags:
+        - TEA Release
+    delete:
+      description: Delete a TEA Release entry
+      operationId: deleteTeaRelease
+      parameters:
+        - name: releaseIdentifier
+          in: path
+          required: true
+          description: UUID of TEA Release in the TEA server
+          schema:
+            type: string
+            format: uuid
+      $ref: '#/components/operations/standardDelete'
+      tags:
+        - TEA Release
+  /collection:
+    post:
+      description: Create a new TEA Collection
+      operationId: createTeaCollection
+      requestBody:
+        $ref: '#/components/requestBodies/CreateTeaCollection'
+      responses:
+        '201':
+          description: TEA Collection created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/collection'
+        '400':
+          description: Invalid request body
+          content:
+            application/json: {}
+        '401':
+          $ref: '#/components/responses/401-unauthorized'
+        '404':
+          $ref: '#/components/responses/404-object-by-id-not-found'
+      tags:
+        - TEA Collection
+components:
+  schemas:
+    identifier:
+      type: object
+      description: An identifier with a specified type
+      properties:
+        idType:
+          description: Type of identifier, e.g. `tei`, `purl`, `cpe`
+          type: string
+          enum:
+            - cpe
+            - tei
+            - purl
+        idValue:
+          description: Identifier value
+          type: string
+      required:
+        - idType
+        - idValue
+    artifactChecksum:
+      type: object
+      properties:
+        algType:
+          description: Checksum algorithm
+          type: string
+          enum:
+            - MD5
+            - SHA-1
+            - SHA-256
+            - SHA-384
+            - SHA-512
+            - SHA3-256
+            - SHA3-384
+            - SHA3-512
+            - BLAKE2b-256
+            - BLAKE2b-384
+            - BLAKE2b-512
+            - BLAKE3
+        algValue:
+          type: string
+          description: Checksum value
+      required:
+        - algType
+        - algValue
+    product:
+      type: object
+      properties:
+        identifier:
+          $ref: '#/components/schemas/typeUuid'
+          description: A unique identifier for the TEA product
+        name:
+          type: string
+          description: Product name
+        identifiers:
+          type: array
+          description: List of identifiers for the product
+          items:
+            $ref: '#/components/schemas/identifier'
+        components:
+          type: array
+          description: List of TEA component UUIDs
+          items:
+            $ref: '#/components/schemas/typeUuid'
+        teiUrns:
+          type: array
+          items:
+            type: string
+            description: Transparency Exchange Identifier URN
+            pattern: ^urn:tei:[a-zA-Z0-9]+:[a-zA-Z0-9\.-]+:.+$
+          description: List of TEI URNs associated with this product
+      required:
+        - identifier
+        - name
+        - identifiers
+        - components
+    component:
+      type: object
+      description: A TEA component
+      properties:
+        uuid:
+          description: A unique identifier for the TEA component
+          $ref: '#/components/schemas/typeUuid'
+        name:
+          type: string
+          description: Component name
+        identifiers:
+          type: array
+          description: List of identifiers for the component
+          items:
+            $ref: '#/components/schemas/identifier'
+        versions:  # Added to match consumer schema requirements
+          type: array
+          description: List of available versions for this component
+          items:
+            type: string
+        releases:
+          type: array
+          description: List of UUIDs referencing TEA Release entries
+          items:
+            $ref: '#/components/schemas/typeUuid'
+      required:
+        - uuid
+        - name
+        - identifiers
+        - versions
+    release:
+      type: object
+      description: A TEA release
+      properties:
+        uuid:
+          description: A unique identifier for the TEA Component Release
+          $ref: '#/components/schemas/typeUuid'
+        version:
+          description: Version number
+          type: string
+          example: 1.2.3
+        releaseDate:
+          description: Timestamp of the release (for sorting purposes)
+          type: string
+          format: date-time
+          example: '2024-03-20T15:30:00Z'
+        preRelease:
+          type: boolean
+          description: A flag indicating pre-release (or beta) status
+        identifiers:
+          type: array
+          description: List of identifiers for the component
+          items:
+            $ref: '#/components/schemas/identifier'
+        collectionReferences:
+          type: array
+          items:
+            $ref: '#/components/schemas/typeUuid'
+          description: Array of UUIDs referencing TEA Collection entries
+          default: []
+      required:
+        - uuid
+        - version
+        - releaseDate
+    collectionUpdateReason:
+      type: object
+      description: Reason for the update to the TEA collection
+      properties:
+        type:
+          description: Type of update reason
+          type: string
+          enum:
+            - INITIAL_RELEASE
+            - VEX_UPDATED
+            - ARTIFACT_UPDATED
+            - ARTIFACT_ADDED
+            - ARTIFACT_REMOVED
+        comment:
+          type: string
+          description: Free text description
+      required:
+        - type
+    collection:
+      type: object
+      description: A collection of security-related documents
+      properties:
+        uuid:
+          description: |
+            UUID of the TEA Collection object. Note that this is equal to the UUID of the associated TEA Release object.
+          $ref: '#/components/schemas/typeUuid'
+        version:
+          type: integer
+          description: TEA Collection version, incremented each time its content changes. Versions start with 1.
+          minimum: 1
+        releaseDate:
+          description: The date when the TEA Collection version was created.
+          type: string
+          format: date-time
+          example: '2024-03-20T15:30:00Z'
+        updateReason:
+          description: Reason for the update/release of the TEA Collection object.
+          $ref: '#/components/schemas/collectionUpdateReason'
+        artifacts:
+          type: array
+          description: List of TEA artifact objects.
+          items:
+            $ref: '#/components/schemas/artifact'
+      required:
+        - uuid
+        - version
+        - releaseDate
+        - updateReason
+    artifact:
+      type: object
+      description: A security-related document
+      properties:
+        uuid:
+          description: UUID of the TEA Artifact object.
+          $ref: '#/components/schemas/typeUuid'
+        name:
+          type: string
+          description: Artifact name
+        type:
+          description: Type of artifact
+          $ref: '#/components/schemas/typeCollectionArtifactType'
+        author:
+          $ref: '#/components/schemas/typeAuthor'
+          description: Author of the artifact
+        formats:
+          type: array
+          description: List of objects with the same content, but in different formats.
+          items:
+            $ref: '#/components/schemas/artifactFormat'
+      required:
+        - uuid
+        - name
+        - type
+        - author
+        - formats
+    artifactFormat:
+      type: object
+      description: A security-related document in a specific format
+      properties:
+        mimeType:
+          type: string
+          description: The MIME type of the document
+        description:
+          type: string
+          description: A free text describing the artifact
+        url:  # Changed from artifactUrl to match consumer
+          type: string
+          format: uri
+          description: Direct download URL for the artifact
+        signatureUrl:  # Already matches consumer
+          type: string
+          format: uri
+          description: Direct download URL for an external signature of the artifact
+        checksums:  # Changed from artifactChecksums to match consumer
+          type: array
+          items:
+            $ref: '#/components/schemas/artifactChecksum'
+          description: List of checksums for the artifact
+      required:
+        - mimeType
+        - description
+        - url
+        - checksums
+    typeAuthor:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        organization:
+          type: string
+      required:
+        - name
+        - email
+        - organization
+    typeCollectionArtifactType:
+      type: string
+      title: Type
+      description: Specifies the type of external reference.
+      enum:
+        - ATTESTATION
+        - BOM
+        - BUILD_META
+        - CERTIFICATION
+        - FORMULATION
+        - LICENSE
+        - RELEASE_NOTES
+        - SECURITY_TXT
+        - THREAT_MODEL
+        - VULNERABILITIES
+        - OTHER
+    typeUuid:
+      type: string
+      format: uuid
+  responses:
+    401-unauthorized:
+      description: Authentication required
+      content:
+        application/json: {}
+    404-object-by-id-not-found:
+      description: Object requested by identifier not found
+      content:
+        application/json: {}
+  parameters:
+    page-offset:
+      name: pageOffset
+      description: Pagination offset
+      in: query
+      required: false
+      schema:
+        type: integer
+        format: int64
+        default: 0
+    pageSize:
+      name: pageSize
+      description: Pagination size
+      in: query
+      required: false
+      schema:
+        type: integer
+        format: int64
+        default: 100
+    teiUrn:
+      name: teiUrn
+      description: Transparency Exchange Identifier (URN)
+      in: path
+      required: true
+      schema:
+        type: string
+        pattern: ^urn:tei:[a-zA-Z0-9]+:[a-zA-Z0-9\.-]+:.+$
+    productIdentifier:
+      name: productIdentifier
+      description: TEA Product Identifier
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    collectionIdentifier:
+      name: collectionIdentifier
+      description: TEA Collection Identifier
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    barcode:
+      name: barcode
+      description: Barcode
+      in: query
+      required: false
+      schema:
+        type: string
+    sku:
+      name: sku
+      description: Product SKU
+      in: query
+      required: false
+      schema:
+        type: string
+    vendorUuid:
+      name: vendorUuid
+      description: Vendor UUID
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/typeUuid'
+    idType:
+      name: idType
+      description: Type of identifier specified in the `idValue` parameter
+      in: query
+      schema:
+        type: string
+        enum:
+          - cpe
+          - tei
+          - purl
+    id-value:
+      name: idValue
+      description: If present, only the objects with the given identifier value will be returned
+      in: query
+      schema:
+        type: string
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        Bearer token authentication is a stateless authentication scheme where the client sends a token in the HTTP Authorization header.
+        The server validates the token and grants access to the requested resource to anyone with the token without needing to authenticate
+        again, and stolen tokens can be used by anyone.
+    basicAuth:
+      type: http
+      scheme: basic
+      description: |
+        Basic authentication is a plaintext scheme built into the HTTP protocol and has been deemed insecure because headers are commonly
+        logged in plaintext.
+    mutualTLS:
+      type: mutualTLS
+      description: |
+        Client certificate authentication is a secure authentication scheme where the client presents a valid certificate to the server
+        for authentication. The server validates the certificate and grants access to the requested resource, but stolen certificates can be
+        used by anyone.
+    pasetoAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: PASETO
+      description: |
+        Platform-Agnostic Security Tokens (PASETO) is a secure alternative to JWT that is resistant to many cryptographic vulnerabilities.
+        PASETO tokens use versioned protocols that specify modern cryptographic algorithms.
+    verifiableCredentials:
+      type: http
+      scheme: bearer
+      bearerFormat: VC-JWT
+      description: |
+        W3C Verifiable Credentials 2.0 with proof field is a standard for expressing verifiable credentials as signed JWT tokens.
+        The integrity and authenticity of the credential can be cryptographically verified.
+    hmacAuth:
+      type: apiKey
+      in: header
+      name: X-HMAC-Signature
+      description: |
+        HMAC authentication uses a shared secret key to create a signature of the request content using a secure hash algorithm (SHA256,
+        SHA384, SHA512, SHA3-256, SHA3-384, or SHA3-512). The server verifies this signature to authenticate the request.
+  operations:
+    standardDelete:
+      responses:
+        '204':
+          description: Resource successfully deleted
+        '401':
+          $ref: '#/components/responses/401-unauthorized'
+        '404':
+          $ref: '#/components/responses/404-object-by-id-not-found'
+security:
+  - bearerAuth: []
+  - basicAuth: []
+  - mutualTLS: []
+  - pasetoAuth: []
+  - verifiableCredentials: []
+  - hmacAuth: []
+tags:
+  - name: TEA Product
+    description: Operations related to TEA Products
+  - name: TEA Component
+    description: Operations related to TEA Components
+  - name: TEA Release
+    description: Operations related to TEA Releases
+  - name: TEA Collection
+    description: Operations related to TEA Collections
+externalDocs:
+  description: Transparency Exchange API specification
+  url: https://github.com/CycloneDX/transparency-exchange-api
+  requestBodies:
+    UpdateTeaProduct:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Product name (required)
+              barcode:
+                type: string
+                description: Barcode
+              sku:
+                type: string
+                description: Product SKU
+              vendorUuid:
+                $ref: '#/components/schemas/typeUuid'
+                description: Vendor UUID
+              type:
+                type: string
+                description: Product type (required)
+              namespace:
+                type: string
+                description: Product namespace (optional)
+              version:
+                type: string
+                description: Product version (optional)
+              qualifiers:
+                type: object
+                additionalProperties:
+                  type: string
+                description: Qualifiers as key-value pairs (optional)
+              subpath:
+                type: string
+                description: Subpath (optional)
+          examples:
+            basic:
+              summary: Basic product update
+              value:
+                name: Updated Product Name
+                barcode: '123456789012'
+                sku: PROD-001
+                vendorUuid: 123e4567-e89b-12d3-a456-426614174000
+                type: generic
+                version: 1.0.0
+            full:
+              summary: Full product update with all PURL fields
+              value:
+                name: Updated Product Name
+                barcode: '123456789012'
+                sku: PROD-001
+                vendorUuid: 123e4567-e89b-12d3-a456-426614174000
+                type: maven
+                namespace: org.example
+                version: 2.1.0
+                qualifiers:
+                  classifier: sources
+                  repository_url: https://repo.example.com
+                subpath: src/main
+    CreateTeaProduct:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              barcode:
+                type: string
+                description: Barcode
+              sku:
+                type: string
+                description: Product SKU
+              vendorUuid:
+                $ref: '#/components/schemas/typeUuid'
+                description: Vendor UUID
+              teiUrns:
+                type: array
+                items:
+                  type: string
+                  description: Transparency Exchange Identifier URN
+                  pattern: ^urn:tei:[a-zA-Z0-9]+:[a-zA-Z0-9\.-]+:.+$
+                description: List of TEI URNs associated with this product
+              type:
+                type: string
+                description: Product type (required)
+              namespace:
+                type: string
+                description: Product namespace (optional)
+              version:
+                type: string
+                description: Product version (optional)
+              qualifiers:
+                type: object
+                additionalProperties:
+                  type: string
+                description: Qualifiers as key-value pairs (optional)
+              subpath:
+                type: string
+                description: Subpath (optional)
+            required:
+              - name
+          examples:
+            basic:
+              summary: Basic product creation
+              value:
+                name: Example Product
+                type: generic
+            full:
+              summary: Full product creation with all fields
+              value:
+                name: Complete Product Example
+                barcode: '123456789012'
+                sku: PROD-001
+                vendorUuid: 123e4567-e89b-12d3-a456-426614174000
+                teiUrns:
+                  - urn:tei:uuid:example.com:d4d9f54a-abcf-11ee-ac79-1a52914d44b1
+                type: maven
+                namespace: org.example
+                version: 2.1.0
+                qualifiers:
+                  classifier: sources
+                  repository_url: https://repo.example.com
+                subpath: src/main
+    CreateTeaComponent:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              productIdentifier:
+                $ref: '#/components/schemas/typeUuid'
+              name:
+                type: string
+                description: Component name
+              identifiers:
+                type: array
+                items:
+                  $ref: '#/components/schemas/identifier'
+                description: List of identifiers for the component
+            required:
+              - productIdentifier
+              - name
+          examples:
+            basic:
+              summary: Basic component creation
+              value:
+                productIdentifier: 123e4567-e89b-12d3-a456-426614174000
+                name: Example Component
+                identifiers:
+                  - idType: purl
+                    idValue: pkg:maven/org.example/component@1.0.0
+    UpdateTeaComponent:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Component name
+              identifiers:
+                type: array
+                items:
+                  $ref: '#/components/schemas/identifier'
+                description: List of identifiers for the component
+    CreateTeaRelease:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              componentIdentifier:
+                $ref: '#/components/schemas/typeUuid'
+                description: UUID of the TEA Component
+              version:
+                type: string
+                description: Version number
+              releaseDate:
+                type: string
+                format: date-time
+                example: '2024-03-20T15:30:00Z'
+                description: Timestamp of the release
+              preRelease:
+                type: boolean
+                description: Flag indicating pre-release status
+              identifiers:
+                type: array
+                items:
+                  $ref: '#/components/schemas/identifier'
+                description: List of identifiers for the release
+            required:
+              - componentIdentifier
+              - version
+              - releaseDate
+          examples:
+            basic:
+              summary: Basic release creation
+              value:
+                componentIdentifier: 123e4567-e89b-12d3-a456-426614174000
+                version: 1.0.0
+                releaseDate: '2024-03-20T15:30:00Z'
+                preRelease: false
+                identifiers:
+                  - idType: purl
+                    idValue: pkg:maven/org.example/component@1.0.0
+    UpdateTeaRelease:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              version:
+                type: string
+                description: Version number
+              releaseDate:
+                type: string
+                format: date-time
+                example: '2024-03-20T15:30:00Z'
+              preRelease:
+                type: boolean
+                description: May only be set to false if previously true
+              identifiers:
+                type: array
+                items:
+                  $ref: '#/components/schemas/identifier'
+    CreateTeaCollection:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              releaseIdentifier:
+                $ref: '#/components/schemas/typeUuid'
+                description: UUID of the TEA Release
+              updateReason:
+                $ref: '#/components/schemas/collectionUpdateReason'
+                description: Reason for collection creation or update
+              artifacts:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      description: Artifact name
+                    type:
+                      $ref: '#/components/schemas/typeCollectionArtifactType'
+                      description: Type of artifact
+                    author:
+                      $ref: '#/components/schemas/typeAuthor'
+                      description: Author of the artifact
+                    formats:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          description:
+                            type: string
+                            description: A free text describing the artifact
+                          mimeType:
+                            type: string
+                            description: The MIME type of the document
+                          url:
+                            type: string
+                            format: uri
+                            description: Direct download URL for the artifact
+                          checksums:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/artifactChecksum'
+                            description: List of checksums for the artifact
+                          signatureUrl:
+                            type: string
+                            format: uri
+                            description: URL for an external signature of the artifact
+                        required:
+                          - description
+                          - mimeType
+                          - url
+                          - checksums
+                  required:
+                    - name
+                    - type
+                    - author
+                    - formats
+            required:
+              - releaseIdentifier
+              - updateReason
+          examples:
+            basic:
+              summary: Basic collection creation
+              value:
+                releaseIdentifier: 123e4567-e89b-12d3-a456-426614174000
+                updateReason:
+                  type: INITIAL_RELEASE
+                  comment: Initial release of collection
+                artifacts:
+                  - name: Example SBOM
+                    type: bom
+                    author:
+                      name: John Doe
+                      email: john.doe@example.com
+                      organization: Example Org
+                    formats:
+                      - description: CycloneDX SBOM (XML)
+                        mimeType: application/vnd.cyclonedx+xml
+                        url: https://example.com/sbom.xml
+                        checksums:
+                          - algType: SHA-256
+                            algValue: a94a8fe5ccb19ba61c4c0873d391e987982fbbd3
+                        signatureUrl: https://example.com/sbom.xml.sig
