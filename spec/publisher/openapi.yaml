@@ -815,49 +815,17 @@ components:
       title: Type
       description: Specifies the type of external reference.
       enum:
-        - vcs
-        - issue-tracker
-        - website
-        - advisories
-        - bom
-        - mailing-list
-        - social
-        - chat
-        - documentation
-        - support
-        - source-distribution
-        - distribution
-        - distribution-intake
-        - license
-        - build-meta
-        - build-system
-        - release-notes
-        - security-contact
-        - model-card
-        - log
-        - configuration
-        - evidence
-        - formulation
-        - attestation
-        - threat-model
-        - adversary-model
-        - risk-assessment
-        - vulnerability-assertion
-        - exploitability-statement
-        - pentest-report
-        - static-analysis-report
-        - dynamic-analysis-report
-        - runtime-analysis-report
-        - component-analysis-report
-        - maturity-report
-        - certification-report
-        - codified-infrastructure
-        - quality-metrics
-        - poam
-        - electronic-signature
-        - digital-signature
-        - rfc-9116
-        - other
+        - ATTESTATION
+        - BOM
+        - BUILD_META
+        - CERTIFICATION
+        - FORMULATION
+        - LICENSE
+        - RELEASE_NOTES
+        - SECURITY_TXT
+        - THREAT_MODEL
+        - VULNERABILITIES
+        - OTHER
     typeUuid:
       type: string
       format: uuid
