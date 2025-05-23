@@ -12,7 +12,7 @@ info:
   license:
     name: Apache 2.0
     url: https://github.com/CycloneDX/transparency-exchange-api/blob/main/LICENSE
-  version: 0.1.0-beta.1
+  version: 0.1.1-beta
 servers:
   - url: http://localhost/tea/v1
     description: Local development
@@ -438,7 +438,7 @@ components:
                   checksums:
                     - algType: MD5
                       algValue: 2e1a525afc81b0a8ecff114b8b743de9
-                    - algType: SHA-1
+                    - algType: SHA_1
                       algValue: 5a7d4caef63c5c5ccdf07c39337323529eb5a770
             - uuid: dfa35519-9734-4259-bba1-3e825cf4be06
               name: Vulnerability Disclosure Report
@@ -448,7 +448,7 @@ components:
                   description: CycloneDX VDR (XML)
                   url: https://logging.apache.org/cyclonedx/vdr.xml
                   checksums:
-                    - algType: SHA-256
+                    - algType: SHA_256
                       algValue: 75b81020b3917cb682b1a7605ade431e062f7a4c01a412f0b87543b6e995ad2a
 
     collection-update-reason:
@@ -546,16 +546,16 @@ components:
       description: Checksum algorithm
       enum:
         - MD5
-        - SHA-1
-        - SHA-256
-        - SHA-384
-        - SHA-512
-        - SHA3-256
-        - SHA3-384
-        - SHA3-512
-        - BLAKE2b-256
-        - BLAKE2b-384
-        - BLAKE2b-512
+        - SHA_1
+        - SHA_256
+        - SHA_384
+        - SHA_512
+        - SHA3_256
+        - SHA3_384
+        - SHA3_512
+        - BLAKE2B_256
+        - BLAKE2B_384
+        - BLAKE2B_512
         - BLAKE3
     #
     # Types used in API responses
