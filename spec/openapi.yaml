@@ -438,7 +438,7 @@ components:
                   checksums:
                     - algType: MD5
                       algValue: 2e1a525afc81b0a8ecff114b8b743de9
-                    - algType: SHA_1
+                    - algType: SHA1
                       algValue: 5a7d4caef63c5c5ccdf07c39337323529eb5a770
             - uuid: dfa35519-9734-4259-bba1-3e825cf4be06
               name: Vulnerability Disclosure Report
@@ -546,7 +546,7 @@ components:
       description: Checksum algorithm
       enum:
         - MD5
-        - SHA_1
+        - SHA1
         - SHA_256
         - SHA_384
         - SHA_512
