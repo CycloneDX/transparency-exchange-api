@@ -16,25 +16,25 @@ servers:
   - url: http://localhost/tea/v1
     description: Local development
 paths:
-  /product/{teiUrn}:
+  /product/{uuid}:
     patch:
       description: Update an existing TEA Product entry
       operationId: updateTeaProduct
       parameters:
-        - $ref: '#/components/parameters/productIdentifier'
+        - name: uuid
+          in: path
+          required: true
+          description: UUID of TEA Product in the TEA server
+          schema:
+            type: string
+            format: uuid
       requestBody:
         $ref: '#/components/requestBodies/UpdateTeaProduct'
       responses:
         '200':
-          description: TEA Product updated successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/product'
+          $ref: '#/components/responses/200-tea-product-updated'
         '400':
-          description: Invalid request body
-          content:
-            application/json: {}
+          $ref: '#/components/responses/400-invalid-request-body'
         '401':
           $ref: '#/components/responses/401-unauthorized'
         '404':
@@ -45,7 +45,13 @@ paths:
       description: Delete a TEA Product entry
       operationId: deleteTeaProduct
       parameters:
-        - $ref: '#/components/parameters/productIdentifier'
+        - name: uuid
+          in: path
+          required: true
+          description: UUID of TEA Product in the TEA server
+          schema:
+            type: string
+            format: uuid
       $ref: '#/components/operations/standardDelete'
       tags:
         - TEA Product
@@ -57,33 +63,9 @@ paths:
         $ref: '#/components/requestBodies/CreateTeaProduct'
       responses:
         '201':
-          description: Product created successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  identifier:
-                    $ref: '#/components/schemas/typeUuid'
-                  productName:
-                    type: string
-                  barcode:
-                    type: string
-                  sku:
-                    type: string
-                  vendorUuid:
-                    $ref: '#/components/schemas/typeUuid'
-                  teiUrns:
-                    type: array
-                    items:
-                      type: string
-                required:
-                  - identifier
-                  - productName
+          $ref: '#/components/responses/201-tea-product-created'
         '400':
-          description: Invalid request body
-          content:
-            application/json: {}
+          $ref: '#/components/responses/400-invalid-request-body'
         '401':
           $ref: '#/components/responses/401-unauthorized'
         '404':
@@ -98,27 +80,21 @@ paths:
         $ref: '#/components/requestBodies/CreateTeaComponent'
       responses:
         '201':
-          description: TEA Component created successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/component'
+          $ref: '#/components/responses/201-tea-component-created'
         '400':
-          description: Invalid parameters
-          content:
-            application/json: {}
+          $ref: '#/components/responses/400-invalid-parameters'
         '401':
           $ref: '#/components/responses/401-unauthorized'
         '404':
           $ref: '#/components/responses/404-object-by-id-not-found'
       tags:
         - TEA Component
-  /component/{componentIdentifier}:
+  /component/{uuid}:
     patch:
       description: Update an existing TEA Component entry
       operationId: updateTeaComponent
       parameters:
-        - name: componentIdentifier
+        - name: uuid
           in: path
           required: true
           description: UUID of TEA Component in the TEA server
@@ -129,15 +105,9 @@ paths:
         $ref: '#/components/requestBodies/UpdateTeaComponent'
       responses:
         '200':
-          description: TEA Component updated successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/component'
+          $ref: '#/components/responses/200-tea-component-updated'
         '400':
-          description: Invalid request body
-          content:
-            application/json: {}
+          $ref: '#/components/responses/400-invalid-request-body'
         '401':
           $ref: '#/components/responses/401-unauthorized'
         '404':
@@ -148,7 +118,7 @@ paths:
       description: Delete a TEA Component entry
       operationId: deleteTeaComponent
       parameters:
-        - name: componentIdentifier
+        - name: uuid
           in: path
           required: true
           description: UUID of TEA Component in the TEA server
@@ -166,27 +136,21 @@ paths:
         $ref: '#/components/requestBodies/CreateTeaRelease'
       responses:
         '201':
-          description: TEA Release created successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/release'
+          $ref: '#/components/responses/201-tea-release-created'
         '400':
-          description: Invalid parameters
-          content:
-            application/json: {}
+          $ref: '#/components/responses/400-invalid-parameters'
         '401':
           $ref: '#/components/responses/401-unauthorized'
         '404':
           $ref: '#/components/responses/404-object-by-id-not-found'
       tags:
         - TEA Release
-  /release/{releaseIdentifier}:
+  /release/{uuid}:
     patch:
       description: Update an existing TEA Release entry
       operationId: updateTeaRelease
       parameters:
-        - name: releaseIdentifier
+        - name: uuid
           in: path
           required: true
           description: UUID of TEA Release in the TEA server
@@ -197,15 +161,9 @@ paths:
         $ref: '#/components/requestBodies/UpdateTeaRelease'
       responses:
         '200':
-          description: TEA Release updated successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/release'
+          $ref: '#/components/responses/200-tea-release-updated'
         '400':
-          description: Invalid request body
-          content:
-            application/json: {}
+          $ref: '#/components/responses/400-invalid-request-body'
         '401':
           $ref: '#/components/responses/401-unauthorized'
         '404':
@@ -216,7 +174,7 @@ paths:
       description: Delete a TEA Release entry
       operationId: deleteTeaRelease
       parameters:
-        - name: releaseIdentifier
+        - name: uuid
           in: path
           required: true
           description: UUID of TEA Release in the TEA server
@@ -234,15 +192,9 @@ paths:
         $ref: '#/components/requestBodies/CreateTeaCollection'
       responses:
         '201':
-          description: TEA Collection created successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/collection'
+          $ref: '#/components/responses/201-tea-collection-created'
         '400':
-          description: Invalid request body
-          content:
-            application/json: {}
+          $ref: '#/components/responses/400-invalid-request-body'
         '401':
           $ref: '#/components/responses/401-unauthorized'
         '404':
@@ -256,12 +208,13 @@ components:
       description: An identifier with a specified type
       properties:
         idType:
-          description: Type of identifier, e.g. `tei`, `purl`, `cpe`
+          description: Type of identifier, e.g. `tei`, `purl`, `cpe`, `swid`
           type: string
           enum:
             - cpe
             - tei
             - purl
+            - swid
         idValue:
           description: Identifier value
           type: string
@@ -275,8 +228,6 @@ components:
           description: Checksum algorithm
           type: string
           enum:
-            - MD5
-            - SHA-1
             - SHA-256
             - SHA-384
             - SHA-512
@@ -302,23 +253,44 @@ components:
         name:
           type: string
           description: Product name
+        barcode:
+          type: string
+          description: Barcode
+        sku:
+          type: string
+          description: Product SKU
+        vendorUuid:
+          $ref: '#/components/schemas/typeUuid'
+          description: Vendor UUID
         identifiers:
           type: array
           description: List of identifiers for the product
           items:
             $ref: '#/components/schemas/identifier'
+        type:
+          $ref: '#/components/schemas/typePackage'
+          description: Product type
+        namespace:
+          type: string
+          description: Product namespace (optional)
+        version:
+          type: string
+          description: Product version (optional)
+        qualifiers:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              type: string
+          description: Array of qualifier objects containing related key-value pairs (optional)
+        subpath:
+          type: string
+          description: Subpath (optional)
         components:
           type: array
           description: List of TEA component UUIDs
           items:
             $ref: '#/components/schemas/typeUuid'
-        teiUrns:
-          type: array
-          items:
-            type: string
-            description: Transparency Exchange Identifier URN
-            pattern: ^urn:tei:[a-zA-Z0-9]+:[a-zA-Z0-9\.-]+:.+$
-          description: List of TEI URNs associated with this product
       required:
         - identifier
         - name
@@ -524,7 +496,136 @@ components:
     typeUuid:
       type: string
       format: uuid
+    typePackage:
+      type: string
+      description: Package type following PURL specification
+      enum:
+        - alpm
+        - apk
+        - bitbucket
+        - bitnami
+        - cargo
+        - cocoapods
+        - composer
+        - conan
+        - conda
+        - cpan
+        - cran
+        - deb
+        - docker
+        - gem
+        - generic
+        - github
+        - golang
+        - hackage
+        - hex
+        - huggingface
+        - luarocks
+        - maven
+        - mlflow
+        - npm
+        - nuget
+        - oci
+        - pub
+        - pypi
+        - qpkg
+        - rpm
+        - swid
+        - swift
   responses:
+    200-tea-product-updated:
+      description: TEA Product updated successfully
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/product'
+    200-tea-component-updated:
+      description: TEA Component updated successfully
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/component'
+    200-tea-release-updated:
+      description: TEA Release updated successfully
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/release'
+    201-tea-product-created:
+      description: Product created successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              identifier:
+                $ref: '#/components/schemas/typeUuid'
+                description: Unique identifier for the created product
+              name:
+                type: string
+                description: Product name
+              barcode:
+                type: string
+                description: Barcode
+              sku:
+                type: string
+                description: Product SKU
+              vendorUuid:
+                $ref: '#/components/schemas/typeUuid'
+                description: Vendor UUID
+              identifiers:
+                type: array
+                items:
+                  $ref: '#/components/schemas/identifier'
+                description: List of identifiers for the product (TEI, CPE, SWID, etc.)
+              type:
+                $ref: '#/components/schemas/typePackage'
+                description: Product type
+              namespace:
+                type: string
+                description: Product namespace (optional)
+              version:
+                type: string
+                description: Product version (optional)
+              qualifiers:
+                type: array
+                items:
+                  type: object
+                  additionalProperties:
+                    type: string
+                description: Array of qualifier objects containing related key-value pairs (optional)
+              subpath:
+                type: string
+                description: Subpath (optional)
+            required:
+              - identifier
+              - name
+    201-tea-component-created:
+      description: TEA Component created successfully
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/component'
+    201-tea-release-created:
+      description: TEA Release created successfully
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/release'
+    201-tea-collection-created:
+      description: TEA Collection created successfully
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/collection'
+    400-invalid-request-body:
+      description: Invalid request body
+      content:
+        application/json: {}
+    400-invalid-parameters:
+      description: Invalid parameters
+      content:
+        application/json: {}
     401-unauthorized:
       description: Authentication required
       content:
@@ -562,7 +663,7 @@ components:
         pattern: ^urn:tei:[a-zA-Z0-9]+:[a-zA-Z0-9\.-]+:.+$
     productIdentifier:
       name: productIdentifier
-      description: TEA Product Identifier
+      description: Customer unique Product Identifier
       in: path
       required: true
       schema:
@@ -664,25 +765,6 @@ components:
           $ref: '#/components/responses/401-unauthorized'
         '404':
           $ref: '#/components/responses/404-object-by-id-not-found'
-security:
-  - bearerAuth: []
-  - basicAuth: []
-  - mutualTLS: []
-  - pasetoAuth: []
-  - verifiableCredentials: []
-  - hmacAuth: []
-tags:
-  - name: TEA Product
-    description: Operations related to TEA Products
-  - name: TEA Component
-    description: Operations related to TEA Components
-  - name: TEA Release
-    description: Operations related to TEA Releases
-  - name: TEA Collection
-    description: Operations related to TEA Collections
-externalDocs:
-  description: Transparency Exchange API specification
-  url: https://github.com/CycloneDX/transparency-exchange-api
   requestBodies:
     UpdateTeaProduct:
       required: true
@@ -703,8 +785,13 @@ externalDocs:
               vendorUuid:
                 $ref: '#/components/schemas/typeUuid'
                 description: Vendor UUID
+              identifiers:
+                type: array
+                items:
+                  $ref: '#/components/schemas/identifier'
+                description: List of identifiers for the product (TEI, CPE, SWID, etc.)
               type:
-                type: string
+                $ref: '#/components/schemas/typePackage'
                 description: Product type (required)
               namespace:
                 type: string
@@ -713,10 +800,12 @@ externalDocs:
                 type: string
                 description: Product version (optional)
               qualifiers:
-                type: object
-                additionalProperties:
-                  type: string
-                description: Qualifiers as key-value pairs (optional)
+                type: array
+                items:
+                  type: object
+                  additionalProperties:
+                    type: string
+                description: Array of qualifier objects containing related key-value pairs (optional)
               subpath:
                 type: string
                 description: Subpath (optional)
@@ -730,19 +819,27 @@ externalDocs:
                 vendorUuid: 123e4567-e89b-12d3-a456-426614174000
                 type: generic
                 version: 1.0.0
+                qualifiers:
+                  - os: linux
+                    arch: x86_64
             full:
-              summary: Full product update with all PURL fields
+              summary: Full product update with all fields
               value:
                 name: Updated Product Name
                 barcode: '123456789012'
                 sku: PROD-001
                 vendorUuid: 123e4567-e89b-12d3-a456-426614174000
+                identifiers:
+                  - idType: tei
+                    idValue: urn:tei:uuid:example.com:d4d9f54a-abcf-11ee-ac79-1a52914d44b1
+                  - idType: cpe
+                    idValue: cpe:2.3:a:example:product:2.1.0:*:*:*:*:*:*:*
                 type: maven
                 namespace: org.example
                 version: 2.1.0
                 qualifiers:
-                  classifier: sources
-                  repository_url: https://repo.example.com
+                  - classifier: sources
+                    repository_url: https://repo.example.com
                 subpath: src/main
     CreateTeaProduct:
       required: true
@@ -762,15 +859,13 @@ externalDocs:
               vendorUuid:
                 $ref: '#/components/schemas/typeUuid'
                 description: Vendor UUID
-              teiUrns:
+              identifiers:
                 type: array
                 items:
-                  type: string
-                  description: Transparency Exchange Identifier URN
-                  pattern: ^urn:tei:[a-zA-Z0-9]+:[a-zA-Z0-9\.-]+:.+$
-                description: List of TEI URNs associated with this product
+                  $ref: '#/components/schemas/identifier'
+                description: List of identifiers for the product (TEI, CPE, SWID, etc.)
               type:
-                type: string
+                $ref: '#/components/schemas/typePackage'
                 description: Product type (required)
               namespace:
                 type: string
@@ -779,10 +874,12 @@ externalDocs:
                 type: string
                 description: Product version (optional)
               qualifiers:
-                type: object
-                additionalProperties:
-                  type: string
-                description: Qualifiers as key-value pairs (optional)
+                type: array
+                items:
+                  type: object
+                  additionalProperties:
+                    type: string
+                description: Array of qualifier objects containing related key-value pairs (optional)
               subpath:
                 type: string
                 description: Subpath (optional)
@@ -794,6 +891,9 @@ externalDocs:
               value:
                 name: Example Product
                 type: generic
+                qualifiers:
+                  - os: linux
+                    arch: x86_64
             full:
               summary: Full product creation with all fields
               value:
@@ -801,14 +901,17 @@ externalDocs:
                 barcode: '123456789012'
                 sku: PROD-001
                 vendorUuid: 123e4567-e89b-12d3-a456-426614174000
-                teiUrns:
-                  - urn:tei:uuid:example.com:d4d9f54a-abcf-11ee-ac79-1a52914d44b1
+                identifiers:
+                  - idType: tei
+                    idValue: urn:tei:uuid:example.com:d4d9f54a-abcf-11ee-ac79-1a52914d44b1
+                  - idType: cpe
+                    idValue: cpe:2.3:a:example:product:2.1.0:*:*:*:*:*:*:*
                 type: maven
                 namespace: org.example
                 version: 2.1.0
                 qualifiers:
-                  classifier: sources
-                  repository_url: https://repo.example.com
+                  - classifier: sources
+                    repository_url: https://repo.example.com
                 subpath: src/main
     CreateTeaComponent:
       required: true
@@ -826,7 +929,26 @@ externalDocs:
                 type: array
                 items:
                   $ref: '#/components/schemas/identifier'
-                description: List of identifiers for the component
+                description: List of identifiers for the component (TEI, CPE, SWID, etc.)
+              type:
+                $ref: '#/components/schemas/typePackage'
+                description: Component type (required)
+              namespace:
+                type: string
+                description: Component namespace (optional)
+              version:
+                type: string
+                description: Component version (optional)
+              qualifiers:
+                type: array
+                items:
+                  type: object
+                  additionalProperties:
+                    type: string
+                description: Array of qualifier objects containing related key-value pairs (optional)
+              subpath:
+                type: string
+                description: Subpath (optional)
             required:
               - productIdentifier
               - name
@@ -836,9 +958,27 @@ externalDocs:
               value:
                 productIdentifier: 123e4567-e89b-12d3-a456-426614174000
                 name: Example Component
+                type: maven
+                qualifiers:
+                  - classifier: jar
+                    type: binary
+            full:
+              summary: Full component creation with all fields
+              value:
+                productIdentifier: 123e4567-e89b-12d3-a456-426614174000
+                name: Apache Log4j Core Component
                 identifiers:
-                  - idType: purl
-                    idValue: pkg:maven/org.example/component@1.0.0
+                  - idType: cpe
+                    idValue: cpe:2.3:a:apache:log4j:2.17.1:*:*:*:*:*:*:*
+                  - idType: tei
+                    idValue: urn:tei:uuid:apache.org:log4j-core-component
+                type: maven
+                namespace: org.apache.logging.log4j
+                version: 2.17.1
+                qualifiers:
+                  - classifier: sources
+                    repository_url: https://github.com/apache/logging-log4j2
+                subpath: log4j-core
     UpdateTeaComponent:
       required: true
       content:
@@ -853,7 +993,54 @@ externalDocs:
                 type: array
                 items:
                   $ref: '#/components/schemas/identifier'
-                description: List of identifiers for the component
+                description: List of identifiers for the component (TEI, CPE, SWID, etc.)
+              type:
+                $ref: '#/components/schemas/typePackage'
+                description: Component type
+              namespace:
+                type: string
+                description: Component namespace (optional)
+              version:
+                type: string
+                description: Component version (optional)
+              qualifiers:
+                type: array
+                items:
+                  type: object
+                  additionalProperties:
+                    type: string
+                description: Array of qualifier objects containing related key-value pairs (optional)
+              subpath:
+                type: string
+                description: Subpath (optional)
+          examples:
+            basic:
+              summary: Basic component update
+              value:
+                name: Updated Component Name
+                type: maven
+                version: 2.0.0
+                qualifiers:
+                  - classifier: jar
+                    type: binary
+            full:
+              summary: Full component update with all fields
+              value:
+                name: Updated Apache Log4j Core Component
+                identifiers:
+                  - idType: cpe
+                    idValue: cpe:2.3:a:apache:log4j:2.18.0:*:*:*:*:*:*:*
+                  - idType: tei
+                    idValue: urn:tei:uuid:apache.org:log4j-core-component-updated
+                type: maven
+                namespace: org.apache.logging.log4j
+                version: 2.18.0
+                qualifiers:
+                  - classifier: sources
+                    repository_url: https://github.com/apache/logging-log4j2
+                  - type: library
+                    scope: compile
+                subpath: log4j-core
     CreateTeaRelease:
       required: true
       content:
@@ -863,7 +1050,7 @@ externalDocs:
             properties:
               componentIdentifier:
                 $ref: '#/components/schemas/typeUuid'
-                description: UUID of the TEA Component
+                description: Customer unique identifier of the TEA Component
               version:
                 type: string
                 description: Version number
@@ -916,6 +1103,24 @@ externalDocs:
                 type: array
                 items:
                   $ref: '#/components/schemas/identifier'
+          examples:
+            basic:
+              summary: Basic release update
+              value:
+                version: 1.0.1
+                releaseDate: '2024-03-21T10:15:00Z'
+                preRelease: false
+            full:
+              summary: Full release update with identifiers
+              value:
+                version: 2.0.0
+                releaseDate: '2024-04-15T14:30:00Z'
+                preRelease: false
+                identifiers:
+                  - idType: purl
+                    idValue: pkg:maven/org.example/component@2.0.0
+                  - idType: cpe
+                    idValue: cpe:2.3:a:example:component:2.0.0:*:*:*:*:*:*:*
     CreateTeaCollection:
       required: true
       content:
@@ -925,7 +1130,7 @@ externalDocs:
             properties:
               releaseIdentifier:
                 $ref: '#/components/schemas/typeUuid'
-                description: UUID of the TEA Release
+                description: Customer unique identifier of the TEA Release
               updateReason:
                 $ref: '#/components/schemas/collectionUpdateReason'
                 description: Reason for collection creation or update
@@ -990,7 +1195,7 @@ externalDocs:
                   comment: Initial release of collection
                 artifacts:
                   - name: Example SBOM
-                    type: bom
+                    type: BOM
                     author:
                       name: John Doe
                       email: john.doe@example.com
@@ -1003,3 +1208,22 @@ externalDocs:
                           - algType: SHA-256
                             algValue: a94a8fe5ccb19ba61c4c0873d391e987982fbbd3
                         signatureUrl: https://example.com/sbom.xml.sig
+security:
+  - bearerAuth: []
+  - basicAuth: []
+  - mutualTLS: []
+  - pasetoAuth: []
+  - verifiableCredentials: []
+  - hmacAuth: []
+tags:
+  - name: TEA Product
+    description: Operations related to TEA Products
+  - name: TEA Component
+    description: Operations related to TEA Components
+  - name: TEA Release
+    description: Operations related to TEA Releases
+  - name: TEA Collection
+    description: Operations related to TEA Collections
+externalDocs:
+  description: Transparency Exchange API specification
+  url: https://github.com/CycloneDX/transparency-exchange-api
