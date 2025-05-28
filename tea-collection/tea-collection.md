@@ -17,6 +17,17 @@ A TEA Component Release object has the following parts:
 - __identifiers__: List of identifiers for the component
   - __idType__: Type of identifier, e.g. `tei`, `purl`, `cpe`
   - __idValue__: Identifier value
+- __formats__: List of different formats of this component release
+  - __id__: A short name for this release format
+  - __description__: A free text describing the component variant
+  - __identifiers__: List identifiers for this release format
+    - __idType__: Type of identifier, e.g. `tei`, `purl`, `cpe`
+    - __idValue__: Identifier value
+  - __url__: Direct download URL for the release format
+  - __signatureUrl__: Direct download URL for an external signature of the release format
+  - __checksums__: List of checksums for the release format
+    - __algType__: Checksum algorithm
+    - __algValue__: Checksum value
 
 ### Examples
 
@@ -129,6 +140,9 @@ The TEA Artifact object has the following parts:
 - __name__: Artifact name.
 - __type__: Type of artifact.
   See [TEA Artifact types](#tea-artifact-types) for a list.
+- __componentFormats__: 
+  List of `id`s of component formats that this artifact applies to.
+  If absent, the artifact applies to all components.
 - __formats__: List of objects with the same content, but in different formats.
   The order of the list has no significance.
   - __mime_type__: The MIME type of the document
