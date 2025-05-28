@@ -15,5 +15,5 @@ work during our meetings and workshops. They are noted here in alphabetic order:
 * Piotr P. Karwasz, The Apache Software Foundation, pkarwasz-ecma@apache.org
 * Steve Springett
 * Valerio Mulas
-* Viktor Peterson
+* Viktor Petersson, sbomify, United Kingdom, hello@sbomify.com
 
