@@ -348,10 +348,10 @@ components:
           type: string
           example: 1.2.3
         createdDate:
-          description: Timestamp when this Release was created in TEA
+          description: Timestamp when this Release was created in TEA (for sorting purposes)
           "$ref": "#/components/schemas/date-time"
         releaseDate:
-          description: Timestamp of the release (for sorting purposes)
+          description: Timestamp of the release
           "$ref": "#/components/schemas/date-time"
         preRelease:
           type: boolean
