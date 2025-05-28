@@ -166,7 +166,7 @@ paths:
   /release/{uuid}/collection/{collectionVersion}:
     get:
       description: Get a specific Collection (by version) for a TEA Release by its UUID
-      operationId: getTeaCollectionVersionByReleaseId
+      operationId: getCollection
       parameters:
         - name: uuid
           in: path
