@@ -342,6 +342,9 @@ components:
           description: Version number
           type: string
           example: 1.2.3
+        createdDate:
+          description: Timestamp when this Release was created in TEA
+          "$ref": "#/components/schemas/date-time"
         releaseDate:
           description: Timestamp of the release (for sorting purposes)
           "$ref": "#/components/schemas/date-time"
@@ -359,11 +362,12 @@ components:
       required:
         - uuid
         - version
-        - releaseDate
+        - createdDate
       examples:
         # Apache Tomcat 11.0.6
         - uuid: 605d0ecb-1057-40e4-9abf-c400b10f0345
           version: "11.0.6"
+          createdDate: 2025-04-01T15:43:00Z
           releaseDate: 2025-04-01T15:43:00Z
           identifiers:
             - idType: PURL
@@ -371,6 +375,7 @@ components:
         # Different release of Apache Tomcat
         - uuid: da89e38e-95e7-44ca-aa7d-f3b6b34c7fab
           version: "10.1.40"
+          createdDate: 2025-04-01T18:20:00Z
           releaseDate: 2025-04-01T18:20:00Z
           identifiers:
             - idType: PURL
@@ -378,7 +383,7 @@ components:
         # A pre-release of Apache Tomcat
         - uuid: 95f481df-f760-47f4-b2f2-f8b76d858450
           version: "11.0.0-M26"
-          releaseDate: 2024-09-13T17:49:00Z
+          createdDate: 2024-09-13T17:49:00Z
           preRelease: true
           identifiers:
             - idType: PURL
