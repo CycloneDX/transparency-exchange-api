@@ -110,10 +110,10 @@ paths:
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
         - TEA Component
-  /release/{uuid}/collection:
+  /release/{uuid}/collection/latest:
     get:
       description: Get the latest TEA Collection belonging to the TEA Release
-      operationId: getLatestCollectionByReleaseId
+      operationId: getLatestCollectionForReleaseId
       parameters:
         - name: uuid
           in: path
