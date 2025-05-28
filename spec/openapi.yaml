@@ -114,7 +114,7 @@ paths:
   /release/{uuid}/collection/latest:
     get:
       description: Get the latest TEA Collection belonging to the TEA Release
-      operationId: getLatestCollectionForReleaseId
+      operationId: getLatestCollection
       parameters:
         - name: uuid
           in: path
