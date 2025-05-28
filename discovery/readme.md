@@ -3,12 +3,14 @@
 **NOTE**: _This is a proposal for the WG_
 
 - [From product identifier to API endpoint](#from-product-identifier-to-api-endpoint)
+- [Advertising the TEI](#advertising-the-tei)
 - [TEA Discovery - defining an extensible identifier](#tea-discovery---defining-an-extensible-identifier)
 - [The TEI URN: An extensible identifier](#the-tei-urn-an-extensible-identifier)
   - [TEI syntax](#tei-syntax)
   - [TEI types](#tei-types)
   - [TEI resolution using DNS](#tei-resolution-using-dns)
-  - [Finding the Index using DNS result](#finding-the-index-using-dns-result)
+- [Connecting to the API](#connecting-to-the-api)
+  - [Overview: Finding the Index using DNS result](#overview-finding-the-index-using-dns-result)
 - [The TEA Version Index](#the-tea-version-index)
 - [References](#references)
 
@@ -189,14 +191,14 @@ Append the product part of the TEI to the URI found
 - TEI: `urn:tei:uuid:products.example.com:d4d9f54a-abcf-11ee-ac79-1a52914d44b1`
 - DNS record: `products.example.com`
 - URL: `https://products.example.com/.well-known/tea/d4d9f54a-abcf-11ee-ac79-1a52914d44b1/`
-- HTTP 302 redirect to "https://teapot02.consumer.example.com/tea/v2/product-index/d4d9f54a-abcf-11ee-ac79-1a52914d44b1'
+- HTTP 302 redirect to "https://teapot02.consumer.example.com/tea/v2/product/d4d9f54a-abcf-11ee-ac79-1a52914d44b1'
 
 Always prefix with the https:// scheme. http (unencrypted) is not valid.
 
 - TEI: `urn:tei:uuid:products.example.com:d4d9f54a-abcf-11ee-ac79-1a52914d44b1`
 - URL: `https://products.example.com/.well-known/tea/d4d9f54a-abcf-11ee-ac79-1a52914d44b1/`
 
-**NOTE:** The `/.well-known/tea`names space needs to be registred.
+**NOTE:** The `/.well-known/tea` names space needs to be registred.
 
 ## The TEA Version Index
 
