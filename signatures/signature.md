@@ -11,7 +11,7 @@ digital signatures.
 
 Within the TEA API documents may be signed with an electronic
 signature. CycloneDX Documents support [signatures](https://cyclonedx.org/use-cases/#authenticity) within
-the JSON file, but other artefacts may need external
+the JSON and XML files, but other artefacts may need external
 signature files, a detached signature.
 
 ## Requirements
