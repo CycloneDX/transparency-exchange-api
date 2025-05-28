@@ -3,12 +3,14 @@
 **NOTE**: _This is a proposal for the WG_
 
 - [From product identifier to API endpoint](#from-product-identifier-to-api-endpoint)
+- [Advertising the TEI](#advertising-the-tei)
 - [TEA Discovery - defining an extensible identifier](#tea-discovery---defining-an-extensible-identifier)
 - [The TEI URN: An extensible identifier](#the-tei-urn-an-extensible-identifier)
   - [TEI syntax](#tei-syntax)
   - [TEI types](#tei-types)
   - [TEI resolution using DNS](#tei-resolution-using-dns)
-  - [Finding the Index using DNS result](#finding-the-index-using-dns-result)
+- [Connecting to the API](#connecting-to-the-api)
+  - [Overview: Finding the Index using DNS result](#overview-finding-the-index-using-dns-result)
 - [The TEA Version Index](#the-tea-version-index)
 - [References](#references)
 
@@ -160,7 +162,7 @@ This is solved by using the ".well-known" name space as defined by the IETF.
 
 The name in the DNS name part points to a set of DNS records.
 
-A TEI with name `tea.example.com` queries for `tea.example.com` `A` and `AAAA` records.
+A TEI with `domain-name` `tea.example.com` queries DNS for `tea.example.com`, considering `A`, `AAAA` and `CNAME` records.
 These point to the hosts available for the Transparency Exchange API.
 
 The TEA client connects to the host using HTTPS and validates the certificate.
