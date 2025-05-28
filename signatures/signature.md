@@ -18,7 +18,7 @@ signature files, a detached signature.
 
 Digital signatures provide integrity and identity to published data.
 
-- __Integrity__: Documents dowloaded needs to be the same
+- __Integrity__: Documents dowloaded must be the same
   as documents published
 - __Identity__: Customers need to be able to verify the
   publisher of the documents and verify that it is
