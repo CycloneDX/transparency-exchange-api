@@ -10,7 +10,7 @@ validated. In some vertical markets branch standards may require
 digital signatures.
 
 Within the TEA API documents may be signed with an electronic
-signature. CycloneDX boms supports signatures within
+signature. CycloneDX Documents support [signatures](https://cyclonedx.org/use-cases/#authenticity) within
 the JSON file, but other artefacts may need external
 signature files, a detached signature.
 
