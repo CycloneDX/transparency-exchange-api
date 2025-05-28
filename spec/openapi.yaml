@@ -17,17 +17,18 @@ servers:
   - url: http://localhost/tea/v1
     description: Local development
 paths:
-  /product/{tei}:
+  /product/{uuid}:
     get:
       description: Returns the corresponding TEA components for a given TEA product UUID.
       operationId: getTeaProductByUuid
       parameters:
-        - name: tei
+        - name: uuid
           in: path
           required: true
-          description: TEI of the TEA product in the TEA server
+          description: UUID of the TEA product in the TEA server
           schema:
             type: string
+            format: uuid
       responses:
         '200':
           description: Requested TEA Product found and returned
@@ -286,7 +287,11 @@ components:
             - idType: CPE
               idValue: cpe:2.3:a:apache:log4j
             - idType: PURL
+              idValue: pkg:maven/org.apache.logging.log4j/log4j-api
+            - idType: PURL
               idValue: pkg:maven/org.apache.logging.log4j/log4j-core
+            - idType: PURL
+              idValue: pkg:maven/org.apache.logging.log4j/log4j-layout-template-json
           components:
             - 3910e0fd-aff4-48d6-b75f-8bf6b84687f0
             - b844c9bd-55d6-478c-af59-954a932b6ad3
