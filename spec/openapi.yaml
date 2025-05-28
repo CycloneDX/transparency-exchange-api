@@ -162,10 +162,10 @@ paths:
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
         - TEA Release
-  /release/{uuid}/collection/{version}:
+  /release/{uuid}/collection/{collectionVersion}:
     get:
-      description: Get all versions of a TEA Collection by its UUID
-      operationId: getTeaCollectionVersionByCollectionIdAndVersion
+      description: Get a specific Collection (by version) for a TEA Release by its UUID
+      operationId: getTeaCollectionVersionByReleaseId
       parameters:
         - name: uuid
           in: path
@@ -173,7 +173,7 @@ paths:
           description: UUID of TEA Collection in the TEA server
           schema:
             "$ref": "#/components/schemas/uuid"
-        - name: version
+        - name: collectionVersion
           in: path
           required: true
           description: Version of TEA Collection
