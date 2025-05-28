@@ -44,7 +44,7 @@ best current practise.
 ## API trust
 
 The TEA API is built on the HTTP protocol with TLS encryption
-and authentication, using the https:// URL scheme.
+and authentication, using the `https://` URL scheme.
 
 The TLS server certificate is normally issued by a public Certificate
 Authority that is part of the Web PKI. The client needs to validate
