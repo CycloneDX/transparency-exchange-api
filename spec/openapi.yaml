@@ -339,6 +339,7 @@ components:
     #
     release:
       type: object
+      description: A TEA Component Release
       properties:
         uuid:
           description: A unique identifier for the TEA Component Release
@@ -363,11 +364,11 @@ components:
           description: List of identifiers for the component
           items:
             "$ref": "#/components/schemas/identifier"
-        formats:
+        distributions:
           type: array
           description: List of different formats of this component release
           items:
-            "$ref": "#/components/schemas/release-format"
+            "$ref": "#/components/schemas/release-distribution"
         # add lifecycle here
       required:
         - uuid
@@ -382,7 +383,7 @@ components:
           identifiers:
             - idType: PURL
               idValue: pkg:maven/org.apache.tomcat/tomcat@11.0.7
-          formats:
+          distributions:
             - id: zip
               description: Core binary distribution, zip archive
               identifiers:
@@ -428,7 +429,7 @@ components:
           identifiers:
             - idType: PURL
               idValue: pkg:maven/org.apache.tomcat/tomcat@11.0.0-M26
-    release-format:
+    release-distribution:
       type: object
       properties:
         id:
