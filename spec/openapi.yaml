@@ -97,20 +97,12 @@ paths:
         '404':
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
-<<<<<<< Updated upstream
-        - TEA Component
-  /release/{uuid}/collection/latest:
-    get:
-      description: Get the latest TEA Collection belonging to the TEA Release
-      operationId: getLatestCollection
-=======
         - TEA Collection
   
   /component/{id}/collection/latest:
     get:
       description: Get the latest TEA Collection belonging for this TEA Component
       operationId: getLatestCollectionForComponent
->>>>>>> Stashed changes
       parameters:
         - name: id
           in: path
@@ -142,40 +134,8 @@ paths:
           required: true
           description: ID of TEA Component in the TEA Service
           schema:
-<<<<<<< Updated upstream
-            type: string
-            format: uuid
-      responses:
-        '200':
-          description: Requested TEA Collection found and returned
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  "$ref": "#/components/schemas/collection"
-        '400':
-          $ref: "#/components/responses/400-invalid-request"
-        '404':
-          $ref: "#/components/responses/404-object-by-id-not-found"
-      tags:
-        - TEA Release
-  /release/{uuid}/collection/{collectionVersion}:
-    get:
-      description: Get a specific Collection (by version) for a TEA Release by its UUID
-      operationId: getCollection
-      parameters:
-        - name: uuid
-          in: path
-          required: true
-          description: UUID of TEA Collection in the TEA server
-          schema:
-            "$ref": "#/components/schemas/uuid"
-        - name: collectionVersion
-=======
             $ref: "#/components/schemas/uuid"
         - name: version
->>>>>>> Stashed changes
           in: path
           required: true
           description: Version of TEA Collection
@@ -551,64 +511,6 @@ components:
     #
     # TEA Release and related objects
     #
-<<<<<<< Updated upstream
-    release:
-      type: object
-      properties:
-        uuid:
-          description: A unique identifier for the TEA Component Release
-          "$ref": "#/components/schemas/uuid"
-        version:
-          description: Version number
-          type: string
-          example: 1.2.3
-        createdDate:
-          description: Timestamp when this Release was created in TEA (for sorting purposes)
-          "$ref": "#/components/schemas/date-time"
-        releaseDate:
-          description: Timestamp of the release
-          "$ref": "#/components/schemas/date-time"
-        preRelease:
-          type: boolean
-          description: |
-            A flag indicating pre-release (or beta) status.
-            May be disabled after the creation of the release object, but can't be enabled after creation of an object.
-        identifiers:
-          type: array
-          description: List of identifiers for the component
-          items:
-            "$ref": "#/components/schemas/identifier"
-        # add lifecycle here
-      required:
-        - uuid
-        - version
-        - createdDate
-      examples:
-        # Apache Tomcat 11.0.6
-        - uuid: 605d0ecb-1057-40e4-9abf-c400b10f0345
-          version: "11.0.6"
-          createdDate: 2025-04-01T15:43:00Z
-          releaseDate: 2025-04-01T15:43:00Z
-          identifiers:
-            - idType: PURL
-              idValue: pkg:maven/org.apache.tomcat/tomcat@11.0.6
-        # Different release of Apache Tomcat
-        - uuid: da89e38e-95e7-44ca-aa7d-f3b6b34c7fab
-          version: "10.1.40"
-          createdDate: 2025-04-01T18:20:00Z
-          releaseDate: 2025-04-01T18:20:00Z
-          identifiers:
-            - idType: PURL
-              idValue: pkg:maven/org.apache.tomcat/tomcat@10.1.40
-        # A pre-release of Apache Tomcat
-        - uuid: 95f481df-f760-47f4-b2f2-f8b76d858450
-          version: "11.0.0-M26"
-          createdDate: 2024-09-13T17:49:00Z
-          preRelease: true
-          identifiers:
-            - idType: PURL
-              idValue: pkg:maven/org.apache.tomcat/tomcat@11.0.0-M26
-=======
     # release:
     #   type: object
     #   properties:
@@ -660,7 +562,6 @@ components:
     #       identifiers:
     #         - idType: PURL
     #           idValue: pkg:maven/org.apache.tomcat/tomcat@11.0.0-M26
->>>>>>> Stashed changes
 
     #
     # TEA Collection and related objects
