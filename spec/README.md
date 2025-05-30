@@ -1,6 +1,6 @@
 # TEA OpenAPI Spec
 
-The OpenAPI 3.1 specification for the Transparency Exchange API is available in [openapi.json](./openapi.json).
+The OpenAPI 3.1 specification for the Transparency Exchange API is available in [openapi.yaml](./openapi.yaml).
 
 - [Generating API Clients from OpenAPI Spec](#generating-api-clients-from-openapi-spec)
 
@@ -23,7 +23,7 @@ Fire up the `swagger-ui` with Docker from the root of the repository:
 ```bash
 docker run \
     -p 8080:8080 \
-    -e SWAGGER_JSON=/koala/spec/openapi.json \
+    -e SWAGGER_JSON=/koala/spec/openapi.yaml \
     -v $(pwd):/koala swaggerapi/swagger-ui
 ```
 

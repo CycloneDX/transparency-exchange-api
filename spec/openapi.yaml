@@ -12,7 +12,7 @@ info:
   license:
     name: Apache 2.0
     url: https://github.com/CycloneDX/transparency-exchange-api/blob/main/LICENSE
-  version: 0.0.3
+  version: 0.1.0-beta.1
 servers:
   - url: http://localhost/tea/v1
     description: Local development
@@ -111,10 +111,10 @@ paths:
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
         - TEA Component
-  /release/{uuid}/collection:
+  /release/{uuid}/collection/latest:
     get:
       description: Get the latest TEA Collection belonging to the TEA Release
-      operationId: getLatestCollectionByReleaseId
+      operationId: getLatestCollection
       parameters:
         - name: uuid
           in: path
@@ -163,10 +163,10 @@ paths:
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
         - TEA Release
-  /release/{uuid}/collection/{version}:
+  /release/{uuid}/collection/{collectionVersion}:
     get:
-      description: Get all versions of a TEA Collection by its UUID
-      operationId: getTeaCollectionVersionByCollectionIdAndVersion
+      description: Get a specific Collection (by version) for a TEA Release by its UUID
+      operationId: getCollection
       parameters:
         - name: uuid
           in: path
@@ -174,7 +174,7 @@ paths:
           description: UUID of TEA Collection in the TEA server
           schema:
             "$ref": "#/components/schemas/uuid"
-        - name: version
+        - name: collectionVersion
           in: path
           required: true
           description: Version of TEA Collection
@@ -347,8 +347,11 @@ components:
           description: Version number
           type: string
           example: 1.2.3
+        createdDate:
+          description: Timestamp when this Release was created in TEA (for sorting purposes)
+          "$ref": "#/components/schemas/date-time"
         releaseDate:
-          description: Timestamp of the release (for sorting purposes)
+          description: Timestamp of the release
           "$ref": "#/components/schemas/date-time"
         preRelease:
           type: boolean
@@ -369,12 +372,13 @@ components:
       required:
         - uuid
         - version
-        - releaseDate
+        - createdDate
       examples:
         # Apache Tomcat 11.0.7
         - uuid: 605d0ecb-1057-40e4-9abf-c400b10f0345
           version: "11.0.7"
-          releaseDate: 2025-05-07T18:08:00Z
+          createdDate: 2025-05-07T18:08:00Z
+          releaseDate: 2025-05-12T18:08:00Z
           identifiers:
             - idType: PURL
               idValue: pkg:maven/org.apache.tomcat/tomcat@11.0.7
@@ -419,7 +423,7 @@ components:
         # A pre-release of Apache Tomcat
         - uuid: 95f481df-f760-47f4-b2f2-f8b76d858450
           version: "11.0.0-M26"
-          releaseDate: 2024-09-13T17:49:00Z
+          createdDate: 2024-09-13T17:49:00Z
           preRelease: true
           identifiers:
             - idType: PURL
