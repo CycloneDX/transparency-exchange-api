@@ -1,33 +1,51 @@
-# TEA release and collections
+# TEA Releases and Collections
 
-## The TEA release object (TRO)
+## The TEA Component Release object (TRO)
 
-The TEA Component Release object corresponds to a specific variant
-(version) of a component with a release identifier (string),
-release timestamp and a lifecycle enumeration for the release.
-The UUID of the TEA Component Release object matches the UUID of the associated TEA Collection objects (TCO).
+A TEA Component Release object represents a specific version of a component,
+identified by a unique release identifier and associated metadata.
+Each release may include multiple distributions,
+which capture variations such as architecture, packaging, or localization.
 
-A TEA Component Release object has the following parts:
+- For software components,
+  each distribution typically corresponds to a different digital file delivered to users
+  (e.g., by platform or packaging type).
+- For hardware components, distributions may reflect differences in packaging, language, or other physical attributes.
 
-- __uuid__: A unique identifier for the TEA Component Release
-- __version__: Version number
-- __releaseDate__: Timestamp of the release (for sorting purposes)
-- __preRelease__: A flag indicating pre-release (or beta) status.
-  May be disabled after the creation of the release object, but can't be enabled after creation of an object.
-- __identifiers__: List of identifiers for the component
-  - __idType__: Type of identifier, e.g. `tei`, `purl`, `cpe`
-  - __idValue__: Identifier value
-- __formats__: List of different formats of this component release
-  - __id__: A short name for this release format
-  - __description__: A free text describing the component variant
-  - __identifiers__: List identifiers for this release format
-    - __idType__: Type of identifier, e.g. `tei`, `purl`, `cpe`
-    - __idValue__: Identifier value
-  - __url__: Direct download URL for the release format
-  - __signatureUrl__: Direct download URL for an external signature of the release format
-  - __checksums__: List of checksums for the release format
-    - __algType__: Checksum algorithm
-    - __algValue__: Checksum value
+Each distribution is assigned a unique `distributionType`, defined by the producer,
+which is used to associate relevant TEA Artifacts with that distribution.
+Since TEA Artifacts can be associated with multiple release objects,
+the taxonomy for `distributionType` values should be defined on a TEA service level
+and consistently applied to all TEA Artifacts published by that producer.
+This ensures global uniqueness and reliable association across releases.
+
+The `uuid` of the TEA Component Release object is identical to the `uuid` of its associated
+[TEA Collection object (TCO)](#the-tea-collection-object-tco).
+
+### Structure
+
+A TEA Component Release object contains the following fields:
+
+- __uuid__: Unique identifier for the TEA Component Release.
+- __version__: Version number of the release.
+- __createdDate__: Timestamp when the release object was created.
+- __releaseDate__: Timestamp of the actual release.
+- __preRelease__: Boolean flag indicating if this is a pre-release (e.g., beta).
+  This flag can be disabled after creation, but not enabled.
+- __identifiers__: List of identifiers for the component.
+  - __idType__: Type of identifier (e.g., `tei`, `purl`, `cpe`).
+  - __idValue__: Value of the identifier.
+- __distributions__: List of release distributions, each with:
+  - __distributionType__: Unique identifier for the distribution type.
+  - __description__: Free-text description of the distribution.
+  - __identifiers__: List of identifiers specific to this distribution.
+    - __idType__: Type of identifier (e.g., `tei`, `purl`, `cpe`).
+    - __idValue__: Value of the identifier.
+  - __url__: Direct download URL for the distribution.
+  - __signatureUrl__: Direct download URL for the distribution's external signature.
+  - __checksums__: List of checksums for the distribution.
+    - __algType__: Checksum algorithm used.
+    - __algValue__: Checksum value.
 
 ### Examples
 
@@ -129,32 +147,55 @@ The TEA Collection object has the following parts:
     - __type__: Type of update reason.
       See [reasons for TEA Collection update](#the-reason-for-tco-update-enum) below.
     - __comment__: Free text description.
-- __artifacts__: List of TEA artifact objects.
-  See [below](#artifact-object).
+  -
+  - __artifacts__: List of TEA artifact objects.
+    See [below](#artifact-object).
 
-### Artifact object
+## The TEA Artifact object
 
-The TEA Artifact object has the following parts:
+A TEA Artifact object represents a security-related document or file linked to a component release,
+such as an SBOM, VEX, attestation, or license.
+Artifacts are strictly **immutable**: if the underlying document changes, a new TEA Artifact object must be created.
+URLs referenced in this object must always resolve to the same resource to ensure that published checksums remain valid and verifiable.
 
-- __uuid__: UUID of the TEA Artifact object.
-- __name__: Artifact name.
-- __type__: Type of artifact.
-  See [TEA Artifact types](#tea-artifact-types) for a list.
-- __componentFormats__: 
-  List of `id`s of component formats that this artifact applies to.
-  If absent, the artifact applies to all components.
-- __formats__: List of objects with the same content, but in different formats.
-  The order of the list has no significance.
-  - __mime_type__: The MIME type of the document
-  - __description__: A free text describing the artifact
-  - __url__: Direct download URL for the artifact
-  - __signature_url__: Direct download URL for an external signature of the artifact
-  - __checksums__: List of checksums for the artifact
-    - __algType__: Checksum algorithm
-      See [CycloneDX checksum algorithms](https://cyclonedx.org/docs/1.6/json/#components_items_hashes_items_alg) for a list of supported values.
-    - __algValue__: Checksum value
+TEA Artifacts can be reused across multiple TEA Collections,
+allowing the same document to be referenced by different component releases or even different components.
+This promotes consistency and reduces duplication.
 
-### The reason for TCO update enum
+Optionally, each artifact can specify the `distributionType` identifiers of the distributions it applies to.
+If this field is absent, the artifact is considered applicable to all distributions of the release.
+
+### Structure
+
+A TEA Artifact object contains the following fields:
+
+- __uuid__: The UUID of the TEA Artifact object. This uniquely identifies the artifact.
+- __name__: A human-readable name for the artifact.
+- __type__: The type of artifact. See [TEA Artifact types](#tea-artifact-types) for allowed values (e.g., `BOM`, `VULNERABILITIES`, `LICENSE`).
+- __componentDistributions__ (optional):  
+  An array of `distributionType` identifiers indicating which distributions this artifact applies to.
+  If omitted, the artifact applies to all distributions.
+- __formats__:  
+  An array of objects, each representing the same artifact content in a different format.
+  The order of the list is not significant.
+  Each format object includes:
+  - __mime_type__: The MIME type of the document (e.g., `application/vnd.cyclonedx+xml`).
+  - __description__: A free-text description of the artifact format.
+  - __url__: A direct download URL for the artifact. This must point to an immutable resource.
+  - __signature_url__ (optional): A direct download URL for a detached digital signature of the artifact, if available.
+  - __checksums__:  
+    An array of checksum objects for the artifact, each containing:
+    - __algType__: The checksum algorithm used (e.g., `SHA_256`, `SHA3_512`).
+    - __algValue__: The checksum value as a string.
+
+### Notes
+
+- The `formats` array allows the same artifact to be provided in multiple encodings or serializations (e.g., JSON, XML).
+- The `checksums` field provides integrity verification for each artifact format.
+- The `signature_url` enables consumers to verify the authenticity of the artifact using detached signatures.
+- Artifacts should be published to stable, versioned URLs to ensure immutability and traceability.
+
+## The reason for TCO update enum
 
 | ENUM             | Description                            |
 |------------------|----------------------------------------|
@@ -167,7 +208,7 @@ The TEA Artifact object has the following parts:
 Updates of VEX (CSAF) files may be handled in a different way by a TEA client,
 producing different alerts than other changes of a collection.
 
-### TEA Artifact types
+## TEA Artifact types
 
 | ENUM            | Description                                                                         |
 |-----------------|-------------------------------------------------------------------------------------|
