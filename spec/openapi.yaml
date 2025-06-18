@@ -339,6 +339,7 @@ components:
     #
     release:
       type: object
+      description: A TEA Component Release
       properties:
         uuid:
           description: A unique identifier for the TEA Component Release
@@ -363,28 +364,63 @@ components:
           description: List of identifiers for the component
           items:
             "$ref": "#/components/schemas/identifier"
+        distributions:
+          type: array
+          description: List of different formats of this component release
+          items:
+            "$ref": "#/components/schemas/release-distribution"
         # add lifecycle here
       required:
         - uuid
         - version
         - createdDate
       examples:
-        # Apache Tomcat 11.0.6
+        # Apache Tomcat 11.0.7
         - uuid: 605d0ecb-1057-40e4-9abf-c400b10f0345
-          version: "11.0.6"
-          createdDate: 2025-04-01T15:43:00Z
-          releaseDate: 2025-04-01T15:43:00Z
+          version: "11.0.7"
+          createdDate: 2025-05-07T18:08:00Z
+          releaseDate: 2025-05-12T18:08:00Z
           identifiers:
             - idType: PURL
-              idValue: pkg:maven/org.apache.tomcat/tomcat@11.0.6
-        # Different release of Apache Tomcat
-        - uuid: da89e38e-95e7-44ca-aa7d-f3b6b34c7fab
-          version: "10.1.40"
-          createdDate: 2025-04-01T18:20:00Z
-          releaseDate: 2025-04-01T18:20:00Z
-          identifiers:
-            - idType: PURL
-              idValue: pkg:maven/org.apache.tomcat/tomcat@10.1.40
+              idValue: pkg:maven/org.apache.tomcat/tomcat@11.0.7
+          distributions:
+            - distributionType: zip
+              description: Core binary distribution, zip archive
+              identifiers:
+                - idType: PURL
+                  idValue: pkg:maven/org.apache.tomcat/tomcat@11.0.6?type=zip
+              checksums:
+                - algType: SHA_256
+                  algValue: 9da736a1cdd27231e70187cbc67398d29ca0b714f885e7032da9f1fb247693c1
+              url: https://repo.maven.apache.org/maven2/org/apache/tomcat/tomcat/11.0.7/tomcat-11.0.6.zip
+              signatureUrl: https://repo.maven.apache.org/maven2/org/apache/tomcat/tomcat/11.0.7/tomcat-11.0.6.zip.asc
+            - distributionType: tar.gz
+              description: Core binary distribution, tar.gz archive
+              identifiers:
+                - idType: PURL
+                  idValue: pkg:maven/org.apache.tomcat/tomcat@11.0.6?type=tar.gz
+              checksums:
+                - algType: SHA_256
+                  algValue: 2fcece641c62ba1f28e1d7b257493151fc44f161fb391015ee6a95fa71632fb9
+              url: https://repo.maven.apache.org/maven2/org/apache/tomcat/tomcat/11.0.7/tomcat-11.0.6.tar.gz
+              signatureUrl: https://repo.maven.apache.org/maven2/org/apache/tomcat/tomcat/11.0.7/tomcat-11.0.6.tar.gz.asc
+            - distributionType: windows-x64.zip
+              description: Core binary distribution, Windows x64 zip archive
+              identifiers:
+                - idType: PURL
+                  idValue: pkg:maven/org.apache.tomcat/tomcat@11.0.6?classifier=windows-x64&type=zip
+              checksums:
+                - algType: SHA_256
+                  algValue: 62a5c358d87a8ef21d7ec1b3b63c9bbb577453dda9c00cbb522b16cee6c23fc4
+              url: https://repo.maven.apache.org/maven2/org/apache/tomcat/tomcat/11.0.7/tomcat-11.0.6-windows-x64.zip
+              signatureUrl: https://repo.maven.apache.org/maven2/org/apache/tomcat/tomcat/11.0.7/tomcat-11.0.6.zip.asc
+            - distributionType: windows-x64.exe
+              description: Core binary distribution, Windows Service Installer (MSI)
+              checksums:
+                - algType: SHA_512
+                  algValue: 1d3824e7643c8aba455ab0bd9e67b14a60f2aaa6aa7775116bce40eb0579e8ced162a4f828051d3b867e96ee2858ec5da0cc654e83a83ba30823cbea0df4ff96
+              url: https://dlcdn.apache.org/tomcat/tomcat-11/v11.0.7/bin/apache-tomcat-11.0.7.exe
+              signatureUrl: https://downloads.apache.org/tomcat/tomcat-11/v11.0.7/bin/apache-tomcat-11.0.7.exe.asc
         # A pre-release of Apache Tomcat
         - uuid: 95f481df-f760-47f4-b2f2-f8b76d858450
           version: "11.0.0-M26"
@@ -393,6 +429,74 @@ components:
           identifiers:
             - idType: PURL
               idValue: pkg:maven/org.apache.tomcat/tomcat@11.0.0-M26
+    release-distribution:
+      type: object
+      properties:
+        distributionType:
+          type: string
+          description: Unique identifier for the distribution type.
+        description:
+          type: string
+          description: Free-text description of the distribution.
+        identifiers:
+          type: array
+          description: List of identifiers specific to this distribution.
+          items:
+            $ref: "#/components/schemas/identifier"
+        url:
+          type: string
+          description: Direct download URL for the distribution.
+          format: url
+        signatureUrl:
+          type: string
+          description: Direct download URL for the distribution's external signature.
+          format: url
+        checksums:
+          type: array
+          description: List of checksums for the distribution.
+          items:
+            "$ref": "#/components/schemas/checksum"
+      required:
+        - id
+      examples:
+        - distributionType: zip
+          description: Core binary distribution, zip archive
+          identifiers:
+            - idType: PURL
+              idValue: pkg:maven/org.apache.tomcat/tomcat@11.0.6?type=zip
+          checksums:
+            - algType: SHA_256
+              algValue: 9da736a1cdd27231e70187cbc67398d29ca0b714f885e7032da9f1fb247693c1
+          url: https://repo.maven.apache.org/maven2/org/apache/tomcat/tomcat/11.0.7/tomcat-11.0.6.zip
+          signatureUrl: https://repo.maven.apache.org/maven2/org/apache/tomcat/tomcat/11.0.7/tomcat-11.0.6.zip.asc
+        - distributionType: tar.gz
+          description: Core binary distribution, tar.gz archive
+          identifiers:
+            - idType: PURL
+              idValue: pkg:maven/org.apache.tomcat/tomcat@11.0.6?type=tar.gz
+          checksums:
+            - algType: SHA_256
+              algValue: 2fcece641c62ba1f28e1d7b257493151fc44f161fb391015ee6a95fa71632fb9
+          url: https://repo.maven.apache.org/maven2/org/apache/tomcat/tomcat/11.0.7/tomcat-11.0.6.tar.gz
+          signatureUrl: https://repo.maven.apache.org/maven2/org/apache/tomcat/tomcat/11.0.7/tomcat-11.0.6.tar.gz.asc
+        - distributionType: windows-x64.zip
+          description: Core binary distribution, Windows x64 zip archive
+          identifiers:
+            - idType: PURL
+              idValue: pkg:maven/org.apache.tomcat/tomcat@11.0.6?classifier=windows-x64&type=zip
+          checksums:
+            - algType: SHA_256
+              algValue: 62a5c358d87a8ef21d7ec1b3b63c9bbb577453dda9c00cbb522b16cee6c23fc4
+          url: https://repo.maven.apache.org/maven2/org/apache/tomcat/tomcat/11.0.7/tomcat-11.0.6-windows-x64.zip
+          signatureUrl: https://repo.maven.apache.org/maven2/org/apache/tomcat/tomcat/11.0.7/tomcat-11.0.6.zip.asc
+        - distributionType: windows-x64.exe
+          description: Core binary distribution, Windows Service Installer (MSI)
+          checksums:
+            - algType: SHA_512
+              algValue: 1d3824e7643c8aba455ab0bd9e67b14a60f2aaa6aa7775116bce40eb0579e8ced162a4f828051d3b867e96ee2858ec5da0cc654e83a83ba30823cbea0df4ff96
+          url: https://dlcdn.apache.org/tomcat/tomcat-11/v11.0.7/bin/apache-tomcat-11.0.7.exe
+          signatureUrl: https://downloads.apache.org/tomcat/tomcat-11/v11.0.7/bin/apache-tomcat-11.0.7.exe.asc
+
 
     #
     # TEA Collection and related objects
@@ -492,6 +596,15 @@ components:
         type:
           description: Type of artifact
           "$ref": "#/components/schemas/artifact-type"
+        distributionTypes:
+          type: array
+          description: |
+            List of component distributions types that this artifact applies to.
+            If absent, the artifact applies to all distributions.
+          items:
+            type: string
+            description: |
+              The `id` of the component format that this artifact applies to.
         formats:
           type: array
           description: |
@@ -536,17 +649,17 @@ components:
           type: array
           description: List of checksums for the artifact
           items:
-            "$ref": "#/components/schemas/artifact-checksum"
-    artifact-checksum:
+            "$ref": "#/components/schemas/checksum"
+    checksum:
       type: object
       properties:
         algType:
           description: Checksum algorithm
-          "$ref": "#/components/schemas/artifact-checksum-type"
+          "$ref": "#/components/schemas/checksum-type"
         algValue:
           type: string
           description: Checksum value
-    artifact-checksum-type:
+    checksum-type:
       type: string
       description: Checksum algorithm
       enum:
