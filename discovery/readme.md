@@ -1,7 +1,5 @@
 # Transparency Exchange API - Discovery
 
-**NOTE**: _This is a proposal for the WG_
-
 - [From product identifier to API endpoint](#from-product-identifier-to-api-endpoint)
 - [Advertising the TEI](#advertising-the-tei)
 - [TEA Discovery - defining an extensible identifier](#tea-discovery---defining-an-extensible-identifier)
@@ -36,6 +34,9 @@ The TEI for a product can be communicated to the user in many ways.
 - A QR code on a box
 - On the invoice or delivery note
 - For software with a GUI, in an "about" box
+
+The user needs to get the TEI from the manufacturer, through a reseller or directly. The TEI
+is defined by the manufacturer and can normally not be derived from known information.
 
 ## TEA Discovery - defining an extensible identifier
 
