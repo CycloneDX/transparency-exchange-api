@@ -49,6 +49,9 @@ and gives the vendor a name space to define product identifiers based on existin
 like EAN/UPC bar code, PURLs or other existing schemes. A given product may have multiple identifiers
 as long as they all resolve into the same destination.
 
+The vendor needs to make sure that the TEI is unique within the vendor's name space. There is no
+intention to create any TEI registries.
+
 ## The TEI URN: An extensible identifier
 
 The TEI, Transparency Exchange Identifier, is a URN schema that is extensible based on existing
@@ -56,12 +59,14 @@ identifiers like EAN codes, PURL and other identifiers. It is based on a DNS nam
 to global uniqueness without new registries.
 
 The TEI can be shown in the software itself, in shipping documentation, in web pages and app stores.
-TEI is unique for a product, not a version of a software. The TEI consist of three core parts
+TEI is unique for a product, not a version of a product.
 
 A TEI belongs to a single product. A product can have multiple TEIs - like one with a EAN/UPC
 barcode and one with the vendor's product number.
 
 ### TEI syntax
+
+The TEI consist of three core parts
 
 ```text
 urn:tei:<type>:<domain-name>:<unique-identifier>
@@ -150,6 +155,11 @@ urn:tei:uuid:cyclonedx.org:d4d9f54a-abcf-11ee-ac79-1a52914d44b1
 - GS1
 - STD
 
+Note that if an identifier, like EAN, is used for multiple different products then this
+EAN code will not be unique for a given product and should not be used as an identifier.
+In this case, the vendor is recommended to create a separate identifier for each unique
+product sold by other means, like UUID or hash.
+
 ### TEI resolution using DNS
 
 The `domain-name` part of the TEI is used in a DNS query to find one or multiple locations for
@@ -201,11 +211,6 @@ Always prefix with the https:// scheme. http (unencrypted) is not valid.
 
 **NOTE:** The `/.well-known/tea` names space needs to be registred.
 
-## The TEA Version Index
-
-The resulting URL leads to the TEA version index, which is documented in another document.
-One redirect (302) is allowed in order to provide for aliasing, where a single product
-has many identifiers. The redirect should not lead to a separate web server.
 
 ## References
 
