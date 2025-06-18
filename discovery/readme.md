@@ -67,7 +67,7 @@ barcode and one with the vendor's product number.
 
 ### TEI syntax
 
-The TEI consist of three core parts
+The TEI consists of three core parts
 
 ```text
 urn:tei:<type>:<domain-name>:<unique-identifier>
