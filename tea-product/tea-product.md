@@ -77,9 +77,16 @@ An example of a product consisting of an OSS project and all its Maven artifacts
     }
   ],
   "components": [
-    { "3910e0fd-aff4-48d6-b75f-8bf6b84687f0", },
-    { "b844c9bd-55d6-478c-af59-954a932b6ad3", },
-    { "d6d3f754-d4f4-4672-b096-b994b064ca2d", },
+    {
+      "uuid": "3910e0fd-aff4-48d6-b75f-8bf6b84687f0",
+      "release": "c1f2f9c4-d86e-4007-b61c-a53dc36f3e72"
+    },
+    {
+      "uuid": "b844c9bd-55d6-478c-af59-954a932b6ad3"
+    },
+    {
+      "uuid": "d6d3f754-d4f4-4672-b096-b994b064ca2d"
+    }
   ]
 }
 ```
