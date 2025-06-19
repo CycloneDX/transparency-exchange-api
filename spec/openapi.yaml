@@ -273,11 +273,11 @@ components:
         components:
           type: array
           description: |
-            List of TEA componentrefs for the product. The componentref by default just 
+            List of TEA component-refs for the product. The component-ref by default just 
             includes the UUID of the component, but in some cases also include a reference
             to the UUID of a specific release.
           items:
-            description: Unique identifier of the TEA componentref
+            description: Unique identifier of the TEA component-ref
             "$ref": "#/components/schemas/uuid"
       required:
         - uuid
@@ -340,16 +340,13 @@ components:
     # The release reference (release UUID) is only used in cases where a product
     # name incldues a version and this version of the product always include
     # the same releases of the component.
-    componentref:
+    component-ref:
       type: object
       description: A reference to a TEA component or specific component release
       properties:
         uuid:
           description: A unique identifier for the TEA component
           "$ref": "#/components/schemas/uuid"
-        name:
-          type: string
-          description: Component name
         release:
           type: string
           description: |
