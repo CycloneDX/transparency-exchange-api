@@ -14,6 +14,9 @@ env:
     PYTHON_VERSION_DEFAULT: '3.12'
     POETRY_VERSION: '1.8.1'
 
+# see https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/controlling-permissions-for-github_token
+permissions: {}
+
 jobs:
     generate-library-code:
         name: Generate Library Code ${{ matrix.language }}
