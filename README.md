@@ -32,16 +32,16 @@ tags in the repository as well as in the slack channel.
 ## Introduction
 
 This specification defines a standard, format agnostic, API for the exchange of
-product related artefacts, like BOMs, between systems. The work includes:
+product related artifacts, like BOMs, between systems. The work includes:
 
 - [Discovery of servers](/discovery/readme.md): Describes discovery using the Transparency Exchange Identifier (TEI)
-- Retrieval of artefacts
-- Publication of artefacts
+- Retrieval of artifacts
+- Publication of artifacts
 - Authentication and authorization
 - Querying
 
 System and tooling implementors are encouraged to adopt this API standard for
-sending/receiving transparency artefacts between systems. 
+sending/receiving transparency artifacts between systems. 
 This will enable more widespread
 "out of the box" integration support in the BOM ecosystem.
 
@@ -54,13 +54,19 @@ The working group has produced a list of use cases and requirements for the prot
 
 ## Data model
 
-- [TEA Product](tea-product/tea-product): This is the starting point. A "product" is something for sale or distributed as an Open Source project. The [Transparency Exchange Identifier, TEI](/discovery/readme.md) points to a single product.
-- [TEA Component index](tea-component/tea-component.md): A Component index is a version entry. The Component version index has one entry per version of the product.
-- [TEA Collection](tea-collection/tea-collection.md): The collection is a list of artefacts for a specific version. The collection can be dynamic or static, depending on the implemenation.
+- [TEA Product](tea-product/tea-product): This is the starting point. A "product" is something for sale or distributed as an Open Source project. The [Transparency Exchange Identifier, TEI](/discovery/readme.md) points to a single product. A product can have multiple TEIs.
+- [TEA Component](tea-component/tea-component.md): A Component is a versioned part of the product. In many cases, the product has a single component,
+  and in other cases a product consists of multiple components.
+  - TEA Components has a list of "releases" for each component.
+- [TEA Collection](tea-collection/tea-collection.md): The collection is a list of artifacts for a specific release. The collection can be
+  dynamic or static, depending on the implemenation. TEA collections are versioned to indicate a change for a specific release,
+  like an update of a VEX file or a correction of an SBOM.
+- [TEA Artifacts](tea-artifact/tea-artifact.md): The artifact is a file associated with the collection. One artifact can be part of many collections,
+  for multiple components.
 
-## Artefacts available of the API
+## artifacts available of the API
 
-The Transparency Exchange API (TEA) supports publication and retrieval of a set of transparency exchange artefacts. The API itself should not be restricting the types of the artefacts. A few examples:
+The Transparency Exchange API (TEA) supports publication and retrieval of a set of transparency exchange artifacts. The API itself should not be restricting the types of the artifacts. A few examples:
 
 ### xBOM
 
@@ -78,7 +84,7 @@ Vulnerability Disclosure Reports (VDR) and Vulnerability Exploitability eXchange
 
 Product lifecycle events that are captured and communicated through the Common Lifecycle Enumeration will be supported. This includes product rebranding, repackaging, mergers and acquisitions, and product milestone events such as end-of-life and end-of-support.
 
-### Insights
+## Insights
 
 Much of the focus on Software Transparency from the U.S. Government and others center around the concept of “full transparency”. Consumers often need to ingest, process, and analyze SBOMs or VEXs just to be able to answer simple questions such as:
 
