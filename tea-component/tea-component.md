@@ -1,20 +1,18 @@
 # The TEA Component API
 
-The TEA Component object is the object that indicates a product component. The product may
-be constructed with one or multiple Tea Components, each with their own set of
-related artefacts.
+The TEA Component represents a component lineage. A product release may
+be constructed with one or multiple TEA Components, each with their own set of
+releases and related artifacts.
 
-For each TEA COMPONENT there is a TEA COMPONENT INDEX, which is a list of all versions
-for that component.
+Each TEA Component has a list of Component Releases (see `/component/{uuid}/releases`),
+which enumerates all known versions for that component.
 
 The API should be very agnostic as to how a "version" is indicated - semver, vers,
 name, hash or anything else.
 
-## Major and minor versions
+## Versions and TEIs
 
-Each component is for a sub-version or minor version (using semver definitions). A new
-major version counts as a new product with a separate product object (TPO). Each
-product object has one or multiple TEI URNs.
+Each product object has one or multiple TEI URNs.
 
 For the API to be able to present a list of versions in a cronological order,
 a timestamp for a release is required.
@@ -42,7 +40,7 @@ Some examples of Maven artifacts as TEA Components:
   "name": "Apache Log4j API",
   "identifiers": [
     {
-      "idType": "purl",
+      "idType": "PURL",
       "idValue": "pkg:maven/org.apache.logging.log4j/log4j-api"
     }
   ]
@@ -55,11 +53,11 @@ Some examples of Maven artifacts as TEA Components:
   "name": "Apache Log4j Core",
   "identifiers": [
     {
-      "idType": "cpe",
+      "idType": "CPE",
       "idValue": "cpe:2.3:a:apache:log4j"
     },
     {
-      "idType": "purl",
+      "idType": "PURL",
       "idValue": "pkg:maven/org.apache.logging.log4j/log4j-core"
     }
   ]

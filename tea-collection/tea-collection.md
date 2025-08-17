@@ -15,7 +15,7 @@ A TEA Component Release object has the following parts:
 - __preRelease__: A flag indicating pre-release (or beta) status.
   May be disabled after the creation of the release object, but can't be enabled after creation of an object.
 - __identifiers__: List of identifiers for the component
-  - __idType__: Type of identifier, e.g. `tei`, `purl`, `cpe`
+  - __idType__: Type of identifier, e.g. `TEI`, `PURL`, `CPE`
   - __idValue__: Identifier value
 
 ### Examples
@@ -29,7 +29,7 @@ A TEA Component Release object of the binary distribution of Apache Tomcat 11.0.
   "releaseDate": "2025-04-01T15:43:00Z",
   "identifiers": [
     {
-      "idType": "purl",
+      "idType": "PURL",
       "idValue": "pkg:maven/org.apache.tomcat/tomcat@11.0.6"
     }
   ]
@@ -45,7 +45,7 @@ Different versions of Apache Tomcat should have separate TEA Component Release o
   "releaseDate": "2025-04-01T18:20:00Z",
   "identifiers": [
     {
-      "idType": "purl",
+      "idType": "PURL",
       "idValue": "pkg:maven/org.apache.tomcat/tomcat@10.1.4"
     }
   ]
@@ -63,7 +63,7 @@ and does not require users to know the version naming scheme adopted by the proj
   "preRelease": true,
   "identifiers": [
     {
-      "idType": "purl",
+      "idType": "PURL",
       "idValue": "pkg:maven/org.apache.tomcat/tomcat@11.0.0-M26"
     }
   ]
@@ -129,12 +129,12 @@ The TEA Artifact object has the following parts:
 - __name__: Artifact name.
 - __type__: Type of artifact.
   See [TEA Artifact types](#tea-artifact-types) for a list.
-- __formats__: List of objects with the same content, but in different formats.
+  - __formats__: List of objects with the same content, but in different formats.
   The order of the list has no significance.
-  - __mime_type__: The MIME type of the document
+  - __mimeType__: The MIME type of the document
   - __description__: A free text describing the artifact
   - __url__: Direct download URL for the artifact
-  - __signature_url__: Direct download URL for an external signature of the artifact
+  - __signatureUrl__: Direct download URL for an external signature of the artifact
   - __checksums__: List of checksums for the artifact
     - __algType__: Checksum algorithm
       See [CycloneDX checksum algorithms](https://cyclonedx.org/docs/1.6/json/#components_items_hashes_items_alg) for a list of supported values.
@@ -184,13 +184,13 @@ producing different alerts than other changes of a collection.
     {
       "uuid": "1cb47b95-8bf8-3bad-a5a4-0d54d86e10ce",
       "name": "Build SBOM",
-      "type": "bom",
+      "type": "BOM",
       "formats": [
         {
-          "mime_type": "application/vnd.cyclonedx+xml",
+          "mimeType": "application/vnd.cyclonedx+xml",
           "description": "CycloneDX SBOM (XML)",
           "url": "https://repo.maven.apache.org/maven2/org/apache/logging/log4j/log4j-core/2.24.3/log4j-core-2.24.3-cyclonedx.xml",
-          "signature_url": "https://repo.maven.apache.org/maven2/org/apache/logging/log4j/log4j-core/2.24.3/log4j-core-2.24.3-cyclonedx.xml.asc",
+          "signatureUrl": "https://repo.maven.apache.org/maven2/org/apache/logging/log4j/log4j-core/2.24.3/log4j-core-2.24.3-cyclonedx.xml.asc",
           "checksums": [
             {
               "algType": "MD5",
@@ -207,10 +207,10 @@ producing different alerts than other changes of a collection.
     {
       "uuid": "dfa35519-9734-4259-bba1-3e825cf4be06",
       "name": "Vulnerability Disclosure Report",
-      "type": "vulnerability-assertion",
+      "type": "VULNERABILITIES",
       "formats": [
         {
-          "mime_type": "application/vnd.cyclonedx+xml",
+          "mimeType": "application/vnd.cyclonedx+xml",
           "description": "CycloneDX VDR (XML)",
           "url": "https://logging.apache.org/cyclonedx/vdr.xml",
           "checksums": [
