@@ -434,6 +434,9 @@ components:
         uuid:
           description: A unique identifier for the TEA Product Release
           "$ref": "#/components/schemas/uuid"
+        product:
+          description: UUID of the TEA Product this release belongs to
+          "$ref": "#/components/schemas/uuid"
         version:
           description: Version number of the product release
           type: string
@@ -547,6 +550,9 @@ components:
       properties:
         uuid:
           description: A unique identifier for the TEA Component Release
+          "$ref": "#/components/schemas/uuid"
+        component:
+          description: UUID of the TEA Component this release belongs to
           "$ref": "#/components/schemas/uuid"
         version:
           description: Version number
