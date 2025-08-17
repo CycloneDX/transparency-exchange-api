@@ -33,14 +33,14 @@ A TEA Component Release object contains the following fields:
 - __preRelease__: Boolean flag indicating if this is a pre-release (e.g., beta).
   This flag can be disabled after creation, but not enabled.
 - __identifiers__: List of identifiers for the component.
-  - __idType__: Type of identifier (e.g., `TEI`, `PURL`, `CPE`).
-  - __idValue__: Value of the identifier.
+- __idType__: Type of identifier (e.g., `TEI`, `PURL`, `CPE`).
+- __idValue__: Value of the identifier.
 - __distributions__: List of release distributions, each with:
   - __distributionType__: Unique identifier for the distribution type.
   - __description__: Free-text description of the distribution.
   - __identifiers__: List of identifiers specific to this distribution.
-    - __idType__: Type of identifier (e.g., `TEI`, `PURL`, `CPE`).
-    - __idValue__: Value of the identifier.
+  - __idType__: Type of identifier (e.g., `TEI`, `PURL`, `CPE`).
+  - __idValue__: Value of the identifier.
   - __url__: Direct download URL for the distribution.
   - __signatureUrl__: Direct download URL for the distribution's external signature.
   - __checksums__: List of checksums for the distribution.
