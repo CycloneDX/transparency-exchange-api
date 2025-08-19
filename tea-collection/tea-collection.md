@@ -33,14 +33,14 @@ A TEA Component Release object contains the following fields:
 - __preRelease__: Boolean flag indicating if this is a pre-release (e.g., beta).
   This flag can be disabled after creation, but not enabled.
 - __identifiers__: List of identifiers for the component.
-  - __idType__: Type of identifier (e.g., `tei`, `purl`, `cpe`).
-  - __idValue__: Value of the identifier.
+- __idType__: Type of identifier (e.g., `TEI`, `PURL`, `CPE`).
+- __idValue__: Value of the identifier.
 - __distributions__: List of release distributions, each with:
   - __distributionType__: Unique identifier for the distribution type.
   - __description__: Free-text description of the distribution.
   - __identifiers__: List of identifiers specific to this distribution.
-    - __idType__: Type of identifier (e.g., `tei`, `purl`, `cpe`).
-    - __idValue__: Value of the identifier.
+  - __idType__: Type of identifier (e.g., `TEI`, `PURL`, `CPE`).
+  - __idValue__: Value of the identifier.
   - __url__: Direct download URL for the distribution.
   - __signatureUrl__: Direct download URL for the distribution's external signature.
   - __checksums__: List of checksums for the distribution.
@@ -137,7 +137,7 @@ ensuring accurate risk assessment and remediation.
       "identifiers": [
         {
           "idType": "PURL",
-          "idValue": "pkg:maven/org.apache.tomcat/tomcat@11.0.6?type=zip"
+          "idValue": "pkg:maven/org.apache.tomcat/tomcat@11.0.7?type=zip"
         }
       ],
       "checksums": [
@@ -146,8 +146,8 @@ ensuring accurate risk assessment and remediation.
           "algValue": "9da736a1cdd27231e70187cbc67398d29ca0b714f885e7032da9f1fb247693c1"
         }
       ],
-      "url": "https://repo.maven.apache.org/maven2/org/apache/tomcat/tomcat/11.0.7/tomcat-11.0.6.zip",
-      "signatureUrl": "https://repo.maven.apache.org/maven2/org/apache/tomcat/tomcat/11.0.7/tomcat-11.0.6.zip.asc"
+      "url": "https://repo.maven.apache.org/maven2/org/apache/tomcat/tomcat/11.0.7/tomcat-11.0.7.zip",
+      "signatureUrl": "https://repo.maven.apache.org/maven2/org/apache/tomcat/tomcat/11.0.7/tomcat-11.0.7.zip.asc"
     },
     {
       "distributionType": "tar.gz",
@@ -155,7 +155,7 @@ ensuring accurate risk assessment and remediation.
       "identifiers": [
         {
           "idType": "PURL",
-          "idValue": "pkg:maven/org.apache.tomcat/tomcat@11.0.6?type=tar.gz"
+          "idValue": "pkg:maven/org.apache.tomcat/tomcat@11.0.7?type=tar.gz"
         }
       ],
       "checksums": [
@@ -164,8 +164,8 @@ ensuring accurate risk assessment and remediation.
           "algValue": "2fcece641c62ba1f28e1d7b257493151fc44f161fb391015ee6a95fa71632fb9"
         }
       ],
-      "url": "https://repo.maven.apache.org/maven2/org/apache/tomcat/tomcat/11.0.7/tomcat-11.0.6.tar.gz",
-      "signatureUrl": "https://repo.maven.apache.org/maven2/org/apache/tomcat/tomcat/11.0.7/tomcat-11.0.6.tar.gz.asc"
+      "url": "https://repo.maven.apache.org/maven2/org/apache/tomcat/tomcat/11.0.7/tomcat-11.0.7.tar.gz",
+      "signatureUrl": "https://repo.maven.apache.org/maven2/org/apache/tomcat/tomcat/11.0.7/tomcat-11.0.7.tar.gz.asc"
     },
     {
       "distributionType": "windows-x64.zip",
@@ -173,7 +173,7 @@ ensuring accurate risk assessment and remediation.
       "identifiers": [
         {
           "idType": "PURL",
-          "idValue": "pkg:maven/org.apache.tomcat/tomcat@11.0.6?classifier=windows-x64&type=zip"
+          "idValue": "pkg:maven/org.apache.tomcat/tomcat@11.0.7?classifier=windows-x64&type=zip"
         }
       ],
       "checksums": [
@@ -182,8 +182,8 @@ ensuring accurate risk assessment and remediation.
           "algValue": "62a5c358d87a8ef21d7ec1b3b63c9bbb577453dda9c00cbb522b16cee6c23fc4"
         }
       ],
-      "url": "https://repo.maven.apache.org/maven2/org/apache/tomcat/tomcat/11.0.7/tomcat-11.0.6-windows-x64.zip",
-      "signatureUrl": "https://repo.maven.apache.org/maven2/org/apache/tomcat/tomcat/11.0.7/tomcat-11.0.6.zip.asc"
+      "url": "https://repo.maven.apache.org/maven2/org/apache/tomcat/tomcat/11.0.7/tomcat-11.0.7-windows-x64.zip",
+      "signatureUrl": "https://repo.maven.apache.org/maven2/org/apache/tomcat/tomcat/11.0.7/tomcat-11.0.7.zip.asc"
     },
     {
       "distributionType": "windows-x64.exe",
@@ -231,7 +231,7 @@ There are two main scenarios for using the `preRelease` flag:
     "preRelease": true,
     "identifiers": [
       {
-        "idType": "purl",
+        "idType": "PURL",
         "idValue": "pkg:maven/org.apache.tomcat/tomcat@11.0.0?repository_url=https:%2F%2Frepository.apache.org%2Fcontent%2Fgroups%2Fstaging%2F"
       }
     ]
@@ -247,7 +247,7 @@ There are two main scenarios for using the `preRelease` flag:
     "preRelease": false,
     "identifiers": [
       {
-        "idType": "purl",
+        "idType": "PURL",
         "idValue": "pkg:maven/org.apache.tomcat/tomcat@11.0.0"
       }
     ]
@@ -263,7 +263,7 @@ There are two main scenarios for using the `preRelease` flag:
     "preRelease": true,
     "identifiers": [
       {
-        "idType": "purl",
+        "idType": "PURL",
         "idValue": "pkg:maven/org.apache.tomcat/tomcat@11.0.0-M26"
       }
     ]
@@ -306,15 +306,16 @@ to implement this:
 
 ### Collection object
 
-The TEA Collection object has the following parts:
+  The TEA Collection object has the following parts:
 
-- Preamble
+  - Preamble
   - __uuid__: UUID of the TEA Collection object.
     Note that this is equal to the UUID of the associated TEA Component Release object.
     When updating a collection, only the `version` is changed.
   - __version__: TEA Collection version, incremented each time its content changes.
     Versions start with 1.
-  - __releaseDate__: TEA Collection version release date.
+  - __date__: TEA Collection version release date.
+  - __belongsTo__: Scope of the collection; enum values `RELEASE` or `PRODUCT_RELEASE`.
   - __updateReason__: Reason for the update/release of the TEA Collection object.
     - __type__: Type of update reason.
       See [reasons for TEA Collection update](#the-reason-for-tco-update-enum) below.
@@ -351,10 +352,10 @@ A TEA Artifact object contains the following fields:
   An array of objects, each representing the same artifact content in a different format.
   The order of the list is not significant.
   Each format object includes:
-  - __mime_type__: The MIME type of the document (e.g., `application/vnd.cyclonedx+xml`).
+  - __mimeType__: The MIME type of the document (e.g., `application/vnd.cyclonedx+xml`).
   - __description__: A free-text description of the artifact format.
   - __url__: A direct download URL for the artifact. This must point to an immutable resource.
-  - __signature_url__ (optional): A direct download URL for a detached digital signature of the artifact, if available.
+  - __signatureUrl__ (optional): A direct download URL for a detached digital signature of the artifact, if available.
   - __checksums__:  
     An array of checksum objects for the artifact, each containing:
     - __algType__: The checksum algorithm used (e.g., `SHA_256`, `SHA3_512`).
@@ -364,7 +365,7 @@ A TEA Artifact object contains the following fields:
 
 - The `formats` array allows the same artifact to be provided in multiple encodings or serializations (e.g., JSON, XML).
 - The `checksums` field provides integrity verification for each artifact format.
-- The `signature_url` enables consumers to verify the authenticity of the artifact using detached signatures.
+- The `signatureUrl` enables consumers to verify the authenticity of the artifact using detached signatures.
 - Artifacts should be published to stable, versioned URLs to ensure immutability and traceability.
 
 ## The reason for TCO update enum
@@ -402,7 +403,7 @@ producing different alerts than other changes of a collection.
 {
   "uuid": "4c72fe22-9d83-4c2f-8eba-d6db484f32c8",
   "version": 1,
-  "releaseDate": "2024-12-13T00:00:00Z",
+  "date": "2024-12-13T00:00:00Z",
   "updateReason": {
     "type": "ARTIFACT_UPDATED",
     "comment": "VDR file updated"
@@ -411,13 +412,13 @@ producing different alerts than other changes of a collection.
     {
       "uuid": "1cb47b95-8bf8-3bad-a5a4-0d54d86e10ce",
       "name": "Build SBOM",
-      "type": "bom",
+      "type": "BOM",
       "formats": [
         {
-          "mime_type": "application/vnd.cyclonedx+xml",
+          "mimeType": "application/vnd.cyclonedx+xml",
           "description": "CycloneDX SBOM (XML)",
           "url": "https://repo.maven.apache.org/maven2/org/apache/logging/log4j/log4j-core/2.24.3/log4j-core-2.24.3-cyclonedx.xml",
-          "signature_url": "https://repo.maven.apache.org/maven2/org/apache/logging/log4j/log4j-core/2.24.3/log4j-core-2.24.3-cyclonedx.xml.asc",
+          "signatureUrl": "https://repo.maven.apache.org/maven2/org/apache/logging/log4j/log4j-core/2.24.3/log4j-core-2.24.3-cyclonedx.xml.asc",
           "checksums": [
             {
               "algType": "MD5",
@@ -434,10 +435,10 @@ producing different alerts than other changes of a collection.
     {
       "uuid": "dfa35519-9734-4259-bba1-3e825cf4be06",
       "name": "Vulnerability Disclosure Report",
-      "type": "vulnerability-assertion",
+      "type": "VULNERABILITIES",
       "formats": [
         {
-          "mime_type": "application/vnd.cyclonedx+xml",
+          "mimeType": "application/vnd.cyclonedx+xml",
           "description": "CycloneDX VDR (XML)",
           "url": "https://logging.apache.org/cyclonedx/vdr.xml",
           "checksums": [
