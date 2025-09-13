@@ -20,6 +20,7 @@ which products and versions are supported for a specific user.
 
 A TEA Product Release will be the starting
 point of discovery. The TEA product release will list all included components
+
 with the UUID of the TEA component. The reference list may also include
 a UUID of a specific release of a component in the case where a product
 always includes a single release of the component.

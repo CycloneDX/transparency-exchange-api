@@ -423,7 +423,6 @@ components:
               idValue: cpe:2.3:a:apache:log4j
             - idType: PURL
               idValue: pkg:maven/org.apache.logging.log4j/log4j-api
-
     #
     # TEA Product Release
     #

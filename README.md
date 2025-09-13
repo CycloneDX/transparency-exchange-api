@@ -32,16 +32,16 @@ tags in the repository as well as in the slack channel.
 ## Introduction
 
 This specification defines a standard, format agnostic, API for the exchange of
-product related artefacts, like BOMs, between systems. The work includes:
+product related artifacts, like BOMs, between systems. The work includes:
 
 - [Discovery of servers](/discovery/readme.md): Describes discovery using the Transparency Exchange Identifier (TEI)
-- Retrieval of artefacts
-- Publication of artefacts
+- Retrieval of artifacts
+- Publication of artifacts
 - Authentication and authorization
 - Querying
 
 System and tooling implementors are encouraged to adopt this API standard for
-sending/receiving transparency artefacts between systems. 
+sending/receiving transparency artifacts between systems. 
 This will enable more widespread
 "out of the box" integration support in the BOM ecosystem.
 
@@ -53,7 +53,6 @@ The working group has produced a list of use cases and requirements for the prot
 - [TEA use cases](doc/tea-usecases.md)
 
 ## Data model
-
 - [TEA Product Release](tea-product/tea-product-release.md): The primary entry point. The [Transparency Exchange Identifier, TEI](/discovery/readme.md) resolves to a specific Product Release. A Product Release may optionally belong to a [TEA Product](tea-product/tea-product.md).
 - [TEA Product](tea-product/tea-product.md): An optional higher-level object that groups a set of Product Releases for a product line or family. Products can be discovered and browsed; releases are accessed via `/product/{uuid}/releases`.
 - [TEA Component](tea-component/tea-component.md): Represents a component lineage. A Component is a collection of Component Releases (accessible via `/component/{uuid}/releases`).
@@ -61,9 +60,9 @@ The working group has produced a list of use cases and requirements for the prot
 - [TEA Collection](tea-collection/tea-collection.md): A versioned list of artefacts for a specific Release (Component Release) or Product Release. Collections are versioned to indicate changes, e.g., an updated VEX or corrected SBOM.
 - [TEA Artefacts](tea-artifact/tea-artifact.md): Files associated with a Collection. A single Artefact can appear in multiple Collections.
 
-## Artefacts available of the API
+## artifacts available of the API
 
-The Transparency Exchange API (TEA) supports publication and retrieval of a set of transparency exchange artefacts. The API itself should not be restricting the types of the artefacts. A few examples:
+The Transparency Exchange API (TEA) supports publication and retrieval of a set of transparency exchange artifacts. The API itself should not be restricting the types of the artifacts. A few examples:
 
 ### xBOM
 
