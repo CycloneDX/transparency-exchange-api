@@ -1,12 +1,10 @@
 # The TEA product API
 
-After TEA discovery, a user has a URL to the TEA product API where
-the TEI is used to query for data. The TEI marks the product sold,
-which can be a single unit or multiple units in a bundle.
+After TEA discovery, the [Transparency Exchange Identifier (TEI)](/discovery/readme.md) resolves to a specific TEA Product Release, which represents a concrete, versioned offering. A TEA Product is an optional higher-level object that groups multiple Product Releases for a product line or family and can be browsed via `/product/{uuid}/releases`.
 
-- For a single product, the output will be metadata about the
-  product and a TEA COMPONENT object.
-- For a composed product consisting of a bundle, the response
+- A product release may consist of a single component, the output will be metadata about the
+  product and the TEA COMPONENT object.
+- For a composed product release consisting of a bundle of components or component releases, the response
   will be multiple TEA COMPONENT objects.
 
 In addition, all known TEIs for the product will be returned,
@@ -20,9 +18,9 @@ which products and versions are supported for a specific user.
 
 ## Composite products
 
-If a product consists of a set of products, each with a different
-version number and update scheme, a TEA "bundle" will be the starting
-point of discovery. The TEA product will list all included components
+A TEA Product Release will be the starting
+point of discovery. The TEA product release will list all included components
+
 with the UUID of the TEA component. The reference list may also include
 a UUID of a specific release of a component in the case where a product
 always includes a single release of the component.
@@ -60,36 +58,26 @@ An example of a product consisting of an OSS project and all its Maven artifacts
   "name": "Apache Log4j 2",
   "identifiers": [
     {
-      "idType": "cpe",
+      "idType": "CPE",
       "idValue": "cpe:2.3:a:apache:log4j"
     },
     {
-      "idType": "purl",
+      "idType": "PURL",
       "idValue": "pkg:maven/org.apache.logging.log4j/log4j-api"
     },
     {
-      "idType": "purl",
+      "idType": "PURL",
       "idValue": "pkg:maven/org.apache.logging.log4j/log4j-core"
     },
     {
-      "idType": "purl",
+      "idType": "PURL",
       "idValue": "pkg:maven/org.apache.logging.log4j/log4j-layout-template-json"
-    }
-  ],
-  "components": [
-    {
-      "uuid": "3910e0fd-aff4-48d6-b75f-8bf6b84687f0",
-      "release": "c1f2f9c4-d86e-4007-b61c-a53dc36f3e72"
-    },
-    {
-      "uuid": "b844c9bd-55d6-478c-af59-954a932b6ad3"
-    },
-    {
-      "uuid": "d6d3f754-d4f4-4672-b096-b994b064ca2d"
     }
   ]
 }
 ```
+
+Releases for this Product can be browsed via the API endpoint `/product/{uuid}/releases`.
 
 ### API usage
 

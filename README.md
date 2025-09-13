@@ -53,16 +53,12 @@ The working group has produced a list of use cases and requirements for the prot
 - [TEA use cases](doc/tea-usecases.md)
 
 ## Data model
-
-- [TEA Product](tea-product/tea-product): This is the starting point. A "product" is something for sale or distributed as an Open Source project. The [Transparency Exchange Identifier, TEI](/discovery/readme.md) points to a single product. A product can have multiple TEIs.
-- [TEA Component](tea-component/tea-component.md): A Component is a versioned part of the product. In many cases, the product has a single component,
-  and in other cases a product consists of multiple components.
-  - TEA Components has a list of "releases" for each component.
-- [TEA Collection](tea-collection/tea-collection.md): The collection is a list of artifacts for a specific release. The collection can be
-  dynamic or static, depending on the implemenation. TEA collections are versioned to indicate a change for a specific release,
-  like an update of a VEX file or a correction of an SBOM.
-- [TEA Artifacts](tea-artifact/tea-artifact.md): The artifact is a file associated with the collection. One artifact can be part of many collections,
-  for multiple components.
+- [TEA Product Release](tea-product/tea-product-release.md): The primary entry point. The [Transparency Exchange Identifier, TEI](/discovery/readme.md) resolves to a specific Product Release. A Product Release may optionally belong to a [TEA Product](tea-product/tea-product.md).
+- [TEA Product](tea-product/tea-product.md): An optional higher-level object that groups a set of Product Releases for a product line or family. Products can be discovered and browsed; releases are accessed via `/product/{uuid}/releases`.
+- [TEA Component](tea-component/tea-component.md): Represents a component lineage. A Component is a collection of Component Releases (accessible via `/component/{uuid}/releases`).
+- [TEA Release](/tea-component/tea-release.md: A Component Release object. Each Component Release may have its own TEA Collection.
+- [TEA Collection](tea-collection/tea-collection.md): A versioned list of artefacts for a specific Release (Component Release) or Product Release. Collections are versioned to indicate changes, e.g., an updated VEX or corrected SBOM.
+- [TEA Artefacts](tea-artifact/tea-artifact.md): Files associated with a Collection. A single Artefact can appear in multiple Collections.
 
 ## artifacts available of the API
 
@@ -70,15 +66,15 @@ The Transparency Exchange API (TEA) supports publication and retrieval of a set 
 
 ### xBOM
 
-Bill of materials for any type of component and service are supported. This includes, but is not limited to, SBOM, HBOM, AI/ML-BOM, SaaSBOM, and CBOM. The API provides a BOM format agnostic way of publishing, searching, and retrieval of xBOM artifacts. 
+Bill of materials for any type of component and service are supported. This includes, but is not limited to, SBOM, HBOM, AI/ML-BOM, SaaSBOM, and CBOM. The API provides a BOM format agnostic way of publishing, searching, and retrieval of xBOM artefacts. 
 
 ### CDXA
 
-Standards and requirements along with attestations to those standards and requirements are captured and supported by CycloneDX Attestations (CDXA). Much like xBOM, these are supply chain artifacts that are captured allowing for consistent publishing, searching, and retrieval.
+Standards and requirements along with attestations to those standards and requirements are captured and supported by CycloneDX Attestations (CDXA). Much like xBOM, these are supply chain artefacts that are captured allowing for consistent publishing, searching, and retrieval.
 
 ### VDR/VEX
 
-Vulnerability Disclosure Reports (VDR) and Vulnerability Exploitability eXchange (VEX) are supported artifact types. Like the xBOM element, the VDR/VEX support is format agnostic. However, CSAF has its own distribution requirements that may not be compatible with APIs. Therefore, the initial focus will be on CycloneDX (VDR and VEX) and OpenVEX.
+Vulnerability Disclosure Reports (VDR) and Vulnerability Exploitability eXchange (VEX) are supported artefact types. Like the xBOM element, the VDR/VEX support is format agnostic. However, CSAF has its own distribution requirements that may not be compatible with APIs. Therefore, the initial focus will be on CycloneDX (VDR and VEX) and OpenVEX.
 
 ### CLE
 
@@ -108,7 +104,7 @@ Contributors are listed in the [Contributors](contributors.md) file.
 - API: Application programming interface
 - Authorization (authz):
 - Authentication (authn):
-- Collection: A set of artifacts representing a version of a product
+- Collection: A set of artefacts representing a version of a product
 - Product: An item sold or delivered under one name
 - Product variant: A variant of a product
 - Version:

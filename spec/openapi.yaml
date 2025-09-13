@@ -19,7 +19,7 @@ servers:
 paths:
   /product/{uuid}:
     get:
-      description: Returns the corresponding TEA components for a given TEA product UUID.
+      description: Get a TEA Product by UUID
       operationId: getTeaProductByUuid
       parameters:
         - name: uuid
@@ -27,8 +27,7 @@ paths:
           required: true
           description: UUID of the TEA product in the TEA server
           schema:
-            type: string
-            format: uuid
+            "$ref": "#/components/schemas/uuid"
       responses:
         '200':
           description: Requested TEA Product found and returned
@@ -42,6 +41,72 @@ paths:
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
         - TEA Product
+  /product/{uuid}/releases:
+    get:
+      description: Get releases of the product
+      operationId: getReleasesByProductId
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          description: UUID of TEA Product in the TEA server
+          schema:
+            "$ref": "#/components/schemas/uuid"
+      responses:
+        '200':
+          description: Requested Releases of TEA Product found and returned
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/productRelease"
+        '400':
+          $ref: "#/components/responses/400-invalid-request"
+        '404':
+          $ref: "#/components/responses/404-object-by-id-not-found"
+      tags:
+        - TEA Product Release
+  /productRelease/{uuid}:
+    get:
+      description: Get a TEA Product Release
+      operationId: getTeaProductReleaseByUuid
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          description: UUID of TEA Product Release in the TEA server
+          schema:
+            "$ref": "#/components/schemas/uuid"
+      responses:
+        '200':
+          description: Requested TEA Product Release found and returned
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/productRelease"
+        '400':
+          $ref: "#/components/responses/400-invalid-request"
+        '404':
+          $ref: "#/components/responses/404-object-by-id-not-found"
+      tags:
+        - TEA Product Release
+  /productReleases:
+    get:
+      description: Returns a list of TEA product releases. Note that multiple product releases may match.
+      operationId: getTeaProductReleaseByIdentifier
+      parameters:
+        - $ref: "#/components/parameters/page-offset"
+        - $ref: "#/components/parameters/page-size"
+        - $ref: "#/components/parameters/id-type"
+        - $ref: "#/components/parameters/id-value"
+      responses:
+        '200':
+          $ref: "#/components/responses/paginated-product-release"
+        '400':
+          $ref: "#/components/responses/400-invalid-request"
+      tags:
+        - TEA Product Release
   /products:
     get:
       description: Returns a list of TEA products. Note that multiple products may
@@ -69,8 +134,7 @@ paths:
           required: true
           description: UUID of TEA Component in the TEA server
           schema:
-            type: string
-            format: uuid
+            "$ref": "#/components/schemas/uuid"
       responses:
         '200':
           description: Requested TEA Component found and returned
@@ -94,8 +158,7 @@ paths:
           required: true
           description: UUID of TEA Component in the TEA server
           schema:
-            type: string
-            format: uuid
+            "$ref": "#/components/schemas/uuid"
       responses:
         '200':
           description: Requested Releases of TEA Component found and returned
@@ -121,8 +184,7 @@ paths:
           required: true
           description: UUID of TEA Release in the TEA server
           schema:
-            type: string
-            format: uuid
+            "$ref": "#/components/schemas/uuid"
       responses:
         '200':
           description: Requested TEA Collection found and returned
@@ -136,6 +198,30 @@ paths:
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
         - TEA Release
+  /productRelease/{uuid}/collection/latest:
+    get:
+      description: Get the latest TEA Collection belonging to the TEA Product Release
+      operationId: getLatestCollectionForProductRelease
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          description: UUID of TEA Product Release in the TEA server
+          schema:
+            "$ref": "#/components/schemas/uuid"
+      responses:
+        '200':
+          description: Requested TEA Collection found and returned
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/collection"
+        '400':
+          $ref: "#/components/responses/400-invalid-request"
+        '404':
+          $ref: "#/components/responses/404-object-by-id-not-found"
+      tags:
+        - TEA Product Release
   /release/{uuid}/collections:
     get:
       description: Get the TEA Collections belonging to the TEA Release
@@ -146,8 +232,7 @@ paths:
           required: true
           description: UUID of TEA Release in the TEA server
           schema:
-            type: string
-            format: uuid
+            "$ref": "#/components/schemas/uuid"
       responses:
         '200':
           description: Requested TEA Collection found and returned
@@ -163,6 +248,62 @@ paths:
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
         - TEA Release
+  /productRelease/{uuid}/collections:
+    get:
+      description: Get the TEA Collections belonging to the TEA Product Release
+      operationId: getCollectionsByProductReleaseId
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          description: UUID of TEA Product Release in the TEA server
+          schema:
+            "$ref": "#/components/schemas/uuid"
+      responses:
+        '200':
+          description: Requested TEA Collection found and returned
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/collection"
+        '400':
+          $ref: "#/components/responses/400-invalid-request"
+        '404':
+          $ref: "#/components/responses/404-object-by-id-not-found"
+      tags:
+        - TEA Product Release
+  /productRelease/{uuid}/collection/{collectionVersion}:
+    get:
+      description: Get a specific Collection (by version) for a TEA Product Release by its UUID
+      operationId: getCollectionForProductRelease
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          description: UUID of TEA Release in the TEA server
+          schema:
+            "$ref": "#/components/schemas/uuid"
+        - name: collectionVersion
+          in: path
+          required: true
+          description: Version of TEA Collection
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Requested TEA Collection Version found and returned
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/collection"
+        '400':
+          $ref: "#/components/responses/400-invalid-request"
+        '404':
+          $ref: "#/components/responses/404-object-by-id-not-found"
+      tags:
+        - TEA Product Release
   /release/{uuid}/collection/{collectionVersion}:
     get:
       description: Get a specific Collection (by version) for a TEA Release by its UUID
@@ -270,20 +411,10 @@ components:
             List of identifiers for the product, like TEI, CPE, PURL or other identifiers
           items:
             "$ref": "#/components/schemas/identifier"
-        components:
-          type: array
-          description: |
-            List of TEA component-refs for the product. The component-ref by default just 
-            includes the UUID of the component, but in some cases also include a reference
-            to the UUID of a specific release.
-          items:
-            description: Unique identifier of the TEA component-ref
-            "$ref": "#/components/schemas/uuid"
       required:
         - uuid
         - name
         - identifiers
-        - components
       examples:
         - uuid: 09e8c73b-ac45-4475-acac-33e6a7314e6d
           name: Apache Log4j 2
@@ -292,10 +423,63 @@ components:
               idValue: cpe:2.3:a:apache:log4j
             - idType: PURL
               idValue: pkg:maven/org.apache.logging.log4j/log4j-api
+    #
+    # TEA Product Release
+    #
+    productRelease:
+      type: object
+      description: A specific release of a TEA product
+      properties:
+        uuid:
+          description: A unique identifier for the TEA Product Release
+          "$ref": "#/components/schemas/uuid"
+        product:
+          description: UUID of the TEA Product this release belongs to
+          "$ref": "#/components/schemas/uuid"
+        version:
+          description: Version number of the product release
+          type: string
+          example: 2.24.3
+        createdDate:
+          description: Timestamp when this Product Release was created in TEA (for sorting purposes)
+          "$ref": "#/components/schemas/date-time"
+        releaseDate:
+          description: Timestamp of the product release
+          "$ref": "#/components/schemas/date-time"
+        preRelease:
+          type: boolean
+          description: |
+            A flag indicating pre-release (or beta) status.
+            May be disabled after the creation of the release object, but can't be enabled after creation of an object.
+        identifiers:
+          type: array
+          description: List of identifiers for the product release
+          items:
+            "$ref": "#/components/schemas/identifier"
+        components:
+          type: array
+          description: |
+            List of component references that compose this product release. A component reference can optionally include
+            the UUID of a specific component release to pin the exact version.
+          items:
+            "$ref": "#/components/schemas/component-ref"
+      required:
+        - uuid
+        - version
+        - createdDate
+        - components
+      examples:
+        - uuid: 123e4567-e89b-12d3-a456-426614174000
+          version: "2.24.3"
+          createdDate: 2025-04-01T15:43:00Z
+          releaseDate: 2025-04-01T15:43:00Z
+          identifiers:
+            - idType: TEI
+              idValue: tei:vendor:product@2.24.3
           components:
-            - 3910e0fd-aff4-48d6-b75f-8bf6b84687f0
-            - b844c9bd-55d6-478c-af59-954a932b6ad3
-            - d6d3f754-d4f4-4672-b096-b994b064ca2d
+            - uuid: 3910e0fd-aff4-48d6-b75f-8bf6b84687f0
+            - uuid: b844c9bd-55d6-478c-af59-954a932b6ad3
+              release: da89e38e-95e7-44ca-aa7d-f3b6b34c7fab
 
     #
     # TEA Component and related objects
@@ -319,7 +503,6 @@ components:
         - uuid
         - name
         - identifiers
-        - versions
       examples:
         - uuid: 3910e0fd-aff4-48d6-b75f-8bf6b84687f0
           name: Apache Log4j API
@@ -338,7 +521,7 @@ components:
     # Reference to a component, in some cases directly to a specific release
     # 
     # The release reference (release UUID) is only used in cases where a product
-    # name incldues a version and this version of the product always include
+    # name includes a version and this version of the product always includes
     # the same releases of the component.
     component-ref:
       type: object
@@ -348,13 +531,11 @@ components:
           description: A unique identifier for the TEA component
           "$ref": "#/components/schemas/uuid"
         release:
-          type: string
           description: |
             Optional UUID of a specific release included in the product in the case where the product
             always include a specific release of a component. The product name should include a version
             identifier in this case.
-          items:
-            "$ref": "#/components/schemas/uuid"
+          "$ref": "#/components/schemas/uuid"
       required:
         - uuid
 
@@ -369,6 +550,9 @@ components:
       properties:
         uuid:
           description: A unique identifier for the TEA Component Release
+          "$ref": "#/components/schemas/uuid"
+        component:
+          description: UUID of the TEA Component this release belongs to
           "$ref": "#/components/schemas/uuid"
         version:
           description: Version number
@@ -534,7 +718,7 @@ components:
         uuid:
           description: |
             UUID of the TEA Collection object.
-            Note that this is equal to the UUID of the associated TEA Component Release object.
+            This matches the UUID of the associated TEA Component Release or TEA Product Release object.
             When updating a collection, only the `version` is changed.
           "$ref": "#/components/schemas/uuid"
         version:
@@ -545,6 +729,9 @@ components:
         date:
           description: The date when the TEA Collection version was created.
           "$ref": "#/components/schemas/date-time"
+        belongsTo:
+          description: Indicates whether this collection belongs to a Component Release or a Product Release
+          "$ref": "#/components/schemas/collection-belongs-to-type"
         updateReason:
           description: Reason for the update/release of the TEA Collection object.
           "$ref": "#/components/schemas/collection-update-reason"
@@ -566,10 +753,10 @@ components:
               name: Build SBOM
               type: BOM
               formats:
-                - mime_type: application/vnd.cyclonedx+xml
+                - mimeType: application/vnd.cyclonedx+xml
                   description: CycloneDX SBOM (XML)
                   url: https://repo.maven.apache.org/maven2/org/apache/logging/log4j/log4j-core/2.24.3/log4j-core-2.24.3-cyclonedx.xml
-                  signature_url: https://repo.maven.apache.org/maven2/org/apache/logging/log4j/log4j-core/2.24.3/log4j-core-2.24.3-cyclonedx.xml.asc
+                  signatureUrl: https://repo.maven.apache.org/maven2/org/apache/logging/log4j/log4j-core/2.24.3/log4j-core-2.24.3-cyclonedx.xml.asc
                   checksums:
                     - algType: MD5
                       algValue: 2e1a525afc81b0a8ecff114b8b743de9
@@ -577,9 +764,9 @@ components:
                       algValue: 5a7d4caef63c5c5ccdf07c39337323529eb5a770
             - uuid: dfa35519-9734-4259-bba1-3e825cf4be06
               name: Vulnerability Disclosure Report
-              type: vulnerability-assertion
+              type: VULNERABILITIES
               formats:
-                - mime_type: application/vnd.cyclonedx+xml
+                - mimeType: application/vnd.cyclonedx+xml
                   description: CycloneDX VDR (XML)
                   url: https://logging.apache.org/cyclonedx/vdr.xml
                   checksums:
@@ -605,6 +792,13 @@ components:
         - ARTIFACT_UPDATED
         - ARTIFACT_ADDED
         - ARTIFACT_REMOVED
+
+    collection-belongs-to-type:
+      type: string
+      description: Indicates whether a collection belongs to a component release or a product release
+      enum:
+        - RELEASE
+        - PRODUCT_RELEASE
 
     #
     # TEA Artifact and related objects
@@ -657,7 +851,7 @@ components:
       type: object
       description: A security-related document in a specific format
       properties:
-        mime_type:
+        mimeType:
           type: string
           description: The MIME type of the document
         description:
@@ -757,6 +951,19 @@ components:
                     type: array
                     items:
                       "$ref": "#/components/schemas/product"
+    paginated-product-release:
+      description: A paginated response containing TEA Product Releases
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/pagination-details"
+              - type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      "$ref": "#/components/schemas/productRelease"
   parameters:
     # Pagination
     page-offset:
@@ -828,6 +1035,7 @@ security:
   - basicAuth: []
 tags:
   - name: TEA Product
+  - name: TEA Product Release
   - name: TEA Component
   - name: TEA Release
   - name: TEA Artifact
