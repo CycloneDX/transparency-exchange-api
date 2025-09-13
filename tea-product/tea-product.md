@@ -10,7 +10,8 @@ which can be a single unit or multiple units in a bundle.
   will be multiple TEA COMPONENT objects.
 
 In addition, all known TEIs for the product will be returned,
-in order for a TEA client to avoid duplication.
+in order for a TEA client to avoid duplication. This list can
+also include known Package URLs (PURL) and CPEs for the product.
 
 ## Authorization
 
@@ -20,9 +21,11 @@ which products and versions are supported for a specific user.
 ## Composite products
 
 If a product consists of a set of products, each with a different
-version number and update scheme, a TEA bundle will be the starting
-point of discovery. The TEA bundle will list all included parts
-and include pointers (URLs) to the TEA index for these.
+version number and update scheme, a TEA "bundle" will be the starting
+point of discovery. The TEA product will list all included components
+with the UUID of the TEA component. The reference list may also include
+a UUID of a specific release of a component in the case where a product
+always includes a single release of the component.
 
 The URL can be to a different vendor or different site with the
 same vendor.
@@ -38,6 +41,7 @@ A TEA Product object has the following parts:
    - __idValue__: Identifier value
 - __components__: List of TEA components for the product
    - __uuid__: Unique identifier of the TEA component
+   - __release__: Optional UUID of a TEA component release
 
 The TEA Component UUID is used in the Component API to find out which versions
 of the Component that exists.
@@ -73,9 +77,16 @@ An example of a product consisting of an OSS project and all its Maven artifacts
     }
   ],
   "components": [
-    "3910e0fd-aff4-48d6-b75f-8bf6b84687f0",
-    "b844c9bd-55d6-478c-af59-954a932b6ad3",
-    "d6d3f754-d4f4-4672-b096-b994b064ca2d"
+    {
+      "uuid": "3910e0fd-aff4-48d6-b75f-8bf6b84687f0",
+      "release": "c1f2f9c4-d86e-4007-b61c-a53dc36f3e72"
+    },
+    {
+      "uuid": "b844c9bd-55d6-478c-af59-954a932b6ad3"
+    },
+    {
+      "uuid": "d6d3f754-d4f4-4672-b096-b994b064ca2d"
+    }
   ]
 }
 ```

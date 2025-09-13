@@ -266,14 +266,18 @@ components:
           description: Product name
         identifiers:
           type: array
-          description: List of identifiers for the product
+          description: |
+            List of identifiers for the product, like TEI, CPE, PURL or other identifiers
           items:
             "$ref": "#/components/schemas/identifier"
         components:
           type: array
-          description: List of TEA components for the product
+          description: |
+            List of TEA component-refs for the product. The component-ref by default just 
+            includes the UUID of the component, but in some cases also include a reference
+            to the UUID of a specific release.
           items:
-            description: Unique identifier of the TEA component
+            description: Unique identifier of the TEA component-ref
             "$ref": "#/components/schemas/uuid"
       required:
         - uuid
@@ -288,10 +292,6 @@ components:
               idValue: cpe:2.3:a:apache:log4j
             - idType: PURL
               idValue: pkg:maven/org.apache.logging.log4j/log4j-api
-            - idType: PURL
-              idValue: pkg:maven/org.apache.logging.log4j/log4j-core
-            - idType: PURL
-              idValue: pkg:maven/org.apache.logging.log4j/log4j-layout-template-json
           components:
             - 3910e0fd-aff4-48d6-b75f-8bf6b84687f0
             - b844c9bd-55d6-478c-af59-954a932b6ad3
@@ -333,6 +333,32 @@ components:
               idValue: cpe:2.3:a:apache:log4j
             - idType: PURL
               idValue: pkg:maven/org.apache.logging.log4j/log4j-core
+
+#
+    # Reference to a component, in some cases directly to a specific release
+    # 
+    # The release reference (release UUID) is only used in cases where a product
+    # name incldues a version and this version of the product always include
+    # the same releases of the component.
+    component-ref:
+      type: object
+      description: A reference to a TEA component or specific component release
+      properties:
+        uuid:
+          description: A unique identifier for the TEA component
+          "$ref": "#/components/schemas/uuid"
+        release:
+          type: string
+          description: |
+            Optional UUID of a specific release included in the product in the case where the product
+            always include a specific release of a component. The product name should include a version
+            identifier in this case.
+          items:
+            "$ref": "#/components/schemas/uuid"
+      required:
+        - uuid
+
+
 
     #
     # TEA Release and related objects
