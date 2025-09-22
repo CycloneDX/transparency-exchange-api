@@ -460,6 +460,10 @@ components:
         product:
           description: UUID of the TEA Product this release belongs to
           "$ref": "#/components/schemas/uuid"
+        productName:
+          description: Name of the TEA Product this release belongs to
+          type: string
+          example: Apache Log4j 2
         version:
           description: Version number of the product release
           type: string
@@ -578,6 +582,10 @@ components:
         component:
           description: UUID of the TEA Component this release belongs to
           "$ref": "#/components/schemas/uuid"
+        componentName:
+          description: Name of the TEA Component this release belongs to
+          type: string
+          example: tomcat
         version:
           description: Version number
           type: string
