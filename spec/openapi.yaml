@@ -921,6 +921,30 @@ components:
         - pageStartIndex
         - pageSize
         - totalResults
+    
+    paginated-product-response:
+      type: object
+      description: A paginated response containing TEA Products
+      allOf:
+        - $ref: "#/components/schemas/pagination-details"
+        - type: object
+          properties:
+            results:
+              type: array
+              items:
+                $ref: "#/components/schemas/product"
+    
+    paginated-product-release-response:
+      type: object
+      description: A paginated response containing TEA Product Releases
+      allOf:
+        - $ref: "#/components/schemas/pagination-details"
+        - type: object
+          properties:
+            results:
+              type: array
+              items:
+                $ref: "#/components/schemas/productRelease"
   responses:
     204-common-delete:
       description: Object deleted successfully
@@ -943,27 +967,13 @@ components:
       content:
         application/json:
           schema:
-            allOf:
-              - $ref: "#/components/schemas/pagination-details"
-              - type: object
-                properties:
-                  results:
-                    type: array
-                    items:
-                      "$ref": "#/components/schemas/product"
+            $ref: "#/components/schemas/paginated-product-response"
     paginated-product-release:
       description: A paginated response containing TEA Product Releases
       content:
         application/json:
           schema:
-            allOf:
-              - $ref: "#/components/schemas/pagination-details"
-              - type: object
-                properties:
-                  results:
-                    type: array
-                    items:
-                      "$ref": "#/components/schemas/productRelease"
+            $ref: "#/components/schemas/paginated-product-release-response"
   parameters:
     # Pagination
     page-offset:
