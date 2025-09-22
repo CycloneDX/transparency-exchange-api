@@ -174,15 +174,15 @@ paths:
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
         - TEA Component
-  /release/{uuid}/collection/latest:
+  /componentRelease/{uuid}/collection/latest:
     get:
-      description: Get the latest TEA Collection belonging to the TEA Release
+      description: Get the latest TEA Collection belonging to the TEA Component Release
       operationId: getLatestCollection
       parameters:
         - name: uuid
           in: path
           required: true
-          description: UUID of TEA Release in the TEA server
+          description: UUID of TEA Component Release in the TEA server
           schema:
             "$ref": "#/components/schemas/uuid"
       responses:
@@ -197,7 +197,7 @@ paths:
         '404':
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
-        - TEA Release
+        - TEA Component Release
   /productRelease/{uuid}/collection/latest:
     get:
       description: Get the latest TEA Collection belonging to the TEA Product Release
@@ -222,15 +222,15 @@ paths:
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
         - TEA Product Release
-  /release/{uuid}/collections:
+  /componentRelease/{uuid}/collections:
     get:
-      description: Get the TEA Collections belonging to the TEA Release
+      description: Get the TEA Collections belonging to the TEA Component Release
       operationId: getCollectionsByReleaseId
       parameters:
         - name: uuid
           in: path
           required: true
-          description: UUID of TEA Release in the TEA server
+          description: UUID of TEA Component Release in the TEA server
           schema:
             "$ref": "#/components/schemas/uuid"
       responses:
@@ -247,7 +247,7 @@ paths:
         '404':
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
-        - TEA Release
+        - TEA Component Release
   /productRelease/{uuid}/collections:
     get:
       description: Get the TEA Collections belonging to the TEA Product Release
@@ -282,7 +282,7 @@ paths:
         - name: uuid
           in: path
           required: true
-          description: UUID of TEA Release in the TEA server
+          description: UUID of TEA Product Release in the TEA server
           schema:
             "$ref": "#/components/schemas/uuid"
         - name: collectionVersion
@@ -304,9 +304,9 @@ paths:
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
         - TEA Product Release
-  /release/{uuid}/collection/{collectionVersion}:
+  /componentRelease/{uuid}/collection/{collectionVersion}:
     get:
-      description: Get a specific Collection (by version) for a TEA Release by its UUID
+      description: Get a specific Collection (by version) for a TEA Component Release by its UUID
       operationId: getCollection
       parameters:
         - name: uuid
@@ -333,7 +333,7 @@ paths:
         '404':
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
-        - TEA Release
+        - TEA Component Release
   /artifact/{uuid}:
     get:
       description: Get metadata for specific TEA artifact
@@ -542,7 +542,7 @@ components:
 
 
     #
-    # TEA Release and related objects
+    # TEA Component Release and related objects
     #
     release:
       type: object
@@ -1047,7 +1047,7 @@ tags:
   - name: TEA Product
   - name: TEA Product Release
   - name: TEA Component
-  - name: TEA Release
+  - name: TEA Component Release
   - name: TEA Artifact
 externalDocs:
   description: Transparency Exchange API specification
