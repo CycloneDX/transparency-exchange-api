@@ -52,15 +52,11 @@ paths:
           description: UUID of TEA Product in the TEA server
           schema:
             "$ref": "#/components/schemas/uuid"
+        - $ref: "#/components/parameters/page-offset"
+        - $ref: "#/components/parameters/page-size"
       responses:
         '200':
-          description: Requested Releases of TEA Product found and returned
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  "$ref": "#/components/schemas/productRelease"
+          $ref: "#/components/responses/paginated-product-release"
         '400':
           $ref: "#/components/responses/400-invalid-request"
         '404':
