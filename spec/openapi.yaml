@@ -94,7 +94,7 @@ paths:
   /productReleases:
     get:
       description: Returns a list of TEA product releases. Note that multiple product releases may match.
-      operationId: getTeaProductReleaseByIdentifier
+      operationId: queryTeaProductReleases
       parameters:
         - $ref: "#/components/parameters/page-offset"
         - $ref: "#/components/parameters/page-size"
@@ -111,7 +111,7 @@ paths:
     get:
       description: Returns a list of TEA products. Note that multiple products may
         match.
-      operationId: getTeaProductByIdentifier
+      operationId: queryTeaProducts
       parameters:
         - $ref: "#/components/parameters/page-offset"
         - $ref: "#/components/parameters/page-size"
