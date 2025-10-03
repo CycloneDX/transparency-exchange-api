@@ -180,20 +180,65 @@ These point to the hosts available for the Transparency Exchange API.
 The TEA client connects to the host using HTTPS and validates the certificate.
 The URI is composed of the name with the `/.well-known/tea` prefix added.
 
-This results in the base URI (without the product identifier) 
-`https://tea.example.com/.well-known/tea/` 
+This results in the base URI 
+`https://tea.example.com/.well-known/tea`
+
+This URI must contain static json that lists the available TEA server endpoints and supported versions.
+The json must conform to the [TEA Well-Known Schema](tea-well-known.schema.json).
+
+Example:
+```json
+{
+  "endpoints": [
+    {
+      "url": "https://api.teaexample.com",
+      "versions": 
+        [
+          "0.1.0-beta.1",
+          "0.2.0-beta.2",
+          "1.0"
+        ]
+    },
+    {
+      "url": "https://api2.teaexample.com/mytea",
+      "versions": 
+        [
+          "1.0"
+        ]
+    }
+  ]
+}
+```
 
 
 ## Connecting to the API
 
-When connecting to the `.well-known/tea` URI with the unique identifier
-a HTTP redirect is **required**.
+Clients must pick any one of the endpoints listed in the `.well-known/tea` json
+response. They must then construct the full URL to the API by appending the
+"/v" plus one of the versions listed in the `versions` array of the selected endpoint,
+plus "/discovery?tei=", plus the TEI that is url-encoded according to [RFC3986]
+and [RFC3986]).
 
-The server MUST redirect HTTP requests for that resource
-to the actual "context path" using one of the available mechanisms
-provided by HTTP (e.g., using a 301, 303, or 307 response).  Clients
-MUST handle HTTP redirects on the `.well-known` URI.  Servers MUST
-NOT locate the actual TEA service endpoint at the
+Examples:
+1. For TEI `urn:tei:uuid:products.example.com:d4d9f54a-abcf-11ee-ac79-1a52914d44b`
+`https://api.teaexample.com/v0.2.0-beta.2/discovery?tei=urn%3Atei%3Auuid%3Aproducts.example.com%3Ad4d9f54a-abcf-11ee-ac79-1a52914d44b`
+2. For TEI `urn:tei:purl:products.example.com:pkg:deb/debian/curl@7.50.3-1?arch=i386&distro=jessie`
+`https://api2.teaexample.com/mytea/v1.0/discovery?tei=urn%3Atei%3Apurl%3Aproducts.example.com%3Apkg%3Adeb%2Fdebian%2Fcurl%407.50.3-1%3Farch%3Di386%26distro%3Djessie`
+
+The discovery endpoint is a part of the TEA OpenAPI specification. 
+
+If the TEI is known to the TEA server, the discovery endpoint must return at least 
+the product release uuid, the root URL of the TEA server, the list of supported
+versions, plus the response may have other fields based on the current version of 
+the TEA OpenAPI specification.
+
+If the TEI is not known to the TEA server, the discovery endpoint must return a 404 
+status code with a response describing the error.
+
+TODO: Handle Auth errors (401, 403) and corresponding messages.
+
+## Notes Regarding .well-known
+Servers MUST NOT locate the actual TEA service endpoint at the
 `.well-known` URI as per Section 1.1 of [RFC5785].
 
 ### Overview: Finding the Index using DNS result
@@ -203,7 +248,7 @@ Append the product part of the TEI to the URI found
 - TEI: `urn:tei:uuid:products.example.com:d4d9f54a-abcf-11ee-ac79-1a52914d44b1`
 - DNS record: `products.example.com`
 - URL: `https://products.example.com/.well-known/tea/d4d9f54a-abcf-11ee-ac79-1a52914d44b1/`
-- HTTP 302 redirect to "https://teapot02.consumer.example.com/tea/v2/product/d4d9f54a-abcf-11ee-ac79-1a52914d44b1'
+- HTTP 302 redirect to `https://teapot02.consumer.example.com/tea/v2/product/d4d9f54a-abcf-11ee-ac79-1a52914d44b1`
 
 Always prefix with the https:// scheme. http (unencrypted) is not valid.
 

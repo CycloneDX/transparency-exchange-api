@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://cyclonedx.github.io/transparency-exchange-api/discovery/tea-well-known.schema.json",
+  "title": "TEA .well-known discovery document",
+  "description": "JSON Schema for the TEA .well-known/tea discovery payload that lists available TEA API endpoints and supported versions.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["endpoints"],
+  "properties": {
+    "endpoints": {
+      "type": "array",
+      "description": "List of available TEA service endpoints and their supported versions.",
+      "minItems": 1,
+      "items": { "$ref": "#/definitions/endpoint" }
+    }
+  },
+  "definitions": {
+    "endpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["url", "versions"],
+      "properties": {
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Base URL of the TEA API endpoint (no trailing slash)."
+        },
+        "versions": {
+          "type": "array",
+          "description": "Supported TEA API versions for this endpoint. Use with the /v{version} prefix when constructing requests.",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "pattern": "^\\d+\\.\\d+(?:\\.\\d+)?(?:-[0-9A-Za-z.-]+)?$",
+            "examples": [
+              "0.1.0-beta.1",
+              "0.2.0-beta.2",
+              "1.0.0",
+              "1.0"
+            ],
+            "description": "TEA OpenAPI Spec Version identifier, conforms to SemVer 2.0 (https://semver.org/)."
+          }
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "endpoints": [
+        {
+          "url": "https://api.teaexample.com",
+          "versions": ["0.1.0-beta.1", "0.2.0-beta.2", "1.0"]
+        },
+        {
+          "url": "https://api2.teaexample.com/mytea",
+          "versions": ["1.0"]
+        }
+      ]
+    }
+  ]
+}
