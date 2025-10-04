@@ -241,19 +241,12 @@ TODO: Handle Auth errors (401, 403) and corresponding messages.
 Servers MUST NOT locate the actual TEA service endpoint at the
 `.well-known` URI as per Section 1.1 of [RFC5785].
 
-### Overview: Finding the Index using DNS result
+### TLS Encryption
 
-Append the product part of the TEI to the URI found
-
-- TEI: `urn:tei:uuid:products.example.com:d4d9f54a-abcf-11ee-ac79-1a52914d44b1`
-- DNS record: `products.example.com`
-- URL: `https://products.example.com/.well-known/tea/d4d9f54a-abcf-11ee-ac79-1a52914d44b1/`
-- HTTP 302 redirect to `https://teapot02.consumer.example.com/tea/v2/product/d4d9f54a-abcf-11ee-ac79-1a52914d44b1`
-
-Always prefix with the https:// scheme. http (unencrypted) is not valid.
+The .well-known endpoint must only be available via HTTPS. Using unencrypted HTTP is not valid.
 
 - TEI: `urn:tei:uuid:products.example.com:d4d9f54a-abcf-11ee-ac79-1a52914d44b1`
-- URL: `https://products.example.com/.well-known/tea/d4d9f54a-abcf-11ee-ac79-1a52914d44b1/`
+- URL: `https://products.example.com/.well-known/tea`
 
 **NOTE:** The `/.well-known/tea` names space needs to be registred.
 
