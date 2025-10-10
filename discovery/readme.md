@@ -189,6 +189,7 @@ The json must conform to the [TEA Well-Known Schema](tea-well-known.schema.json)
 Example:
 ```json
 {
+  "schemaVersion": 1,
   "endpoints": [
     {
       "url": "https://api.teaexample.com",
@@ -196,15 +197,17 @@ Example:
         [
           "0.1.0-beta.1",
           "0.2.0-beta.2",
-          "1.0"
-        ]
+          "1.0.0"
+        ],
+      "priority": 1
     },
     {
       "url": "https://api2.teaexample.com/mytea",
       "versions": 
         [
-          "1.0"
-        ]
+          "1.0.0"
+        ],
+      "priority": 0.5
     }
   ]
 }
@@ -214,7 +217,15 @@ Example:
 ## Connecting to the API
 
 Clients must pick any one of the endpoints listed in the `.well-known/tea` json
-response. They must then construct the full URL to the API by appending the
+response. The client MUST pick an endpoint with the at least one version that is
+supported by the client is using. The client MUST prioritize endpoints with the 
+highest matching version supported both by the client and the endpoint based on 
+SemVer 2.0.0 specification comparison [rules](https://semver.org/#spec-item-11).
+If there are several endpoints like these and if the priority field is present, 
+the client SHOULD pick the endpoint with the highest priority value (a float 
+between 0 and 1).
+
+The client must then construct the full URL to the API by appending the
 "/v" plus one of the versions listed in the `versions` array of the selected endpoint,
 plus "/discovery?tei=", plus the TEI that is url-encoded according to [RFC3986]
 and [RFC3986]).
@@ -223,7 +234,7 @@ Examples:
 1. For TEI `urn:tei:uuid:products.example.com:d4d9f54a-abcf-11ee-ac79-1a52914d44b`
 `https://api.teaexample.com/v0.2.0-beta.2/discovery?tei=urn%3Atei%3Auuid%3Aproducts.example.com%3Ad4d9f54a-abcf-11ee-ac79-1a52914d44b`
 2. For TEI `urn:tei:purl:products.example.com:pkg:deb/debian/curl@7.50.3-1?arch=i386&distro=jessie`
-`https://api2.teaexample.com/mytea/v1.0/discovery?tei=urn%3Atei%3Apurl%3Aproducts.example.com%3Apkg%3Adeb%2Fdebian%2Fcurl%407.50.3-1%3Farch%3Di386%26distro%3Djessie`
+`https://api2.teaexample.com/mytea/v1.0.0/discovery?tei=urn%3Atei%3Apurl%3Aproducts.example.com%3Apkg%3Adeb%2Fdebian%2Fcurl%407.50.3-1%3Farch%3Di386%26distro%3Djessie`
 
 The discovery endpoint is a part of the TEA OpenAPI specification. 
 

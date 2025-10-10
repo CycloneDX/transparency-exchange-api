@@ -414,7 +414,7 @@ paths:
                     minItems: 1
                     items:
                       type: string
-                    example: ["0.2.0-beta.2", "1.0"]
+                    example: ["0.2.0-beta.2", "1.0.0"]
                 required:
                   - productReleaseUuid
                   - rootUrl
