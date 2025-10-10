@@ -1102,6 +1102,12 @@ components:
                 $ref: "#/components/schemas/unknown-error-type"
             required:
               - error
+    paginated-product:
+      description: A paginated response containing TEA Products
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/paginated-product-response"
     paginated-product-release:
       description: A paginated response containing TEA Product Releases
       content:
