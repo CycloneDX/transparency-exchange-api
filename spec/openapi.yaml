@@ -392,33 +392,7 @@ paths:
             example: urn%3Atei%3Auuid%3Aproducts.example.com%3Ad4d9f54a-abcf-11ee-ac79-1a52914d44b
       responses:
         '200':
-          description: Discovery information for the requested TEI
-          content:
-            application/json:
-              schema:
-                type: object
-                additionalProperties: false
-                properties:
-                  productReleaseUuid:
-                    description: UUID of the resolved TEA Product Release
-                    $ref: "#/components/schemas/uuid"
-                    example: d4d9f54a-abcf-11ee-ac79-1a52914d44b
-                  rootUrl:
-                    description: Root URL of the TEA server for this TEI without trailing slash
-                    type: string
-                    format: uri
-                    example: https://api.teaexample.com
-                  versions:
-                    description: Supported TEA API versions at this server without v prefix
-                    type: array
-                    minItems: 1
-                    items:
-                      type: string
-                    example: ["0.2.0-beta.2", "1.0.0"]
-                required:
-                  - productReleaseUuid
-                  - rootUrl
-                  - versions
+          $ref: "#/components/responses/discovery-response"
         '400':
           $ref: "#/components/responses/400-invalid-request"
         '404':
@@ -1030,6 +1004,42 @@ components:
     #
     # Types used in API responses
     #
+    error-response:
+      type: object
+      description: Error response
+      additionalProperties: false
+      properties:
+        error:
+          $ref: "#/components/schemas/unknown-error-type"
+      required:
+        - error
+
+    discovery-info:
+      type: object
+      description: Discovery information for a TEI
+      additionalProperties: false
+      properties:
+        productReleaseUuid:
+          description: UUID of the resolved TEA Product Release
+          $ref: "#/components/schemas/uuid"
+          example: d4d9f54a-abcf-11ee-ac79-1a52914d44b
+        rootUrl:
+          description: Root URL of the TEA server for this TEI without trailing slash
+          type: string
+          format: uri
+          example: https://api.teaexample.com
+        versions:
+          description: Supported TEA API versions at this server without v prefix
+          type: array
+          minItems: 1
+          items:
+            type: string
+          example: ["0.2.0-beta.2", "1.0.0"]
+      required:
+        - productReleaseUuid
+        - rootUrl
+        - versions
+
     pagination-details:
       type: object
       properties:
@@ -1095,13 +1105,13 @@ components:
       content:
         application/json:
           schema:
-            type: object
-            additionalProperties: false
-            properties:
-              error:
-                $ref: "#/components/schemas/unknown-error-type"
-            required:
-              - error
+            $ref: "#/components/schemas/error-response"
+    discovery-response:
+      description: Discovery information for the requested TEI
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/discovery-info"
     paginated-product:
       description: A paginated response containing TEA Products
       content:
