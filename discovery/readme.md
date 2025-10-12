@@ -246,6 +246,13 @@ the TEA OpenAPI specification.
 If the TEI is not known to the TEA server, the discovery endpoint must return a 404 
 status code with a response describing the error.
 
+If the DNS record for the discovery endpoint cannot be resolved by the client, or
+the discovery endpoint fails with 5xx error code, or the TLS certificate cannot be validated,
+the client MUST retry the discovery endpoint with the next endpoint in the list, if another
+endpoint is present. If no other endpoint is available, the client MUST retry the discovery
+endpoint with the first endpoint in the list. The client SHOULD implement an exponential
+backoff strategy for retries.
+
 TODO: Handle Auth errors (401, 403) and corresponding messages.
 
 ## Notes Regarding .well-known
