@@ -150,17 +150,57 @@ Example:
 urn:tei:uuid:cyclonedx.org:443:d4d9f54a-abcf-11ee-ac79-1a52914d44b1
 ```
 
+#### EAN/UPC
 
-#### Other types to be defined
+Where the `unique-identifier` is a EAN/UPC.
 
-- EAN
-- GS1
-- STD
+Syntax:
 
-Note that if an identifier, like EAN, is used for multiple different products then this
-EAN code will not be unique for a given product and should not be used as an identifier.
-In this case, the vendor is recommended to create a separate identifier for each unique
-product sold by other means, like UUID or hash.
+```text
+urn:tei:eanupc:<domain-name>:<domain-port>:<ean/upc-number>
+````
+
+Example:
+```text
+urn:tei:eanupc:cyclonedx.org:443:1234567890123
+```
+
+#### GTIN
+
+Where the `unique-identifier` is a [GTIN](https://www.gs1.org/standards/id-keys/gtin).
+
+Syntax:
+
+```text
+urn:tei:gtin:<domain-name>:<domain-port>:<gtin-number>
+````
+
+Example:
+```text
+urn:tei:gtin:cyclonedx.org:443:0234567890123
+```
+
+#### ASIN
+
+Where the `unique-identifier` is a [ASIN](https://sell.amazon.com/blog/what-is-an-asin).
+
+Syntax:
+
+```text
+urn:tei:asin:<domain-name>:<domain-port>:<asin-identifier>
+````
+
+Example:
+```text
+urn:tei:asin:cyclonedx.org:443:B07FZ8S74R
+```
+
+Note that if an identifier, like EAN, is used for multiple different product releases
+then this EAN code will not be unique for a given product. While this case is supported
+by TEA, the vendor is recommended to create a separate TEI for each unique product sold,
+like UUID or hash. In any case, the vendor SHOULD minimize the number of distinct product
+releases returned per TEI. Preferable situation is to have a single product release
+per TEI.
 
 ### TEI resolution using DNS
 
