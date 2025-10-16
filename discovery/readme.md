@@ -218,13 +218,13 @@ The name in the DNS name part points to a set of DNS records.
 A TEI with `domain-name` `tea.example.com` queries DNS for `tea.example.com`, considering `A`, `AAAA` and `CNAME` records.
 These point to the hosts available for the Transparency Exchange API.
 
-The TEA client connects to the host using HTTPS and validates the certificate.
-The URI is composed of the name with the `/.well-known/tea` prefix added.
+The TEA client connects to the host using HTTPS on the domain port specified in TEI and validates
+the certificate. The URL is composed of the host name and port with the `/.well-known/tea` path added.
 
-This results in the base URI 
-`https://tea.example.com/.well-known/tea`
+This results in the base URL such as
+`https://products.example.com:443/.well-known/tea`
 
-This URI must contain static json that lists the available TEA server endpoints and supported versions.
+This response must contain json object that lists the available TEA server endpoints and supported versions.
 The json must conform to the [TEA Well-Known Schema](tea-well-known.schema.json).
 
 Example:
