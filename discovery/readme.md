@@ -195,6 +195,22 @@ Example:
 urn:tei:asin:cyclonedx.org:443:B07FZ8S74R
 ```
 
+
+#### UDI
+
+Where the `unique-identifier` is a [UDI](https://www.gs1.org/industries/healthcare/udi).
+
+Syntax:
+
+```text
+urn:tei:udi:<domain-name>:<domain-port>:<udi-identifier>
+````
+
+Example:
+```text
+urn:tei:udi:cyclonedx.org:443:00123456789012
+```
+
 Note that if an identifier, like EAN, is used for multiple different product releases
 then this EAN code will not be unique for a given product. While this case is supported
 by TEA, the vendor is recommended to create a separate TEI for each unique product sold,
