@@ -70,13 +70,12 @@ barcode and one with the vendor's product number.
 The TEI consists of three core parts
 
 ```text
-urn:tei:<type>:<domain-name>:<domain-port>:<unique-identifier>
+urn:tei:<type>:<domain-name>:<unique-identifier>
 ````
 
 - The **`type`** which defines the syntax of the unique identifier part
 - The **`domain-name`** part resolves into a web server, which may not be the API host.
   - The uniqueness of the name is the domain name part that has to be registred at creation of the TEI.
-- The **`domain-port`** is the port number of the web server on which ./well-known/tea is available.
 - The **`unique-identifier`** has to be unique within the `domain-name`.
   Recommendation is to use a UUID but it can be an existing article code too
 
@@ -95,13 +94,13 @@ Where the `unique-identifier` is a PURL in it's canonical string form.
 Syntax:
 
 ```text
-urn:tei:purl:<domain-name>:<domain-port>:<purl>
+urn:tei:purl:<domain-name>:<purl>
 ````
 
 Example:
 
 ```text
-urn:tei:purl:cyclonedx.org:443:pkg:pypi/cyclonedx-python-lib@8.4.0?extension=whl&qualifier=py3-none-any
+urn:tei:purl:cyclonedx.org:pkg:pypi/cyclonedx-python-lib@8.4.0?extension=whl&qualifier=py3-none-any
 ```
 
 #### SWID
@@ -111,7 +110,7 @@ Where the `unique-identifier` is a SWID.
 Syntax:
 
 ```text
-urn:tei:swid:<domain-name>:<domain-port>:<swid>
+urn:tei:swid:<domain-name>:<swid>
 ````
 
 Note that there is a TEI SWID type as well as a PURL SWID type.
@@ -125,12 +124,12 @@ Where the `unique-identifier` is a Hash. Supports the following hash types:
 - SHA512
 
 ```text
-urn:tei:hash:<domain-name>:<domain-port>:<hashtype>:<hash>
+urn:tei:hash:<domain-name>:<hashtype>:<hash>
 ````
 
 Example:
 ```text
-urn:tei:hash:cyclonedx.org:443:SHA256:fd44efd601f651c8865acf0dfeacb0df19a2b50ec69ead0262096fd2f67197b9
+urn:tei:hash:cyclonedx.org:SHA256:fd44efd601f651c8865acf0dfeacb0df19a2b50ec69ead0262096fd2f67197b9
 ```
 
 The origin of the hash is up to the vendor to define.
@@ -142,12 +141,12 @@ Where the `unique-identifier` is a UUID.
 Syntax:
 
 ```text
-urn:tei:uuid:<domain-name>:<domain-port>:<uuid>
+urn:tei:uuid:<domain-name>:<uuid>
 ````
 
 Example:
 ```text
-urn:tei:uuid:cyclonedx.org:443:d4d9f54a-abcf-11ee-ac79-1a52914d44b1
+urn:tei:uuid:cyclonedx.org:d4d9f54a-abcf-11ee-ac79-1a52914d44b1
 ```
 
 #### EAN/UPC
@@ -157,12 +156,12 @@ Where the `unique-identifier` is a EAN/UPC.
 Syntax:
 
 ```text
-urn:tei:eanupc:<domain-name>:<domain-port>:<ean/upc-number>
+urn:tei:eanupc:<domain-name>:<ean/upc-number>
 ````
 
 Example:
 ```text
-urn:tei:eanupc:cyclonedx.org:443:1234567890123
+urn:tei:eanupc:cyclonedx.org:1234567890123
 ```
 
 #### GTIN
@@ -172,12 +171,12 @@ Where the `unique-identifier` is a [GTIN](https://www.gs1.org/standards/id-keys/
 Syntax:
 
 ```text
-urn:tei:gtin:<domain-name>:<domain-port>:<gtin-number>
+urn:tei:gtin:<domain-name>:<gtin-number>
 ````
 
 Example:
 ```text
-urn:tei:gtin:cyclonedx.org:443:0234567890123
+urn:tei:gtin:cyclonedx.org:0234567890123
 ```
 
 #### ASIN
@@ -187,12 +186,12 @@ Where the `unique-identifier` is a [ASIN](https://sell.amazon.com/blog/what-is-a
 Syntax:
 
 ```text
-urn:tei:asin:<domain-name>:<domain-port>:<asin-identifier>
+urn:tei:asin:<domain-name>:<asin-identifier>
 ````
 
 Example:
 ```text
-urn:tei:asin:cyclonedx.org:443:B07FZ8S74R
+urn:tei:asin:cyclonedx.org:B07FZ8S74R
 ```
 
 
@@ -203,12 +202,12 @@ Where the `unique-identifier` is a [UDI](https://www.gs1.org/industries/healthca
 Syntax:
 
 ```text
-urn:tei:udi:<domain-name>:<domain-port>:<udi-identifier>
+urn:tei:udi:<domain-name>:<udi-identifier>
 ````
 
 Example:
 ```text
-urn:tei:udi:cyclonedx.org:443:00123456789012
+urn:tei:udi:cyclonedx.org:00123456789012
 ```
 
 Note that if an identifier, like EAN, is used for multiple different product releases
@@ -226,19 +225,19 @@ product transparency exchange information.
 At the URL a well-known name space is used to find out where the API endpoint is hosted.
 This is solved by using the ".well-known" name space as defined by the IETF.
 
-- `urn:tei:uuid:products.example.com:443:d4d9f54a-abcf-11ee-ac79-1a52914d44b1`
-- Syntax: `urn:tei:uuid:<name based on domain>:<domain-port>:<unique identifier>`
+- `urn:tei:uuid:products.example.com:d4d9f54a-abcf-11ee-ac79-1a52914d44b1`
+- Syntax: `urn:tei:uuid:<name based on domain>:<unique identifier>`
 
 The name in the DNS name part points to a set of DNS records.
 
 A TEI with `domain-name` `tea.example.com` queries DNS for `tea.example.com`, considering `A`, `AAAA` and `CNAME` records.
 These point to the hosts available for the Transparency Exchange API.
 
-The TEA client connects to the host using HTTPS on the domain port specified in TEI and validates
-the certificate. The URL is composed of the host name and port with the `/.well-known/tea` path added.
+The TEA client connects to the host using HTTPS and validates
+the certificate. The URL is composed of the host name with the `/.well-known/tea` path added.
 
 This results in the base URL such as
-`https://products.example.com:443/.well-known/tea`
+`https://products.example.com/.well-known/tea`
 
 This response must contain json object that lists the available TEA server endpoints and supported versions.
 The json must conform to the [TEA Well-Known Schema](tea-well-known.schema.json).
@@ -270,6 +269,23 @@ Example:
 }
 ```
 
+## TODO: Port resolution
+
+N.B. This needs to be resolved before finalizing the spec.
+
+Currently, the port number is not part of the TEI but it is needed to connect to the API.
+The current assumption is that the client connects on the default https port (443).
+At this time, it is recommended that experimental clients add an optional port parameter, which
+allows to override the default port.
+
+A port number cannot be added to the TEI URN spec as it breaks the location independence
+requirement of URN.
+
+Possible solutions to this issue:
+1. Make a convention that the port number for the ./well-known/tea is always 443. Exceptions
+possible via explicit client setting for non-production environments only.
+2. Use SRV or HTTPS DNS records to resolve the ./well-known/tea URL with the port number.
+
 
 ## Connecting to the API
 
@@ -288,10 +304,10 @@ plus "/discovery?tei=", plus the TEI that is url-encoded according to [RFC3986]
 and [RFC3986]).
 
 Examples:
-1. For TEI `urn:tei:uuid:products.example.com:443:d4d9f54a-abcf-11ee-ac79-1a52914d44b`
-`https://api.teaexample.com/v0.2.0-beta.2/discovery?tei=urn%3Atei%3Auuid%3Aproducts.example.com%3A443%3Ad4d9f54a-abcf-11ee-ac79-1a52914d44b`
-2. For TEI `urn:tei:purl:products.example.com:443:pkg:deb/debian/curl@7.50.3-1?arch=i386&distro=jessie`
-`https://api2.teaexample.com/mytea/v1.0.0/discovery?tei=urn%3Atei%3Apurl%3Aproducts.example.com%3A443%3Apkg%3Adeb%2Fdebian%2Fcurl%407.50.3-1%3Farch%3Di386%26distro%3Djessie`
+1. For TEI `urn:tei:uuid:products.example.com:d4d9f54a-abcf-11ee-ac79-1a52914d44b`
+`https://api.teaexample.com/v0.2.0-beta.2/discovery?tei=urn%3Atei%3Auuid%3Aproducts.example.com%3Ad4d9f54a-abcf-11ee-ac79-1a52914d44b`
+2. For TEI `urn:tei:purl:products.example.com:pkg:deb/debian/curl@7.50.3-1?arch=i386&distro=jessie`
+`https://api2.teaexample.com/mytea/v1.0.0/discovery?tei=urn%3Atei%3Apurl%3Aproducts.example.com%3Apkg%3Adeb%2Fdebian%2Fcurl%407.50.3-1%3Farch%3Di386%26distro%3Djessie`
 
 The discovery endpoint is a part of the TEA OpenAPI specification. 
 
@@ -321,7 +337,7 @@ Servers MUST NOT locate the actual TEA service endpoint at the
 
 The .well-known endpoint must only be available via HTTPS. Using unencrypted HTTP is not valid.
 
-- TEI: `urn:tei:uuid:products.example.com:443:d4d9f54a-abcf-11ee-ac79-1a52914d44b1`
+- TEI: `urn:tei:uuid:products.example.com:d4d9f54a-abcf-11ee-ac79-1a52914d44b1`
 - URL: `https://products.example.com/.well-known/tea`
 
 **NOTE:** The `/.well-known/tea` names space needs to be registred.

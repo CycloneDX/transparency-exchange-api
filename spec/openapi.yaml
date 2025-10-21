@@ -389,7 +389,7 @@ paths:
           description: Transparency Exchange Identifier (TEI) for the product being discovered. Provide the TEI as a URL-encoded string per RFC 3986, RFC 3987.
           schema:
             type: string
-            example: urn%3Atei%3Auuid%3Aproducts.example.com%3A443%3Ad4d9f54a-abcf-11ee-ac79-1a52914d44b
+            example: urn%3Atei%3Auuid%3Aproducts.example.com%3Ad4d9f54a-abcf-11ee-ac79-1a52914d44b
       responses:
         '200':
           $ref: "#/components/responses/discovery-response"
