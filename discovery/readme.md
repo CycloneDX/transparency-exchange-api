@@ -149,17 +149,73 @@ Example:
 urn:tei:uuid:cyclonedx.org:d4d9f54a-abcf-11ee-ac79-1a52914d44b1
 ```
 
+#### EAN/UPC
 
-#### Other types to be defined
+Where the `unique-identifier` is a EAN/UPC.
 
-- EAN
-- GS1
-- STD
+Syntax:
 
-Note that if an identifier, like EAN, is used for multiple different products then this
-EAN code will not be unique for a given product and should not be used as an identifier.
-In this case, the vendor is recommended to create a separate identifier for each unique
-product sold by other means, like UUID or hash.
+```text
+urn:tei:eanupc:<domain-name>:<ean/upc-number>
+````
+
+Example:
+```text
+urn:tei:eanupc:cyclonedx.org:1234567890123
+```
+
+#### GTIN
+
+Where the `unique-identifier` is a [GTIN](https://www.gs1.org/standards/id-keys/gtin).
+
+Syntax:
+
+```text
+urn:tei:gtin:<domain-name>:<gtin-number>
+````
+
+Example:
+```text
+urn:tei:gtin:cyclonedx.org:0234567890123
+```
+
+#### ASIN
+
+Where the `unique-identifier` is a [ASIN](https://sell.amazon.com/blog/what-is-an-asin).
+
+Syntax:
+
+```text
+urn:tei:asin:<domain-name>:<asin-identifier>
+````
+
+Example:
+```text
+urn:tei:asin:cyclonedx.org:B07FZ8S74R
+```
+
+
+#### UDI
+
+Where the `unique-identifier` is a [UDI](https://www.gs1.org/industries/healthcare/udi).
+
+Syntax:
+
+```text
+urn:tei:udi:<domain-name>:<udi-identifier>
+````
+
+Example:
+```text
+urn:tei:udi:cyclonedx.org:00123456789012
+```
+
+Note that if an identifier, like EAN, is used for multiple different product releases
+then this EAN code will not be unique for a given product. While this case is supported
+by TEA, the vendor is recommended to create a separate TEI for each unique product sold,
+like UUID or hash. In any case, the vendor SHOULD minimize the number of distinct product
+releases returned per TEI. Preferable situation is to have a single product release
+per TEI.
 
 ### TEI resolution using DNS
 
@@ -177,38 +233,112 @@ The name in the DNS name part points to a set of DNS records.
 A TEI with `domain-name` `tea.example.com` queries DNS for `tea.example.com`, considering `A`, `AAAA` and `CNAME` records.
 These point to the hosts available for the Transparency Exchange API.
 
-The TEA client connects to the host using HTTPS and validates the certificate.
-The URI is composed of the name with the `/.well-known/tea` prefix added.
+The TEA client connects to the host using HTTPS and validates
+the certificate. The URL is composed of the host name with the `/.well-known/tea` path added.
 
-This results in the base URI (without the product identifier) 
-`https://tea.example.com/.well-known/tea/` 
+This results in the base URL such as
+`https://products.example.com/.well-known/tea`
+
+This response must contain json object that lists the available TEA server endpoints and supported versions.
+The json must conform to the [TEA Well-Known Schema](tea-well-known.schema.json).
+
+Example:
+```json
+{
+  "schemaVersion": 1,
+  "endpoints": [
+    {
+      "url": "https://api.teaexample.com",
+      "versions": 
+        [
+          "0.1.0-beta.1",
+          "0.2.0-beta.2",
+          "1.0.0"
+        ],
+      "priority": 1
+    },
+    {
+      "url": "https://api2.teaexample.com/mytea",
+      "versions": 
+        [
+          "1.0.0"
+        ],
+      "priority": 0.5
+    }
+  ]
+}
+```
+
+## TODO: Port resolution
+
+N.B. This needs to be resolved before finalizing the spec.
+
+Currently, the port number is not part of the TEI but it is needed to connect to the API.
+The current assumption is that the client connects on the default https port (443).
+At this time, it is recommended that experimental clients add an optional port parameter, which
+allows to override the default port.
+
+A port number cannot be added to the TEI URN spec as it breaks the location independence
+requirement of URN.
+
+Possible solutions to this issue:
+1. Make a convention that the port number for the ./well-known/tea is always 443. Exceptions
+possible via explicit client setting for non-production environments only.
+2. Use SRV or HTTPS DNS records to resolve the ./well-known/tea URL with the port number.
 
 
 ## Connecting to the API
 
-When connecting to the `.well-known/tea` URI with the unique identifier
-a HTTP redirect is **required**.
+Clients must pick any one of the endpoints listed in the `.well-known/tea` json
+response. The client MUST pick an endpoint with the at least one version that is
+supported by the client is using. The client MUST prioritize endpoints with the 
+highest matching version supported both by the client and the endpoint based on 
+SemVer 2.0.0 specification comparison [rules](https://semver.org/#spec-item-11).
+If there are several endpoints like these and if the priority field is present, 
+the client SHOULD pick the endpoint with the highest priority value (a float 
+between 0 and 1).
 
-The server MUST redirect HTTP requests for that resource
-to the actual "context path" using one of the available mechanisms
-provided by HTTP (e.g., using a 301, 303, or 307 response).  Clients
-MUST handle HTTP redirects on the `.well-known` URI.  Servers MUST
-NOT locate the actual TEA service endpoint at the
+The client must then construct the full URL to the API by appending the
+"/v" plus one of the versions listed in the `versions` array of the selected endpoint,
+plus "/discovery?tei=", plus the TEI that is url-encoded according to [RFC3986]
+and [RFC3986]).
+
+Examples:
+1. For TEI `urn:tei:uuid:products.example.com:d4d9f54a-abcf-11ee-ac79-1a52914d44b`
+`https://api.teaexample.com/v0.2.0-beta.2/discovery?tei=urn%3Atei%3Auuid%3Aproducts.example.com%3Ad4d9f54a-abcf-11ee-ac79-1a52914d44b`
+2. For TEI `urn:tei:purl:products.example.com:pkg:deb/debian/curl@7.50.3-1?arch=i386&distro=jessie`
+`https://api2.teaexample.com/mytea/v1.0.0/discovery?tei=urn%3Atei%3Apurl%3Aproducts.example.com%3Apkg%3Adeb%2Fdebian%2Fcurl%407.50.3-1%3Farch%3Di386%26distro%3Djessie`
+
+The discovery endpoint is a part of the TEA OpenAPI specification. 
+
+If the TEI is known to the TEA server, the discovery endpoint must return at least 
+the product release uuid, the root URL of the TEA server, the list of supported
+versions, plus the response may have other fields based on the current version of 
+the TEA OpenAPI specification.
+
+If the TEI is not known to the TEA server, the discovery endpoint must return a 404 
+status code with a response describing the error.
+
+If the DNS record for the discovery endpoint cannot be resolved by the client, or
+the discovery endpoint fails with 5xx error code, or the TLS certificate cannot be validated,
+the client MUST retry the discovery endpoint with the next endpoint in the list, if another
+endpoint is present. While doing so the client SHOULD preserve the priority order if provided 
+(from highest to lowest priority). If no other endpoint is available, the client MUST retry 
+the discovery endpoint with the first endpoint in the list. The client SHOULD implement an 
+exponential backoff strategy for retries.
+
+TODO: Handle Auth errors (401, 403) and corresponding messages.
+
+## Notes Regarding .well-known
+Servers MUST NOT locate the actual TEA service endpoint at the
 `.well-known` URI as per Section 1.1 of [RFC5785].
 
-### Overview: Finding the Index using DNS result
+### TLS Encryption
 
-Append the product part of the TEI to the URI found
-
-- TEI: `urn:tei:uuid:products.example.com:d4d9f54a-abcf-11ee-ac79-1a52914d44b1`
-- DNS record: `products.example.com`
-- URL: `https://products.example.com/.well-known/tea/d4d9f54a-abcf-11ee-ac79-1a52914d44b1/`
-- HTTP 302 redirect to "https://teapot02.consumer.example.com/tea/v2/product/d4d9f54a-abcf-11ee-ac79-1a52914d44b1'
-
-Always prefix with the https:// scheme. http (unencrypted) is not valid.
+The .well-known endpoint must only be available via HTTPS. Using unencrypted HTTP is not valid.
 
 - TEI: `urn:tei:uuid:products.example.com:d4d9f54a-abcf-11ee-ac79-1a52914d44b1`
-- URL: `https://products.example.com/.well-known/tea/d4d9f54a-abcf-11ee-ac79-1a52914d44b1/`
+- URL: `https://products.example.com/.well-known/tea`
 
 **NOTE:** The `/.well-known/tea` names space needs to be registred.
 
