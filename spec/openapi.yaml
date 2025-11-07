@@ -380,7 +380,7 @@ paths:
         - TEA Artifact
   /discovery:
     get:
-      description: Discovery endpoint which resolves TEI into product release UUID.
+      description: Discovery endpoint which resolves TEI into product release(s) UUID.
       operationId: discoveryByTei
       parameters:
         - name: tei
@@ -1048,7 +1048,7 @@ components:
       additionalProperties: false
       properties:
         productReleaseUuid:
-          description: UUID of the resolved TEA Product Release
+          description: Array of UUID(s) of the resolved TEA Product Release(s)
           $ref: "#/components/schemas/uuid"
           example: ["d4d9f54a-abcf-11ee-ac79-1a52914d44b"]
         servers:
