@@ -193,7 +193,7 @@ paths:
         '404':
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
-        - TEA Component Release        
+        - TEA Component Release
   /componentRelease/{uuid}/collection/latest:
     get:
       description: Get the latest TEA Collection belonging to the TEA Component Release
@@ -564,7 +564,7 @@ components:
 
 #
     # Reference to a component, in some cases directly to a specific release
-    # 
+    #
     # The release reference (release UUID) is only used in cases where a product
     # name includes a version and this version of the product always includes
     # the same releases of the component.
@@ -1050,7 +1050,7 @@ components:
         productReleaseUuid:
           description: UUID of the resolved TEA Product Release
           $ref: "#/components/schemas/uuid"
-          example: d4d9f54a-abcf-11ee-ac79-1a52914d44b
+          example: ["d4d9f54a-abcf-11ee-ac79-1a52914d44b"]
         servers:
           description: Array of TEA server information
           type: array
@@ -1084,7 +1084,7 @@ components:
         - pageStartIndex
         - pageSize
         - totalResults
-    
+
     paginated-product-response:
       type: object
       description: A paginated response containing TEA Products
@@ -1096,7 +1096,7 @@ components:
               type: array
               items:
                 $ref: "#/components/schemas/product"
-    
+
     paginated-product-release-response:
       type: object
       description: A paginated response containing TEA Product Releases
