@@ -12,7 +12,7 @@ info:
   license:
     name: Apache 2.0
     url: https://github.com/CycloneDX/transparency-exchange-api/blob/main/LICENSE
-  version: 0.3.0-beta.2
+  version: 0.2.0-beta.2
 servers:
   - url: http://localhost/tea/v1
     description: Local development
@@ -354,30 +354,30 @@ paths:
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
         - TEA Component Release
-  /artefact/{uuid}:
+  /artifact/{uuid}:
     get:
-      description: Get metadata for specific TEA artefact
-      operationId: getArtefact
+      description: Get metadata for specific TEA artifact
+      operationId: getArtifact
       parameters:
         - name: uuid
           in: path
           required: true
-          description: UUID of TEA Artefact in the TEA server
+          description: UUID of TEA Artifact in the TEA server
           schema:
             "$ref": "#/components/schemas/uuid"
       responses:
         '200':
-          description: Requested TEA Artefact metadata found and returned
+          description: Requested TEA Artifact metadata found and returned
           content:
             application/json:
               schema:
-                "$ref": "#/components/schemas/artefact"
+                "$ref": "#/components/schemas/artifact"
         '400':
           $ref: "#/components/responses/400-invalid-request"
         '404':
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
-        - TEA Artefact
+        - TEA Artifact
   /discovery:
     get:
       description: Discovery endpoint which resolves TEI into product release UUID.
@@ -786,7 +786,7 @@ components:
             updateReason:
               type: INITIAL_RELEASE
               comment: Initial collection for this release
-            artefacts:
+            artifacts:
               - uuid: 1cb47b95-8bf8-3bad-a5a4-0d54d86e10ce
                 name: Build SBOM
                 type: BOM
@@ -835,20 +835,20 @@ components:
         updateReason:
           description: Reason for the update/release of the TEA Collection object.
           "$ref": "#/components/schemas/collection-update-reason"
-        artefacts:
+        artifacts:
           type: array
-          description: List of TEA artefact objects.
+          description: List of TEA artifact objects.
           items:
-            "$ref": "#/components/schemas/artefact"
+            "$ref": "#/components/schemas/artifact"
       examples:
         # Documents in the latest release of Log4j Core
         - uuid: 4c72fe22-9d83-4c2f-8eba-d6db484f32c8
           version: 3
           date: 2024-12-13T00:00:00Z
           updateReason:
-            type: ARTEFACT_UPDATED
+            type: ARTIFACT_UPDATED
             comment: VDR file updated
-          artefacts:
+          artifacts:
             - uuid: 1cb47b95-8bf8-3bad-a5a4-0d54d86e10ce
               name: Build SBOM
               type: BOM
@@ -888,9 +888,10 @@ components:
       description: Type of TEA collection update
       enum:
         - INITIAL_RELEASE
-        - ARTEFACT_UPDATED
-        - ARTEFACT_ADDED
-        - ARTEFACT_REMOVED
+        - VEX_UPDATED
+        - ARTIFACT_UPDATED
+        - ARTIFACT_ADDED
+        - ARTIFACT_REMOVED
 
     collection-belongs-to-type:
       type: string
@@ -900,38 +901,38 @@ components:
         - PRODUCT_RELEASE
 
     #
-    # TEA Artefact and related objects
+    # TEA Artifact and related objects
     #
-    artefact:
+    artifact:
       type: object
       description: A security-related document
       properties:
         uuid:
-          description: UUID of the TEA Artefact object.
+          description: UUID of the TEA Artifact object.
           "$ref": "#/components/schemas/uuid"
         name:
           type: string
-          description: Artefact name
+          description: Artifact name
         type:
-          description: Type of artefact
-          "$ref": "#/components/schemas/artefact-type"
+          description: Type of artifact
+          "$ref": "#/components/schemas/artifact-type"
         distributionTypes:
           type: array
           description: |
-            List of component distributions types that this artefact applies to.
-            If absent, the artefact applies to all distributions.
+            List of component distributions types that this artifact applies to.
+            If absent, the artifact applies to all distributions.
           items:
             type: string
             description: |
-              The `id` of the component format that this artefact applies to.
+              The `id` of the component format that this artifact applies to.
         formats:
           type: array
           description: |
             List of objects with the same content, but in different formats.
             The order of the list has no significance.
           items:
-            "$ref": "#/components/schemas/artefact-format"
-    artefact-type:
+            "$ref": "#/components/schemas/artifact-format"
+    artifact-type:
       type: string
       description: Specifies the type of external reference.
       enum:
@@ -946,7 +947,7 @@ components:
         - THREAT_MODEL
         - VULNERABILITIES
         - OTHER
-    artefact-format:
+    artifact-format:
       type: object
       description: A security-related document in a specific format
       properties:
@@ -955,18 +956,18 @@ components:
           description: The MIME type of the document
         description:
           type: string
-          description: A free text describing the artefact
+          description: A free text describing the artifact
         url:
           type: string
-          description: Direct download URL for the artefact
+          description: Direct download URL for the artifact
           format: url
         signatureUrl:
           type: string
-          description: Direct download URL for an external signature of the artefact
+          description: Direct download URL for an external signature of the artifact
           format: url
         checksums:
           type: array
-          description: List of checksums for the artefact
+          description: List of checksums for the artifact
           items:
             "$ref": "#/components/schemas/checksum"
     checksum:
@@ -1220,7 +1221,7 @@ tags:
   - name: TEA Product Release
   - name: TEA Component
   - name: TEA Component Release
-  - name: TEA Artefact
+  - name: TEA Artifact
   - name: TEA Discovery
 externalDocs:
   description: Transparency Exchange API specification
