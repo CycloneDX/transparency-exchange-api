@@ -50,7 +50,7 @@ owned version.
 
 ### Example
 
-An example of a product consisting of an OSS project and all its Maven artifacts:
+An example of a product consisting of an OSS project and all its Maven artefacts:
 
 ```json
 {

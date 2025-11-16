@@ -21,10 +21,10 @@ At the base URL well known URLs (ref) needs to point to
 As an alternative, discovery using a company's ordinary web site should be supported.
 This can be handled using the file security.txt (IETF RFC 9116)
 
-## Artifact Discovery based on TEA collections
+## Artefact Discovery based on TEA collections
 
-The API MUST provide a way to discover the artifacts that are available for retrieval or further query.
-Discovery SHOULD group artifacts together that represent a **collection**
+The API MUST provide a way to discover the artefacts that are available for retrieval or further query.
+Discovery SHOULD group artefacts together that represent a **collection**
 that are directly applicable to a given product with a given version.
 Collections are OPTIONAL.
 
@@ -44,11 +44,11 @@ modifying collections, or deleting existing collections.
 
 - Authn/Authz MUST be supported
 
-## Artifact Retrieval
+## Artefact Retrieval
 
-The API MUST provide a method in which to retrieve an artifact based on the identity of the artifact.
+The API MUST provide a method in which to retrieve an artefact based on the identity of the artefact.
 For example, using CycloneDX BOM-Link to retrieve either the
-latest version or specific version of an artifact.
+latest version or specific version of an artefact.
 
 ```text
 urn:cdx:serialNumber
@@ -59,15 +59,15 @@ The API needs to provide support for update checks, i.e. to check if a document 
 updated without downloading. (possibly etag or HEAD method or similar)
 Authn/Authz MUST be supported
 
-## Artifact Publishing
+## Artefact Publishing
 
-The API MUST provide a way to publish an artifact, either standalone or to a collection. 
-The detection of duplicate artifacts with the same identity MUST be handled and prevented.
+The API MUST provide a way to publish an artefact, either standalone or to a collection. 
+The detection of duplicate artefacts with the same identity MUST be handled and prevented.
 Authn/Authz MUST be supported
 
-## Artifact Versioning
+## Artefact Versioning
 
-The system and API must support artifact versioning for formats that support
+The system and API must support artefact versioning for formats that support
 versioning such as CycloneDX. For example:
 
 - The ability to retrieve the latest SBOM vs a previous (uncorrected) version of the same SBOM.
@@ -77,7 +77,7 @@ versioning such as CycloneDX. For example:
 
 Authn/Authz MUST be supported
 
-## insights: Search Artifact Inventory
+## insights: Search Artefact Inventory
 
 The API MUST provide a way to search the inventory of a specific BOM or all available BOMs
 for a given component or service. The API SHOULD support multiple identity formats including
@@ -92,6 +92,6 @@ The API MUST provide a way to search for the metadata component across all avail
 The API SHOULD support multiple identity formats including PURL, CPE, SWID, GAV, GTIN, and GMN. 
 For example:
 
-- Return the identity of all artifacts that describe `cpe:/a:acme:commerce_suite:1.0`.
+- Return the identity of all artefacts that describe `cpe:/a:acme:commerce_suite:1.0`.
 
 Authn/Authz MUST be supported

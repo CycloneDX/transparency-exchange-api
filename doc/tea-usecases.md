@@ -21,7 +21,7 @@ As a consumer that has an SBOM for a product, I want to be able to retrieve VEX 
 
 ### C2: Consumer: Automation based on product name/identifier
 
-As a consumer, I want to download artifacts for a product based on known data.
+As a consumer, I want to download artefacts for a product based on known data.
 A combination of manufacturer, product name, vendor product ID, EAN bar code or other unique identifier.
 After discovering the base repository URL I want to be able to find a specific 
 product variant and version.
@@ -29,9 +29,9 @@ product variant and version.
 If the consumer is a business, then the procurement process may include delivery of an SBOM with proper identifiers and possibly URLs or identifiers in another document, which may bootstrap the discovery process in a more exact way than in the case of buying a product in a retail market.
 Alice bought a gadget at the gadget store that contains a full Linux system. Where and how will she find the SBOM and VEX for the gadget?
 
-### C3: Consumer: Artifact retrieval 
+### C3: Consumer: Artefact retrieval 
 
-As a consumer, I want to retrieve one or more supply chain artifacts for the products that I have access to, possibly through licensing or other means. As a consumer, I should be able to retrieve all source artifacts such as xBOMs, VDR/VEX, CDXA, and CLE.
+As a consumer, I want to retrieve one or more supply chain artefacts for the products that I have access to, possibly through licensing or other means. As a consumer, I should be able to retrieve all source artefacts such as xBOMs, VDR/VEX, CDXA, and CLE.
 
 ### C4: Consumer: Summarized CLE
 
@@ -41,7 +41,7 @@ A CLE captures all lifecycle events over time, however, there is a need to retri
 ### C5: Consumer: Insights
 
 As a consumer, I want the ability to simply ask the API questions rather than having to download,
-process, and analyze raw supply chain artifacts on my own systems. Common questions should be
+process, and analyze raw supply chain artefacts on my own systems. Common questions should be
 provided by the API by default along with the ability to query for more complex answers using 
 the Common Expression Language (CEL). 
 
