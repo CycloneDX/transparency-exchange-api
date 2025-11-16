@@ -14,13 +14,10 @@ formed - TC54 TG1. The working group has a slack channel in the CycloneDX slack 
 
 ![](images/tealogo.png)
 
-## Status of the standard: Beta 1
+## Status of the standard: Beta 2
 
-TEA is now in beta 1. This beta focuses on the consumer side of the API. Work on the
-publisher API will start after the beta. The idea is to get implementation feedback
-early on the current specification in order to move forward towards a first official
-version of the standard. Feedback will be gathered in the Hackathon at OWASP AppSec
-Global in Barcelona May 28 as well as in the meetings and slack channel.
+TEA is now in beta 2. This beta focuses on ready-to-implement consumer side of the API. Work on the
+publisher API will start after the 1.0 release.
 
 We encourage developers to start with both client and server implementations of TEA and
 participate in interoperability tests. These will be organised both as hackathons and
@@ -29,19 +26,24 @@ informally using the Slack channel.
 There will likely be multiple beta releases. We will announce these by adding new
 tags in the repository as well as in the slack channel.
 
+Priority issues for Beta 3:
+- Refinement of distribution types and distributionType fields, see https://github.com/CycloneDX/transparency-exchange-api/issues/198
+- CLE Spec needs to be integrated in TEA
+- E2e poc of authn/z workflow with TEA consumer spec, including consumer spec adjustment to better support authn/z
+
 ## Introduction
 
 This specification defines a standard, format agnostic, API for the exchange of
-product related artifacts, like BOMs, between systems. The work includes:
+product related artefacts, like BOMs, between systems. The work includes:
 
 - [Discovery of servers](/discovery/readme.md): Describes discovery using the Transparency Exchange Identifier (TEI)
-- Retrieval of artifacts
-- Publication of artifacts
+- Retrieval of artefacts
+- Publication of artefacts
 - Authentication and authorization
 - Querying
 
 System and tooling implementors are encouraged to adopt this API standard for
-sending/receiving transparency artifacts between systems. 
+sending/receiving transparency artefacts between systems. 
 This will enable more widespread
 "out of the box" integration support in the BOM ecosystem.
 
@@ -58,11 +60,11 @@ The working group has produced a list of use cases and requirements for the prot
 - [TEA Component](tea-component/tea-component.md): Represents a component lineage. A Component is a collection of Component Releases (accessible via `/component/{uuid}/releases`).
 - [TEA Release](/tea-component/tea-release.md: A Component Release object. Each Component Release may have its own TEA Collection.
 - [TEA Collection](tea-collection/tea-collection.md): A versioned list of artefacts for a specific Release (Component Release) or Product Release. Collections are versioned to indicate changes, e.g., an updated VEX or corrected SBOM.
-- [TEA Artefacts](tea-artifact/tea-artifact.md): Files associated with a Collection. A single Artefact can appear in multiple Collections.
+- [TEA Artefacts](tea-artefact/tea-artefact.md): Files associated with a Collection. A single Artefact can appear in multiple Collections.
 
-## artifacts available of the API
+## Artefacts available of the API
 
-The Transparency Exchange API (TEA) supports publication and retrieval of a set of transparency exchange artifacts. The API itself should not be restricting the types of the artifacts. A few examples:
+The Transparency Exchange API (TEA) supports publication and retrieval of a set of transparency exchange artefacts. The API itself should not be restricting the types of the artefacts. A few examples:
 
 ### xBOM
 
