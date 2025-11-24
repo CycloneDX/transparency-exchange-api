@@ -6,69 +6,66 @@ described in the [discovery document](/discovery/readme.md).
 
 ## API usage
 
-The standard TEI points to a product. A product is something sold, downloaded as an opensource project or aquired
-by other means. It contains one or multiple components.
+The standard TEI points to a product release. A product release is something sold, downloaded as an opensource project or aquired by other means. It contains one or multiple component releases.
 
-- __List of TEA Components__: Components are components of something that is part of a product.
-  Each Component has it's own versioning and it's own set of artifacts.
-- __List of TEA Releases__: Each component has a list of releases where each release has a timestamp and
-  a lifecycle enumeration. They are normally sorted by timestamps. The TEA API has no requirements of
-type of version string (semantic or any other scheme) - it's just an identifier set by the manufacturer.
+- __List of TEA Component Rleases__: Component releases are components of a product release.
+  Each Component release has its own versioning and its own set of artefacts, they have a timestamp and   a lifecycle enumeration. They are normally sorted by timestamps. The TEA API has no requirements of type of version string (semantic or any other scheme) - it's just an identifier set by the manufacturer.
 - __List of TEA Collections__: For each release, there is a list of TEA collections as indicated
   by release date and a version integer starting with collection version 1. 
-- __List of TEA Artifacts__: The collection is unique for a version and contains a list of artifacts.
-  This can be SBOM files, VEX, SCITT, IN-TOTO or other documents.  Note that a single artifact
-  can belong to multiple versionsof a Component and multiple Components.
-- __List of artifact formats__: An artifact can be published in multiple formats.
+- __List of TEA Artefacts__: The collection is unique for a version and contains a list of artefacts.
+  This can be SBOM files, VEX, SCITT, IN-TOTO or other documents.  Note that a single artefact
+  can belong to multiple Component or Product Releases.
+- __List of artefact formats__: An artefact can be published in multiple formats.
 
-The user has to know product TEI and version of each component (TEA Component) to find the list of
-artifacts for the used version.
+The user has to know product release TEI and in some cases version of each component (TEA 
+Component Release) to find the list of artefacts for the particular Product Release.
 
 ## API flow based on TEI discovery
 
 ```mermaid
 
 ---
-title: TEA consumer
+title: TEA consumer flow
 ---
-
 sequenceDiagram
     autonumber
-    actor user
-    participant discovery as TEA Discovery with TEI
+    actor manufacturer as Manufacturer
+    actor user as TEA Client
 
-    participant tea_product as TEA Product
-    participant tea_component as TEA Component
-    participant tea_release as TEA Release
-    participant tea_collection as TEA Collection
-    participant tea_artifact as TEA Artefact
+    participant discovery as TEA Discovery / TEA Server
+    participant tea_product_release as TEA Product Release
+    participant tea_component_release as TEA Component Release
 
+    manufacturer ->> user: Provides TEI (Transparency Exchange Identifier)
 
-    user ->> discovery: Discovery using DNS
-    discovery ->> user: List of API servers
+    user ->> discovery: GET https://<domain>/.well-known/tea
+    discovery -->> user: TEA discovery document (API servers & endpoints)
 
-    user ->> tea_product: Finding all product parts (TEA Components) and facts about the product
-    tea_product ->> user: List of product parts
+    user ->> discovery: Call Discovery endpoint with TEI
+    discovery -->> user: Product Release reference(s)
 
-    user ->> tea_component: Finding information of a component
-    tea_component ->> user: List of component metadata
+    alt Multiple Product Releases returned
+        user ->> tea_product_release: Resolve Product Release(s)
+        tea_product_release -->> user: List of Component Releases
+        user ->> user: Identify Discriminating Component Releases
+        user ->> tea_component_release: Resolve Discriminating Component Releases
+        tea_component_release -->> user: Discriminating Component Release Details
+        user ->> user: Converge on a Single Product Release
+    end
 
-    user ->> tea_release: Finding a specific version/release
-    tea_release ->> user: List of releases and collection id for each release
+    user ->> tea_product_release: Resolve Product Release Details
+    tea_product_release -->> user: List of Component Releases
 
-    user ->> tea_collection: Finding all artefacts for version in scope
-    tea_collection ->> user: List of artefacts and formats available for each artefact
-
-    user ->> tea_artifact: Request to download artifact
-    tea_artifact ->> user: Artifact
-
-
+    loop For each tea_component_release
+        user ->> tea_component_release: Obtain latest collections
+        tea_component_release -->> user: List of Artefacts
+    end
 
 ```
 
 ## API flow based on direct access to API
 
-In this case, the client wants to search for a specific product using the API
+In this case, the client wants to search for a specific product release using the API
 
 ```mermaid
 
@@ -80,30 +77,26 @@ sequenceDiagram
     autonumber
     actor user
 
-    participant tea_product as TEA Product
-    participant tea_component as TEA Component
-    participant tea_release as TEA Release
+    participant tea_product_release as TEA Product Release
+    participant tea_component_release as TEA Component Release
     participant tea_collection as TEA Collection
-    participant tea_artifact as TEA Artefact
+    participant tea_artefact as TEA Artefact
 
 
-    user ->> tea_product: Search for product based on identifier (CPE, PURL, name)
-    tea_product ->> user: List of products
+    user ->> tea_product_release: Search for product releases based on identifier (CPE, PURL, name)
+    tea_product_release ->> user: List of product releases
 
-    user ->> tea_product: Finding all product parts (TEA Components) and facts about choosen product
-    tea_product ->> user: List of product parts
+    user ->> tea_product_release: Finding all product parts (TEA Component Releases) and facts     about choosen product
+    tea_product_release ->> user: List of TEA Component Releases
 
-    user ->> tea_component: Finding information of a component
-    tea_component ->> user: List of component metadata
+    user ->> tea_component_release: Finding information of a component release
+    tea_component_release ->> user: List of releases and collection id for each release
 
-    user ->> tea_release: Finding a specific version/release
-    tea_release ->> user: List of releases and collection id for each release
-
-    user ->> tea_collection: Finding all artefacts for version in scope
+    user ->> tea_collection: Finding all artefacts for TEA Component Release
     tea_collection ->> user: List of artefacts and formats available for each artefact
 
-    user ->> tea_artifact: Request to download artifact
-    tea_artifact ->> user: Artifact
+    user ->> tea_artefact: Request to download artefact
+    tea_artefact ->> user: Artefact
 
 ```
 
@@ -123,14 +116,14 @@ sequenceDiagram
     autonumber
     actor user
 
-    participant tea_product as TEA Product
     participant tea_component as TEA Component
-    participant tea_release as TEA Release
-    participant tea_collection as TEA Collection
-    participant tea_artifact as TEA Artefact
+    participant tea_component_release as TEA Component Release
 
-    user ->> tea_release: Finding a specific version/release
-    tea_release ->> user: List of releases and collection id for each release
+    user ->> tea_component: Finding a specific version/release
+    tea_component ->> user: List of releases and collection id for each release
+
+    user ->> tea_component_release: Details for discovered release
+    tea_component_release ->> user: Collection with artefact details for the release
 
 ```
 
@@ -138,7 +131,7 @@ sequenceDiagram
 
 In this case a TEA client knows the release UUID, the collection UUID, and the
 collection version from previous queries. If the given version is not the same,
-another query is done to get reason for update and new collection list of artifacts.
+another query is done to get reason for update and new collection list of artefacts.
 
 
 ```mermaid
@@ -151,11 +144,7 @@ sequenceDiagram
     autonumber
     actor user
 
-    participant tea_product as TEA Product
-    participant tea_component as TEA Component
-    participant tea_release as TEA Release
     participant tea_collection as TEA Collection
-    participant tea_artifact as TEA Artefact
 
 
     user ->> tea_collection: Finding the current collection, including version

@@ -14,23 +14,23 @@
 
 ## From product identifier to API endpoint
 
-TEA Discovery is the connection between a product identifier and the API endpoint.
-A "product" is something that the customer aquires or downloads - hardware and/or software.
+TEA Discovery is the connection between a product release identifier and the API endpoint.
+A "product release" is something that the customer aquires or downloads - hardware and/or software.
 
 It can be a bundle of many digital devices or software applications.
-A "product" normally also has an entry in a large corporation's asset inventory system.
+A "product release" normally also has an entry in a large corporation's asset inventory system.
 
-A product identifier is embedded in a URN where the identifier is one of many existing
+A product release identifier is embedded in a URN where the identifier is one of many existing
 identifiers or a random string - like an EAN or UPC bar code, UUID, product
 number or PURL.
 
 The goal is for a user to add this URN to the transparency platform (sometimes with an
-associated authentication token) and have the platform access the required artifacts
+associated authentication token) and have the platform access the required artefacts
 in a highly automated fashion.
 
 ## Advertising the TEI
 
-The TEI for a product can be communicated to the user in many ways.
+The TEI for a product release can be communicated to the user in many ways.
 
 - A QR code on a box
 - On the invoice or delivery note
@@ -41,16 +41,16 @@ is defined by the manufacturer and can normally not be derived from known inform
 
 ## TEA Discovery - defining an extensible identifier
 
-TEA discovery is the process where a user with a product identifier can discover and download
-artifacts automatically, with or without authentication. A globally unique identifier is
-required for a given product. This identifier is called the Transparency Exchange Identifier (TEI).
+TEA discovery is the process where a user with a product release identifier can discover and download
+artefacts automatically, with or without authentication. A globally unique identifier is
+required for a given product release. This identifier is called the Transparency Exchange Identifier (TEI).
 
 The TEI identifier is based on DNS, which assures a uniqueness per vendor (or open source project)
-and gives the vendor a name space to define product identifiers based on existing or new identifiers
-like EAN/UPC bar code, PURLs or other existing schemes. A given product may have multiple identifiers
+and gives the vendor a namespace to define product release identifiers based on existing or new identifiers
+like EAN/UPC bar code, PURLs or other existing schemes. A given product release may have multiple identifiers
 as long as they all resolve into the same destination.
 
-The vendor needs to make sure that the TEI is unique within the vendor's name space. There is no
+The vendor needs to make sure that the TEI is unique within the vendor's namespace. There is no
 intention to create any TEI registries.
 
 ## The TEI URN: An extensible identifier
@@ -60,9 +60,8 @@ identifiers like EAN codes, PURL and other identifiers. It is based on a DNS nam
 to global uniqueness without new registries.
 
 The TEI can be shown in the software itself, in shipping documentation, in web pages and app stores.
-TEI is unique for a product, not a version of a product.
 
-A TEI belongs to a single product. A product can have multiple TEIs - like one with a EAN/UPC
+A TEI belongs to a single product release. A product release can have multiple TEIs - like one with a EAN/UPC
 barcode and one with the vendor's product number.
 
 ### TEI syntax
