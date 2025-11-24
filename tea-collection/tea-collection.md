@@ -13,10 +13,10 @@ which capture variations such as architecture, packaging, or localization.
 - For hardware components, distributions may reflect differences in packaging, language, or other physical attributes.
 
 Each distribution is assigned a unique `distributionType`, defined by the producer,
-which is used to associate relevant TEA Artifacts with that distribution.
-Since TEA Artifacts can be associated with multiple release objects,
+which is used to associate relevant TEA Artefacts with that distribution.
+Since TEA Artefacts can be associated with multiple release objects,
 the taxonomy for `distributionType` values should be defined on a TEA service level
-and consistently applied to all TEA Artifacts published by that producer.
+and consistently applied to all TEA Artefacts published by that producer.
 This ensures global uniqueness and reliable association across releases.
 
 The `uuid` of the TEA Component Release object is identical to the `uuid` of its associated
@@ -112,7 +112,7 @@ For instance:
   created by the [Nullsoft Scriptable Install System](https://nsis.sourceforge.io/Main_Page).
 
 By defining separate `distributionType`s,
-it becomes possible to precisely associate artifacts and vulnerability disclosures with the affected distributions,
+it becomes possible to precisely associate artefacts and vulnerability disclosures with the affected distributions,
 ensuring accurate risk assessment and remediation.
 
 <details>
@@ -271,22 +271,22 @@ There are two main scenarios for using the `preRelease` flag:
   ```
 </details>
 
-## The TEA Collection object (TCO)
+## TEA Collection object (TCO)
 
 For each product and version there is a Tea Collection object, which is a list
-of available artifacts for this specific version. The TEA Index is a list of
+of available artefacts for this specific version. The TEA Index is a list of
 TEA collections.
 
 The TEA collection is normally created by the TEA application server at
-publication time of artifacts. The publisher may sign the collection
+publication time of artefacts. The publisher may sign the collection
 object as a JSON file at time of publication.
 
-If there are any updates of artifacts within a collection for the same
+If there are any updates of artefacts within a collection for the same
 version of a product, then a new TEA Collection object is created and signed.
 This update will have the same UUID, but a new version number. A reason
 for the update will have to be provided. This shall be used to
 correct mistakes, spelling errors as well as to provide new information
-on dynamic artifact types such as LCE or VEX. If the product
+on dynamic artefact types such as LCE or VEX. If the product
 is modified, that is a new product version and that should generate
 a new collection object with a new UUID and updated metadata.
 
@@ -321,67 +321,67 @@ to implement this:
       See [reasons for TEA Collection update](#the-reason-for-tco-update-enum) below.
     - __comment__: Free text description.
   -
-  - __artifacts__: List of TEA artifact objects.
-    See [below](#artifact-object).
+  - __artefacts__: List of TEA artefact objects.
+    See [below](#tea-artefact-object).
 
-## The TEA Artifact object
+## TEA Artefact object
 
-A TEA Artifact object represents a security-related document or file linked to a component release,
+A TEA Artefact object represents a security-related document or file linked to a component release,
 such as an SBOM, VEX, attestation, or license.
-Artifacts are strictly **immutable**: if the underlying document changes, a new TEA Artifact object must be created.
+Artefacts are strictly **immutable**: if the underlying document changes, a new TEA Artefact object must be created.
 URLs referenced in this object must always resolve to the same resource to ensure that published checksums remain valid and verifiable.
 
-TEA Artifacts can be reused across multiple TEA Collections,
-allowing the same document to be referenced by different component releases or even different components.
+TEA Artefacts can be reused across multiple TEA Collections,
+allowing the same document to be referenced by different component or product releases.
 This promotes consistency and reduces duplication.
 
-Optionally, each artifact can specify the `distributionType` identifiers of the distributions it applies to.
-If this field is absent, the artifact is considered applicable to all distributions of the release.
+Optionally, each artefact can specify the `distributionType` identifiers of the distributions it applies to.
+If this field is absent, the artefact is considered applicable to all distributions of the release.
 
 ### Structure
 
-A TEA Artifact object contains the following fields:
+A TEA Artefact object contains the following fields:
 
-- __uuid__: The UUID of the TEA Artifact object. This uniquely identifies the artifact.
-- __name__: A human-readable name for the artifact.
-- __type__: The type of artifact. See [TEA Artifact types](#tea-artifact-types) for allowed values (e.g., `BOM`, `VULNERABILITIES`, `LICENSE`).
+- __uuid__: The UUID of the TEA Artefact object. This uniquely identifies the artefact.
+- __name__: A human-readable name for the artefact.
+- __type__: The type of artefact. See [TEA Artefact types](#tea-artefact-types) for allowed values (e.g., `BOM`, `VULNERABILITIES`, `LICENSE`).
 - __componentDistributions__ (optional):  
-  An array of `distributionType` identifiers indicating which distributions this artifact applies to.
-  If omitted, the artifact applies to all distributions.
+  An array of `distributionType` identifiers indicating which distributions this artefact applies to.
+  If omitted, the artefact applies to all distributions.
 - __formats__:  
-  An array of objects, each representing the same artifact content in a different format.
+  An array of objects, each representing the same artefact content in a different format.
   The order of the list is not significant.
   Each format object includes:
   - __mimeType__: The MIME type of the document (e.g., `application/vnd.cyclonedx+xml`).
-  - __description__: A free-text description of the artifact format.
-  - __url__: A direct download URL for the artifact. This must point to an immutable resource.
-  - __signatureUrl__ (optional): A direct download URL for a detached digital signature of the artifact, if available.
+  - __description__: A free-text description of the artefact format.
+  - __url__: A direct download URL for the artefact. This must point to an immutable resource.
+  - __signatureUrl__ (optional): A direct download URL for a detached digital signature of the artefact, if available.
   - __checksums__:  
-    An array of checksum objects for the artifact, each containing:
+    An array of checksum objects for the artefact, each containing:
     - __algType__: The checksum algorithm used (e.g., `SHA_256`, `SHA3_512`).
     - __algValue__: The checksum value as a string.
 
 ### Notes
 
-- The `formats` array allows the same artifact to be provided in multiple encodings or serializations (e.g., JSON, XML).
-- The `checksums` field provides integrity verification for each artifact format.
-- The `signatureUrl` enables consumers to verify the authenticity of the artifact using detached signatures.
-- Artifacts should be published to stable, versioned URLs to ensure immutability and traceability.
+- The `formats` array allows the same artefact to be provided in multiple encodings or serializations (e.g., JSON, XML).
+- The `checksums` field provides integrity verification for each artefact format.
+- The `signatureUrl` enables consumers to verify the authenticity of the artefact using detached signatures.
+- Artefacts should be published to stable, versioned URLs to ensure immutability and traceability.
 
 ## The reason for TCO update enum
 
 | ENUM             | Description                            |
 |------------------|----------------------------------------|
 | INITIAL_RELEASE  | Initial release of the collection      |
-| VEX_UPDATED      | Updated the VEX artifact(s)            |
-| ARTIFACT_UPDATED | Updated the artifact(s) other than VEX |
-| ARTIFACT_REMOVED | Removal of artifact                    |
-| ARTIFACT_ADDED   | Addition of an artifact                |
+| VEX_UPDATED      | Updated the VEX artefact(s)            |
+| ARTEFACT_UPDATED | Updated the artefact(s) other than VEX |
+| ARTEFACT_REMOVED | Removal of artefact                    |
+| ARTEFACT_ADDED   | Addition of an artefact                |
 
 Updates of VEX (CSAF) files may be handled in a different way by a TEA client,
 producing different alerts than other changes of a collection.
 
-## TEA Artifact types
+## TEA Artefact types
 
 | ENUM            | Description                                                                         |
 |-----------------|-------------------------------------------------------------------------------------|
@@ -405,10 +405,10 @@ producing different alerts than other changes of a collection.
   "version": 1,
   "date": "2024-12-13T00:00:00Z",
   "updateReason": {
-    "type": "ARTIFACT_UPDATED",
+    "type": "ARTEFACT_UPDATED",
     "comment": "VDR file updated"
   },
-  "artifacts": [
+  "artefacts": [
     {
       "uuid": "1cb47b95-8bf8-3bad-a5a4-0d54d86e10ce",
       "name": "Build SBOM",

@@ -3,9 +3,9 @@ outputDir: /local/out/java-webclient
 generatorName: java
 additionalProperties:
   library: webclient
-  artifactDescription: Transparency Exchange API Java Webclient
-  artifactId: tea-api-webclient
-  artifactUrl: https://github.com/CycloneDX/transparency-exchange-api
+  artefactDescription: Transparency Exchange API Java Webclient
+  artefactId: tea-api-webclient
+  artefactUrl: https://github.com/CycloneDX/transparency-exchange-api
   invokerPackage: org.cyclonedx.tea.webclient
   apiPackage: org.cyclonedx.tea.webclient.api
   modelPackage: org.cyclonedx.tea.webclient.model
@@ -23,5 +23,5 @@ additionalProperties:
   asyncNative: true
   generateBuilders: true
   parentGroupId: org.sonatype.buildsupport
-  parentArtifactId: public-parent
+  parentArtefactId: public-parent
   parentVersion: 50

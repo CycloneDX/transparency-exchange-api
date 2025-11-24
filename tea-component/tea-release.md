@@ -2,7 +2,7 @@
 
 ## Overview
 
-A TEA Component Release represents a specific version of a TEA Component lineage. It is the concrete, versioned entity which has collections of security-related artifacts (SBOM, VDR/VEX, attestations, etc.).
+A TEA Component Release represents a specific version of a TEA Component lineage. It is the concrete, versioned entity which has collections of security-related artefacts (SBOM, VDR/VEX, attestations, etc.).
 
 Key attributes:
 - uuid: Unique identifier of the component release
@@ -13,7 +13,7 @@ Key attributes:
 - preRelease: Indicates pre-release/beta status
 - identifiers: Array of identifiers (idType: CPE/TEI/PURL; idValue: string)
 
-Collections for a release contain artifacts relevant to that specific release.
+Collections for a release contain artefacts relevant to that specific release.
 
 ## JSON examples
 

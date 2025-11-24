@@ -2,7 +2,7 @@
 
 The TEA Component represents a component lineage. A product release may
 be constructed with one or multiple TEA Components, each with their own set of
-releases and related artifacts.
+releases and related artefacts.
 
 Each TEA Component has a list of Component Releases (see `/component/{uuid}/releases`),
 which enumerates all known versions for that component.
@@ -32,7 +32,7 @@ for a component.
 
 ### Examples
 
-Some examples of Maven artifacts as TEA Components:
+Some examples of Maven artefacts as TEA Components:
 
 ```json
 {
