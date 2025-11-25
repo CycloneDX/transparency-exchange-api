@@ -2,7 +2,7 @@ Following TEA related presentations by Pavel Shukhman are available:
 
 1. Transparency Exchange API: Where To Find Product SBOM? (Open Source SecurityCon 2025) - 2025-11-10
 [Slides](https://www.slideshare.net/slideshow/open-source-security-con2025-in-atlanta-transparency-exchange-api-where-to-find-product-sbom/284093812)
-Video pending
+[Video](https://www.youtube.com/watch?v=na30ADqKH0c)
 
 2. Transparency Exchange API: How Do You Find the SBOM for a Smart Light Bulb? (OWASP 2025 Global AppSec USA) - 2025-11-06
 [Slides](https://www.slideshare.net/slideshow/transparency-exchange-api-how-do-you-find-the-sbom-for-a-smart-light-bulb/284067467)
