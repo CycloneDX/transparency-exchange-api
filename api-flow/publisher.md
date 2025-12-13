@@ -19,7 +19,7 @@ sequenceDiagram
     Vendor ->> tea_component: POST to /v1/component with the TEA PI and component version as the payload
     tea_component ->> Vendor: Component is created and a TEA Component ID is returned
 
-    Vendor ->> tea_collection: POST to /v1/collection with the TEA Component ID as the and the artefact as payload
+    Vendor ->> tea_collection: POST to /v1/collection with the TEA Component ID and the artefact as payload
     tea_collection ->> Vendor: Collection is created with the collection ID returned
 
 ```
@@ -40,7 +40,7 @@ sequenceDiagram
     tea_component ->> Vendor: Component is created and a TEA Component ID is returned
 
     Note over Vendor,TEA Component: Add an artefact (e.g. SBOM)
-    Vendor ->> tea_collection: POST to /v1/collection with the TEA Component ID as the and the artefact as payload
+    Vendor ->> tea_collection: POST to /v1/collection with the TEA Component ID and the artefact as payload
     tea_collection ->> Vendor: Collection is created with the collection ID returned
 
 ```
@@ -58,6 +58,6 @@ sequenceDiagram
     Vendor ->> tea_component: GET to /v1/component with the TEA PI to get the latest version
     tea_component ->> Vendor: Component will be returned
 
-    Vendor ->> tea_collection: POST to /v1/collection with the TEA Component ID as the and the artefact as payload
+    Vendor ->> tea_collection: POST to /v1/collection with the TEA Component ID and the artefact as payload
     tea_collection ->> Vendor: Collection is created with the collection ID returned
 ```

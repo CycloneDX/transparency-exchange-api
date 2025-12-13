@@ -7,7 +7,7 @@ a..."
 The use cases are divided in two categories:
 
 * Use cases for __customers__ (end-users, manufacturers) to find a repository with 
-  Transparency Artefacts for a single unit purchased
+  Transparency artefacts for a single unit purchased
 * Use cases where there are different __products__
   * This applies after discovery where we need to handle various things a customer may 
     buy as a single unit

@@ -512,7 +512,7 @@
                                     "reason": {
                                         "$ref": "#/components/schemas/type_collection_reason"
                                     },
-                                    "artefacts": {
+                                    "artifacts": {
                                         "type": "array",
                                         "items": {
                                             "type": "object",
@@ -521,7 +521,7 @@
                                                     "type": "string"
                                                 },
                                                 "type": {
-                                                    "$ref": "#/components/schemas/type_tea_collection_artefact_type"
+                                                    "$ref": "#/components/schemas/type_tea_collection_artifact_type"
                                                 },
                                                 "author": {
                                                     "$ref": "#/components/schemas/type_author"
@@ -537,19 +537,19 @@
                                                             "mime_type": {
                                                                 "type": "string"
                                                             },
-                                                            "artefact_url": {
+                                                            "artifact_url": {
                                                                 "type": "string",
                                                                 "format": "uri"
                                                             },
-                                                            "artefact_size_in_bytes": {
+                                                            "artifact_size_in_bytes": {
                                                                 "type": "integer",
                                                                 "format": "int64"
                                                             },
-                                                            "artefact_checksum": {
+                                                            "artifact_checksum": {
                                                                 "type": "string",
                                                                 "description": "The checksum value"
                                                             },
-                                                            "artefact_checksum_type": {
+                                                            "artifact_checksum_type": {
                                                                 "type": "string",
                                                                 "description": "The algorithm used to generate the checksum",
                                                                 "enum": [
@@ -573,10 +573,10 @@
                                                         "required": [
                                                             "description",
                                                             "mime_type",
-                                                            "artefact_url",
-                                                            "artefact_size_in_bytes",
-                                                            "artefact_checksum",
-                                                            "artefact_checksum_type"
+                                                            "artifact_url",
+                                                            "artifact_size_in_bytes",
+                                                            "artifact_checksum",
+                                                            "artifact_checksum_type"
                                                         ]
                                                     }
                                                 }
@@ -613,9 +613,9 @@
                                             "organization": "Example Org"
                                         },
                                         "reason": "New Product Release",
-                                        "artefacts": [
+                                        "artifacts": [
                                             {
-                                                "name": "Example Artefact",
+                                                "name": "Example TEA Artifact",
                                                 "type": "bom",
                                                 "author": {
                                                     "name": "John Doe",
@@ -626,10 +626,10 @@
                                                     {
                                                         "description": "Example SBOM",
                                                         "mime_type": "application/json",
-                                                        "artefact_url": "https://example.com/sbom.json",
-                                                        "artefact_size_in_bytes": 1024,
-                                                        "artefact_checksum": "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3",
-                                                        "artefact_checksum_type": "SHA256"
+                                                        "artifact_url": "https://example.com/sbom.json",
+                                                        "artifact_size_in_bytes": 1024,
+                                                        "artifact_checksum": "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3",
+                                                        "artifact_checksum_type": "SHA256"
                                                     }
                                                 ]
                                             }
@@ -735,7 +735,7 @@
                                     "reason": {
                                         "$ref": "#/components/schemas/type_collection_reason"
                                     },
-                                    "artefacts": {
+                                    "artifacts": {
                                         "type": "array",
                                         "items": {
                                             "type": "object",
@@ -744,7 +744,7 @@
                                                     "type": "string"
                                                 },
                                                 "type": {
-                                                    "$ref": "#/components/schemas/type_tea_collection_artefact_type"
+                                                    "$ref": "#/components/schemas/type_tea_collection_artifact_type"
                                                 },
                                                 "author": {
                                                     "$ref": "#/components/schemas/type_author"
@@ -760,19 +760,19 @@
                                                             "mime_type": {
                                                                 "type": "string"
                                                             },
-                                                            "artefact_url": {
+                                                            "artifact_url": {
                                                                 "type": "string",
                                                                 "format": "uri"
                                                             },
-                                                            "artefact_size_in_bytes": {
+                                                            "artifact_size_in_bytes": {
                                                                 "type": "integer",
                                                                 "format": "int64"
                                                             },
-                                                            "artefact_checksum": {
+                                                            "artifact_checksum": {
                                                                 "type": "string",
                                                                 "description": "The checksum value"
                                                             },
-                                                            "artefact_checksum_type": {
+                                                            "artifact_checksum_type": {
                                                                 "type": "string",
                                                                 "description": "The algorithm used to generate the checksum",
                                                                 "enum": [
@@ -796,10 +796,10 @@
                                                         "required": [
                                                             "description",
                                                             "mime_type",
-                                                            "artefact_url",
-                                                            "artefact_size_in_bytes",
-                                                            "artefact_checksum",
-                                                            "artefact_checksum_type"
+                                                            "artifact_url",
+                                                            "artifact_size_in_bytes",
+                                                            "artifact_checksum",
+                                                            "artifact_checksum_type"
                                                         ]
                                                     }
                                                 }
@@ -918,7 +918,7 @@
                     }
                 ]
             },
-            "base_artefact_object": {
+            "base_artifact_object": {
                 "type": "object",
                 "properties": {
                     "identifier": {
@@ -930,19 +930,19 @@
                     "mime_type": {
                         "type": "string"
                     },
-                    "artefact_url": {
+                    "artifact_url": {
                         "type": "string",
                         "format": "uri"
                     },
-                    "artefact_size_in_bytes": {
+                    "artifact_size_in_bytes": {
                         "type": "integer",
                         "format": "int64"
                     },
-                    "artefact_checksum": {
+                    "artifact_checksum": {
                         "type": "string",
                         "description": "The checksum value"
                     },
-                    "artefact_checksum_type": {
+                    "artifact_checksum_type": {
                         "type": "string",
                         "description": "The algorithm used to generate the checksum",
                         "enum": [
@@ -1039,10 +1039,10 @@
                     "reason": {
                         "$ref": "#/components/schemas/type_collection_reason"
                     },
-                    "artefacts": {
+                    "artifacts": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/tea_collection_artefact"
+                            "$ref": "#/components/schemas/tea_collection_artifact"
                         },
                         "default": []
                     }
@@ -1056,7 +1056,7 @@
                     "reason"
                 ]
             },
-            "tea_collection_artefact": {
+            "tea_collection_artifact": {
                 "type": "object",
                 "properties": {
                     "identifier": {
@@ -1066,7 +1066,7 @@
                         "type": "string"
                     },
                     "type": {
-                        "$ref": "#/components/schemas/type_tea_collection_artefact_type"
+                        "$ref": "#/components/schemas/type_tea_collection_artifact_type"
                     },
                     "author": {
                         "$ref": "#/components/schemas/type_author"
@@ -1074,7 +1074,7 @@
                     "objects": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/tea_collection_artefact_object"
+                            "$ref": "#/components/schemas/tea_collection_artifact_object"
                         },
                         "minItems": 1
                     }
@@ -1087,7 +1087,7 @@
                     "objects"
                 ]
             },
-            "tea_collection_artefact_object": {
+            "tea_collection_artifact_object": {
                 "type": "object",
                 "properties": {
                     "identifier": {
@@ -1099,19 +1099,19 @@
                     "mime_type": {
                         "type": "string"
                     },
-                    "artefact_url": {
+                    "artifact_url": {
                         "type": "string",
                         "format": "uri"
                     },
-                    "artefact_size_in_bytes": {
+                    "artifact_size_in_bytes": {
                         "type": "integer",
                         "format": "int64"
                     },
-                    "artefact_checksum": {
+                    "artifact_checksum": {
                         "type": "string",
                         "description": "The checksum value"
                     },
-                    "artefact_checksum_type": {
+                    "artifact_checksum_type": {
                         "type": "string",
                         "description": "The algorithm used to generate the checksum",
                         "enum": [
@@ -1136,10 +1136,10 @@
                     "identifier",
                     "description",
                     "mime_type",
-                    "artefact_url",
-                    "artefact_size_in_bytes",
-                    "artefact_checksum",
-                    "artefact_checksum_type"
+                    "artifact_url",
+                    "artifact_size_in_bytes",
+                    "artifact_checksum",
+                    "artifact_checksum_type"
                 ]
             },
             "type_author": {
@@ -1202,7 +1202,7 @@
                     "total_results"
                 ]
             },
-            "type_tea_collection_artefact_type": {
+            "type_tea_collection_artifact_type": {
                 "type": "string",
                 "title": "Type",
                 "description": "Specifies the type of external reference.",
