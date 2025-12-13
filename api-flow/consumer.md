@@ -12,7 +12,7 @@ The standard TEI points to a product release. A product release is something sol
   Each Component release has its own versioning and its own set of artefacts, they have a timestamp and   a lifecycle enumeration. They are normally sorted by timestamps. The TEA API has no requirements of type of version string (semantic or any other scheme) - it's just an identifier set by the manufacturer.
 - __List of TEA Collections__: For each release, there is a list of TEA collections as indicated
   by release date and a version integer starting with collection version 1. 
-- __List of TEA Artefacts__: The collection is unique for a version and contains a list of artefacts.
+- __List of TEA Artifacts__: The collection is unique for a version and contains a list of artefacts.
   This can be SBOM files, VEX, SCITT, IN-TOTO or other documents.  Note that a single artefact
   can belong to multiple Component or Product Releases.
 - __List of artefact formats__: An artefact can be published in multiple formats.
@@ -58,7 +58,7 @@ sequenceDiagram
 
     loop For each tea_component_release
         user ->> tea_component_release: Obtain latest collections
-        tea_component_release -->> user: List of Artefacts
+        tea_component_release -->> user: List of TEA Artifacts
     end
 
 ```
@@ -80,23 +80,23 @@ sequenceDiagram
     participant tea_product_release as TEA Product Release
     participant tea_component_release as TEA Component Release
     participant tea_collection as TEA Collection
-    participant tea_artefact as TEA Artefact
+    participant tea_artifact as TEA Artifact
 
 
     user ->> tea_product_release: Search for product releases based on identifier (CPE, PURL, name)
     tea_product_release ->> user: List of product releases
 
-    user ->> tea_product_release: Finding all product parts (TEA Component Releases) and facts     about choosen product
+    user ->> tea_product_release: Finding all product parts (TEA Component Releases) and facts about choosen product
     tea_product_release ->> user: List of TEA Component Releases
 
     user ->> tea_component_release: Finding information of a component release
     tea_component_release ->> user: List of releases and collection id for each release
 
-    user ->> tea_collection: Finding all artefacts for TEA Component Release
-    tea_collection ->> user: List of artefacts and formats available for each artefact
+    user ->> tea_collection: Finding all TEA Artifacts for TEA Component Release
+    tea_collection ->> user: List of TEA Artifacts and formats available for each TEA Artifact
 
-    user ->> tea_artefact: Request to download artefact
-    tea_artefact ->> user: Artefact
+    user ->> tea_artifact: Request to download TEA artifact
+    tea_artifact ->> user: TEA Artifact
 
 ```
 
