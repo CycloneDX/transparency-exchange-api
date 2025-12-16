@@ -6,7 +6,7 @@ Following TEA related presentations by Pavel Shukhman are available:
 
 2. Transparency Exchange API: How Do You Find the SBOM for a Smart Light Bulb? (OWASP 2025 Global AppSec USA) - 2025-11-06
 [Slides](https://www.slideshare.net/slideshow/transparency-exchange-api-how-do-you-find-the-sbom-for-a-smart-light-bulb/284067467)
-Video pending
+[Video](https://www.youtube.com/watch?v=lvEEMPNOEkI)
 
 3. OWASP Transparency Exchange API: How We (Will) Share xBOMs (BSides Toronto) - 2025-10-04
 [Slides](https://www.slideshare.net/slideshow/owasp-transparency-exchange-api-how-we-will-share-xboms/283617314)
