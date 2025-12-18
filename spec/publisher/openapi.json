@@ -615,7 +615,7 @@
                                         "reason": "New Product Release",
                                         "artifacts": [
                                             {
-                                                "name": "Example Artifact",
+                                                "name": "Example TEA Artifact",
                                                 "type": "bom",
                                                 "author": {
                                                     "name": "John Doe",

@@ -12,7 +12,7 @@ info:
   license:
     name: Apache 2.0
     url: https://github.com/CycloneDX/transparency-exchange-api/blob/main/LICENSE
-  version: 0.3.0-beta.2
+  version: 0.2.0-beta.2
 servers:
   - url: http://localhost/tea/v1
     description: Local development
@@ -356,7 +356,7 @@ paths:
         - TEA Component Release
   /artifact/{uuid}:
     get:
-      description: Get metadata for specific TEA Artifact
+      description: Get metadata for specific TEA artifact
       operationId: getArtifact
       parameters:
         - name: uuid
@@ -837,7 +837,7 @@ components:
           "$ref": "#/components/schemas/collection-update-reason"
         artifacts:
           type: array
-          description: List of TEA Artifact objects.
+          description: List of TEA artifact objects.
           items:
             "$ref": "#/components/schemas/artifact"
       examples:
@@ -912,19 +912,19 @@ components:
           "$ref": "#/components/schemas/uuid"
         name:
           type: string
-          description: Name of TEA Artifact
+          description: Artifact name
         type:
-          description: Type of TEA Artifact
+          description: Type of artifact
           "$ref": "#/components/schemas/artifact-type"
         distributionTypes:
           type: array
           description: |
-            List of component distributions types that this TEA Artifact applies to.
-            If absent, the TEA Artifact applies to all distributions.
+            List of component distributions types that this artifact applies to.
+            If absent, the artifact applies to all distributions.
           items:
             type: string
             description: |
-              The `id` of the component format that this TEA Artifact applies to.
+              The `id` of the component format that this artifact applies to.
         formats:
           type: array
           description: |
@@ -956,18 +956,18 @@ components:
           description: The MIME type of the document
         description:
           type: string
-          description: A free text describing the TEA Artifact
+          description: A free text describing the artifact
         url:
           type: string
-          description: Direct download URL for the TEA Artifact
+          description: Direct download URL for the artifact
           format: url
         signatureUrl:
           type: string
-          description: Direct download URL for an external signature of the TEA Artifact
+          description: Direct download URL for an external signature of the artifact
           format: url
         checksums:
           type: array
-          description: List of checksums for the TEA Artifact
+          description: List of checksums for the artifact
           items:
             "$ref": "#/components/schemas/checksum"
     checksum:

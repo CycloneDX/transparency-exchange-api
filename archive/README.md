@@ -1,0 +1,1 @@
+This directory contains archived versions of the API specification and related documentation. These files are preserved for historical reference and should not be used for current development.

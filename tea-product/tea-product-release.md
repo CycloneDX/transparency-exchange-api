@@ -2,7 +2,7 @@
 
 ## Overview
 
-A TEA Product Release represents a specific versioned release of a TEA Product. It is the primary resolvable entity via TEI and the entry point for discovery of included components and related collections of security artifacts.
+A TEA Product Release represents a specific versioned release of a TEA Product. It is the primary resolvable entity via TEI and the entry point for discovery of included components and related collections of security artefacts.
 
 Key attributes:
 - uuid: Unique identifier of the product release
@@ -16,7 +16,7 @@ Key attributes:
   - uuid: UUID of the TEA Component
   - release: Optional UUID of a specific component release to pin an exact version
 
-Collections for a product release contain artifacts relevant to that product release.
+Collections for a product release contain artefacts relevant to that product release.
 
 ## JSON examples
 
