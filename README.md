@@ -6,11 +6,11 @@
 [![ECMA TC54](https://img.shields.io/badge/ECMA-TC54-FC7C00?labelColor=404040)](https://tc54.org)
 [![ECMA TC54](https://img.shields.io/badge/ECMA-TC54--TG1-FC7C00?labelColor=404040)](https://ecma-international.org/task-groups/tc54-tg1/)
 
-# CycloneDX Transparency Exchange API Standard
+# OWASP Transparency Exchange API Standard
 
-The Transparency Exchange API (TEA) is being worked on within the CycloneDX community
-with the goal to standardise the API in ECMA. A working group within ECMA TC54 has been
-formed - TC54 TG1. The working group has a slack channel in the CycloneDX slack space.
+The Transparency Exchange API (TEA) is being worked on within the ECMA TC54 tg 1
+with the goal to standardise the API in ECMA. 
+The working group has a slack channel in the CycloneDX slack space.
 
 ![](images/tealogo.png)
 
@@ -23,16 +23,19 @@ We encourage developers to start with both client and server implementations of 
 participate in interoperability tests. These will be organised both as hackathons and
 informally using the Slack channel.
 
-There will likely be multiple beta releases. We will announce these by adding new
-tags in the repository as well as in the slack channel.
 
-Priority issues for Beta 3:
+Priority issues for v1.0:
 - Refinement of distribution types and distributionType fields, see https://github.com/CycloneDX/transparency-exchange-api/issues/198
 - CLE Spec needs to be integrated in TEA
 - E2e poc of authn/z workflow with TEA consumer spec, including consumer spec adjustment to better support authn/z
 - Compliance document workflow, see https://github.com/CycloneDX/transparency-exchange-api/issues/205
 
 ## Introduction
+
+The TEA API is created to support automation of the software supply chain. Upstream
+vendors and open source projects can use this standard to keep downstream consumers
+up to date with transparency artefacts such as, but not limited to, bill of materials,
+VEX files, attestations and much more.
 
 This specification defines a standard, format agnostic, API for the exchange of
 product related artefacts, like BOMs, between systems. The work includes:
@@ -67,7 +70,7 @@ The working group has produced a list of use cases and requirements for the prot
 
 The Transparency Exchange API (TEA) supports publication and retrieval of a set of transparency exchange artefacts. The API itself should not be restricting the types of the artefacts. A few examples:
 
-### xBOM
+### *xBOM
 
 Bill of materials for any type of component and service are supported. This includes, but is not limited to, SBOM, HBOM, AI/ML-BOM, SaaSBOM, and CBOM. The API provides a BOM format agnostic way of publishing, searching, and retrieval of xBOM artefacts. 
 
@@ -92,6 +95,8 @@ Much of the focus on Software Transparency from the U.S. Government and others c
 
 Insights allows for “limited transparency” that can be asked and answered using an expression language that can be tightly scoped or outcome-driven. Insights also removes the complexities of BOM format conversion away from the consumers. An object model derived from CycloneDX will be an integral part of this API, since the objects within CycloneDX are self-contained (thus API friendly) and the specification supports all the necessary xBOM types along with CDXA.
 
+Insights will be integrated into the API after the 1.0 release.
+
 ## Presentations and videos
 
 - You can find presentations in the repository in the [Presentations](/presentations) directory
@@ -105,8 +110,8 @@ Contributors are listed in the [Contributors](contributors.md) file.
 ## Terminology
 
 - API: Application programming interface
-- Authorization (authz):
-- Authentication (authn):
+- Authorization (authz): Which products/components that a user has the right to access
+- Authentication (authn): Credentials to get authorization
 - Collection: A set of artefacts representing a version of a product
 - Product: An item sold or delivered under one name
 - Product variant: A variant of a product
