@@ -352,7 +352,7 @@ A TEA Artifact object contains the following fields:
   An array of objects, each representing the same artefact content in a different format.
   The order of the list is not significant.
   Each format object includes:
-  - __mimeType__: The MIME type of the document (e.g., `application/vnd.cyclonedx+xml`).
+  - __mediaType__: The MIME type of the document (e.g., `application/vnd.cyclonedx+xml`).
   - __description__: A free-text description of the artefact format.
   - __url__: A direct download URL for the artefact. This must point to an immutable resource.
   - __signatureUrl__ (optional): A direct download URL for a detached digital signature of the artefact, if available.
@@ -415,7 +415,7 @@ producing different alerts than other changes of a collection.
       "type": "BOM",
       "formats": [
         {
-          "mimeType": "application/vnd.cyclonedx+xml",
+          "mediaType": "application/vnd.cyclonedx+xml",
           "description": "CycloneDX SBOM (XML)",
           "url": "https://repo.maven.apache.org/maven2/org/apache/logging/log4j/log4j-core/2.24.3/log4j-core-2.24.3-cyclonedx.xml",
           "signatureUrl": "https://repo.maven.apache.org/maven2/org/apache/logging/log4j/log4j-core/2.24.3/log4j-core-2.24.3-cyclonedx.xml.asc",
@@ -438,7 +438,7 @@ producing different alerts than other changes of a collection.
       "type": "VULNERABILITIES",
       "formats": [
         {
-          "mimeType": "application/vnd.cyclonedx+xml",
+          "mediaType": "application/vnd.cyclonedx+xml",
           "description": "CycloneDX VDR (XML)",
           "url": "https://logging.apache.org/cyclonedx/vdr.xml",
           "checksums": [
