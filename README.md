@@ -43,7 +43,7 @@ product related artefacts, like BOMs, between systems. The work includes:
 - [Discovery of servers](/discovery/readme.md): Describes discovery using the Transparency Exchange Identifier (TEI)
 - Retrieval of artefacts
 - Publication of artefacts
-- Authentication and authorization
+- [Authentication and authorization](/auth/readme.md)
 - Querying
 
 System and tooling implementors are encouraged to adopt this API standard for
