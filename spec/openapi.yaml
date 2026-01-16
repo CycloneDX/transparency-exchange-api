@@ -791,7 +791,7 @@ components:
                 name: Build SBOM
                 type: BOM
                 formats:
-                  - mimeType: application/vnd.cyclonedx+xml
+                  - mediaType: application/vnd.cyclonedx+xml
                     description: CycloneDX SBOM (XML)
                     url: https://repo.maven.apache.org/maven2/org/apache/tomcat/tomcat/11.0.7/tomcat-11.0.7-cyclonedx.xml
                     checksums:
@@ -801,7 +801,7 @@ components:
                 name: Vulnerability Disclosure Report
                 type: VULNERABILITIES
                 formats:
-                  - mimeType: application/vnd.cyclonedx+xml
+                  - mediaType: application/vnd.cyclonedx+xml
                     description: CycloneDX VDR (XML)
                     url: https://tomcat.apache.org/cyclonedx/vdr.xml
                     checksums:
@@ -853,7 +853,7 @@ components:
               name: Build SBOM
               type: BOM
               formats:
-                - mimeType: application/vnd.cyclonedx+xml
+                - mediaType: application/vnd.cyclonedx+xml
                   description: CycloneDX SBOM (XML)
                   url: https://repo.maven.apache.org/maven2/org/apache/logging/log4j/log4j-core/2.24.3/log4j-core-2.24.3-cyclonedx.xml
                   signatureUrl: https://repo.maven.apache.org/maven2/org/apache/logging/log4j/log4j-core/2.24.3/log4j-core-2.24.3-cyclonedx.xml.asc
@@ -866,7 +866,7 @@ components:
               name: Vulnerability Disclosure Report
               type: VULNERABILITIES
               formats:
-                - mimeType: application/vnd.cyclonedx+xml
+                - mediaType: application/vnd.cyclonedx+xml
                   description: CycloneDX VDR (XML)
                   url: https://logging.apache.org/cyclonedx/vdr.xml
                   checksums:
@@ -951,7 +951,7 @@ components:
       type: object
       description: A security-related document in a specific format
       properties:
-        mimeType:
+        mediaType:
           type: string
           description: The MIME type of the document
         description:

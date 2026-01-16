@@ -534,7 +534,7 @@
                                                             "description": {
                                                                 "type": "string"
                                                             },
-                                                            "mime_type": {
+                                                            "media_type": {
                                                                 "type": "string"
                                                             },
                                                             "artifact_url": {
@@ -572,7 +572,7 @@
                                                         },
                                                         "required": [
                                                             "description",
-                                                            "mime_type",
+                                                            "media_type",
                                                             "artifact_url",
                                                             "artifact_size_in_bytes",
                                                             "artifact_checksum",
@@ -625,7 +625,7 @@
                                                 "objects": [
                                                     {
                                                         "description": "Example SBOM",
-                                                        "mime_type": "application/json",
+                                                        "media_type": "application/json",
                                                         "artifact_url": "https://example.com/sbom.json",
                                                         "artifact_size_in_bytes": 1024,
                                                         "artifact_checksum": "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3",
@@ -757,7 +757,7 @@
                                                             "description": {
                                                                 "type": "string"
                                                             },
-                                                            "mime_type": {
+                                                            "media_type": {
                                                                 "type": "string"
                                                             },
                                                             "artifact_url": {
@@ -795,7 +795,7 @@
                                                         },
                                                         "required": [
                                                             "description",
-                                                            "mime_type",
+                                                            "media_type",
                                                             "artifact_url",
                                                             "artifact_size_in_bytes",
                                                             "artifact_checksum",
@@ -927,7 +927,7 @@
                     "description": {
                         "type": "string"
                     },
-                    "mime_type": {
+                    "media_type": {
                         "type": "string"
                     },
                     "artifact_url": {
@@ -1096,7 +1096,7 @@
                     "description": {
                         "type": "string"
                     },
-                    "mime_type": {
+                    "media_type": {
                         "type": "string"
                     },
                     "artifact_url": {
@@ -1135,7 +1135,7 @@
                 "required": [
                     "identifier",
                     "description",
-                    "mime_type",
+                    "media_type",
                     "artifact_url",
                     "artifact_size_in_bytes",
                     "artifact_checksum",
