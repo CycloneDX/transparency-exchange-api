@@ -55,7 +55,7 @@ intention to create any TEI registries.
 
 ## The TEI URN: An extensible identifier
 
-The TEI, Transparency Exchange Identifier, is a URN schema that is extensible based on existing
+The TEI, __Transparency Exchange Identifier__, is a URN schema that is extensible based on existing
 identifiers like EAN codes, PURL and other identifiers. It is based on a DNS name, which leads
 to global uniqueness without new registries.
 
@@ -110,7 +110,7 @@ Syntax:
 
 ```text
 urn:tei:swid:<domain-name>:<swid>
-````
+```
 
 Note that there is a TEI SWID type as well as a PURL SWID type.
 
@@ -209,7 +209,7 @@ Example:
 urn:tei:udi:cyclonedx.org:00123456789012
 ```
 
-Note that if an identifier, like EAN, is used for multiple different product releases
+Note that if the same identifier, like EAN, is used for multiple different product releases
 then this EAN code will not be unique for a given product. While this case is supported
 by TEA, the vendor is recommended to create a separate TEI for each unique product sold,
 like UUID or hash. In any case, the vendor SHOULD minimize the number of distinct product
@@ -268,33 +268,31 @@ Example:
 }
 ```
 
-## TODO: Port resolution
-
-N.B. This needs to be resolved before finalizing the spec.
+## Port resolution
 
 Currently, the port number is not part of the TEI but it is needed to connect to the API.
-The current assumption is that the client connects on the default https port (443).
-At this time, it is recommended that experimental clients add an optional port parameter, which
-allows to override the default port.
-
 A port number cannot be added to the TEI URN spec as it breaks the location independence
 requirement of URN.
 
-Possible solutions to this issue:
-1. Make a convention that the port number for the ./well-known/tea is always 443. Exceptions
-possible via explicit client setting for non-production environments only.
-2. Use SRV or HTTPS DNS records to resolve the ./well-known/tea URL with the port number.
+The TEA API server may be hosted on any port, but the server that is part of the
+first step of discovery will by default be running on the default HTTPS port 443.
+In the JSON file found there, the server URLs may contain port numbers.
 
+If the clients are known to support HTTPS/SVCB DNS records for failover and
+load balancing, these may be used to redirect to other ports and servers.
+
+Public servers are recommended to have the server hosting the DNS name used
+in the TEI URI running on the default port to enable discovery of the API servers.
 
 ## Connecting to the API
 
 Clients must pick any one of the endpoints listed in the `.well-known/tea` json
 response. The client MUST pick an endpoint with the at least one version that is
-supported by the client is using. The client MUST prioritize endpoints with the 
-highest matching version supported both by the client and the endpoint based on 
+supported by the client is using. The client MUST prioritize endpoints with the
+highest matching version supported both by the client and the endpoint based on
 SemVer 2.0.0 specification comparison [rules](https://semver.org/#spec-item-11).
-If there are several endpoints like these and if the priority field is present, 
-the client SHOULD pick the endpoint with the highest priority value (a float 
+If there are several endpoints like these and if the priority field is present,
+the client SHOULD pick the endpoint with the highest priority value (a float
 between 0 and 1).
 
 The client must then construct the full URL to the API by appending the
@@ -308,25 +306,31 @@ Examples:
 2. For TEI `urn:tei:purl:products.example.com:pkg:deb/debian/curl@7.50.3-1?arch=i386&distro=jessie`
 `https://api2.teaexample.com/mytea/v1.0.0/discovery?tei=urn%3Atei%3Apurl%3Aproducts.example.com%3Apkg%3Adeb%2Fdebian%2Fcurl%407.50.3-1%3Farch%3Di386%26distro%3Djessie`
 
-The discovery endpoint is a part of the TEA OpenAPI specification. 
+The discovery endpoint is a part of the TEA OpenAPI specification.
 
-If the TEI is known to the TEA server, the discovery endpoint must return at least 
+If the TEI is known to the TEA server, the discovery endpoint must return at least
 the product release uuid, the root URL of the TEA server, the list of supported
-versions, plus the response may have other fields based on the current version of 
+versions, plus the response may have other fields based on the current version of
 the TEA OpenAPI specification.
 
-If the TEI is not known to the TEA server, the discovery endpoint must return a 404 
+If the TEI is not known to the TEA server, the discovery endpoint must return a 404
 status code with a response describing the error.
 
 If the DNS record for the discovery endpoint cannot be resolved by the client, or
 the discovery endpoint fails with 5xx error code, or the TLS certificate cannot be validated,
 the client MUST retry the discovery endpoint with the next endpoint in the list, if another
-endpoint is present. While doing so the client SHOULD preserve the priority order if provided 
-(from highest to lowest priority). If no other endpoint is available, the client MUST retry 
-the discovery endpoint with the first endpoint in the list. The client SHOULD implement an 
+endpoint is present. While doing so the client SHOULD preserve the priority order if provided
+(from highest to lowest priority). If no other endpoint is available, the client MUST retry
+the discovery endpoint with the first endpoint in the list. The client SHOULD implement an
 exponential backoff strategy for retries.
 
-TODO: Handle Auth errors (401, 403) and corresponding messages.
+Client implementations needs to indicate authentication errors clearly to the users,
+to indicate that there are no updates. An expired token or TLS Client Cert will
+mean that new versions of a product or updated artefacts will not be accessed.
+Authentication error codes (401, 403) should not lead to failover to the next endpoint
+in the list.
+
+How this is communicated to the client users is implementation specific.
 
 ## Notes Regarding .well-known
 Servers MUST NOT locate the actual TEA service endpoint at the
@@ -338,9 +342,6 @@ The .well-known endpoint must only be available via HTTPS. Using unencrypted HTT
 
 - TEI: `urn:tei:uuid:products.example.com:d4d9f54a-abcf-11ee-ac79-1a52914d44b1`
 - URL: `https://products.example.com/.well-known/tea`
-
-**NOTE:** The `/.well-known/tea` names space needs to be registred.
-
 
 ## References
 
