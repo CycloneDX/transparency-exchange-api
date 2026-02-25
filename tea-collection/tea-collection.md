@@ -342,7 +342,11 @@ If this field is absent, the TEA Artifact is considered applicable to all distri
 
 A TEA Artifact object contains the following fields:
 
-- __uuid__: The UUID of the TEA Artefact object. This uniquely identifies the TEA Artifact.
+- __uuid__: The UUID of the TEA Artifact object. Together with *version* uniquely identifies the TEA Artifact.
+- __version__:
+  An integer with default value 1.
+  Together with *uuid* uniquely identifies the TEA Artifact.
+  This field can be used to designate successive, immutable revisions of an artefact content (e.g. an updated VEX file).
 - __name__: A human-readable name for the artefact.
 - __type__: The type of artefact. See [TEA Artifact types](#tea-artefact-types) for allowed values (e.g., `BOM`, `VULNERABILITIES`, `LICENSE`).
 - __componentDistributions__ (optional):  
@@ -402,7 +406,7 @@ producing different alerts than other changes of a collection.
 ```json
 {
   "uuid": "4c72fe22-9d83-4c2f-8eba-d6db484f32c8",
-  "version": 1,
+  "version": 10,
   "date": "2024-12-13T00:00:00Z",
   "updateReason": {
     "type": "ARTIFACT_UPDATED",
@@ -434,6 +438,7 @@ producing different alerts than other changes of a collection.
     },
     {
       "uuid": "dfa35519-9734-4259-bba1-3e825cf4be06",
+      "version": 7,
       "name": "Vulnerability Disclosure Report",
       "type": "VULNERABILITIES",
       "formats": [
