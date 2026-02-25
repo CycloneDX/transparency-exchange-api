@@ -345,6 +345,7 @@ A TEA Artifact object contains the following fields:
 - __uuid__: The UUID of the TEA Artefact object. This uniquely identifies the TEA Artifact.
 - __name__: A human-readable name for the artefact.
 - __type__: The type of artefact. See [TEA Artifact types](#tea-artefact-types) for allowed values (e.g., `BOM`, `VULNERABILITIES`, `LICENSE`).
+- __date__: The date and time the TEA Artefact revision was created.
 - __componentDistributions__ (optional):  
   An array of `distributionType` identifiers indicating which distributions this TEA Artifact applies to.
   If omitted, the TEA Artifact applies to all distributions.
