@@ -1030,6 +1030,7 @@ components:
       required:
         - uuid
         - type
+        - formats
     artifact-type:
       type: string
       description: Specifies the type of external reference.
