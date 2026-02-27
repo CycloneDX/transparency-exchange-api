@@ -1011,6 +1011,9 @@ components:
         type:
           description: Type of TEA Artifact
           "$ref": "#/components/schemas/artifact-type"
+        createdDate:
+          description: The date when the TEA Artifact revision was created.
+          "$ref": "#/components/schemas/date-time"
         distributionTypes:
           type: array
           description: |
