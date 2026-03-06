@@ -8,9 +8,9 @@ A python client library and CLI client for TEA.
 
 * https://github.com/sbomify/py-libtea
 
-### Rearm CLI
+### ReARM CLI
 
-The REARM cli supports TEA. See doc here: https://github.com/relizaio/rearm-cli/blob/main/docs/tea.md
+The ReARM cli supports TEA. See doc here: https://github.com/relizaio/rearm-cli/blob/main/docs/tea.md
 
 * https://github.com/relizaio/rearm-cli
 
@@ -21,6 +21,14 @@ The REARM cli supports TEA. See doc here: https://github.com/relizaio/rearm-cli/
 This project is a lightweight implementation of Transparency Exchange API which uses NestJS framework.
 
 * https://github.com/relizaio/oolong
+
+### ReARM
+
+ReARM is a Release-Level Supply Chain Evidence Platform. It supports TEA for standardized discovery and retrieval of SBOMs and other security artefacts.
+
+* Documentation for using TEA in ReARM: https://docs.rearmhq.com/tea/
+
+* https://github.com/relizaio/rearm
 
 ### SBOMIFY
 
