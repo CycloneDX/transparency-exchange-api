@@ -12,7 +12,7 @@ info:
   license:
     name: Apache 2.0
     url: https://github.com/CycloneDX/transparency-exchange-api/blob/main/LICENSE
-  version: 0.4.0-beta.3
+  version: 0.4.0
 servers:
   - url: http://localhost/tea/v1
     description: Local development
@@ -265,7 +265,7 @@ paths:
         '404':
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
-        - TEA Component Release        
+        - TEA Component Release
   /componentRelease/{uuid}/cle:
     get:
       description: Get the CLE (Common Lifecycle Enumeration) data for a TEA Component Release
@@ -660,7 +660,7 @@ components:
 
 #
     # Reference to a component, in some cases directly to a specific release
-    # 
+    #
     # The release reference (release UUID) is only used in cases where a product
     # name includes a version and this version of the product always includes
     # the same releases of the component.
@@ -1363,7 +1363,7 @@ components:
         - pageStartIndex
         - pageSize
         - totalResults
-    
+
     paginated-product-response:
       type: object
       description: A paginated response containing TEA Products
@@ -1375,7 +1375,7 @@ components:
               type: array
               items:
                 $ref: "#/components/schemas/product"
-    
+
     paginated-product-release-response:
       type: object
       description: A paginated response containing TEA Product Releases
