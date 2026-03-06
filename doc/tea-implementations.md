@@ -1,4 +1,7 @@
+![](/images/tealogo.png)
+
 # TEA Implementations
+
 
 ## Open Source clients
 
