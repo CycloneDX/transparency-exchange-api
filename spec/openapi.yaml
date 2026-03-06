@@ -242,6 +242,38 @@ paths:
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
         - CLE
+  /components:
+    get:
+      description: Returns a list of TEA components. Note that multiple components may match.
+      operationId: queryTeaComponents
+      parameters:
+        - $ref: "#/components/parameters/page-offset"
+        - $ref: "#/components/parameters/page-size"
+        - $ref: "#/components/parameters/id-type"
+        - $ref: "#/components/parameters/id-value"
+      responses:
+        '200':
+          $ref: "#/components/responses/paginated-component"
+        '400':
+          $ref: "#/components/responses/400-invalid-request"
+      tags:
+        - TEA Component
+  /componentReleases:
+    get:
+      description: Returns a list of TEA component releases. Note that multiple component releases may match.
+      operationId: queryTeaComponentReleases
+      parameters:
+        - $ref: "#/components/parameters/page-offset"
+        - $ref: "#/components/parameters/page-size"
+        - $ref: "#/components/parameters/id-type"
+        - $ref: "#/components/parameters/id-value"
+      responses:
+        '200':
+          $ref: "#/components/responses/paginated-component-release"
+        '400':
+          $ref: "#/components/responses/400-invalid-request"
+      tags:
+        - TEA Component Release
   /componentRelease/{uuid}:
     get:
       description: Get the TEA Component Release with its latest collection
@@ -523,6 +555,33 @@ components:
         - CPE
         - TEI
         - PURL
+        - COMPLIANCE_DOCUMENT
+    compliance-document-type:
+      type: string
+      description: >
+        Well-known compliance document types. When idType is COMPLIANCE_DOCUMENT,
+        the idValue SHOULD be one of these values.
+      enum:
+        - SOC_2_TYPE_I
+        - SOC_2_TYPE_II
+        - SOC_3
+        - ISO_27001
+        - ISO_27017
+        - ISO_27018
+        - ISO_27701
+        - ISO_42001
+        - PCI_DSS
+        - HIPAA
+        - FedRAMP
+        - GDPR
+        - CSA_STAR
+        - NIST_800_53
+        - NIST_800_171
+        - CMMC
+        - HITRUST
+        - TISAX
+        - CYBER_ESSENTIALS
+        - CYBER_ESSENTIALS_PLUS
     uuid:
       type: string
       description: A UUID
@@ -1387,6 +1446,30 @@ components:
               type: array
               items:
                 $ref: "#/components/schemas/productRelease"
+
+    paginated-component-response:
+      type: object
+      description: A paginated response containing TEA Components
+      allOf:
+        - $ref: "#/components/schemas/pagination-details"
+        - type: object
+          properties:
+            results:
+              type: array
+              items:
+                $ref: "#/components/schemas/component"
+
+    paginated-component-release-response:
+      type: object
+      description: A paginated response containing TEA Component Releases
+      allOf:
+        - $ref: "#/components/schemas/pagination-details"
+        - type: object
+          properties:
+            results:
+              type: array
+              items:
+                $ref: "#/components/schemas/release"
   responses:
     204-common-delete:
       description: Object deleted successfully
@@ -1426,6 +1509,18 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/paginated-product-release-response"
+    paginated-component:
+      description: A paginated response containing TEA Components
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/paginated-component-response"
+    paginated-component-release:
+      description: A paginated response containing TEA Component Releases
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/paginated-component-release-response"
   parameters:
     # Pagination
     page-offset:
