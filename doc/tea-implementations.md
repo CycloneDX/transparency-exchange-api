@@ -24,7 +24,7 @@ This project is a lightweight implementation of Transparency Exchange API which 
 
 ### ReARM
 
-ReARM is a Release-Level Supply Chain Evidence Platform. It supports TEA for standardized discovery and retrieval of SBOMs and other security artifacts.
+ReARM is a Release-Level Supply Chain Evidence Platform. It supports TEA for standardized discovery and retrieval of SBOMs and other security artefacts.
 
 * Documentation for using TEA in ReARM: https://docs.rearmhq.com/tea/
 
