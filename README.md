@@ -25,10 +25,11 @@ informally using the Slack channel.
 
 
 Priority issues for v1.0:
-- Refinement of distribution types and distributionType fields, see https://github.com/CycloneDX/transparency-exchange-api/issues/198
-- CLE Spec needs to be integrated in TEA
+
 - E2e poc of authn/z workflow with TEA consumer spec, including consumer spec adjustment to better support authn/z
 - Compliance document workflow, see https://github.com/CycloneDX/transparency-exchange-api/issues/205
+
+Check the list of [implementations](doc/tea-implementations.md) that are available.
 
 ## Introduction
 
@@ -68,7 +69,7 @@ The working group has produced a list of use cases and requirements for the prot
 
 ## Artefacts available of the API
 
-The Transparency Exchange API (TEA) supports publication and retrieval of a set of transparency exchange artefacts. The API itself should not be restricting the types of the artefacts. A few examples:
+The Transparency Exchange API (TEA) supports publication and retrieval of a set of transparency exchange artefacts. The API itself is not restricting the types of the artefacts published. A few examples:
 
 ### *xBOM
 
@@ -84,24 +85,34 @@ Vulnerability Disclosure Reports (VDR) and Vulnerability Exploitability eXchange
 
 ### CLE
 
-Product lifecycle events are communicated through the [ECMA-428 Common Lifecycle Enumeration standard](https://ecma-international.org/publications-and-standards/standards/ecma-428/). This includes product rebranding, repackaging, mergers and acquisitions, and product milestone events such as end-of-life and end-of-support.
+Product lifecycle events are communicated through the
+[ECMA-428 Common Lifecycle Enumeration standard](https://ecma-international.org/publications-and-standards/standards/ecma-428/).
+This includes product rebranding, repackaging, mergers and acquisitions, and product milestone events such as end-of-life and end-of-support.
 
 Inclusion of CLE is optional and it may be introduced on the following levels:
+
 - TEA Product
 - TEA Component
 - TEA Product Release
 - TEA Component Release
 
-If CLE is included, it is the responsibility of the TEA implementation to ensure consistency of CLE events across the TEA Product and its releases and similarly across the TEA Component and its releases.
+If CLE is included, it is the responsibility of the TEA implementation to ensure consistency of
+CLE events across the TEA Product and its releases and similarly across the TEA Component and its releases.
 
 ## Insights
 
-Much of the focus on Software Transparency from the U.S. Government and others center around the concept of “full transparency”. Consumers often need to ingest, process, and analyze SBOMs or VEXs just to be able to answer simple questions such as:
+Much of the focus on Software Transparency from the U.S. Government and others center around the
+concept of “full transparency”. Consumers often need to ingest, process, and analyze SBOMs or
+VEXs just to be able to answer simple questions such as:
 
 - Do any of my licensed products from Vendor A use Apache Struts?
 - Are any of my licensed products from Vendor A vulnerable to log4shell and is there any action I need to take?
 
-Insights allows for “limited transparency” that can be asked and answered using an expression language that can be tightly scoped or outcome-driven. Insights also removes the complexities of BOM format conversion away from the consumers. An object model derived from CycloneDX will be an integral part of this API, since the objects within CycloneDX are self-contained (thus API friendly) and the specification supports all the necessary xBOM types along with CDXA.
+Insights allows for “limited transparency” that can be asked and answered using an expression language
+that can be tightly scoped or outcome-driven. Insights also removes the complexities of BOM format 
+onversion away from the consumers. An object model derived from CycloneDX will be an integral part of
+this API, since the objects within CycloneDX are self-contained (thus API friendly) and the specification
+supports all the necessary xBOM types along with CDXA.
 
 Insights will be integrated into the API after the 1.0 release.
 
