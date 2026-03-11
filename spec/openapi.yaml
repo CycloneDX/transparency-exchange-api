@@ -482,10 +482,10 @@ paths:
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
         - TEA Component Release
-  /artifact/{uuid}:
+  /artifact/{uuid}/latest:
     get:
-      description: Get metadata for specific TEA Artifact
-      operationId: getArtifact
+      description: Get metadata for latest revision of a specific TEA Artifact
+      operationId: getLatestArtifact
       parameters:
         - name: uuid
           in: path
@@ -493,6 +493,36 @@ paths:
           description: UUID of TEA Artifact in the TEA server
           schema:
             "$ref": "#/components/schemas/uuid"
+      responses:
+        '200':
+          description: Requested TEA Artifact metadata found and returned
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/artifact"
+        '400':
+          $ref: "#/components/responses/400-invalid-request"
+        '404':
+          $ref: "#/components/responses/404-object-by-id-not-found"
+      tags:
+        - TEA Artifact
+  /artifact/{uuid}/{artifactVersion}:
+    get:
+      description: Get metadata for a specific revision of a specific TEA Artifact
+      operationId: getArtifactByVersion
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          description: UUID of TEA Artifact in the TEA server
+          schema:
+            "$ref": "#/components/schemas/uuid"
+        - name: artifactVersion
+          in: path
+          required: true
+          description: Version of TEA Artifact
+          schema:
+            type: integer
       responses:
         '200':
           description: Requested TEA Artifact metadata found and returned
@@ -997,7 +1027,7 @@ components:
       examples:
         # Documents in the latest release of Log4j Core
         - uuid: 4c72fe22-9d83-4c2f-8eba-d6db484f32c8
-          version: 3
+          version: 10
           date: 2024-12-13T00:00:00Z
           updateReason:
             type: ARTIFACT_UPDATED
@@ -1017,6 +1047,7 @@ components:
                     - algType: SHA-1
                       algValue: 5a7d4caef63c5c5ccdf07c39337323529eb5a770
             - uuid: dfa35519-9734-4259-bba1-3e825cf4be06
+              version: 7
               name: Vulnerability Disclosure Report
               type: VULNERABILITIES
               formats:
@@ -1062,8 +1093,15 @@ components:
       description: A security-related document
       properties:
         uuid:
-          description: UUID of the TEA Artifact object.
+          description: The UUID of the TEA Artifact object. Together with *version* uniquely identifies the TEA Artifact.
           "$ref": "#/components/schemas/uuid"
+        version:
+          description: |
+            An integer with default value 1.
+            Together with *uuid* uniquely identifies the TEA Artifact.
+            This field can be used to designate successive, immutable revisions of an artefact content (e.g. an updated VEX file).
+          type: integer
+          default: 1
         name:
           type: string
           description: Name of TEA Artifact
@@ -1093,6 +1131,31 @@ components:
         - uuid
         - type
         - formats
+      examples:
+        - uuid: 1cb47b95-8bf8-3bad-a5a4-0d54d86e10ce
+          name: Build SBOM
+          type: BOM
+          formats:
+            - mediaType: application/vnd.cyclonedx+xml
+              description: CycloneDX SBOM (XML)
+              url: https://repo.maven.apache.org/maven2/org/apache/logging/log4j/log4j-core/2.24.3/log4j-core-2.24.3-cyclonedx.xml
+              signatureUrl: https://repo.maven.apache.org/maven2/org/apache/logging/log4j/log4j-core/2.24.3/log4j-core-2.24.3-cyclonedx.xml.asc
+              checksums:
+                - algType: MD5
+                  algValue: 2e1a525afc81b0a8ecff114b8b743de9
+                - algType: SHA-1
+                  algValue: 5a7d4caef63c5c5ccdf07c39337323529eb5a770
+        - uuid: dfa35519-9734-4259-bba1-3e825cf4be06
+          version: 7
+          name: Vulnerability Disclosure Report
+          type: VULNERABILITIES
+          formats:
+            - mediaType: application/vnd.cyclonedx+xml
+              description: CycloneDX VDR (XML)
+              url: https://logging.apache.org/cyclonedx/vdr.xml
+              checksums:
+                - algType: SHA-256
+                  algValue: 75b81020b3917cb682b1a7605ade431e062f7a4c01a412f0b87543b6e995ad2a
     artifact-type:
       type: string
       description: Specifies the type of external reference.
