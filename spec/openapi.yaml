@@ -52,8 +52,10 @@ paths:
           description: UUID of TEA Product in the TEA server
           schema:
             "$ref": "#/components/schemas/uuid"
-        - $ref: "#/components/parameters/page-offset"
         - $ref: "#/components/parameters/page-size"
+        - $ref: "#/components/parameters/page-token"
+        - $ref: "#/components/parameters/sort-field-product-release"
+        - $ref: "#/components/parameters/sort-order"
       responses:
         '200':
           $ref: "#/components/responses/paginated-product-release"
@@ -116,10 +118,10 @@ paths:
       description: Returns a list of TEA product releases. Note that multiple product releases may match.
       operationId: queryTeaProductReleases
       parameters:
-        - $ref: "#/components/parameters/page-offset"
         - $ref: "#/components/parameters/page-size"
-        - $ref: "#/components/parameters/id-type"
-        - $ref: "#/components/parameters/id-value"
+        - $ref: "#/components/parameters/page-token"
+        - $ref: "#/components/parameters/sort-field-product-release"
+        - $ref: "#/components/parameters/sort-order"
       responses:
         '200':
           $ref: "#/components/responses/paginated-product-release"
@@ -203,15 +205,13 @@ paths:
           description: UUID of TEA Component in the TEA server
           schema:
             "$ref": "#/components/schemas/uuid"
+        - $ref: "#/components/parameters/page-size"
+        - $ref: "#/components/parameters/page-token"
+        - $ref: "#/components/parameters/sort-field-component-release"
+        - $ref: "#/components/parameters/sort-order"
       responses:
         '200':
-          description: Requested Releases of TEA Component found and returned
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  "$ref": "#/components/schemas/release"
+          $ref: "#/components/responses/paginated-component-release"
         '400':
           $ref: "#/components/responses/400-invalid-request"
         '404':
@@ -247,10 +247,10 @@ paths:
       description: Returns a list of TEA components. Note that multiple components may match.
       operationId: queryTeaComponents
       parameters:
-        - $ref: "#/components/parameters/page-offset"
         - $ref: "#/components/parameters/page-size"
-        - $ref: "#/components/parameters/id-type"
-        - $ref: "#/components/parameters/id-value"
+        - $ref: "#/components/parameters/page-token"
+        - $ref: "#/components/parameters/sort-field-component"
+        - $ref: "#/components/parameters/sort-order"
       responses:
         '200':
           $ref: "#/components/responses/paginated-component"
@@ -263,10 +263,10 @@ paths:
       description: Returns a list of TEA component releases. Note that multiple component releases may match.
       operationId: queryTeaComponentReleases
       parameters:
-        - $ref: "#/components/parameters/page-offset"
         - $ref: "#/components/parameters/page-size"
-        - $ref: "#/components/parameters/id-type"
-        - $ref: "#/components/parameters/id-value"
+        - $ref: "#/components/parameters/page-token"
+        - $ref: "#/components/parameters/sort-field-component"
+        - $ref: "#/components/parameters/sort-order"
       responses:
         '200':
           $ref: "#/components/responses/paginated-component-release"
@@ -381,15 +381,13 @@ paths:
           description: UUID of TEA Component Release in the TEA server
           schema:
             "$ref": "#/components/schemas/uuid"
+        - $ref: "#/components/parameters/page-size"
+        - $ref: "#/components/parameters/page-token"
+        - $ref: "#/components/parameters/sort-field-collection"
+        - $ref: "#/components/parameters/sort-order"
       responses:
         '200':
-          description: Requested TEA Collection found and returned
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  "$ref": "#/components/schemas/collection"
+          $ref: "#/components/responses/paginated-collection"
         '400':
           $ref: "#/components/responses/400-invalid-request"
         '404':
@@ -407,15 +405,13 @@ paths:
           description: UUID of TEA Product Release in the TEA server
           schema:
             "$ref": "#/components/schemas/uuid"
+        - $ref: "#/components/parameters/page-size"
+        - $ref: "#/components/parameters/page-token"
+        - $ref: "#/components/parameters/sort-field-collection"
+        - $ref: "#/components/parameters/sort-order"
       responses:
         '200':
-          description: Requested TEA Collection found and returned
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  "$ref": "#/components/schemas/collection"
+          $ref: "#/components/responses/paginated-collection"
         '400':
           $ref: "#/components/responses/400-invalid-request"
         '404':
@@ -1486,41 +1482,6 @@ components:
         - hasNext
         - nextPageToken
 
-    paginated-product-release-response:
-      type: object
-      description: A paginated response containing TEA Product Releases
-      allOf:
-        - $ref: "#/components/schemas/pagination-details"
-        - type: object
-          properties:
-            results:
-              type: array
-              items:
-                $ref: "#/components/schemas/productRelease"
-
-    paginated-component-response:
-      type: object
-      description: A paginated response containing TEA Components
-      allOf:
-        - $ref: "#/components/schemas/pagination-details"
-        - type: object
-          properties:
-            results:
-              type: array
-              items:
-                $ref: "#/components/schemas/component"
-
-    paginated-component-release-response:
-      type: object
-      description: A paginated response containing TEA Component Releases
-      allOf:
-        - $ref: "#/components/schemas/pagination-details"
-        - type: object
-          properties:
-            results:
-              type: array
-              items:
-                $ref: "#/components/schemas/release"
   responses:
     204-common-delete:
       description: Object deleted successfully
@@ -1570,19 +1531,62 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/paginated-product-release-response"
+            allOf:
+              - $ref: "#/components/schemas/pagination-details"
+              - type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/productRelease"
+                required:
+                  - results
     paginated-component:
       description: A paginated response containing TEA Components
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/paginated-component-response"
+            allOf:
+              - $ref: "#/components/schemas/pagination-details"
+              - type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/component"
+                required:
+                  - results
     paginated-component-release:
       description: A paginated response containing TEA Component Releases
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/paginated-component-release-response"
+            allOf:
+              - $ref: "#/components/schemas/pagination-details"
+              - type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/release"
+                required:
+                  - results
+    paginated-collection:
+      description: A paginated response containing TEA Collections
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/pagination-details"
+              - type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/collection"
+                required:
+                  - results
+                    
   parameters:
     # Pagination
     page-size:
@@ -1617,6 +1621,38 @@ components:
           - desc
         default: asc
     # Pagination Sort Fields per TEA Object Type
+    sort-field-collection:
+      name: sortField
+      description: The field by which to sort the results.
+      in: query
+      required: false
+      schema:
+        type: string
+        enum:
+          - version
+        default: version
+    sort-field-component:
+      name: sortField
+      description: The field by which to sort the results.
+      in: query
+      required: false
+      schema:
+        type: string
+        enum:
+          - name
+        default: name
+    sort-field-component-release:
+      name: sortField
+      description: The field by which to sort the results.
+      in: query
+      required: false
+      schema:
+        type: string
+        enum:
+          - createdDate
+          - releaseDate
+          - version
+        default: createdDate
     sort-field-product:
       name: sortField
       description: The field by which to sort the results.
@@ -1627,6 +1663,18 @@ components:
         enum:
           - name
         default: name
+    sort-field-product-release:
+      name: sortField
+      description: The field by which to sort the results.
+      in: query
+      required: false
+      schema:
+        type: string
+        enum:
+          - createdDate
+          - releaseDate
+          - version
+        default: createdDate
 
     #
     # Query by identifier
