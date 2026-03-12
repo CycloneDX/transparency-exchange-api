@@ -1468,26 +1468,23 @@ components:
     pagination-details:
       type: object
       properties:
+        hasNext:
+          type: boolean
+          description: |
+            A flag (to aid clients) to know whether there is a next page of results to fetch. 
+            
+            `nextPageToken` will always be supplied, hence this hint is included to aid clients.
+          default: false
         nextPageToken:
           type: string
-          nullable: true
+          nullable: false
           description: |
-            A token to retrieve the next page. If this field is omitted or empty, 
-            there are no more pages to retrieve.
-      required:
-        - nextPageToken
+            A token that can be used in a following request to retrieve the next page or results.
 
-    paginated-product-response:
-      type: object
-      description: A paginated response containing TEA Products
-      allOf:
-        - $ref: "#/components/schemas/pagination-details"
-        - type: object
-          properties:
-            results:
-              type: array
-              items:
-                $ref: "#/components/schemas/product"
+            It must always be supplied in responses.
+      required:
+        - hasNext
+        - nextPageToken
 
     paginated-product-release-response:
       type: object
@@ -1566,6 +1563,8 @@ components:
                     type: array
                     items:
                       $ref: "#/components/schemas/product"
+                required:
+                  - results
     paginated-product-release:
       description: A paginated response containing TEA Product Releases
       content:
