@@ -118,6 +118,10 @@ paths:
       description: Returns a list of TEA product releases. Note that multiple product releases may match.
       operationId: queryTeaProductReleases
       parameters:
+        # For result filtering
+        - $ref: "#/components/parameters/id-type"
+        - $ref: "#/components/parameters/id-value"
+        # For pagination
         - $ref: "#/components/parameters/page-size"
         - $ref: "#/components/parameters/page-token"
         - $ref: "#/components/parameters/sort-field-product-release"
@@ -159,6 +163,10 @@ paths:
         match.
       operationId: queryTeaProducts
       parameters:
+        # For result filtering
+        - $ref: "#/components/parameters/id-type"
+        - $ref: "#/components/parameters/id-value"
+        # For pagination
         - $ref: "#/components/parameters/page-size"
         - $ref: "#/components/parameters/page-token"
         - $ref: "#/components/parameters/sort-field-product"
@@ -247,6 +255,10 @@ paths:
       description: Returns a list of TEA components. Note that multiple components may match.
       operationId: queryTeaComponents
       parameters:
+        # For result filtering
+        - $ref: "#/components/parameters/id-type"
+        - $ref: "#/components/parameters/id-value"
+        # For pagination
         - $ref: "#/components/parameters/page-size"
         - $ref: "#/components/parameters/page-token"
         - $ref: "#/components/parameters/sort-field-component"
@@ -263,6 +275,10 @@ paths:
       description: Returns a list of TEA component releases. Note that multiple component releases may match.
       operationId: queryTeaComponentReleases
       parameters:
+        # For result filtering
+        - $ref: "#/components/parameters/id-type"
+        - $ref: "#/components/parameters/id-value"
+        # For pagination
         - $ref: "#/components/parameters/page-size"
         - $ref: "#/components/parameters/page-token"
         - $ref: "#/components/parameters/sort-field-component"
