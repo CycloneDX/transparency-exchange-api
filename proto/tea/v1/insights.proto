@@ -1,0 +1,770 @@
+// Copyright 2024-2026 CycloneDX Contributors
+// SPDX-License-Identifier: Apache-2.0
+
+syntax = "proto3";
+
+package tea.v1;
+
+import "buf/validate/validate.proto";
+import "google/api/annotations.proto";
+import "google/protobuf/any.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+import "tea/v1/common.proto";
+import "tea/v1/artifact.proto";
+
+option go_package = "github.com/CycloneDX/transparency-exchange-api/gen/go/tea/v1;teav1";
+option java_package = "org.cyclonedx.tea.v1";
+option java_multiple_files = true;
+option csharp_namespace = "CycloneDX.Tea.V1";
+
+// ============================================================================
+// Insights Service
+// ============================================================================
+
+// InsightsService provides query and analytics capabilities for TEA data.
+// This enables "limited transparency" queries without requiring full artifact
+// downloads and processing by the consumer.
+//
+// The service supports:
+// - CEL (Common Expression Language) queries
+// - Pre-built queries for common use cases
+// - Vulnerability analysis
+// - Component dependency analysis
+//
+// This service is an optional part of the TEA specification.
+// Authentication is typically required for insights queries.
+service InsightsService {
+  // ==========================================================================
+  // CEL Query Operations
+  // ==========================================================================
+
+  // Query executes a CEL expression against TEA data.
+  // CEL provides a type-safe, sandboxed query language.
+  // See: https://github.com/google/cel-spec
+  rpc Query(QueryRequest) returns (QueryResponse) {
+    option (google.api.http) = {
+      post: "/v1/insights/query"
+      body: "*"
+    };
+  }
+
+  // ValidateQuery validates a CEL expression without executing it.
+  rpc ValidateQuery(ValidateQueryRequest) returns (ValidateQueryResponse) {
+    option (google.api.http) = {
+      post: "/v1/insights/query/validate"
+      body: "*"
+    };
+  }
+
+  // ==========================================================================
+  // Pre-built Queries
+  // ==========================================================================
+
+  // GetVulnerabilitySummary returns vulnerability information for a release.
+  rpc GetVulnerabilitySummary(GetVulnerabilitySummaryRequest) returns (VulnerabilitySummary) {
+    option (google.api.http) = {
+      get: "/v1/insights/releases/{release_uuid}/vulnerabilities"
+    };
+  }
+
+  // GetComponentDependencies returns component dependencies for a release.
+  rpc GetComponentDependencies(GetComponentDependenciesRequest) returns (ComponentDependencies) {
+    option (google.api.http) = {
+      get: "/v1/insights/releases/{release_uuid}/dependencies"
+    };
+  }
+
+  // FindAffectedReleases finds releases affected by a specific component.
+  rpc FindAffectedReleases(FindAffectedReleasesRequest) returns (FindAffectedReleasesResponse) {
+    option (google.api.http) = {
+      get: "/v1/insights/affected"
+    };
+  }
+
+  // GetLicenseSummary returns license information for a release.
+  rpc GetLicenseSummary(GetLicenseSummaryRequest) returns (LicenseSummary) {
+    option (google.api.http) = {
+      get: "/v1/insights/releases/{release_uuid}/licenses"
+    };
+  }
+
+  // GetCryptoInventory returns cryptographic assets for a release.
+  // Based on CBOM (Cryptographic Bill of Materials).
+  rpc GetCryptoInventory(GetCryptoInventoryRequest) returns (CryptoInventory) {
+    option (google.api.http) = {
+      get: "/v1/insights/releases/{release_uuid}/crypto"
+    };
+  }
+
+  // ==========================================================================
+  // Analytics
+  // ==========================================================================
+
+  // GetReleaseMetrics returns analytics for a release.
+  rpc GetReleaseMetrics(GetReleaseMetricsRequest) returns (ReleaseMetrics) {
+    option (google.api.http) = {
+      get: "/v1/insights/releases/{release_uuid}/metrics"
+    };
+  }
+
+  // CompareSBOMs compares two SBOMs for drift detection.
+  rpc CompareSBOMs(CompareSBOMsRequest) returns (SBOMComparison) {
+    option (google.api.http) = {
+      post: "/v1/insights/compare/sbom"
+      body: "*"
+    };
+  }
+}
+
+// ============================================================================
+// CEL Query Messages
+// ============================================================================
+
+// QueryRequest contains a CEL query to execute.
+message QueryRequest {
+  // CEL expression to evaluate.
+  // The expression has access to TEA data objects (products, components,
+  // releases, artifacts, sboms, vex, etc.).
+  //
+  // Example expressions:
+  // - components.exists(c, c.purl == "pkg:maven/org.apache.logging.log4j/log4j-core")
+  // - sbom.components.filter(c, c.vulnerabilities.size() > 0)
+  // - releases.filter(r, r.artifacts.exists(a, a.type == "VULNERABILITIES"))
+  string expression = 1 [
+    (buf.validate.field).string.min_len = 1,
+    (buf.validate.field).string.max_len = 10000,
+    (buf.validate.field).required = true
+  ];
+
+  // Scope of the query (what data to query against).
+  QueryScope scope = 2;
+
+  // Variables to bind in the expression.
+  map<string, google.protobuf.Value> variables = 3;
+
+  // Maximum execution time (server may enforce limits).
+  int32 timeout_seconds = 4 [json_name = "timeoutSeconds"];
+
+  // Pagination for results.
+  PageRequest pagination = 5;
+
+  // Output format.
+  QueryOutputFormat output_format = 6 [json_name = "outputFormat"];
+}
+
+// QueryScope defines what data the query operates on.
+message QueryScope {
+  // Query against a specific release.
+  optional string release_uuid = 1 [json_name = "releaseUuid"];
+
+  // Query against a specific product.
+  optional string product_uuid = 2 [json_name = "productUuid"];
+
+  // Query against all data (requires special permission).
+  bool global = 3;
+
+  // Artifact types to include in scope.
+  repeated ArtifactType artifact_types = 4 [json_name = "artifactTypes"];
+
+  // Date range for temporal queries.
+  DateRange date_range = 5 [json_name = "dateRange"];
+}
+
+// QueryOutputFormat specifies how to format query results.
+enum QueryOutputFormat {
+  // Unspecified - server default (JSON).
+  QUERY_OUTPUT_FORMAT_UNSPECIFIED = 0;
+
+  // JSON output.
+  QUERY_OUTPUT_FORMAT_JSON = 1;
+
+  // Protocol Buffer Any.
+  QUERY_OUTPUT_FORMAT_PROTO = 2;
+
+  // CSV (for tabular results).
+  QUERY_OUTPUT_FORMAT_CSV = 3;
+}
+
+// QueryResponse contains the results of a CEL query.
+message QueryResponse {
+  // Query result as JSON (when output_format is JSON).
+  google.protobuf.Struct result = 1;
+
+  // Query result as Any (when output_format is PROTO).
+  google.protobuf.Any result_proto = 2 [json_name = "resultProto"];
+
+  // Query result as CSV (when output_format is CSV).
+  string result_csv = 3 [json_name = "resultCsv"];
+
+  // Number of results.
+  int64 result_count = 4 [json_name = "resultCount"];
+
+  // Execution time in milliseconds.
+  int64 execution_time_ms = 5 [json_name = "executionTimeMs"];
+
+  // Pagination for continued results.
+  PageResponse pagination = 6;
+
+  // Warnings during execution.
+  repeated string warnings = 7;
+}
+
+// ValidateQueryRequest validates a CEL expression.
+message ValidateQueryRequest {
+  // CEL expression to validate.
+  string expression = 1 [(buf.validate.field).required = true];
+}
+
+// ValidateQueryResponse contains validation results.
+message ValidateQueryResponse {
+  // Whether the expression is valid.
+  bool valid = 1;
+
+  // Validation errors (if any).
+  repeated QueryValidationError errors = 2;
+
+  // Inferred return type.
+  string return_type = 3 [json_name = "returnType"];
+
+  // Estimated complexity score.
+  int32 complexity_score = 4 [json_name = "complexityScore"];
+}
+
+// QueryValidationError describes a CEL validation error.
+message QueryValidationError {
+  // Error message.
+  string message = 1;
+
+  // Position in expression.
+  int32 position = 2;
+
+  // Line number.
+  int32 line = 3;
+
+  // Column number.
+  int32 column = 4;
+}
+
+// ============================================================================
+// Vulnerability Messages
+// ============================================================================
+
+// GetVulnerabilitySummaryRequest requests vulnerability summary.
+message GetVulnerabilitySummaryRequest {
+  // UUID of the release.
+  string release_uuid = 1 [
+    (buf.validate.field).string.uuid = true,
+    (buf.validate.field).required = true,
+    json_name = "releaseUuid"
+  ];
+
+  // Include VEX analysis (not just raw vulnerabilities).
+  bool include_vex_analysis = 2 [json_name = "includeVexAnalysis"];
+
+  // Minimum severity to include.
+  VulnerabilitySeverity min_severity = 3 [json_name = "minSeverity"];
+}
+
+// VulnerabilitySummary contains vulnerability information.
+message VulnerabilitySummary {
+  // UUID of the release.
+  string release_uuid = 1 [json_name = "releaseUuid"];
+
+  // Total vulnerabilities found.
+  int32 total_count = 2 [json_name = "totalCount"];
+
+  // Counts by severity.
+  VulnerabilityCounts by_severity = 3 [json_name = "bySeverity"];
+
+  // Counts by status (from VEX).
+  VexStatusCounts by_vex_status = 4 [json_name = "byVexStatus"];
+
+  // Top vulnerabilities (most severe).
+  repeated VulnerabilityInfo top_vulnerabilities = 5 [json_name = "topVulnerabilities"];
+
+  // When the analysis was performed.
+  google.protobuf.Timestamp analyzed_at = 6 [json_name = "analyzedAt"];
+
+  // Artifacts used for this analysis.
+  repeated string source_artifact_uuids = 7 [json_name = "sourceArtifactUuids"];
+}
+
+// VulnerabilitySeverity levels.
+enum VulnerabilitySeverity {
+  VULNERABILITY_SEVERITY_UNSPECIFIED = 0;
+  VULNERABILITY_SEVERITY_NONE = 1;
+  VULNERABILITY_SEVERITY_LOW = 2;
+  VULNERABILITY_SEVERITY_MEDIUM = 3;
+  VULNERABILITY_SEVERITY_HIGH = 4;
+  VULNERABILITY_SEVERITY_CRITICAL = 5;
+}
+
+// VulnerabilityCounts by severity.
+message VulnerabilityCounts {
+  int32 critical = 1;
+  int32 high = 2;
+  int32 medium = 3;
+  int32 low = 4;
+  int32 none = 5;
+  int32 unknown = 6;
+}
+
+// VexStatusCounts by VEX status.
+message VexStatusCounts {
+  int32 affected = 1;
+  int32 not_affected = 2;
+  int32 fixed = 3;
+  int32 under_investigation = 4 [json_name = "underInvestigation"];
+}
+
+// VulnerabilityInfo contains details about a vulnerability.
+message VulnerabilityInfo {
+  // CVE or other vulnerability ID.
+  string id = 1;
+
+  // Severity level.
+  VulnerabilitySeverity severity = 2;
+
+  // CVSS score (if available).
+  optional float cvss_score = 3 [json_name = "cvssScore"];
+
+  // Brief description.
+  string description = 4;
+
+  // Affected component.
+  Identifier affected_component = 5 [json_name = "affectedComponent"];
+
+  // VEX status (if VEX is available).
+  optional VexStatus vex_status = 6 [json_name = "vexStatus"];
+
+  // VEX justification.
+  string vex_justification = 7 [json_name = "vexJustification"];
+}
+
+// VexStatus from VEX documents.
+enum VexStatus {
+  VEX_STATUS_UNSPECIFIED = 0;
+  VEX_STATUS_AFFECTED = 1;
+  VEX_STATUS_NOT_AFFECTED = 2;
+  VEX_STATUS_FIXED = 3;
+  VEX_STATUS_UNDER_INVESTIGATION = 4;
+}
+
+// ============================================================================
+// Dependency Messages
+// ============================================================================
+
+// GetComponentDependenciesRequest requests dependency tree.
+message GetComponentDependenciesRequest {
+  // UUID of the release.
+  string release_uuid = 1 [
+    (buf.validate.field).string.uuid = true,
+    (buf.validate.field).required = true,
+    json_name = "releaseUuid"
+  ];
+
+  // Maximum depth to traverse (0 = unlimited).
+  int32 max_depth = 2 [json_name = "maxDepth"];
+
+  // Include transitive dependencies.
+  bool include_transitive = 3 [json_name = "includeTransitive"];
+}
+
+// ComponentDependencies contains the dependency tree.
+message ComponentDependencies {
+  // UUID of the release.
+  string release_uuid = 1 [json_name = "releaseUuid"];
+
+  // Root component.
+  DependencyNode root = 2;
+
+  // Total dependency count (including transitive).
+  int32 total_count = 3 [json_name = "totalCount"];
+
+  // Direct dependency count.
+  int32 direct_count = 4 [json_name = "directCount"];
+
+  // Transitive dependency count.
+  int32 transitive_count = 5 [json_name = "transitiveCount"];
+}
+
+// DependencyNode represents a component in the dependency tree.
+message DependencyNode {
+  // Component identifier.
+  Identifier identifier = 1;
+
+  // Component name.
+  string name = 2;
+
+  // Component version.
+  string version = 3;
+
+  // Dependency scope (runtime, dev, test, etc.).
+  string scope = 4;
+
+  // Direct dependencies.
+  repeated DependencyNode dependencies = 5;
+
+  // Depth in the tree.
+  int32 depth = 6;
+}
+
+// FindAffectedReleasesRequest finds releases using a component.
+message FindAffectedReleasesRequest {
+  // Identifier of the component to search for.
+  Identifier identifier = 1 [(buf.validate.field).required = true];
+
+  // Version range (VERS format).
+  string version_range = 2 [json_name = "versionRange"];
+
+  // Pagination.
+  PageRequest pagination = 3;
+}
+
+// FindAffectedReleasesResponse contains matching releases.
+message FindAffectedReleasesResponse {
+  // Releases that use the specified component.
+  repeated AffectedRelease releases = 1;
+
+  // Pagination.
+  PageResponse pagination = 2;
+}
+
+// AffectedRelease contains info about an affected release.
+message AffectedRelease {
+  // Release UUID.
+  string release_uuid = 1 [json_name = "releaseUuid"];
+
+  // Release version.
+  string version = 2;
+
+  // Product name (if available).
+  string product_name = 3 [json_name = "productName"];
+
+  // How the component is used (direct/transitive).
+  string dependency_type = 4 [json_name = "dependencyType"];
+
+  // Specific version of the component used.
+  string component_version = 5 [json_name = "componentVersion"];
+}
+
+// ============================================================================
+// License Messages
+// ============================================================================
+
+// GetLicenseSummaryRequest requests license summary.
+message GetLicenseSummaryRequest {
+  // UUID of the release.
+  string release_uuid = 1 [
+    (buf.validate.field).string.uuid = true,
+    (buf.validate.field).required = true,
+    json_name = "releaseUuid"
+  ];
+}
+
+// LicenseSummary contains license information.
+message LicenseSummary {
+  // UUID of the release.
+  string release_uuid = 1 [json_name = "releaseUuid"];
+
+  // Total components analyzed.
+  int32 total_components = 2 [json_name = "totalComponents"];
+
+  // Components with identified licenses.
+  int32 with_license = 3 [json_name = "withLicense"];
+
+  // Components without identified licenses.
+  int32 without_license = 4 [json_name = "withoutLicense"];
+
+  // License distribution.
+  repeated LicenseCount licenses = 5;
+
+  // License conflicts (if any).
+  repeated LicenseConflict conflicts = 6;
+}
+
+// LicenseCount represents a license and its usage count.
+message LicenseCount {
+  // SPDX license ID.
+  string spdx_id = 1 [json_name = "spdxId"];
+
+  // License name.
+  string name = 2;
+
+  // Number of components using this license.
+  int32 count = 3;
+
+  // License category (permissive, copyleft, proprietary).
+  string category = 4;
+}
+
+// LicenseConflict describes a potential license conflict.
+message LicenseConflict {
+  // First license.
+  string license1 = 1;
+
+  // Second license.
+  string license2 = 2;
+
+  // Description of the conflict.
+  string description = 3;
+
+  // Severity (info, warning, error).
+  string severity = 4;
+}
+
+// ============================================================================
+// Crypto Messages
+// ============================================================================
+
+// GetCryptoInventoryRequest requests cryptographic inventory.
+message GetCryptoInventoryRequest {
+  // UUID of the release.
+  string release_uuid = 1 [
+    (buf.validate.field).string.uuid = true,
+    (buf.validate.field).required = true,
+    json_name = "releaseUuid"
+  ];
+}
+
+// CryptoInventory contains cryptographic assets.
+message CryptoInventory {
+  // UUID of the release.
+  string release_uuid = 1 [json_name = "releaseUuid"];
+
+  // Cryptographic algorithms in use.
+  repeated CryptoAlgorithm algorithms = 2;
+
+  // Certificates found.
+  repeated CryptoCertificate certificates = 3;
+
+  // Quantum readiness assessment.
+  QuantumReadiness quantum_readiness = 4 [json_name = "quantumReadiness"];
+}
+
+// CryptoAlgorithm describes a cryptographic algorithm.
+message CryptoAlgorithm {
+  // Algorithm name (e.g., "AES-256-GCM", "RSA-2048").
+  string name = 1;
+
+  // Algorithm type (symmetric, asymmetric, hash, etc.).
+  string type = 2;
+
+  // Usage (encryption, signing, hashing, key-exchange).
+  string usage = 3;
+
+  // Key size (if applicable).
+  int32 key_size = 4 [json_name = "keySize"];
+
+  // Is quantum-safe.
+  bool quantum_safe = 5 [json_name = "quantumSafe"];
+
+  // Components using this algorithm.
+  repeated string components = 6;
+}
+
+// CryptoCertificate describes a certificate.
+message CryptoCertificate {
+  // Certificate subject.
+  string subject = 1;
+
+  // Certificate issuer.
+  string issuer = 2;
+
+  // Expiration date.
+  google.protobuf.Timestamp expires = 3;
+
+  // Public key algorithm.
+  string algorithm = 4;
+
+  // Key size.
+  int32 key_size = 5 [json_name = "keySize"];
+}
+
+// QuantumReadiness assesses post-quantum cryptography readiness.
+message QuantumReadiness {
+  // Overall readiness score (0-100).
+  int32 score = 1;
+
+  // Number of quantum-vulnerable algorithms.
+  int32 vulnerable_count = 2 [json_name = "vulnerableCount"];
+
+  // Number of quantum-safe algorithms.
+  int32 safe_count = 3 [json_name = "safeCount"];
+
+  // Recommendations.
+  repeated string recommendations = 4;
+}
+
+// ============================================================================
+// Metrics Messages
+// ============================================================================
+
+// GetReleaseMetricsRequest requests release metrics.
+message GetReleaseMetricsRequest {
+  // UUID of the release.
+  string release_uuid = 1 [
+    (buf.validate.field).string.uuid = true,
+    (buf.validate.field).required = true,
+    json_name = "releaseUuid"
+  ];
+}
+
+// ReleaseMetrics contains analytics for a release.
+message ReleaseMetrics {
+  // UUID of the release.
+  string release_uuid = 1 [json_name = "releaseUuid"];
+
+  // Component metrics.
+  ComponentMetrics components = 2;
+
+  // Artifact metrics.
+  ArtifactMetrics artifacts = 3;
+
+  // Collection metrics.
+  CollectionMetrics collection = 4;
+}
+
+// ComponentMetrics contains component-related metrics.
+message ComponentMetrics {
+  // Total components.
+  int32 total = 1;
+
+  // Direct dependencies.
+  int32 direct = 2;
+
+  // Transitive dependencies.
+  int32 transitive = 3;
+
+  // By type (library, framework, etc.).
+  map<string, int32> by_type = 4 [json_name = "byType"];
+
+  // By ecosystem (maven, npm, etc.).
+  map<string, int32> by_ecosystem = 5 [json_name = "byEcosystem"];
+}
+
+// ArtifactMetrics contains artifact-related metrics.
+message ArtifactMetrics {
+  // Total artifacts.
+  int32 total = 1;
+
+  // By type.
+  map<string, int32> by_type = 2 [json_name = "byType"];
+
+  // Total size in bytes.
+  int64 total_size_bytes = 3 [json_name = "totalSizeBytes"];
+}
+
+// CollectionMetrics contains collection-related metrics.
+message CollectionMetrics {
+  // Collection version.
+  int32 version = 1;
+
+  // Number of updates.
+  int32 update_count = 2 [json_name = "updateCount"];
+
+  // Last update timestamp.
+  google.protobuf.Timestamp last_updated = 3 [json_name = "lastUpdated"];
+
+  // Is signed.
+  bool is_signed = 4 [json_name = "isSigned"];
+}
+
+// ============================================================================
+// SBOM Comparison Messages
+// ============================================================================
+
+// CompareSBOMsRequest compares two SBOMs.
+message CompareSBOMsRequest {
+  // First SBOM (base).
+  oneof base {
+    // Base release UUID.
+    string base_release_uuid = 1;
+    // Base artifact UUID.
+    string base_artifact_uuid = 2;
+  }
+
+  // Second SBOM (target).
+  oneof target {
+    // Target release UUID.
+    string target_release_uuid = 3;
+    // Target artifact UUID.
+    string target_artifact_uuid = 4;
+  }
+
+  // Include detailed component changes.
+  bool include_details = 5 [json_name = "includeDetails"];
+}
+
+// SBOMComparison contains comparison results.
+message SBOMComparison {
+  // Components added in target.
+  repeated ComponentChange added = 1;
+
+  // Components removed in target.
+  repeated ComponentChange removed = 2;
+
+  // Components with version changes.
+  repeated ComponentVersionChange updated = 3;
+
+  // Components unchanged.
+  int32 unchanged_count = 4 [json_name = "unchangedCount"];
+
+  // Summary statistics.
+  ComparisonSummary summary = 5;
+}
+
+// ComponentChange describes an added or removed component.
+message ComponentChange {
+  // Component identifier.
+  Identifier identifier = 1;
+
+  // Component name.
+  string name = 2;
+
+  // Component version.
+  string version = 3;
+}
+
+// ComponentVersionChange describes a version change.
+message ComponentVersionChange {
+  // Component identifier.
+  Identifier identifier = 1;
+
+  // Component name.
+  string name = 2;
+
+  // Previous version.
+  string old_version = 3 [json_name = "oldVersion"];
+
+  // New version.
+  string new_version = 4 [json_name = "newVersion"];
+
+  // Is upgrade (true) or downgrade (false).
+  bool is_upgrade = 5 [json_name = "isUpgrade"];
+}
+
+// ComparisonSummary contains comparison statistics.
+message ComparisonSummary {
+  // Components in base SBOM.
+  int32 base_count = 1 [json_name = "baseCount"];
+
+  // Components in target SBOM.
+  int32 target_count = 2 [json_name = "targetCount"];
+
+  // Components added.
+  int32 added_count = 3 [json_name = "addedCount"];
+
+  // Components removed.
+  int32 removed_count = 4 [json_name = "removedCount"];
+
+  // Components updated.
+  int32 updated_count = 5 [json_name = "updatedCount"];
+
+  // Components unchanged.
+  int32 unchanged_count = 6 [json_name = "unchangedCount"];
+
+  // Similarity percentage.
+  float similarity_percent = 7 [json_name = "similarityPercent"];
+}

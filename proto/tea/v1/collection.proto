@@ -1,0 +1,316 @@
+// Copyright 2024-2026 CycloneDX Contributors
+// SPDX-License-Identifier: Apache-2.0
+
+syntax = "proto3";
+
+package tea.v1;
+
+import "buf/validate/validate.proto";
+import "google/protobuf/timestamp.proto";
+import "tea/v1/common.proto";
+import "tea/v1/artifact.proto";
+
+option go_package = "github.com/CycloneDX/transparency-exchange-api/gen/go/tea/v1;teav1";
+option java_package = "org.cyclonedx.tea.v1";
+option java_multiple_files = true;
+option csharp_namespace = "CycloneDX.Tea.V1";
+
+// ============================================================================
+// TEA Collection
+// ============================================================================
+
+// Collection represents a TEA Collection - a versioned list of artifacts for a
+// specific ComponentRelease or ProductRelease.
+//
+// Collections are versioned to indicate changes (e.g., an updated VEX or
+// corrected SBOM). When artifacts are updated, a new Collection version is
+// created with the same UUID but incremented version number.
+//
+// The UUID of a Collection for a ComponentRelease is identical to the
+// ComponentRelease UUID. For ProductReleases, it's the ProductRelease UUID.
+message Collection {
+  // Unique identifier for this TEA Collection.
+  // For ComponentRelease collections: equals the ComponentRelease UUID.
+  // For ProductRelease collections: equals the ProductRelease UUID.
+  // Format: UUID v4 or v7.
+  string uuid = 1 [
+    (buf.validate.field).string.uuid = true,
+    (buf.validate.field).required = true
+  ];
+
+  // Collection version number.
+  // Incremented each time the collection content changes.
+  // Starts at 1 for new collections.
+  int32 version = 2 [
+    (buf.validate.field).int32.gte = 1,
+    (buf.validate.field).required = true
+  ];
+
+  // Timestamp when this collection version was created.
+  google.protobuf.Timestamp date = 3;
+
+  // Scope of this collection - indicates what the collection belongs to.
+  CollectionScope belongs_to = 4 [json_name = "belongsTo"];
+
+  // Reason for this collection version update.
+  UpdateReason update_reason = 5 [json_name = "updateReason"];
+
+  // List of TEA Artifacts in this collection.
+  repeated Artifact artifacts = 6;
+
+  // Digital signature of the collection (if signed).
+  optional CollectionSignature signature = 7;
+
+  // Timestamp when this collection was created in the TEA system.
+  google.protobuf.Timestamp created_date = 8 [json_name = "createdDate"];
+
+  // Optional deprecation information.
+  optional Deprecation deprecation = 9;
+
+  // List of conformance vectors (compliance standards or frameworks) this collection complies with.
+  // Examples: "NIST SP 800-53", "OWASP Top 10", "ISO 27001", "PCI DSS", "GDPR".
+  // These indicate the security, privacy, or regulatory standards met by the artifacts in this collection.
+  repeated string conformance_vectors = 10 [json_name = "conformanceVectors"];
+}
+
+// ============================================================================
+// Collection Scope
+// ============================================================================
+
+// CollectionScope indicates what entity the collection belongs to.
+enum CollectionScope {
+  // Unspecified scope.
+  COLLECTION_SCOPE_UNSPECIFIED = 0;
+
+  // Collection belongs to a ComponentRelease.
+  COLLECTION_SCOPE_RELEASE = 1;
+
+  // Collection belongs to a ProductRelease.
+  COLLECTION_SCOPE_PRODUCT_RELEASE = 2;
+}
+
+// ============================================================================
+// Update Reason
+// ============================================================================
+
+// UpdateReasonType categorizes why a collection was updated.
+enum UpdateReasonType {
+  // Unspecified update reason.
+  UPDATE_REASON_TYPE_UNSPECIFIED = 0;
+
+  // Initial release of the collection.
+  UPDATE_REASON_TYPE_INITIAL_RELEASE = 1;
+
+  // VEX (Vulnerability Exploitability eXchange) artifact was updated.
+  // Updates to VEX may produce different alerts in TEA clients.
+  UPDATE_REASON_TYPE_VEX_UPDATED = 2;
+
+  // One or more artifacts (other than VEX) were updated.
+  UPDATE_REASON_TYPE_ARTIFACT_UPDATED = 3;
+
+  // One or more artifacts were removed from the collection.
+  UPDATE_REASON_TYPE_ARTIFACT_REMOVED = 4;
+
+  // One or more artifacts were added to the collection.
+  UPDATE_REASON_TYPE_ARTIFACT_ADDED = 5;
+
+  // Correction to metadata (not artifact content).
+  UPDATE_REASON_TYPE_METADATA_CORRECTION = 6;
+
+  // Security-related update requiring immediate attention.
+  UPDATE_REASON_TYPE_SECURITY_UPDATE = 7;
+}
+
+// UpdateReason provides context for why a collection version was created.
+message UpdateReason {
+  // Type of update.
+  UpdateReasonType type = 1 [(buf.validate.field).enum = {defined_only: true}];
+
+  // Human-readable description of the update.
+  string comment = 2 [(buf.validate.field).string.max_len = 4096];
+
+  // UUIDs of affected artifacts (for update/remove/add reasons).
+  repeated string affected_artifact_uuids = 3 [json_name = "affectedArtifactUuids"];
+}
+
+// ============================================================================
+// Collection Signature
+// ============================================================================
+
+// SignatureAlgorithm specifies the algorithm used for digital signatures.
+enum SignatureAlgorithm {
+  // Unspecified algorithm.
+  SIGNATURE_ALGORITHM_UNSPECIFIED = 0;
+
+  // RSA with SHA-256 (RSASSA-PKCS1-v1_5).
+  SIGNATURE_ALGORITHM_RS256 = 1;
+
+  // RSA with SHA-384.
+  SIGNATURE_ALGORITHM_RS384 = 2;
+
+  // RSA with SHA-512.
+  SIGNATURE_ALGORITHM_RS512 = 3;
+
+  // ECDSA with P-256 and SHA-256.
+  SIGNATURE_ALGORITHM_ES256 = 4;
+
+  // ECDSA with P-384 and SHA-384.
+  SIGNATURE_ALGORITHM_ES384 = 5;
+
+  // ECDSA with P-521 and SHA-512.
+  SIGNATURE_ALGORITHM_ES512 = 6;
+
+  // EdDSA with Ed25519.
+  SIGNATURE_ALGORITHM_EDDSA = 7;
+
+  // RSA-PSS with SHA-256.
+  SIGNATURE_ALGORITHM_PS256 = 8;
+
+  // RSA-PSS with SHA-384.
+  SIGNATURE_ALGORITHM_PS384 = 9;
+
+  // RSA-PSS with SHA-512.
+  SIGNATURE_ALGORITHM_PS512 = 10;
+}
+
+// CollectionSignature contains the digital signature of a collection.
+message CollectionSignature {
+  // Signature algorithm used.
+  SignatureAlgorithm algorithm = 1;
+
+  // Base64-encoded signature value.
+  string value = 2 [(buf.validate.field).string.min_len = 1];
+
+  // Timestamp when the signature was created.
+  google.protobuf.Timestamp signed_at = 3 [json_name = "signedAt"];
+
+  // Key identifier (for key lookup/verification).
+  string key_id = 4 [json_name = "keyId"];
+
+  // Optional X.509 certificate chain (PEM-encoded).
+  repeated string certificate_chain = 5 [json_name = "certificateChain"];
+
+  // Sigstore bundle (if Sigstore/cosign was used).
+  optional SigstoreBundle sigstore_bundle = 6 [json_name = "sigstoreBundle"];
+}
+
+// SigstoreBundle contains Sigstore-specific signature information.
+message SigstoreBundle {
+  // Rekor log entry URL.
+  string rekor_log_url = 1 [json_name = "rekorLogUrl"];
+
+  // Rekor log entry ID.
+  string rekor_log_id = 2 [json_name = "rekorLogId"];
+
+  // Fulcio certificate (PEM-encoded).
+  string fulcio_certificate = 3 [json_name = "fulcioCertificate"];
+
+  // Timestamp authority response (RFC 3161).
+  bytes timestamp_authority_response = 4 [json_name = "timestampAuthorityResponse"];
+}
+
+// ============================================================================
+// Collection Version Info
+// ============================================================================
+
+// CollectionVersionInfo provides summary information about a collection version
+// without including the full artifact list.
+message CollectionVersionInfo {
+  // Collection UUID.
+  string uuid = 1;
+
+  // Version number.
+  int32 version = 2;
+
+  // Creation timestamp.
+  google.protobuf.Timestamp date = 3;
+
+  // Update reason summary.
+  UpdateReason update_reason = 4 [json_name = "updateReason"];
+
+  // Number of artifacts in this version.
+  int32 artifact_count = 5 [json_name = "artifactCount"];
+
+  // Whether this version is signed.
+  bool is_signed = 6 [json_name = "isSigned"];
+}
+
+// ============================================================================
+// Request/Response Messages
+// ============================================================================
+
+// GetCollectionRequest is the request for getting the latest collection version.
+message GetCollectionRequest {
+  // UUID of the collection to retrieve.
+  string uuid = 1 [(buf.validate.field).string.uuid = true, (buf.validate.field).required = true];
+
+  // Include artifact content metadata in the response.
+  // If false, only artifact UUIDs are returned.
+  bool include_artifacts = 2 [json_name = "includeArtifacts"];
+}
+
+// ListCollectionVersionsRequest is the request for listing all versions of a collection.
+message ListCollectionVersionsRequest {
+  // UUID of the collection.
+  string uuid = 1 [(buf.validate.field).string.uuid = true, (buf.validate.field).required = true];
+
+  // Pagination parameters.
+  PageRequest pagination = 2;
+
+  // Include full artifact details (default: false, summary only).
+  bool include_artifacts = 3 [json_name = "includeArtifacts"];
+}
+
+// ListCollectionVersionsResponse is the response for listing collection versions.
+message ListCollectionVersionsResponse {
+  // Collection version summaries (or full collections if include_artifacts=true).
+  repeated CollectionVersionInfo versions = 1;
+
+  // Full collection data (only populated if include_artifacts=true).
+  repeated Collection collections = 2;
+
+  // Pagination information.
+  PageResponse pagination = 3;
+}
+
+// GetCollectionVersionRequest is the request for getting a specific collection version.
+message GetCollectionVersionRequest {
+  // UUID of the collection.
+  string uuid = 1 [(buf.validate.field).string.uuid = true, (buf.validate.field).required = true];
+
+  // Version number to retrieve.
+  int32 version = 2 [(buf.validate.field).int32.gte = 1];
+}
+
+// CompareCollectionVersionsRequest compares two versions of a collection.
+message CompareCollectionVersionsRequest {
+  // UUID of the collection.
+  string uuid = 1 [(buf.validate.field).string.uuid = true, (buf.validate.field).required = true];
+
+  // First version to compare (base).
+  int32 base_version = 2 [(buf.validate.field).int32.gte = 1, json_name = "baseVersion"];
+
+  // Second version to compare (target).
+  int32 target_version = 3 [(buf.validate.field).int32.gte = 1, json_name = "targetVersion"];
+}
+
+// CompareCollectionVersionsResponse shows differences between two collection versions.
+message CompareCollectionVersionsResponse {
+  // UUID of the collection.
+  string uuid = 1;
+
+  // Base version number.
+  int32 base_version = 2 [json_name = "baseVersion"];
+
+  // Target version number.
+  int32 target_version = 3 [json_name = "targetVersion"];
+
+  // Artifacts added in target version.
+  repeated string added_artifact_uuids = 4 [json_name = "addedArtifactUuids"];
+
+  // Artifacts removed in target version.
+  repeated string removed_artifact_uuids = 5 [json_name = "removedArtifactUuids"];
+
+  // Artifacts modified in target version (same UUID, different content).
+  repeated string modified_artifact_uuids = 6 [json_name = "modifiedArtifactUuids"];
+}

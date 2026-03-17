@@ -23,8 +23,18 @@ Component Release) to find the list of artefacts for the particular Product Rele
 ## API flow based on TEI discovery
 
 ```mermaid
-
 ---
+config:
+  sequence:
+    diagramMarginX: 60
+    diagramMarginY: 40
+    actorFontSize: 20
+    actorFontWeight: bold
+    noteFontSize: 18
+  theme: neo dark
+  layout: elk
+  look: neo
+
 title: TEA consumer flow
 ---
 sequenceDiagram
@@ -60,7 +70,6 @@ sequenceDiagram
         user ->> tea_component_release: Obtain latest collections
         tea_component_release -->> user: List of TEA Artifacts
     end
-
 ```
 
 ## API flow based on direct access to API
@@ -70,6 +79,16 @@ In this case, the client wants to search for a specific product release using th
 ```mermaid
 
 ---
+config:
+  sequence:
+    diagramMarginX: 60
+    diagramMarginY: 40
+    actorFontSize: 20
+    actorFontWeight: bold
+    noteFontSize: 18
+  theme: neo dark
+  layout: elk
+  look: neo
 title: TEA client flow with search
 ---
 
@@ -109,6 +128,16 @@ for a release.
 ```mermaid
 
 ---
+config:
+  sequence:
+    diagramMarginX: 60
+    diagramMarginY: 40
+    actorFontSize: 20
+    actorFontWeight: bold
+    noteFontSize: 18
+  theme: neo dark
+  layout: elk
+  look: neo
 title: TEA client flow with direct query for release
 ---
 
@@ -137,6 +166,16 @@ another query is done to get reason for update and new collection list of artefa
 ```mermaid
 
 ---
+config:
+  sequence:
+    diagramMarginX: 60
+    diagramMarginY: 40
+    actorFontSize: 20
+    actorFontWeight: bold
+    noteFontSize: 18
+  theme: neo
+  layout: elk
+  look: neo
 title: TEA client collection query
 ---
 

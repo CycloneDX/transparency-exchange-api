@@ -1,0 +1,83 @@
+# TEA Server Local Development
+#
+# Usage:
+#   docker compose up -d          # Start services
+#   docker compose down           # Stop services
+#   docker compose logs -f tea    # View logs
+#
+# Environment:
+#   TEA_JWT_SECRET: Required for JWT auth (dev default provided)
+#   TEA_DATABASE_URL: Auto-configured from Postgres service
+
+services:
+  # ─────────────────────────────────────────────────────────────────────────────
+  # PostgreSQL Database
+  # ─────────────────────────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: tea-postgres
+    environment:
+      POSTGRES_USER: tea
+      POSTGRES_PASSWORD: tea-dev-password
+      POSTGRES_DB: tea
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tea -d tea"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # TEA Server
+  # ─────────────────────────────────────────────────────────────────────────────
+  tea:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tea-server
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      # Database connection
+      TEA_DATABASE_URL: postgres://tea:tea-dev-password@postgres:5432/tea
+      
+      # JWT configuration (dev only - use secure secret in production)
+      TEA_JWT_SECRET: dev-only-insecure-secret-32-bytes--
+      
+      # Server configuration
+      TEA_PORT: 8734
+      TEA_SERVER_URL: http://localhost:8734
+      
+      # Logging
+      RUST_LOG: info,tea_server=debug
+      
+      # Rate limiting (disabled for dev)
+      TEA_RATE_LIMIT_ENABLED: "false"
+      
+      # Signing (disabled for dev)
+      TEA_SIGNING_MODE: disabled
+    ports:
+      - "8734:8734"
+    restart: unless-stopped
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Redis (optional, for distributed rate limiting)
+  # ─────────────────────────────────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: tea-redis
+    ports:
+      - "6379:6379"
+    profiles:
+      - redis
+    volumes:
+      - redis_data:/data
+
+volumes:
+  postgres_data:
+  redis_data:

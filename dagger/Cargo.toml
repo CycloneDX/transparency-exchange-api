@@ -1,0 +1,8 @@
+[package]
+name = "tea-dagger"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+dagger-sdk = "0.9"
+tokio = { version = "1.0", features = ["full"] }

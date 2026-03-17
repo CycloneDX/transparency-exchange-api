@@ -12,7 +12,7 @@ The Transparency Exchange API (TEA) is being worked on within the ECMA TC54 tg 1
 with the goal to standardise the API in ECMA. 
 The working group has a slack channel in the CycloneDX slack space.
 
-![](images/tealogo.png)
+![Transparency Exchange API Logo](images/tealogo.png "Transparency Exchange API Logo")
 
 ## Status of the standard: Beta 2
 
@@ -116,6 +116,40 @@ supports all the necessary xBOM types along with CDXA.
 
 Insights will be integrated into the API after the 1.0 release.
 
+## AI/ML BOM Profiles and Deprecation Support
+
+The CycloneDX specification and the Transparency Exchange API (TEA) standard incorporate both AI/ML BOM profiles and mechanisms for managing deprecation, primarily within the core schema and API structure.
+
+### AI/ML BOM Profiles
+
+Machine Learning Bill of Materials (ML-BOM) support was introduced in CycloneDX v1.5 and enhanced in v1.6 and v1.7, providing detailed fields for AI and ML components.
+
+**Component Type**: A new machine-learning-model component type was added to the schema.
+
+**Detailed Metadata**: The schema allows documentation of various ML-specific metadata under this component type, including:
+
+- Provenance: Information on training datasets, their sources, and integrity.
+- Training Methodology: Details on the training process, parameters, and environmental factors like energy consumption and CO2 emissions.
+- Intended Use and Limitations: Documentation of the model's intended use, known limitations, biases, and ethical considerations.
+- Model Card Reference: The externalReferences field can use the model-card type to link to comprehensive model documentation.
+- Architecture: Fields for describing the model architecture, parameters, and versioning.
+
+**TEA Integration**: The Transparency Exchange API supports the exchange of all "xBOM" types, including AI/ML-BOMs, as format-agnostic artifacts, enabling automated discovery and retrieval of these specific BOMs.
+
+### Deprecation Primitives/API/Schema
+
+CycloneDX manages deprecation within its core schema evolution and API design, rather than as a separate "deprecation primitive" object.
+
+**Schema Evolution**: The specification itself evolves, and fields are explicitly marked as deprecated within the JSON and XML schemas.
+
+**Version Management**: The API and standard rely on versioning (e.g., v1.5, v1.6, v1.7). Future major versions, such as CycloneDX 2.0, will focus on completely removing deprecated fields to streamline the standard and tools.
+
+**Machine-Readable Release Notes**: The standard supports machine-readable release notes, which often include explicit deprecation notices for components or APIs. This allows tools to automatically identify and flag components that are no longer supported.
+
+**API Design**: The TEA is designed to handle different versions of BOMs and related artifacts. While the API standard is in Beta, it focuses on format-agnostic exchange and relies on the core CycloneDX specification's built-in methods for handling component lifecycles and deprecation through versioning and metadata.
+
+For more details on the AI/ML BOM capabilities, refer to the Machine Learning Bill of Materials (ML-BOM) documentation. For information on the specification's evolution and deprecation markers, the CycloneDX specification GitHub repository is the primary source.
+
 ## Presentations and videos
 
 - You can find presentations in the repository in the [Presentations](/presentations) directory
@@ -136,7 +170,21 @@ Contributors are listed in the [Contributors](contributors.md) file.
 - Product variant: A variant of a product
 - Version:
 
-![](images/Project-Koala.svg)
+![Project Koala Logo](images/Project-Koala.svg "Project Koala Logo")
+
+## Enterprise-Grade Features
+
+This repository has been elevated to enterprise grade with the following security-first, evidence-native enhancements:
+
+- **Hermetic Dependency Governance**: Two-lane CI with connected ingestion and airgapped builds, governed artifacts, recursive closures enforced by OPA.
+- **Conformance Automation**: Dagger pipeline with OpenAPI validation, bidirectional security checks (mTLS), evidence collection.
+- **Bidirectional Security**: API spec requires mutual TLS for client-server authentication, encrypted channels, JWT with signatures.
+- **Evidence Collection**: SBOM generation (CycloneDX), SLSA provenance, attestations, Sigstore/cosign signing.
+- **QA Processes**: golangci-lint, test coverage (Codecov), govulncheck, mutation testing (go-mutesting).
+- **High-End Documentation**: Next.js site with Scalar API reference, architecture guides (DDD/Clean/Hexagonal/Three Spaces), evidence collection docs.
+- **Stabilization**: Automated releases via GoReleaser, semantic versioning, buf schema management for Protobuf lifecycle.
+
+All aligned with OWASP, CycloneDX, ECMA TC54 principles for long-lived, evolvable systems.
 
 ## Previous work
 

@@ -1,0 +1,77 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://cyclonedx.org/schema/tea/v1/discovery-response.schema.json",
+    "type": "object",
+    "title": "TEA Discovery Response",
+    "description": "Response from TEI discovery and well-known endpoint queries.",
+    "oneOf": [
+        {
+            "properties": {
+                "productReleaseUuid": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "UUID of the product release that the TEI resolves to."
+                }
+            },
+            "additionalProperties": false
+        },
+        {
+            "properties": {
+                "schemaVersion": {
+                    "type": "integer",
+                    "const": 1,
+                    "description": "Schema version for the TEA .well-known discovery document. Currently always 1."
+                },
+                "endpoints": {
+                    "type": "array",
+                    "description": "List of available TEA service endpoints and their supported versions.",
+                    "minItems": 1,
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "url": {
+                                "type": "string",
+                                "format": "uri",
+                                "description": "Base URL of the TEA API endpoint (no trailing slash)."
+                            },
+                            "versions": {
+                                "type": "array",
+                                "description": "Supported TEA API versions for this endpoint. Use with the /v{version} prefix when constructing requests.",
+                                "minItems": 1,
+                                "items": {
+                                    "type": "string",
+                                    "pattern": "^\\d+\\.\\d+(?:\\.\\d+)?(?:-[0-9A-Za-z.-]+)?$",
+                                    "examples": [
+                                        "0.1.0-beta.1",
+                                        "0.2.0-beta.2",
+                                        "1.0.0"
+                                    ],
+                                    "description": "TEA OpenAPI Spec Version identifier, conforms to SemVer 2.0 (https://semver.org/)."
+                                }
+                            },
+                            "priority": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "description": "Optional priority for load balancing or client selection. Lower values have higher priority."
+                            },
+                            "description": {
+                                "type": "string",
+                                "description": "Optional human-readable description of this endpoint."
+                            }
+                        },
+                        "required": [
+                            "url",
+                            "versions"
+                        ],
+                        "additionalProperties": false
+                    }
+                }
+            },
+            "required": [
+                "schemaVersion",
+                "endpoints"
+            ],
+            "additionalProperties": false
+        }
+    ]
+}

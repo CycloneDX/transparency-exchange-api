@@ -1,0 +1,66 @@
+# Dependency Admission Policy
+# This YAML defines the core policy for dependency management, aligned with hermetic builds and zero-trust supply chain.
+
+## Core Invariants
+
+pinning:
+  description: "All dependencies must be pinned to exact versions. No floating ranges (^, ~, >) allowed in production builds."
+  enforcement: "CI build fails if lockfile contains unpinned ranges."
+  exceptions: "Time-bound, signed exceptions for critical updates only."
+
+lockfile_as_truth:
+  description: "Lockfile (go.sum, Cargo.lock, pnpm-lock.yaml) is the source of truth and must be committed."
+  enforcement: "CI verifies lockfile presence and uses --frozen-lockfile or equivalent."
+  exceptions: "None."
+
+provenance_required:
+  description: "Build outputs must include SLSA provenance attestations."
+  enforcement: "Build fails without attest.provenance.intoto.json."
+  exceptions: "None for production."
+
+## Deprecation Protocol
+
+lifecycle_states:
+  - ACTIVE: "Fully allowed."
+  - DEPRECATED: "Allowed with warning until sunset_date; back-propagate impact."
+  - QUARANTINED: "Blocked unless time-bound exception; back-propagate."
+  - RETIRED: "Always blocked."
+
+deprecation_policy:
+  description: "Deprecations propagate to reverse dependencies; open PRs/tickets in impacted repos."
+  enforcement: "OPA policy blocks based on state and sunset dates."
+  exceptions: "Signed, time-bound for migrations."
+
+## Build Constraints
+
+network_prohibited:
+  description: "No network fetches during build; use deps.snapshot.oci only."
+  enforcement: "Build in airgapped lane with GONOSUMDB, GOPROXY=off, etc."
+  exceptions: "None."
+
+snapshot_required:
+  description: "deps.snapshot.oci must be present and signed."
+  enforcement: "CI pulls from internal OCI registry."
+  exceptions: "None."
+
+## Risk Scoring
+
+risk_factors:
+  - reachability: "Is vulnerable code actually used?"
+  - privilege: "Native modules, postinstall scripts?"
+  - maintainer_risk: "Bus factor, account age."
+  - update_velocity: "Staleness."
+  - criticality_path: "Runtime vs dev-only."
+  - popularity_anomalies: "Typosquatting signals."
+
+scoring_enforcement:
+  description: "Score determines block/warn/allow."
+  enforcement: "OPA evaluates scores against thresholds."
+  exceptions: "Risk-scored exceptions only."
+
+## Exceptions
+
+exceptions_policy:
+  description: "Time-bound, scope-bound, justified, signed."
+  enforcement: "Stored in exceptions.yaml with expiry."
+  exceptions: "N/A."

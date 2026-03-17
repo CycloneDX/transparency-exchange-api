@@ -22,9 +22,9 @@ Fire up the `swagger-ui` with Docker from the root of the repository:
 
 ```bash
 docker run \
-    -p 8080:8080 \
+    -p 87348080 \
     -e SWAGGER_JSON=/koala/spec/openapi.yaml \
     -v $(pwd):/koala swaggerapi/swagger-ui
 ```
 
-And browse to [http://localhost:8080](http://localhost:8080).
+And browse to [http://localhost:8734](http://localhost:8734).

@@ -1,0 +1,131 @@
+[package]
+name = "tea-server"
+version = "0.1.0"
+edition = "2021"
+description = "Reference implementation of the Transparency Exchange API (TEA)"
+authors = ["CycloneDX Contributors"]
+license = "Apache-2.0"
+repository = "https://github.com/CycloneDX/transparency-exchange-api"
+homepage = "https://cyclonedx.org"
+documentation = "https://cyclonedx.github.io/transparency-exchange-api/"
+
+[dependencies]
+# Async runtime
+tokio = { version = "1.0", features = ["full"] }
+tokio-stream = "0.1"
+futures-util = "0.3"
+
+# Web server
+axum = "0.7"
+axum-extra = { version = "0.9", features = ["typed-header"] }
+axum-server = { version = "0.7", features = ["tls-rustls"] }
+tower = "0.4"
+tower-http = { version = "0.5", features = [
+    "cors",
+    "trace",
+    "request-id",
+    "util",
+    "limit",
+    "set-header",
+] }
+
+# gRPC
+tonic = "0.12"
+tonic-web = "0.12"
+prost = "0.13"
+prost-types = "0.13"
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Configuration
+config = "0.14"
+dotenvy = "0.15"
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+
+# Database
+sqlx = { version = "0.8", features = [
+    "runtime-tokio",
+    "postgres",
+    "chrono",
+    "uuid",
+    "json",
+    "migrate",
+] }
+
+# Cache
+redis = { version = "0.25", features = ["tokio-comp", "connection-manager"] }
+
+# Object storage (S3-compatible — SeaweedFS uses S3 API)
+aws-sdk-s3 = "1.0"
+aws-config = "1.0"
+
+# Authentication — SA-13: pin exact versions for supply-chain safety
+jsonwebtoken = "=9.3.1"
+rustls = "=0.23.35"
+rustls-pemfile = "2.0"
+tokio-rustls = "0.26"
+
+# Error handling
+anyhow = "1.0"
+thiserror = "2.0"
+
+# HTTP client (0.12 uses hyper 1.x, compatible with axum 0.7)
+reqwest = { version = "0.12", features = ["json"] }
+
+# Async traits
+async-trait = "0.1"
+
+# URL validation
+url = "2.5"
+
+# Utilities
+uuid = { version = "1.0", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+base64 = "0.22"
+hex = "0.4"
+sha2 = "0.10"
+blake3 = "1.5"
+hmac = "0.12"
+
+# Observability — pinned in lockstep (tracing-opentelemetry requires matching OTel version)
+opentelemetry = "0.27"
+opentelemetry-otlp = { version = "0.27", features = ["grpc-tonic"] }
+tracing-opentelemetry = "0.28"
+opentelemetry_sdk = { version = "0.27", features = ["rt-tokio"] }
+
+# Test dependencies
+[dev-dependencies]
+testcontainers-modules = { version = "0.14", features = ["postgres"] }
+tokio-test = "0.4"
+tempfile = "3.0"
+
+[build-dependencies]
+tonic-build = "0.12"
+
+# Release profile: optimized for production binary size and safety
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+panic = "abort"
+strip = true
+
+# Workspace configuration
+[workspace]
+members = ["."]
+
+# Lints: enforce safety and quality standards per canonical-rust SKILL
+[lints.rust]
+unsafe_code = "deny"
+
+[lints.clippy]
+correctness = "deny"
+suspicious = "warn"
+style = "warn"
+complexity = "warn"
+perf = "warn"

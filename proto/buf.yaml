@@ -1,0 +1,38 @@
+# Buf V2 module configuration for TEA (Transparency Exchange API)
+# https://buf.build/docs/configuration/v2/buf-yaml
+version: v2
+
+modules:
+  - path: .
+    name: buf.build/cyclonedx/tea
+
+# Dependencies from Buf Schema Registry
+deps:
+  - buf.build/bufbuild/protovalidate
+  # Google API annotations for gRPC-Gateway HTTP bindings
+  - buf.build/googleapis/googleapis
+  # gRPC-Gateway annotations
+  - buf.build/grpc-ecosystem/grpc-gateway
+# Linting configuration
+lint:
+  use:
+    - STANDARD
+    - COMMENTS
+  except:
+    # Allow v1 instead of requiring v1beta1 for initial release
+    - PACKAGE_VERSION_SUFFIX
+  disallow_comment_ignores: true
+  enum_zero_value_suffix: _UNSPECIFIED
+  rpc_allow_same_request_response: false
+  rpc_allow_google_protobuf_empty_requests: true
+  rpc_allow_google_protobuf_empty_responses: true
+  service_suffix: Service
+
+# Breaking change detection
+breaking:
+  use:
+    - FILE
+  except:
+    # Allow during beta development
+    - FIELD_SAME_DEFAULT
+  ignore_unstable_packages: true

@@ -1,0 +1,159 @@
+# SLSA Provenance Generation Workflow
+#
+# This workflow generates SLSA v1.0 provenance attestations for built artifacts,
+# providing supply chain integrity verification per the SLSA framework.
+#
+# Requirements:
+# - SLSA Level 3+ provenance generation
+# - Sigstore signing of provenance
+# - Upload to OCI registry alongside artifacts
+
+name: SLSA Provenance
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+  id-token: write # Required for OIDC token for Sigstore
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Build and push container image with Docker Buildx provenance
+  # ─────────────────────────────────────────────────────────────────────────────
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      digest: ${{ steps.build.outputs.digest }}
+      tags: ${{ steps.meta.outputs.tags }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=tag
+            type=sha,prefix=sha-
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push
+        id: build
+        uses: docker/build-push-action@v5
+        with:
+          context: ./tea-server
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          provenance: true # Enable Docker provenance
+          sbom: true # Generate SBOM
+          outputs: type=registry,oci-mediatypes=true
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Generate SLSA provenance using SLSA GitHub generator (SLSA Level 3)
+  # This is a reusable workflow call at the job level
+  # ─────────────────────────────────────────────────────────────────────────────
+  provenance:
+    needs: build
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      actions: read
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v1.10.0
+    with:
+      image: ghcr.io/${{ github.repository }}
+      digest: ${{ needs.build.outputs.digest }}
+      registry-username: ${{ github.actor }}
+    secrets:
+      registry-password: ${{ secrets.GITHUB_TOKEN }}
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Generate SBOM and attach to image
+  # ─────────────────────────────────────────────────────────────────────────────
+  sbom:
+    needs: [build, provenance]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install cosign
+        uses: sigstore/cosign-installer@v3
+
+      - name: Install Syft
+        uses: anchore/sbom-action/download-syft@v0
+
+      - name: Generate SBOM
+        run: |
+          syft \
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ needs.build.outputs.digest }} \
+            -o spdx-json=sbom.spdx.json \
+            -o cyclonedx-json=sbom.cdx.json
+
+      - name: Sign SBOM with Sigstore
+        run: |
+          cosign sign-blob \
+            --yes \
+            --output-signature sbom.spdx.json.sig \
+            --output-certificate sbom.spdx.json.crt \
+            sbom.spdx.json
+
+      - name: Attach SBOM to image
+        run: |
+          cosign attach sbom \
+            --sbom sbom.spdx.json \
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ needs.build.outputs.digest }}
+
+      - name: Verify image attestations
+        run: |
+          cosign verify-attestation \
+            --certificate-identity-regexp="https://github.com/${{ github.repository }}/" \
+            --certificate-oidc-issuer="https://token.actions.githubusercontent.com" \
+            --type slsaprovenance \
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ needs.build.outputs.digest }}
+
+      - name: Upload SBOM artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom
+          path: |
+            sbom.spdx.json
+            sbom.cdx.json
+            sbom.spdx.json.sig
+          retention-days: 90

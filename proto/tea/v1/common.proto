@@ -1,0 +1,372 @@
+// Copyright 2024-2026 CycloneDX Contributors
+// SPDX-License-Identifier: Apache-2.0
+
+syntax = "proto3";
+
+package tea.v1;
+
+import "buf/validate/validate.proto";
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/CycloneDX/transparency-exchange-api/gen/go/tea/v1;teav1";
+option java_package = "org.cyclonedx.tea.v1";
+option java_multiple_files = true;
+option csharp_namespace = "CycloneDX.Tea.V1";
+
+// ============================================================================
+// Identifier Types
+// ============================================================================
+
+// IdentifierType defines the type of identifier used to identify a product,
+// component, or release in the transparency ecosystem.
+enum IdentifierType {
+  // Unspecified identifier type - should not be used in valid data.
+  IDENTIFIER_TYPE_UNSPECIFIED = 0;
+
+  // TEI - Transparency Exchange Identifier
+  // Format: urn:tei:<type>:<domain-name>:<unique-identifier>
+  // Example: urn:tei:uuid:cyclonedx.org:d4d9f54a-abcf-11ee-ac79-1a52914d44b1
+  IDENTIFIER_TYPE_TEI = 1;
+
+  // PURL - Package URL (https://github.com/package-url/purl-spec)
+  // Example: pkg:maven/org.apache.logging.log4j/log4j-core@2.24.3
+  IDENTIFIER_TYPE_PURL = 2;
+
+  // CPE - Common Platform Enumeration (https://nvd.nist.gov/products/cpe)
+  // Example: cpe:2.3:a:apache:log4j:2.24.3:*:*:*:*:*:*:*
+  IDENTIFIER_TYPE_CPE = 3;
+
+  // SWID - Software Identification Tag (ISO/IEC 19770-2)
+  IDENTIFIER_TYPE_SWID = 4;
+
+  // GAV - Maven Group:Artifact:Version coordinates
+  // Example: org.apache.logging.log4j:log4j-core:2.24.3
+  IDENTIFIER_TYPE_GAV = 5;
+
+  // GTIN - Global Trade Item Number (EAN/UPC barcodes)
+  // Example: 1234567890123
+  IDENTIFIER_TYPE_GTIN = 6;
+
+  // GMN - Global Model Number
+  IDENTIFIER_TYPE_GMN = 7;
+
+  // UDI - Unique Device Identification (medical devices)
+  IDENTIFIER_TYPE_UDI = 8;
+
+  // ASIN - Amazon Standard Identification Number
+  IDENTIFIER_TYPE_ASIN = 9;
+
+  // HASH - Content hash identifier
+  // Format varies by hash algorithm
+  IDENTIFIER_TYPE_HASH = 10;
+}
+
+// Identifier represents a typed identifier for a TEA entity.
+// Identifiers are immutable and globally unique within their type namespace.
+message Identifier {
+  // Type of the identifier.
+  IdentifierType id_type = 1 [
+    (buf.validate.field).enum = {defined_only: true, not_in: [0]},
+    json_name = "idType"
+  ];
+
+  // Value of the identifier in its canonical string form.
+  // Must conform to the format specification of the identifier type.
+  string id_value = 2 [
+    (buf.validate.field).string.min_len = 1,
+    (buf.validate.field).string.max_len = 2048,
+    json_name = "idValue"
+  ];
+}
+
+// ============================================================================
+// Checksum Types
+// ============================================================================
+
+// ChecksumAlgorithm defines the cryptographic hash algorithm used for checksums.
+// Algorithms are ordered by security strength (weakest to strongest).
+enum ChecksumAlgorithm {
+  // Unspecified algorithm - should not be used in valid data.
+  CHECKSUM_ALGORITHM_UNSPECIFIED = 0;
+
+  // MD5 - 128-bit hash (DEPRECATED: cryptographically broken)
+  // Only for legacy compatibility, not recommended for new data.
+  CHECKSUM_ALGORITHM_MD5 = 1 [deprecated = true];
+
+  // SHA-1 - 160-bit hash (DEPRECATED: cryptographically weak)
+  // Only for legacy compatibility, not recommended for new data.
+  CHECKSUM_ALGORITHM_SHA1 = 2 [deprecated = true];
+
+  // SHA-256 - 256-bit hash (RECOMMENDED minimum)
+  CHECKSUM_ALGORITHM_SHA256 = 3;
+
+  // SHA-384 - 384-bit hash
+  CHECKSUM_ALGORITHM_SHA384 = 4;
+
+  // SHA-512 - 512-bit hash
+  CHECKSUM_ALGORITHM_SHA512 = 5;
+
+  // SHA3-256 - 256-bit Keccak-based hash
+  CHECKSUM_ALGORITHM_SHA3_256 = 6;
+
+  // SHA3-384 - 384-bit Keccak-based hash
+  CHECKSUM_ALGORITHM_SHA3_384 = 7;
+
+  // SHA3-512 - 512-bit Keccak-based hash
+  CHECKSUM_ALGORITHM_SHA3_512 = 8;
+
+  // BLAKE2b-256 - 256-bit BLAKE2b hash
+  CHECKSUM_ALGORITHM_BLAKE2B_256 = 9;
+
+  // BLAKE2b-384 - 384-bit BLAKE2b hash
+  CHECKSUM_ALGORITHM_BLAKE2B_384 = 10;
+
+  // BLAKE2b-512 - 512-bit BLAKE2b hash
+  CHECKSUM_ALGORITHM_BLAKE2B_512 = 11;
+
+  // BLAKE3 - Variable-length BLAKE3 hash (default 256-bit)
+  CHECKSUM_ALGORITHM_BLAKE3 = 12;
+}
+
+// Checksum represents a cryptographic hash of content for integrity verification.
+message Checksum {
+  // Algorithm used to compute the checksum.
+  ChecksumAlgorithm alg_type = 1 [
+    (buf.validate.field).enum = {defined_only: true, not_in: [0]},
+    json_name = "algType"
+  ];
+
+  // Hexadecimal-encoded checksum value (lowercase).
+  string alg_value = 2 [
+    (buf.validate.field).string.pattern = "^[a-f0-9]+$",
+    (buf.validate.field).string.min_len = 32,
+    (buf.validate.field).string.max_len = 256,
+    json_name = "algValue"
+  ];
+}
+
+// ============================================================================
+// Pagination
+// ============================================================================
+
+// PageRequest specifies pagination parameters for list operations.
+message PageRequest {
+  // Maximum number of items to return per page.
+  // Server may return fewer items. Default is 20, maximum is 100.
+  int32 page_size = 1 [
+    (buf.validate.field).int32 = {gte: 1, lte: 100},
+    json_name = "pageSize"
+  ];
+
+  // Opaque token for fetching the next page of results.
+  // Obtained from PageResponse.next_page_token of a previous request.
+  // Omit for the first page.
+  string page_token = 2 [json_name = "pageToken"];
+}
+
+// PageResponse contains pagination metadata in list responses.
+message PageResponse {
+  // Token to retrieve the next page of results.
+  // Empty if there are no more results.
+  string next_page_token = 1 [json_name = "nextPageToken"];
+
+  // Total number of items across all pages (if known).
+  // May be omitted if the total is expensive to compute.
+  optional int64 total_count = 2 [json_name = "totalCount"];
+}
+
+// ============================================================================
+// Error Types
+// ============================================================================
+
+// ErrorCode defines standard error codes for TEA API responses.
+// These map to HTTP status codes where applicable.
+enum ErrorCode {
+  // Unspecified error - should not be used.
+  ERROR_CODE_UNSPECIFIED = 0;
+
+  // The request was invalid or malformed (HTTP 400).
+  ERROR_CODE_INVALID_ARGUMENT = 1;
+
+  // Authentication credentials were missing or invalid (HTTP 401).
+  ERROR_CODE_UNAUTHENTICATED = 2;
+
+  // The caller does not have permission for this operation (HTTP 403).
+  ERROR_CODE_PERMISSION_DENIED = 3;
+
+  // The requested resource was not found (HTTP 404).
+  ERROR_CODE_NOT_FOUND = 4;
+
+  // The resource already exists (HTTP 409).
+  ERROR_CODE_ALREADY_EXISTS = 5;
+
+  // The operation was rejected due to resource exhaustion (HTTP 429).
+  ERROR_CODE_RESOURCE_EXHAUSTED = 6;
+
+  // The operation was cancelled (HTTP 499).
+  ERROR_CODE_CANCELLED = 7;
+
+  // An internal server error occurred (HTTP 500).
+  ERROR_CODE_INTERNAL = 8;
+
+  // The service is temporarily unavailable (HTTP 503).
+  ERROR_CODE_UNAVAILABLE = 9;
+}
+
+// ErrorDetail provides structured error information.
+message ErrorDetail {
+  // Machine-readable error code.
+  ErrorCode code = 1;
+
+  // Human-readable error message.
+  string message = 2;
+
+  // Field that caused the error (for validation errors).
+  string field = 3;
+
+  // Additional error context as key-value pairs.
+  map<string, string> metadata = 4;
+}
+
+// ErrorResponse is the standard error response format for TEA APIs.
+message ErrorResponse {
+  // Primary error code.
+  ErrorCode code = 1;
+
+  // Human-readable error message.
+  string message = 2;
+
+  // Detailed error information.
+  repeated ErrorDetail details = 3;
+
+  // Unique request ID for tracing.
+  string request_id = 4 [json_name = "requestId"];
+
+  // Optional documentation URL for this error type.
+  string documentation_url = 5 [json_name = "documentationUrl"];
+}
+
+// ============================================================================
+// Timestamp Utilities
+// ============================================================================
+
+// DateRange represents a range of dates for filtering.
+message DateRange {
+  // Start of the date range (inclusive).
+  google.protobuf.Timestamp start = 1;
+
+  // End of the date range (exclusive).
+  google.protobuf.Timestamp end = 2;
+}
+
+// ============================================================================
+// Sorting
+// ============================================================================
+
+// SortOrder specifies the direction of sorting.
+enum SortOrder {
+  // Unspecified sort order - server default (usually descending by date).
+  SORT_ORDER_UNSPECIFIED = 0;
+
+  // Ascending order (oldest first, A-Z).
+  SORT_ORDER_ASC = 1;
+
+  // Descending order (newest first, Z-A).
+  SORT_ORDER_DESC = 2;
+}
+
+// SortField specifies which field to sort by.
+enum SortField {
+  // Unspecified sort field - server default.
+  SORT_FIELD_UNSPECIFIED = 0;
+
+  // Sort by creation date.
+  SORT_FIELD_CREATED_DATE = 1;
+
+  // Sort by release date.
+  SORT_FIELD_RELEASE_DATE = 2;
+
+  // Sort by version (semantic versioning order).
+  SORT_FIELD_VERSION = 3;
+
+  // Sort by name (alphabetical).
+  SORT_FIELD_NAME = 4;
+}
+
+// SortSpec specifies sorting parameters.
+message SortSpec {
+  // Field to sort by.
+  SortField field = 1;
+
+  // Sort direction.
+  SortOrder order = 2;
+}
+
+// ============================================================================
+// Health Check (following gRPC health checking protocol)
+// ============================================================================
+
+// HealthStatus represents the health state of a service.
+enum HealthStatus {
+  // Unknown health status.
+  HEALTH_STATUS_UNSPECIFIED = 0;
+
+  // Service is healthy and serving requests.
+  HEALTH_STATUS_SERVING = 1;
+
+  // Service is unhealthy and not serving requests.
+  HEALTH_STATUS_NOT_SERVING = 2;
+
+  // Service exists but health status unknown.
+  HEALTH_STATUS_UNKNOWN = 3;
+}
+
+// HealthCheckRequest is used to query service health.
+message HealthCheckRequest {
+  // Service name to check. Empty string checks overall server health.
+  string service = 1;
+}
+
+// HealthCheckResponse contains the health status.
+message HealthCheckResponse {
+  // Current health status.
+  HealthStatus status = 1;
+
+  // Optional detailed health information.
+  map<string, string> details = 2;
+}
+
+// ============================================================================
+// Deprecation Support
+// ============================================================================
+
+// DeprecationState represents the lifecycle state of an entity.
+enum DeprecationState {
+  // Unspecified deprecation state.
+  DEPRECATION_STATE_UNSPECIFIED = 0;
+
+  // Entity is active and supported.
+  DEPRECATION_STATE_ACTIVE = 1;
+
+  // Entity is deprecated but still operational.
+  DEPRECATION_STATE_DEPRECATED = 2;
+
+  // Entity is in sunset period and will be removed.
+  DEPRECATION_STATE_SUNSET = 3;
+}
+
+// Deprecation contains deprecation information for an entity.
+message Deprecation {
+  // Current deprecation state.
+  DeprecationState state = 1;
+
+  // Human-readable deprecation notice.
+  string notice = 2 [(buf.validate.field).string.max_len = 2048];
+
+  // Sunset date when the entity will be removed (if known).
+  optional google.protobuf.Timestamp sunset_date = 3 [json_name = "sunsetDate"];
+
+  // UUID of the successor entity (if applicable).
+  optional string successor_uuid = 4 [(buf.validate.field).string.uuid = true, json_name = "successorUuid"];
+}

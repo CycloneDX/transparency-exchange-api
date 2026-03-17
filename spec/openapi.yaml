@@ -1653,9 +1653,13 @@ components:
     basicAuth:
       type: http
       scheme: basic
+    mutualTLS:
+      type: mutualTLS
+      description: Mutual TLS for bidirectional authentication
 security:
   - bearerAuth: []
   - basicAuth: []
+  - mutualTLS: []
 tags:
   - name: TEA Product
   - name: TEA Product Release

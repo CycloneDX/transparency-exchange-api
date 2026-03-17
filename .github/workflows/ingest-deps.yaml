@@ -1,0 +1,41 @@
+name: Ingest Dependencies
+
+on:
+    schedule:
+        - cron: "0 0 * * 0" # Weekly on Sunday
+    workflow_dispatch:
+
+permissions:
+    contents: read
+    packages: write # For pushing to GHCR
+
+jobs:
+    ingest:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Setup Go
+              uses: actions/setup-go@v5
+              with:
+                  go-version: 1.22
+
+            - name: Install Dagger
+              run: |
+                  curl -L https://dl.dagger.io/dagger/install.sh | sh
+                  export PATH=$PATH:$HOME/.dagger/bin
+
+            - name: Login to GHCR
+              uses: docker/login-action@v3
+              with:
+                  registry: ghcr.io
+                  username: ${{ github.actor }}
+                  password: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Run IngestDeps and Push Snapshot
+              run: |
+                  # Run Dagger to ingest deps
+                  dagger call ingest-deps --source . export --path snapshot
+                  # Push the snapshot directory as OCI artifact using oras
+                  oras push ghcr.io/${{ github.repository }}/deps-snapshot:latest snapshot/ --annotation org.opencontainers.image.source=https://github.com/${{ github.repository }}

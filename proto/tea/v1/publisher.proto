@@ -1,0 +1,763 @@
+// Copyright 2024-2026 CycloneDX Contributors
+// SPDX-License-Identifier: Apache-2.0
+
+syntax = "proto3";
+
+package tea.v1;
+
+import "buf/validate/validate.proto";
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
+import "tea/v1/common.proto";
+import "tea/v1/product.proto";
+import "tea/v1/component.proto";
+import "tea/v1/collection.proto";
+import "tea/v1/artifact.proto";
+
+option go_package = "github.com/CycloneDX/transparency-exchange-api/gen/go/tea/v1;teav1";
+option java_package = "org.cyclonedx.tea.v1";
+option java_multiple_files = true;
+option csharp_namespace = "CycloneDX.Tea.V1";
+
+// ============================================================================
+// Publisher Service
+// ============================================================================
+
+// PublisherService provides write access for artifact publishers to manage
+// transparency artifacts in the TEA server.
+//
+// All endpoints require authentication and appropriate authorization.
+// Publishers must have SCOPE_PUBLISHER_* permissions.
+//
+// This service implements the TEA Publisher API specification.
+// Note: The Publisher API is a recommended (optional) part of the TEA spec.
+service PublisherService {
+  // ==========================================================================
+  // Product Management
+  // ==========================================================================
+
+  // CreateProduct creates a new product.
+  rpc CreateProduct(CreateProductRequest) returns (Product) {
+    option (google.api.http) = {
+      post: "/v1/publisher/products"
+      body: "*"
+    };
+  }
+
+  // UpdateProduct updates an existing product.
+  rpc UpdateProduct(UpdateProductRequest) returns (Product) {
+    option (google.api.http) = {
+      put: "/v1/publisher/products/{uuid}"
+      body: "*"
+    };
+  }
+
+  // DeleteProduct removes a product and all its releases.
+  // This is a destructive operation - use with caution.
+  rpc DeleteProduct(DeleteProductRequest) returns (DeleteProductResponse) {
+    option (google.api.http) = {
+      delete: "/v1/publisher/products/{uuid}"
+    };
+  }
+
+  // CreateProductRelease creates a new release for a product.
+  rpc CreateProductRelease(CreateProductReleaseRequest) returns (ProductRelease) {
+    option (google.api.http) = {
+      post: "/v1/publisher/product-releases"
+      body: "*"
+    };
+  }
+
+  // UpdateProductRelease updates an existing product release.
+  rpc UpdateProductRelease(UpdateProductReleaseRequest) returns (ProductRelease) {
+    option (google.api.http) = {
+      put: "/v1/publisher/product-releases/{uuid}"
+      body: "*"
+    };
+  }
+
+  // DeleteProductRelease removes a product release.
+  rpc DeleteProductRelease(DeleteProductReleaseRequest) returns (DeleteProductReleaseResponse) {
+    option (google.api.http) = {
+      delete: "/v1/publisher/product-releases/{uuid}"
+    };
+  }
+
+  // ==========================================================================
+  // Component Management
+  // ==========================================================================
+
+  // CreateComponent creates a new component.
+  rpc CreateComponent(CreateComponentRequest) returns (Component) {
+    option (google.api.http) = {
+      post: "/v1/publisher/components"
+      body: "*"
+    };
+  }
+
+  // UpdateComponent updates an existing component.
+  rpc UpdateComponent(UpdateComponentRequest) returns (Component) {
+    option (google.api.http) = {
+      put: "/v1/publisher/components/{uuid}"
+      body: "*"
+    };
+  }
+
+  // DeleteComponent removes a component and all its releases.
+  rpc DeleteComponent(DeleteComponentRequest) returns (DeleteComponentResponse) {
+    option (google.api.http) = {
+      delete: "/v1/publisher/components/{uuid}"
+    };
+  }
+
+  // CreateComponentRelease creates a new release for a component.
+  rpc CreateComponentRelease(CreateComponentReleaseRequest) returns (ComponentRelease) {
+    option (google.api.http) = {
+      post: "/v1/publisher/component-releases"
+      body: "*"
+    };
+  }
+
+  // UpdateComponentRelease updates an existing component release.
+  // Note: pre_release can only be changed from true to false, not vice versa.
+  rpc UpdateComponentRelease(UpdateComponentReleaseRequest) returns (ComponentRelease) {
+    option (google.api.http) = {
+      put: "/v1/publisher/component-releases/{uuid}"
+      body: "*"
+    };
+  }
+
+  // DeleteComponentRelease removes a component release.
+  rpc DeleteComponentRelease(DeleteComponentReleaseRequest) returns (DeleteComponentReleaseResponse) {
+    option (google.api.http) = {
+      delete: "/v1/publisher/component-releases/{uuid}"
+    };
+  }
+
+  // ==========================================================================
+  // Artifact Management
+  // ==========================================================================
+
+  // UploadArtifact uploads a new artifact.
+  // Artifacts are immutable once created.
+  rpc UploadArtifact(stream UploadArtifactRequest) returns (Artifact) {
+    option (google.api.http) = {
+      post: "/v1/publisher/artifacts"
+      body: "*"
+    };
+  }
+
+  // CreateArtifactFromUrl creates an artifact from an external URL.
+  // The server will fetch and verify the content.
+  rpc CreateArtifactFromUrl(CreateArtifactFromUrlRequest) returns (Artifact) {
+    option (google.api.http) = {
+      post: "/v1/publisher/artifacts/from-url"
+      body: "*"
+    };
+  }
+
+  // DeleteArtifact removes an artifact.
+  // Note: Artifacts in use by collections cannot be deleted.
+  rpc DeleteArtifact(DeleteArtifactRequest) returns (DeleteArtifactResponse) {
+    option (google.api.http) = {
+      delete: "/v1/publisher/artifacts/{uuid}"
+    };
+  }
+
+  // ==========================================================================
+  // Collection Management
+  // ==========================================================================
+
+  // CreateCollection creates a new collection for a release.
+  rpc CreateCollection(CreateCollectionRequest) returns (Collection) {
+    option (google.api.http) = {
+      post: "/v1/publisher/collections"
+      body: "*"
+    };
+  }
+
+  // UpdateCollection creates a new version of an existing collection.
+  // Collections are versioned - updates create new versions.
+  rpc UpdateCollection(UpdateCollectionRequest) returns (Collection) {
+    option (google.api.http) = {
+      post: "/v1/publisher/collections/{uuid}/versions"
+      body: "*"
+    };
+  }
+
+  // SignCollection signs a collection (if signing is enabled).
+  rpc SignCollection(SignCollectionRequest) returns (Collection) {
+    option (google.api.http) = {
+      post: "/v1/publisher/collections/{uuid}/sign"
+      body: "*"
+    };
+  }
+
+  // ==========================================================================
+  // Batch Operations
+  // ==========================================================================
+
+  // BatchUploadArtifacts uploads multiple artifacts.
+  rpc BatchUploadArtifacts(stream BatchUploadArtifactsRequest) returns (BatchUploadArtifactsResponse) {
+    option (google.api.http) = {
+      post: "/v1/publisher/artifacts/batch"
+      body: "*"
+    };
+  }
+
+  // ImportCollection imports a complete collection with artifacts.
+  // Used for bulk data migration.
+  rpc ImportCollection(stream ImportCollectionRequest) returns (ImportCollectionResponse) {
+    option (google.api.http) = {
+      post: "/v1/publisher/import"
+      body: "*"
+    };
+  }
+}
+
+// ============================================================================
+// Product Request/Response Messages
+// ============================================================================
+
+// CreateProductRequest is the request to create a product.
+message CreateProductRequest {
+  // Human-readable name.
+  string name = 1 [
+    (buf.validate.field).string.min_len = 1,
+    (buf.validate.field).string.max_len = 512,
+    (buf.validate.field).required = true
+  ];
+
+  // Optional description.
+  string description = 2;
+
+  // Identifiers for the product.
+  repeated Identifier identifiers = 3;
+
+  // Vendor information.
+  Vendor vendor = 4;
+
+  // Optional homepage URL.
+  string homepage_url = 5 [json_name = "homepageUrl"];
+
+  // Optional documentation URL.
+  string documentation_url = 6 [json_name = "documentationUrl"];
+
+  // Optional VCS URL.
+  string vcs_url = 7 [json_name = "vcsUrl"];
+
+  // Client-provided UUID (optional, server generates if not provided).
+  optional string uuid = 8 [(buf.validate.field).string.uuid = true];
+}
+
+// UpdateProductRequest is the request to update a product.
+message UpdateProductRequest {
+  // UUID of the product to update.
+  string uuid = 1 [(buf.validate.field).string.uuid = true, (buf.validate.field).required = true];
+
+  // Fields to update.
+  google.protobuf.FieldMask update_mask = 2 [json_name = "updateMask"];
+
+  // Updated name.
+  string name = 3;
+
+  // Updated description.
+  string description = 4;
+
+  // Updated identifiers (replaces existing).
+  repeated Identifier identifiers = 5;
+
+  // Updated vendor information.
+  Vendor vendor = 6;
+
+  // Updated homepage URL.
+  string homepage_url = 7 [json_name = "homepageUrl"];
+
+  // Updated documentation URL.
+  string documentation_url = 8 [json_name = "documentationUrl"];
+
+  // Updated VCS URL.
+  string vcs_url = 9 [json_name = "vcsUrl"];
+}
+
+// DeleteProductRequest is the request to delete a product.
+message DeleteProductRequest {
+  // UUID of the product to delete.
+  string uuid = 1 [(buf.validate.field).string.uuid = true, (buf.validate.field).required = true];
+
+  // If true, delete all releases as well.
+  bool cascade = 2;
+}
+
+// DeleteProductResponse is the response from deleting a product.
+message DeleteProductResponse {
+  // UUID of the deleted product.
+  string uuid = 1;
+
+  // Number of releases deleted (if cascade=true).
+  int32 releases_deleted = 2 [json_name = "releasesDeleted"];
+}
+
+// CreateProductReleaseRequest is the request to create a product release.
+message CreateProductReleaseRequest {
+  // UUID of the parent product (optional).
+  optional string product_uuid = 1 [(buf.validate.field).string.uuid = true, json_name = "productUuid"];
+
+  // Version string.
+  string version = 2 [
+    (buf.validate.field).string.min_len = 1,
+    (buf.validate.field).required = true
+  ];
+
+  // Release date.
+  google.protobuf.Timestamp release_date = 3 [json_name = "releaseDate"];
+
+  // Pre-release flag.
+  bool pre_release = 4 [json_name = "preRelease"];
+
+  // Identifiers for the release.
+  repeated Identifier identifiers = 5;
+
+  // Component references.
+  repeated ComponentRef components = 6;
+
+  // Client-provided UUID (optional).
+  optional string uuid = 7 [(buf.validate.field).string.uuid = true];
+}
+
+// UpdateProductReleaseRequest is the request to update a product release.
+message UpdateProductReleaseRequest {
+  // UUID of the product release to update.
+  string uuid = 1 [(buf.validate.field).string.uuid = true, (buf.validate.field).required = true];
+
+  // Fields to update.
+  google.protobuf.FieldMask update_mask = 2 [json_name = "updateMask"];
+
+  // Updated version.
+  string version = 3;
+
+  // Updated release date.
+  google.protobuf.Timestamp release_date = 4 [json_name = "releaseDate"];
+
+  // Pre-release flag (can only change from true to false).
+  bool pre_release = 5 [json_name = "preRelease"];
+
+  // Updated identifiers.
+  repeated Identifier identifiers = 6;
+
+  // Updated component references.
+  repeated ComponentRef components = 7;
+}
+
+// DeleteProductReleaseRequest is the request to delete a product release.
+message DeleteProductReleaseRequest {
+  // UUID of the product release to delete.
+  string uuid = 1 [(buf.validate.field).string.uuid = true, (buf.validate.field).required = true];
+}
+
+// DeleteProductReleaseResponse is the response from deleting a product release.
+message DeleteProductReleaseResponse {
+  // UUID of the deleted product release.
+  string uuid = 1;
+}
+
+// ============================================================================
+// Component Request/Response Messages
+// ============================================================================
+
+// CreateComponentRequest is the request to create a component.
+message CreateComponentRequest {
+  // Human-readable name.
+  string name = 1 [
+    (buf.validate.field).string.min_len = 1,
+    (buf.validate.field).required = true
+  ];
+
+  // Optional description.
+  string description = 2;
+
+  // Identifiers for the component.
+  repeated Identifier identifiers = 3;
+
+  // Component type.
+  ComponentType component_type = 4 [json_name = "componentType"];
+
+  // License information.
+  repeated LicenseInfo licenses = 5;
+
+  // Publisher name.
+  string publisher = 6;
+
+  // Homepage URL.
+  string homepage_url = 7 [json_name = "homepageUrl"];
+
+  // VCS URL.
+  string vcs_url = 8 [json_name = "vcsUrl"];
+
+  // Client-provided UUID (optional).
+  optional string uuid = 9 [(buf.validate.field).string.uuid = true];
+}
+
+// UpdateComponentRequest is the request to update a component.
+message UpdateComponentRequest {
+  // UUID of the component to update.
+  string uuid = 1 [(buf.validate.field).string.uuid = true, (buf.validate.field).required = true];
+
+  // Fields to update.
+  google.protobuf.FieldMask update_mask = 2 [json_name = "updateMask"];
+
+  // Updated name.
+  string name = 3;
+
+  // Updated description.
+  string description = 4;
+
+  // Updated identifiers.
+  repeated Identifier identifiers = 5;
+
+  // Updated component type.
+  ComponentType component_type = 6 [json_name = "componentType"];
+
+  // Updated licenses.
+  repeated LicenseInfo licenses = 7;
+
+  // Updated publisher.
+  string publisher = 8;
+
+  // Updated homepage URL.
+  string homepage_url = 9 [json_name = "homepageUrl"];
+
+  // Updated VCS URL.
+  string vcs_url = 10 [json_name = "vcsUrl"];
+}
+
+// DeleteComponentRequest is the request to delete a component.
+message DeleteComponentRequest {
+  // UUID of the component to delete.
+  string uuid = 1 [(buf.validate.field).string.uuid = true, (buf.validate.field).required = true];
+
+  // If true, delete all releases as well.
+  bool cascade = 2;
+}
+
+// DeleteComponentResponse is the response from deleting a component.
+message DeleteComponentResponse {
+  // UUID of the deleted component.
+  string uuid = 1;
+
+  // Number of releases deleted (if cascade=true).
+  int32 releases_deleted = 2 [json_name = "releasesDeleted"];
+}
+
+// CreateComponentReleaseRequest is the request to create a component release.
+message CreateComponentReleaseRequest {
+  // UUID of the parent component.
+  string component_uuid = 1 [
+    (buf.validate.field).string.uuid = true,
+    (buf.validate.field).required = true,
+    json_name = "componentUuid"
+  ];
+
+  // Version string.
+  string version = 2 [
+    (buf.validate.field).string.min_len = 1,
+    (buf.validate.field).required = true
+  ];
+
+  // Release date.
+  google.protobuf.Timestamp release_date = 3 [json_name = "releaseDate"];
+
+  // Pre-release flag.
+  bool pre_release = 4 [json_name = "preRelease"];
+
+  // Identifiers for the release.
+  repeated Identifier identifiers = 5;
+
+  // Distributions.
+  repeated Distribution distributions = 6;
+
+  // Client-provided UUID (optional).
+  optional string uuid = 7 [(buf.validate.field).string.uuid = true];
+}
+
+// UpdateComponentReleaseRequest is the request to update a component release.
+message UpdateComponentReleaseRequest {
+  // UUID of the component release to update.
+  string uuid = 1 [(buf.validate.field).string.uuid = true, (buf.validate.field).required = true];
+
+  // Fields to update.
+  google.protobuf.FieldMask update_mask = 2 [json_name = "updateMask"];
+
+  // Updated version.
+  string version = 3;
+
+  // Updated release date.
+  google.protobuf.Timestamp release_date = 4 [json_name = "releaseDate"];
+
+  // Pre-release flag (can only change from true to false).
+  bool pre_release = 5 [json_name = "preRelease"];
+
+  // Updated identifiers.
+  repeated Identifier identifiers = 6;
+
+  // Updated distributions.
+  repeated Distribution distributions = 7;
+}
+
+// DeleteComponentReleaseRequest is the request to delete a component release.
+message DeleteComponentReleaseRequest {
+  // UUID of the component release to delete.
+  string uuid = 1 [(buf.validate.field).string.uuid = true, (buf.validate.field).required = true];
+}
+
+// DeleteComponentReleaseResponse is the response from deleting a component release.
+message DeleteComponentReleaseResponse {
+  // UUID of the deleted component release.
+  string uuid = 1;
+}
+
+// ============================================================================
+// Artifact Request/Response Messages
+// ============================================================================
+
+// UploadArtifactRequest is used for streaming artifact uploads.
+message UploadArtifactRequest {
+  oneof data {
+    // Metadata (must be sent first).
+    ArtifactMetadata metadata = 1;
+
+    // Content chunk.
+    bytes content = 2;
+  }
+}
+
+// ArtifactMetadata contains metadata for artifact upload.
+message ArtifactMetadata {
+  // Human-readable name.
+  string name = 1 [(buf.validate.field).required = true];
+
+  // Artifact type.
+  ArtifactType type = 2 [(buf.validate.field).enum = {defined_only: true, not_in: [0]}];
+
+  // MIME type of the content.
+  string mime_type = 3 [json_name = "mimeType", (buf.validate.field).required = true];
+
+  // Optional description.
+  string description = 4;
+
+  // Distribution types this applies to.
+  repeated string component_distributions = 5 [json_name = "componentDistributions"];
+
+  // Subject of the artifact.
+  ArtifactSubject subject = 6;
+
+  // Spec version (e.g., "1.5" for CycloneDX).
+  string spec_version = 7 [json_name = "specVersion"];
+
+  // Client-provided UUID (optional).
+  optional string uuid = 8 [(buf.validate.field).string.uuid = true];
+
+  // Expected checksums for verification.
+  repeated Checksum expected_checksums = 9 [json_name = "expectedChecksums"];
+}
+
+// CreateArtifactFromUrlRequest creates an artifact from an external URL.
+message CreateArtifactFromUrlRequest {
+  // Artifact metadata.
+  ArtifactMetadata metadata = 1 [(buf.validate.field).required = true];
+
+  // URL to fetch the content from.
+  string source_url = 2 [
+    (buf.validate.field).string.uri = true,
+    (buf.validate.field).required = true,
+    json_name = "sourceUrl"
+  ];
+
+  // Expected checksums for verification.
+  repeated Checksum expected_checksums = 3 [json_name = "expectedChecksums"];
+
+  // Optional signature URL.
+  string signature_url = 4 [json_name = "signatureUrl"];
+}
+
+// DeleteArtifactRequest is the request to delete an artifact.
+message DeleteArtifactRequest {
+  // UUID of the artifact to delete.
+  string uuid = 1 [(buf.validate.field).string.uuid = true, (buf.validate.field).required = true];
+
+  // Force deletion even if artifact is in use.
+  bool force = 2;
+}
+
+// DeleteArtifactResponse is the response from deleting an artifact.
+message DeleteArtifactResponse {
+  // UUID of the deleted artifact.
+  string uuid = 1;
+
+  // Collections that referenced this artifact (if forced).
+  repeated string affected_collection_uuids = 2 [json_name = "affectedCollectionUuids"];
+}
+
+// ============================================================================
+// Collection Request/Response Messages
+// ============================================================================
+
+// CreateCollectionRequest is the request to create a collection.
+message CreateCollectionRequest {
+  // UUID for the collection (equals release UUID).
+  string uuid = 1 [(buf.validate.field).string.uuid = true, (buf.validate.field).required = true];
+
+  // Scope of the collection.
+  CollectionScope belongs_to = 2 [json_name = "belongsTo", (buf.validate.field).required = true];
+
+  // UUIDs of artifacts to include.
+  repeated string artifact_uuids = 3 [json_name = "artifactUuids"];
+
+  // Update reason (should be INITIAL_RELEASE).
+  UpdateReason update_reason = 4 [json_name = "updateReason"];
+}
+
+// UpdateCollectionRequest creates a new version of a collection.
+message UpdateCollectionRequest {
+  // UUID of the collection to update.
+  string uuid = 1 [(buf.validate.field).string.uuid = true, (buf.validate.field).required = true];
+
+  // UUIDs of artifacts in the new version.
+  repeated string artifact_uuids = 2 [json_name = "artifactUuids"];
+
+  // Reason for the update.
+  UpdateReason update_reason = 3 [json_name = "updateReason", (buf.validate.field).required = true];
+}
+
+// SignCollectionRequest signs a collection.
+message SignCollectionRequest {
+  // UUID of the collection to sign.
+  string uuid = 1 [(buf.validate.field).string.uuid = true, (buf.validate.field).required = true];
+
+  // Version to sign (latest if omitted).
+  optional int32 version = 2;
+
+  // Key ID to use for signing.
+  string key_id = 3 [json_name = "keyId"];
+
+  // Use Sigstore for signing.
+  bool use_sigstore = 4 [json_name = "useSigstore"];
+}
+
+// ============================================================================
+// Batch Operations
+// ============================================================================
+
+// BatchUploadArtifactsRequest is used for batch artifact uploads.
+message BatchUploadArtifactsRequest {
+  oneof data {
+    // Batch metadata (must be sent first).
+    BatchArtifactMetadata batch_metadata = 1;
+
+    // Single artifact data.
+    UploadArtifactRequest artifact = 2;
+  }
+}
+
+// BatchArtifactMetadata contains metadata for batch upload.
+message BatchArtifactMetadata {
+  // Total number of artifacts in this batch.
+  int32 total_count = 1 [json_name = "totalCount"];
+
+  // Target collection UUID (optional).
+  optional string collection_uuid = 2 [json_name = "collectionUuid"];
+}
+
+// BatchUploadArtifactsResponse contains results of batch upload.
+message BatchUploadArtifactsResponse {
+  // Successfully uploaded artifacts.
+  repeated Artifact artifacts = 1;
+
+  // Failed uploads.
+  repeated BatchUploadError errors = 2;
+}
+
+// BatchUploadError describes a failed upload in a batch.
+message BatchUploadError {
+  // Index in the batch.
+  int32 index = 1;
+
+  // Artifact name (if available).
+  string name = 2;
+
+  // Error details.
+  ErrorDetail error = 3;
+}
+
+// ImportCollectionRequest is used for bulk import.
+message ImportCollectionRequest {
+  oneof data {
+    // Import metadata (must be sent first).
+    ImportMetadata import_metadata = 1;
+
+    // Collection data.
+    Collection collection = 2;
+
+    // Artifact with content.
+    ArtifactWithContent artifact = 3;
+  }
+}
+
+// ImportMetadata contains metadata for bulk import.
+message ImportMetadata {
+  // Source system identifier.
+  string source_system = 1 [json_name = "sourceSystem"];
+
+  // Total collections in import.
+  int32 total_collections = 2 [json_name = "totalCollections"];
+
+  // Total artifacts in import.
+  int32 total_artifacts = 3 [json_name = "totalArtifacts"];
+
+  // Overwrite existing data.
+  bool overwrite = 4;
+}
+
+// ArtifactWithContent includes artifact metadata and content.
+message ArtifactWithContent {
+  // Artifact metadata.
+  Artifact artifact = 1;
+
+  // Content for each format.
+  repeated ArtifactFormatContent format_contents = 2 [json_name = "formatContents"];
+}
+
+// ArtifactFormatContent contains content for one format.
+message ArtifactFormatContent {
+  // MIME type.
+  string mime_type = 1 [json_name = "mimeType"];
+
+  // Content bytes.
+  bytes content = 2;
+}
+
+// ImportCollectionResponse contains results of bulk import.
+message ImportCollectionResponse {
+  // Number of collections imported.
+  int32 collections_imported = 1 [json_name = "collectionsImported"];
+
+  // Number of artifacts imported.
+  int32 artifacts_imported = 2 [json_name = "artifactsImported"];
+
+  // Errors during import.
+  repeated ImportError errors = 3;
+}
+
+// ImportError describes an error during import.
+message ImportError {
+  // Type of entity that failed.
+  string entity_type = 1 [json_name = "entityType"];
+
+  // UUID of the entity.
+  string uuid = 2;
+
+  // Error details.
+  ErrorDetail error = 3;
+}
