@@ -52,4 +52,18 @@ sbomify is a Software Bill of Materials (SBOM) and document management platform 
 
 ## Other implementations
 
+### CyBeats SBOM Studio (commercial)
+
+Cybeats SBOM Studio centralizes the SBOM lifecycle and product vulnerability monitoring and exposes a CycloneDX Transparency Exchange API endpoint through standardized .well-known/tea discovery, enabling automated distribution of SBOMs and related security artifacts across the supply chain. *Curently for demonstration purposes only.
+
+- [Product Details](https://www.cybeats.com/product/sbom-studio)
+- [TEA Endpoint](https://us.sbom.cybeats.com/.well-known/tea)
+
+### CyBeats SBOM Consumer (commercial)
+
+Cybeats SBOM Consumer enables IT teams to configure a vendor TEA domain and automatically discover, retrieve, and import supplier SBOMs into the Consumer instance for validation and continuous risk monitoring.
+
+- [Product Details](https://www.cybeats.com/product/sbom-consumer)
+
 If you want to have your implementation listed here, please provide a pull request.
+
