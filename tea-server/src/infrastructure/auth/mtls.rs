@@ -79,21 +79,12 @@ where
 }
 
 /// Configuration for mTLS middleware.
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Default)]
 pub struct MtlsConfig {
     /// Whether mTLS is enabled.
     pub enabled: bool,
     /// Path to the CA certificate for client certificate validation.
     pub client_ca_path: Option<String>,
-}
-
-impl Default for MtlsConfig {
-    fn default() -> Self {
-        Self {
-            enabled: false,
-            client_ca_path: None,
-        }
-    }
 }
 
 impl From<crate::config::settings::TlsConfig> for MtlsConfig {

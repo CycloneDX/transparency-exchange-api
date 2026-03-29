@@ -7,9 +7,8 @@ mod product_service_tests {
     use crate::domain::common::deprecation::{Deprecation, DeprecationState};
     use crate::domain::common::error::DomainError;
     use crate::domain::common::pagination::PaginationParams;
-    use crate::domain::product::entity::{Product, Vendor};
+    use crate::domain::product::entity::{Product, ProductRelease, Vendor};
     use crate::domain::product::service::ProductService;
-    use crate::domain::common::identifier::Identifier;
     use crate::infrastructure::persistence::memory::product_repository::InMemoryProductRepository;
     use chrono::Utc;
     use uuid::Uuid;
@@ -37,6 +36,20 @@ mod product_service_tests {
             vcs_url: None,
             deprecation: None,
             dependencies: vec![],
+        }
+    }
+
+    fn valid_release(product_uuid: Uuid) -> ProductRelease {
+        ProductRelease {
+            uuid: Uuid::nil(),
+            product_uuid,
+            version: "1.0.0".to_string(),
+            created_date: Utc::now(),
+            modified_date: Utc::now(),
+            release_date: Some(Utc::now()),
+            pre_release: false,
+            identifiers: vec![],
+            components: vec![],
         }
     }
 
@@ -136,7 +149,10 @@ mod product_service_tests {
     #[tokio::test]
     async fn list_products_empty_when_no_products() {
         let svc = make_service();
-        let result = svc.list_products(PaginationParams::default()).await.unwrap();
+        let result = svc
+            .list_products(PaginationParams::default())
+            .await
+            .unwrap();
         assert!(result.items.is_empty());
     }
 
@@ -151,7 +167,10 @@ mod product_service_tests {
         })
         .await
         .unwrap();
-        let list = svc.list_products(PaginationParams::default()).await.unwrap();
+        let list = svc
+            .list_products(PaginationParams::default())
+            .await
+            .unwrap();
         assert_eq!(list.items.len(), 2);
     }
 
@@ -181,17 +200,48 @@ mod product_service_tests {
             effective_date: None,
             replacement_identifiers: vec![],
         };
-        let deprecated = svc.deprecate_product(&created.uuid, deprecation).await.unwrap();
+        let deprecated = svc
+            .deprecate_product(&created.uuid, deprecation)
+            .await
+            .unwrap();
         assert!(deprecated.deprecation.is_some());
-        assert_eq!(deprecated.deprecation.unwrap().state, DeprecationState::Deprecated);
+        assert_eq!(
+            deprecated.deprecation.unwrap().state,
+            DeprecationState::Deprecated
+        );
+    }
+
+    #[tokio::test]
+    async fn create_product_release_requires_product_uuid() {
+        let svc = make_service();
+        let mut release = valid_release(Uuid::nil());
+        release.product_uuid = Uuid::nil();
+
+        let result = svc.create_release(release).await;
+        assert!(matches!(result, Err(DomainError::Validation(_))));
+    }
+
+    #[tokio::test]
+    async fn create_product_release_assigns_uuid_and_lists_by_product() {
+        let svc = make_service();
+        let product = svc.create_product(valid_product()).await.unwrap();
+        let release = svc
+            .create_release(valid_release(product.uuid))
+            .await
+            .unwrap();
+
+        assert_ne!(release.uuid, Uuid::nil());
+        let releases = svc.list_releases(&product.uuid).await.unwrap();
+        assert_eq!(releases.len(), 1);
+        assert_eq!(releases[0].version, "1.0.0");
     }
 }
 
 #[cfg(test)]
 mod artifact_service_tests {
     use crate::domain::artifact::entity::{Artifact, ArtifactFormat, ArtifactType};
-    use crate::domain::common::error::DomainError;
     use crate::domain::artifact::service::ArtifactService;
+    use crate::domain::common::error::DomainError;
     use crate::infrastructure::persistence::memory::artifact_repository::InMemoryArtifactRepository;
     use chrono::Utc;
     use uuid::Uuid;
@@ -316,7 +366,21 @@ mod collection_service_tests {
         let svc = make_service();
         let mut col = valid_collection();
         col.name = "".to_string();
-        assert!(matches!(svc.create_collection(col).await, Err(DomainError::Validation(_))));
+        assert!(matches!(
+            svc.create_collection(col).await,
+            Err(DomainError::Validation(_))
+        ));
+    }
+
+    #[tokio::test]
+    async fn create_collection_version_zero_fails() {
+        let svc = make_service();
+        let mut col = valid_collection();
+        col.version = 0;
+        assert!(matches!(
+            svc.create_collection(col).await,
+            Err(DomainError::Validation(_))
+        ));
     }
 
     #[tokio::test]
@@ -344,9 +408,9 @@ mod collection_service_tests {
 
 #[cfg(test)]
 mod component_service_tests {
+    use crate::domain::common::error::DomainError;
     use crate::domain::component::entity::{Component, ComponentType};
     use crate::domain::component::service::ComponentService;
-    use crate::domain::common::error::DomainError;
     use crate::infrastructure::persistence::memory::component_repository::InMemoryComponentRepository;
     use chrono::Utc;
     use uuid::Uuid;
@@ -378,7 +442,10 @@ mod component_service_tests {
         let svc = make_service();
         let mut comp = valid_component();
         comp.name = "".to_string();
-        assert!(matches!(svc.create_component(comp).await, Err(DomainError::Validation(_))));
+        assert!(matches!(
+            svc.create_component(comp).await,
+            Err(DomainError::Validation(_))
+        ));
     }
 
     #[tokio::test]
@@ -386,7 +453,10 @@ mod component_service_tests {
         let svc = make_service();
         let mut comp = valid_component();
         comp.homepage_url = Some("bad-url".to_string());
-        assert!(matches!(svc.create_component(comp).await, Err(DomainError::Validation(_))));
+        assert!(matches!(
+            svc.create_component(comp).await,
+            Err(DomainError::Validation(_))
+        ));
     }
 
     #[tokio::test]

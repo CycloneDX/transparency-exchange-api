@@ -1,5 +1,4 @@
 use async_trait::async_trait;
-use chrono::Utc;
 use sqlx::{PgPool, Row};
 use uuid::Uuid;
 
@@ -82,6 +81,22 @@ fn artifact_type_str(t: &ArtifactType) -> &'static str {
     }
 }
 
+fn db_state(deprecation: Option<&Deprecation>) -> String {
+    match deprecation {
+        Some(dep) => format!("{:?}", dep.state),
+        None => format!("{:?}", DeprecationState::Active),
+    }
+}
+
+fn parse_state(state: &str) -> DeprecationState {
+    match state {
+        "Active" | "ACTIVE" => DeprecationState::Active,
+        "Deprecated" | "DEPRECATED" => DeprecationState::Deprecated,
+        "Retired" | "RETIRED" => DeprecationState::Retired,
+        _ => DeprecationState::Unspecified,
+    }
+}
+
 fn map_artifact_row(row: &sqlx::postgres::PgRow) -> Result<Artifact, RepositoryError> {
     let type_str: Option<String> = row.try_get("type")?;
     let component_distributions: Vec<String> =
@@ -94,12 +109,7 @@ fn map_artifact_row(row: &sqlx::postgres::PgRow) -> Result<Artifact, RepositoryE
         serde_json::from_value(row.try_get("identifiers")?).unwrap_or_default();
     let deprecation_state: Option<String> = row.try_get("deprecation_state")?;
     let deprecation = deprecation_state.map(|state| Deprecation {
-        state: match state.as_str() {
-            "ACTIVE" => DeprecationState::Active,
-            "DEPRECATED" => DeprecationState::Deprecated,
-            "RETIRED" => DeprecationState::Retired,
-            _ => DeprecationState::Unspecified,
-        },
+        state: parse_state(&state),
         reason: row.try_get("deprecation_reason").ok().flatten(),
         announced_date: None,
         effective_date: row.try_get("deprecated_date").ok().flatten(),
@@ -175,7 +185,7 @@ impl ArtifactRepository for PostgresArtifactRepository {
         let subject_json = artifact
             .subject
             .as_ref()
-            .map(|s| serde_json::to_value(s))
+            .map(serde_json::to_value)
             .transpose()
             .map_err(json_err)?;
 
@@ -200,8 +210,13 @@ impl ArtifactRepository for PostgresArtifactRepository {
         .bind(&artifact.description)
         .bind(subject_json)
         .bind(serde_json::to_value(&artifact.dependencies).map_err(json_err)?)
-        .bind(artifact.deprecation.as_ref().map(|d| format!("{:?}", d.state).to_uppercase()))
-        .bind(artifact.deprecation.as_ref().and_then(|d| d.reason.as_deref()))
+        .bind(db_state(artifact.deprecation.as_ref()))
+        .bind(
+            artifact
+                .deprecation
+                .as_ref()
+                .and_then(|d| d.reason.as_deref()),
+        )
         .bind(artifact.deprecation.as_ref().and_then(|d| d.effective_date))
         .execute(&self.pool)
         .await?;
@@ -216,7 +231,7 @@ impl ArtifactRepository for PostgresArtifactRepository {
         let subject_json = artifact
             .subject
             .as_ref()
-            .map(|s| serde_json::to_value(s))
+            .map(serde_json::to_value)
             .transpose()
             .map_err(json_err)?;
 
@@ -238,8 +253,13 @@ impl ArtifactRepository for PostgresArtifactRepository {
         .bind(&artifact.description)
         .bind(subject_json)
         .bind(serde_json::to_value(&artifact.dependencies).map_err(json_err)?)
-        .bind(artifact.deprecation.as_ref().map(|d| format!("{:?}", d.state).to_uppercase()))
-        .bind(artifact.deprecation.as_ref().and_then(|d| d.reason.as_deref()))
+        .bind(db_state(artifact.deprecation.as_ref()))
+        .bind(
+            artifact
+                .deprecation
+                .as_ref()
+                .and_then(|d| d.reason.as_deref()),
+        )
         .bind(artifact.deprecation.as_ref().and_then(|d| d.effective_date))
         .execute(&self.pool)
         .await?;

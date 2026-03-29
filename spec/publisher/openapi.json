@@ -1,1516 +1,3714 @@
 {
-    "jsonSchemaDialect": "https://spec.openapis.org/oas/3.1/dialect/base",
-    "openapi": "3.1.1",
-    "info": {
-        "title": "Transparency Exchange API",
-        "summary": "Transparency Exchange API specification for consumers and publishers",
-        "description": "TBC",
-        "contact": {
-            "name": "TEA Working Group",
-            "email": "TBC",
-            "url": "https://github.com/CycloneDX/transparency-exchange-api"
-        },
-        "license": {
-            "name": "Apache 2.0",
-            "url": "https://github.com/CycloneDX/transparency-exchange-api/blob/main/LICENSE"
-        },
-        "version": "0.0.2"
+  "$schema": "https://spec.openapis.org/oas/3.1/schema-base/2025-02-13",
+  "openapi": "3.1.1",
+  "jsonSchemaDialect": "https://spec.openapis.org/oas/3.1/dialect/base",
+  "info": {
+    "title": "TEA Publisher API Profile",
+    "summary": "Draft HTTP profile aligned with the canonical TEA publisher protobuf contract",
+    "description": "This OpenAPI profile mirrors the google.api.http annotations in proto/tea/v1/publisher.proto. The protobuf contract remains the canonical source of truth for publisher RPC semantics. Optional publisher capabilities that a given implementation does not support must fail explicitly rather than partially succeeding.",
+    "version": "0.4.0-draft",
+    "contact": {
+      "name": "TEA Working Group",
+      "url": "https://github.com/CycloneDX/transparency-exchange-api"
     },
-    "servers": [
-        {
-            "url": "http://localhost/tea/v1",
-            "description": "Local development"
-        }
-    ],
-    "paths": {
-        "/product/{tei_urn}": {
-            "get": {
-                "description": "Returns the corresponding leafs for a given TEI URN",
-                "operationId": "getTeaProduct",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/tei_urn"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Requested TEA Product found and returned",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/tea_product"
-                                }
-                            }
-                        }
-                    },
-
-                    "404": {
-                        "$ref": "#/components/responses/404-object-by-id-not-found"
-                    }
-
-                },
-                "tags": [
-                    "TEA Product"
-                ]
-            },
-            "patch": {
-                "description": "Update an existing TEA Product entry",
-                "operationId": "updateTeaProduct",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/tea_product_identifier"
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "product_name": {
-                                        "type": "string"
-                                    },
-                                    "barcode": {
-                                        "type": "string",
-                                        "description": "Barcode"
-                                    },
-                                    "sku": {
-                                        "type": "string",
-                                        "description": "Product SKU"
-                                    },
-                                    "vendor_uuid": {
-                                        "$ref": "#/components/schemas/type_uuid",
-                                        "description": "Vendor UUID"
-                                    },
-                                    "purl": {
-                                        "type": "string",
-                                        "description": "Package URL (PURL)"
-                                    }
-                                }
-                            },
-                            "examples": {
-                                "basic": {
-                                    "summary": "Basic product update",
-                                    "value": {
-                                        "product_name": "Updated Product Name",
-                                        "barcode": "123456789012",
-                                        "sku": "PROD-001",
-                                        "vendor_uuid": "123e4567-e89b-12d3-a456-426614174000",
-                                        "purl": "pkg:generic/example@1.0.0"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "TEA Product updated successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/tea_product"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid request body",
-                        "content": {
-                            "application/json": {}
-                        }
-                    },
-                    "401": { "$ref": "#/components/responses/401-unauthorized" },
-                    "404": {
-                        "$ref": "#/components/responses/404-object-by-id-not-found"
-                    }
-                },
-                "tags": [
-                    "TEA Product"
-                ],
-                "security": [
-                    {
-                        "bearerAuth": []
-                    },
-                    {
-                        "basicAuth": []
-                    }
-                ]
-            },
-            "delete": {
-                "description": "Delete a TEA Product entry",
-                "operationId": "deleteTeaProduct",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/tea_product_identifier"
-                    }
-                ],
-                "$ref": "#/components/operations/standard_delete",
-                "tags": [
-                    "TEA Product"
-                ]
-            }
-        },
-        "/product": {
-            "get": {
-                "description": "Returns a list of TEA Products",
-                "operationId": "listTeaProducts",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/standard_pagination"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "List retrieved successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/paginated_product_list"
-                                }
-                            }
-                        }
-                    },
-                    "$ref": "#/components/responses/standard_errors"
-                }
-            },
-            "post": {
-                "description": "Create TEA Product entry for the supplied product identifier",
-                "operationId": "createTeaProduct",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "product_name": {
-                                        "type": "string"
-                                    },
-                                    "barcode": {
-                                        "type": "string",
-                                        "description": "Barcode"
-                                    },
-                                    "sku": {
-                                        "type": "string",
-                                        "description": "Product SKU"
-                                    },
-                                    "vendor_uuid": {
-                                        "$ref": "#/components/schemas/type_uuid",
-                                        "description": "Vendor UUID"
-                                    },
-                                    "purl": {
-                                        "type": "string",
-                                        "description": "Package URL (PURL)"
-                                    }
-                                },
-                                "required": [
-                                    "product_name"
-                                ]
-                            },
-                            "examples": {
-                                "basic": {
-                                    "summary": "Basic product creation",
-                                    "value": {
-                                        "product_name": "Example Product"
-                                    }
-                                },
-                                "full": {
-                                    "summary": "Full product creation with all fields",
-                                    "value": {
-                                        "product_name": "Complete Product Example",
-                                        "barcode": "123456789012",
-                                        "sku": "PROD-001",
-                                        "vendor_uuid": "123e4567-e89b-12d3-a456-426614174000",
-                                        "purl": "pkg:generic/example@1.0.0"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "TEA Product created successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "identifier": {
-                                            "$ref": "#/components/schemas/type_uuid"
-                                        },
-                                        "product_name": {
-                                            "type": "string"
-                                        },
-                                        "barcode": {
-                                            "type": "string"
-                                        },
-                                        "sku": {
-                                            "type": "string"
-                                        },
-                                        "vendor_uuid": {
-                                            "$ref": "#/components/schemas/type_uuid"
-                                        },
-                                        "purl": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "required": [
-                                        "identifier",
-                                        "product_name"
-                                    ]
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid request body",
-                        "content": {
-                            "application/json": {}
-                        }
-                    },
-                    "401": { "$ref": "#/components/responses/401-unauthorized" },
-                    "404": {
-                        "$ref": "#/components/responses/404-object-by-id-not-found"
-                    }
-                },
-                "tags": [
-                    "TEA Product"
-                ],
-                "security": [
-                    {
-                        "bearerAuth": []
-                    },
-                    {
-                        "basicAuth": []
-                    }
-                ]
-            }
-        },
-        "/leaf": {
-            "post": {
-                "description": "Create a new TEA Leaf entry",
-                "operationId": "createTeaLeaf",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "tea_product_identifier": {
-                                        "type": "string"
-                                    },
-                                    "product_version": {
-                                        "type": "string"
-                                    },
-                                    "release_date": {
-                                        "type": "string",
-                                        "format": "date-time",
-                                        "example": "2024-03-20T15:30:00Z"
-                                    },
-                                    "pre_release": {
-                                        "type": "boolean"
-                                    }
-                                },
-                                "required": [
-                                    "tea_product_identifier",
-                                    "product_version",
-                                    "release_date",
-                                    "pre_release"
-                                ]
-                            },
-                            "examples": {
-                                "basic": {
-                                    "summary": "Basic leaf creation",
-                                    "value": {
-                                        "tea_product_identifier": "123e4567-e89b-12d3-a456-426614174000",
-                                        "product_version": "1.0.0",
-                                        "release_date": "2024-03-20T15:30:00Z",
-                                        "pre_release": false
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "TEA Leaf created successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/tea_leaf"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid parameters",
-                        "content": {
-                            "application/json": {}
-                        }
-                    },
-                    "401": { "$ref": "#/components/responses/401-unauthorized" },
-                    "404": {
-                        "$ref": "#/components/responses/404-object-by-id-not-found"
-                    }
-                },
-                "tags": [
-                    "TEA Leaf"
-                ],
-                "security": [
-                    {
-                        "bearerAuth": []
-                    },
-                    {
-                        "basicAuth": []
-                    }
-                ]
-            }
-        },
-        "/leaf/{tea_leaf_identifier}": {
-            "get": {
-                "description": "Get the TEA Leaf that describes the Version of a Product",
-                "operationId": "getTeaLeaf",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/tea_leaf_identifier"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Requested TEA Leaf found and returned",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/tea_leaf"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "$ref": "#/components/responses/404-object-by-id-not-found"
-                    }
-                },
-                "tags": [
-                    "TEA Leaf"
-                ]
-            },
-            "patch": {
-                "description": "Update an existing TEA Leaf entry",
-                "operationId": "updateTeaLeaf",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/tea_leaf_identifier"
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "product_name": {
-                                        "type": "string"
-                                    },
-                                    "product_version": {
-                                        "type": "string"
-                                    },
-                                    "release_date": {
-                                        "type": "string",
-                                        "format": "date-time",
-                                        "example": "2024-03-20T15:30:00Z"
-                                    },
-                                    "pre_release": {
-                                        "type": "boolean"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "TEA Leaf updated successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/tea_leaf"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid request body",
-                        "content": {
-                            "application/json": {}
-                        }
-                    },
-                    "401": { "$ref": "#/components/responses/401-unauthorized" },
-                    "404": {
-                        "$ref": "#/components/responses/404-object-by-id-not-found"
-                    }
-                },
-                "tags": [
-                    "TEA Leaf"
-                ],
-                "security": [
-                    {
-                        "bearerAuth": []
-                    },
-                    {
-                        "basicAuth": []
-                    }
-                ]
-            },
-            "delete": {
-                "description": "Delete a TEA Leaf entry",
-                "operationId": "deleteTeaLeaf",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/tea_leaf_identifier"
-                    }
-                ],
-                "$ref": "#/components/operations/standard_delete",
-                "tags": [
-                    "TEA Leaf"
-                ]
-            }
-        },
-        "/collection": {
-            "post": {
-                "description": "Create a new TEA Collection",
-                "operationId": "createTeaCollection",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "tea_leaf_identifier": {
-                                        "$ref": "#/components/schemas/type_uuid"
-                                    },
-                                    "product_name": {
-                                        "type": "string"
-                                    },
-                                    "product_version": {
-                                        "type": "string"
-                                    },
-                                    "release_date": {
-                                        "type": "string",
-                                        "format": "date-time",
-                                        "example": "2024-03-20T15:30:00Z"
-                                    },
-                                    "author": {
-                                        "$ref": "#/components/schemas/type_author"
-                                    },
-                                    "reason": {
-                                        "$ref": "#/components/schemas/type_collection_reason"
-                                    },
-                                    "artifacts": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "object",
-                                            "properties": {
-                                                "name": {
-                                                    "type": "string"
-                                                },
-                                                "type": {
-                                                    "$ref": "#/components/schemas/type_tea_collection_artifact_type"
-                                                },
-                                                "author": {
-                                                    "$ref": "#/components/schemas/type_author"
-                                                },
-                                                "objects": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "object",
-                                                        "properties": {
-                                                            "description": {
-                                                                "type": "string"
-                                                            },
-                                                            "media_type": {
-                                                                "type": "string"
-                                                            },
-                                                            "artifact_url": {
-                                                                "type": "string",
-                                                                "format": "uri"
-                                                            },
-                                                            "artifact_size_in_bytes": {
-                                                                "type": "integer",
-                                                                "format": "int64"
-                                                            },
-                                                            "artifact_checksum": {
-                                                                "type": "string",
-                                                                "description": "The checksum value"
-                                                            },
-                                                            "artifact_checksum_type": {
-                                                                "type": "string",
-                                                                "description": "The algorithm used to generate the checksum",
-                                                                "enum": [
-                                                                    "SHA512",
-                                                                    "SHA384",
-                                                                    "SHA256",
-                                                                    "SHA224",
-                                                                    "SHA1",
-                                                                    "MD5",
-                                                                    "BLAKE2b-512",
-                                                                    "BLAKE2s-256",
-                                                                    "BLAKE3"
-                                                                ],
-                                                                "default": "SHA256"
-                                                            },
-                                                            "signature_url": {
-                                                                "type": "string",
-                                                                "format": "uri"
-                                                            }
-                                                        },
-                                                        "required": [
-                                                            "description",
-                                                            "media_type",
-                                                            "artifact_url",
-                                                            "artifact_size_in_bytes",
-                                                            "artifact_checksum",
-                                                            "artifact_checksum_type"
-                                                        ]
-                                                    }
-                                                }
-                                            },
-                                            "required": [
-                                                "name",
-                                                "type",
-                                                "author",
-                                                "objects"
-                                            ]
-                                        }
-                                    }
-                                },
-                                "required": [
-                                    "tea_leaf_identifier",
-                                    "product_name",
-                                    "product_version",
-                                    "release_date",
-                                    "author",
-                                    "reason"
-                                ]
-                            },
-                            "examples": {
-                                "basic": {
-                                    "summary": "Basic collection creation",
-                                    "value": {
-                                        "tea_leaf_identifier": "123e4567-e89b-12d3-a456-426614174000",
-                                        "product_name": "Example Product",
-                                        "product_version": "1.0.0",
-                                        "release_date": "2024-03-20T15:30:00Z",
-                                        "author": {
-                                            "name": "John Doe",
-                                            "email": "john.doe@example.com",
-                                            "organization": "Example Org"
-                                        },
-                                        "reason": "New Product Release",
-                                        "artifacts": [
-                                            {
-                                                "name": "Example TEA Artifact",
-                                                "type": "bom",
-                                                "author": {
-                                                    "name": "John Doe",
-                                                    "email": "john.doe@example.com",
-                                                    "organization": "Example Org"
-                                                },
-                                                "objects": [
-                                                    {
-                                                        "description": "Example SBOM",
-                                                        "media_type": "application/json",
-                                                        "artifact_url": "https://example.com/sbom.json",
-                                                        "artifact_size_in_bytes": 1024,
-                                                        "artifact_checksum": "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3",
-                                                        "artifact_checksum_type": "SHA256"
-                                                    }
-                                                ]
-                                            }
-                                        ]
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "TEA Collection created successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/tea_collection"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid request body",
-                        "content": {
-                            "application/json": {}
-                        }
-                    },
-                    "401": { "$ref": "#/components/responses/401-unauthorized" },
-                    "404": {
-                        "$ref": "#/components/responses/404-object-by-id-not-found"
-                    }
-                },
-                "tags": [
-                    "TEA Collection"
-                ],
-                "security": [
-                    {
-                        "bearerAuth": []
-                    },
-                    {
-                        "basicAuth": []
-                    }
-                ]
-            }
-        },
-        "/collection/{tea_collection_identifier}": {
-            "get": {
-                "description": "Get a TEA Collection by it's Identifier",
-                "operationId": "getTeaCollection",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/tea_collection_identifier"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Requested TEA Collection found and returned",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/tea_collection"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "$ref": "#/components/responses/404-object-by-id-not-found"
-                    }
-                },
-                "tags": [
-                    "TEA Collection"
-                ]
-            },
-            "patch": {
-                "description": "Update an existing TEA Collection",
-                "operationId": "updateTeaCollection",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/tea_collection_identifier"
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "product_name": {
-                                        "type": "string"
-                                    },
-                                    "product_version": {
-                                        "type": "string"
-                                    },
-                                    "release_date": {
-                                        "type": "string",
-                                        "format": "date-time",
-                                        "example": "2024-03-20T15:30:00Z"
-                                    },
-                                    "author": {
-                                        "$ref": "#/components/schemas/type_author"
-                                    },
-                                    "reason": {
-                                        "$ref": "#/components/schemas/type_collection_reason"
-                                    },
-                                    "artifacts": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "object",
-                                            "properties": {
-                                                "name": {
-                                                    "type": "string"
-                                                },
-                                                "type": {
-                                                    "$ref": "#/components/schemas/type_tea_collection_artifact_type"
-                                                },
-                                                "author": {
-                                                    "$ref": "#/components/schemas/type_author"
-                                                },
-                                                "objects": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "object",
-                                                        "properties": {
-                                                            "description": {
-                                                                "type": "string"
-                                                            },
-                                                            "media_type": {
-                                                                "type": "string"
-                                                            },
-                                                            "artifact_url": {
-                                                                "type": "string",
-                                                                "format": "uri"
-                                                            },
-                                                            "artifact_size_in_bytes": {
-                                                                "type": "integer",
-                                                                "format": "int64"
-                                                            },
-                                                            "artifact_checksum": {
-                                                                "type": "string",
-                                                                "description": "The checksum value"
-                                                            },
-                                                            "artifact_checksum_type": {
-                                                                "type": "string",
-                                                                "description": "The algorithm used to generate the checksum",
-                                                                "enum": [
-                                                                    "SHA512",
-                                                                    "SHA384",
-                                                                    "SHA256",
-                                                                    "SHA224",
-                                                                    "SHA1",
-                                                                    "MD5",
-                                                                    "BLAKE2b-512",
-                                                                    "BLAKE2s-256",
-                                                                    "BLAKE3"
-                                                                ],
-                                                                "default": "SHA256"
-                                                            },
-                                                            "signature_url": {
-                                                                "type": "string",
-                                                                "format": "uri"
-                                                            }
-                                                        },
-                                                        "required": [
-                                                            "description",
-                                                            "media_type",
-                                                            "artifact_url",
-                                                            "artifact_size_in_bytes",
-                                                            "artifact_checksum",
-                                                            "artifact_checksum_type"
-                                                        ]
-                                                    }
-                                                }
-                                            },
-                                            "required": [
-                                                "name",
-                                                "type",
-                                                "author",
-                                                "objects"
-                                            ]
-                                        }
-                                    }
-                                },
-                                "required": [
-                                    "product_name",
-                                    "product_version",
-                                    "release_date",
-                                    "author",
-                                    "reason"
-                                ]
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "TEA Collection updated successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/tea_collection"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid request body",
-                        "content": {
-                            "application/json": {}
-                        }
-                    },
-                    "401": { "$ref": "#/components/responses/401-unauthorized" },
-                    "404": {
-                        "$ref": "#/components/responses/404-object-by-id-not-found"
-                    }
-                },
-                "tags": [
-                    "TEA Collection"
-                ],
-                "security": [
-                    {
-                        "bearerAuth": []
-                    },
-                    {
-                        "basicAuth": []
-                    }
-                ]
-            },
-            "delete": {
-                "description": "Delete a TEA Collection entry",
-                "operationId": "deleteTeaCollection",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/tea_collection_identifier"
-                    }
-                ],
-                "$ref": "#/components/operations/standard_delete",
-                "tags": [
-                    "TEA Collection"
-                ]
-            }
-        }
-    },
-    "webhooks": {},
-    "components": {
-        "schemas": {
-            "base_product_fields": {
-                "type": "object",
-                "properties": {
-                    "product_name": {
-                        "type": "string"
-                    },
-                    "barcode": {
-                        "type": "string",
-                        "description": "Barcode"
-                    },
-                    "sku": {
-                        "type": "string",
-                        "description": "Product SKU"
-                    },
-                    "vendor_uuid": {
-                        "$ref": "#/components/schemas/type_uuid",
-                        "description": "Vendor UUID"
-                    },
-                    "purl": {
-                        "type": "string",
-                        "description": "Package URL (PURL)"
-                    }
-                }
-            },
-            "base_versioned_product": {
-                "allOf": [
-                    { "$ref": "#/components/schemas/base_product_fields" },
-                    {
-                        "type": "object",
-                        "properties": {
-                            "product_version": {
-                                "type": "string"
-                            },
-                            "release_date": {
-                                "type": "string",
-                                "format": "date-time",
-                                "example": "2024-03-20T15:30:00Z"
-                            }
-                        }
-                    }
-                ]
-            },
-            "base_artifact_object": {
-                "type": "object",
-                "properties": {
-                    "identifier": {
-                        "$ref": "#/components/schemas/type_uuid"
-                    },
-                    "description": {
-                        "type": "string"
-                    },
-                    "media_type": {
-                        "type": "string"
-                    },
-                    "artifact_url": {
-                        "type": "string",
-                        "format": "uri"
-                    },
-                    "artifact_size_in_bytes": {
-                        "type": "integer",
-                        "format": "int64"
-                    },
-                    "artifact_checksum": {
-                        "type": "string",
-                        "description": "The checksum value"
-                    },
-                    "artifact_checksum_type": {
-                        "type": "string",
-                        "description": "The algorithm used to generate the checksum",
-                        "enum": [
-                            "SHA512",
-                            "SHA384",
-                            "SHA256",
-                            "SHA224",
-                            "SHA1",
-                            "MD5",
-                            "BLAKE2b-512",
-                            "BLAKE2s-256",
-                            "BLAKE3"
-                        ],
-                        "default": "SHA256"
-                    }
-                }
-            },
-            "tea_product": {
-                "allOf": [
-                    { "$ref": "#/components/schemas/base_product_fields" },
-                    {
-                        "type": "object",
-                        "properties": {
-                            "identifier": {
-                                "$ref": "#/components/schemas/type_uuid"
-                            },
-                            "leaf_references": {
-                                "type": "array",
-                                "items": {
-                                    "$ref": "#/components/schemas/type_uuid"
-                                },
-                                "description": "Array of UUIDs referencing TEA Leaf entries"
-                            }
-                        },
-                        "required": ["identifier", "product_name"]
-                    }
-                ]
-            },
-            "tea_leaf": {
-                "allOf": [
-                    { "$ref": "#/components/schemas/base_versioned_product" },
-                    {
-                        "type": "object",
-                        "properties": {
-                            "identifier": {
-                                "$ref": "#/components/schemas/type_uuid"
-                            },
-                            "pre_release": {
-                                "type": "boolean"
-                            },
-                            "end_of_life": {
-                                "type": "string",
-                                "format": "date-time"
-                            },
-                            "collection_references": {
-                                "type": "array",
-                                "items": {
-                                    "$ref": "#/components/schemas/type_uuid"
-                                },
-                                "description": "Array of UUIDs referencing TEA Collection entries",
-                                "default": []
-                            }
-                        },
-                        "required": [
-                            "identifier",
-                            "product_name",
-                            "product_version",
-                            "release_date",
-                            "pre_release"
-                        ]
-                    }
-                ]
-            },
-            "tea_collection": {
-                "type": "object",
-                "properties": {
-                    "identifier": {
-                        "$ref": "#/components/schemas/type_uuid"
-                    },
-                    "product_name": {
-                        "type": "string"
-                    },
-                    "product_version": {
-                        "type": "string"
-                    },
-                    "release_date": {
-                        "type": "string",
-                        "format": "date-time",
-                        "example": "2024-03-20T15:30:00Z"
-                    },
-                    "author": {
-                        "$ref": "#/components/schemas/type_author"
-                    },
-                    "reason": {
-                        "$ref": "#/components/schemas/type_collection_reason"
-                    },
-                    "artifacts": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/tea_collection_artifact"
-                        },
-                        "default": []
-                    }
-                },
-                "required": [
-                    "identifier",
-                    "product_name",
-                    "product_version",
-                    "release_date",
-                    "author",
-                    "reason"
-                ]
-            },
-            "tea_collection_artifact": {
-                "type": "object",
-                "properties": {
-                    "identifier": {
-                        "$ref": "#/components/schemas/type_uuid"
-                    },
-                    "name": {
-                        "type": "string"
-                    },
-                    "type": {
-                        "$ref": "#/components/schemas/type_tea_collection_artifact_type"
-                    },
-                    "author": {
-                        "$ref": "#/components/schemas/type_author"
-                    },
-                    "objects": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/tea_collection_artifact_object"
-                        },
-                        "minItems": 1
-                    }
-                },
-                "required": [
-                    "identifier",
-                    "name",
-                    "type",
-                    "author",
-                    "objects"
-                ]
-            },
-            "tea_collection_artifact_object": {
-                "type": "object",
-                "properties": {
-                    "identifier": {
-                        "$ref": "#/components/schemas/type_uuid"
-                    },
-                    "description": {
-                        "type": "string"
-                    },
-                    "media_type": {
-                        "type": "string"
-                    },
-                    "artifact_url": {
-                        "type": "string",
-                        "format": "uri"
-                    },
-                    "artifact_size_in_bytes": {
-                        "type": "integer",
-                        "format": "int64"
-                    },
-                    "artifact_checksum": {
-                        "type": "string",
-                        "description": "The checksum value"
-                    },
-                    "artifact_checksum_type": {
-                        "type": "string",
-                        "description": "The algorithm used to generate the checksum",
-                        "enum": [
-                            "SHA512",
-                            "SHA384",
-                            "SHA256",
-                            "SHA224",
-                            "SHA1",
-                            "MD5",
-                            "BLAKE2b-512",
-                            "BLAKE2s-256",
-                            "BLAKE3"
-                        ],
-                        "default": "SHA256"
-                    },
-                    "signature_url": {
-                        "type": "string",
-                        "format": "uri"
-                    }
-                },
-                "required": [
-                    "identifier",
-                    "description",
-                    "media_type",
-                    "artifact_url",
-                    "artifact_size_in_bytes",
-                    "artifact_checksum",
-                    "artifact_checksum_type"
-                ]
-            },
-            "type_author": {
-                "type": "object",
-                "properties": {
-                    "name": {
-                        "type": "string"
-                    },
-                    "email": {
-                        "type": "string",
-                        "format": "email"
-                    },
-                    "organization": {
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "name",
-                    "email",
-                    "organization"
-                ]
-            },
-            "type_collection_reason": {
-                "type": "string",
-                "description": "Event requiring this TEA Collection was published",
-                "enum": [
-                    "New Product Release",
-                    "BOM Updated",
-                    "Attestation Added",
-                    "Attestation Updated"
-                ]
-            },
-            "type_pagination_details": {
-                "type": "object",
-                "properties": {
-                    "timestamp": {
-                        "type": "string",
-                        "format": "date-time",
-                        "example": "2024-03-20T15:30:00Z"
-                    },
-                    "page_start_index": {
-                        "type": "number",
-                        "format": "int64",
-                        "default": 0
-                    },
-                    "page_size": {
-                        "type": "number",
-                        "format": "int64",
-                        "default": 100
-                    },
-                    "total_results": {
-                        "type": "number",
-                        "format": "int64"
-                    }
-                },
-                "required": [
-                    "timestamp",
-                    "page_start_index",
-                    "page_size",
-                    "total_results"
-                ]
-            },
-            "type_tea_collection_artifact_type": {
-                "type": "string",
-                "title": "Type",
-                "description": "Specifies the type of external reference.",
-                "enum": [
-                    "vcs",
-                    "issue-tracker",
-                    "website",
-                    "advisories",
-                    "bom",
-                    "mailing-list",
-                    "social",
-                    "chat",
-                    "documentation",
-                    "support",
-                    "source-distribution",
-                    "distribution",
-                    "distribution-intake",
-                    "license",
-                    "build-meta",
-                    "build-system",
-                    "release-notes",
-                    "security-contact",
-                    "model-card",
-                    "log",
-                    "configuration",
-                    "evidence",
-                    "formulation",
-                    "attestation",
-                    "threat-model",
-                    "adversary-model",
-                    "risk-assessment",
-                    "vulnerability-assertion",
-                    "exploitability-statement",
-                    "pentest-report",
-                    "static-analysis-report",
-                    "dynamic-analysis-report",
-                    "runtime-analysis-report",
-                    "component-analysis-report",
-                    "maturity-report",
-                    "certification-report",
-                    "codified-infrastructure",
-                    "quality-metrics",
-                    "poam",
-                    "electronic-signature",
-                    "digital-signature",
-                    "rfc-9116",
-                    "other"
-                ],
-                "meta:enum": {
-                    "vcs": "Version Control System",
-                    "issue-tracker": "Issue or defect tracking system, or an Application Lifecycle Management (ALM) system",
-                    "website": "Website",
-                    "advisories": "Security advisories",
-                    "bom": "Bill of Materials (SBOM, OBOM, HBOM, SaaSBOM, etc)",
-                    "mailing-list": "Mailing list or discussion group",
-                    "social": "Social media account",
-                    "chat": "Real-time chat platform",
-                    "documentation": "Documentation, guides, or how-to instructions",
-                    "support": "Community or commercial support",
-                    "source-distribution": {
-                        "description": "The location where the source code distributable can be obtained. This is often an archive format such as zip or tgz. The source-distribution type complements use of the version control (vcs) type."
-                    },
-                    "distribution": "Direct or repository download location",
-                    "distribution-intake": "The location where a component was published to. This is often the same as \"distribution\" but may also include specialized publishing processes that act as an intermediary.",
-                    "license": "The reference to the license file. If a license URL has been defined in the license node, it should also be defined as an external reference for completeness.",
-                    "build-meta": "Build-system specific meta file (i.e. pom.xml, package.json, .nuspec, etc)",
-                    "build-system": "Reference to an automated build system",
-                    "release-notes": "Reference to release notes",
-                    "security-contact": "Specifies a way to contact the maintainer, supplier, or provider in the event of a security incident. Common URIs include links to a disclosure procedure, a mailto (RFC-2368) that specifies an email address, a tel (RFC-3966) that specifies a phone number, or dns (RFC-4501) that specifies the records containing DNS Security TXT.",
-                    "model-card": "A model card describes the intended uses of a machine learning model, potential limitations, biases, ethical considerations, training parameters, datasets used to train the model, performance metrics, and other relevant data useful for ML transparency.",
-                    "log": "A record of events that occurred in a computer system or application, such as problems, errors, or information on current operations.",
-                    "configuration": "Parameters or settings that may be used by other components or services.",
-                    "evidence": "Information used to substantiate a claim.",
-                    "formulation": "Describes how a component or service was manufactured or deployed.",
-                    "attestation": "Human or machine-readable statements containing facts, evidence, or testimony.",
-                    "threat-model": "An enumeration of identified weaknesses, threats, and countermeasures, dataflow diagram (DFD), attack tree, and other supporting documentation in human-readable or machine-readable format.",
-                    "adversary-model": "The defined assumptions, goals, and capabilities of an adversary.",
-                    "risk-assessment": "Identifies and analyzes the potential of future events that may negatively impact individuals, assets, and/or the environment. Risk assessments may also include judgments on the tolerability of each risk.",
-                    "vulnerability-assertion": "A Vulnerability Disclosure Report (VDR) which asserts the known and previously unknown vulnerabilities that affect a component, service, or product including the analysis and findings describing the impact (or lack of impact) that the reported vulnerability has on a component, service, or product.",
-                    "exploitability-statement": "A Vulnerability Exploitability eXchange (VEX) which asserts the known vulnerabilities that do not affect a product, product family, or organization, and optionally the ones that do. The VEX should include the analysis and findings describing the impact (or lack of impact) that the reported vulnerability has on the product, product family, or organization.",
-                    "pentest-report": "Results from an authorized simulated cyberattack on a component or service, otherwise known as a penetration test.",
-                    "static-analysis-report": "SARIF or proprietary machine or human-readable report for which static analysis has identified code quality, security, and other potential issues with the source code.",
-                    "dynamic-analysis-report": "Dynamic analysis report that has identified issues such as vulnerabilities and misconfigurations.",
-                    "runtime-analysis-report": "Report generated by analyzing the call stack of a running application.",
-                    "component-analysis-report": "Report generated by Software Composition Analysis (SCA), container analysis, or other forms of component analysis.",
-                    "maturity-report": "Report containing a formal assessment of an organization, business unit, or team against a maturity model.",
-                    "certification-report": "Industry, regulatory, or other certification from an accredited (if applicable) certification body.",
-                    "codified-infrastructure": "Code or configuration that defines and provisions virtualized infrastructure, commonly referred to as Infrastructure as Code (IaC).",
-                    "quality-metrics": "Report or system in which quality metrics can be obtained.",
-                    "poam": "Plans of Action and Milestones (POAM) complement an \"attestation\" external reference. POAM is defined by NIST as a \"document that identifies tasks needing to be accomplished. It details resources required to accomplish the elements of the plan, any milestones in meeting the tasks and scheduled completion dates for the milestones\".",
-                    "electronic-signature": "An e-signature is commonly a scanned representation of a written signature or a stylized script of the person's name.",
-                    "digital-signature": "A signature that leverages cryptography, typically public/private key pairs, which provides strong authenticity verification.",
-                    "rfc-9116": "Document that complies with RFC-9116 (A File Format to Aid in Security Vulnerability Disclosure)",
-                    "other": "Use this if no other types accurately describe the purpose of the external reference."
-                }
-            },
-            "type_uuid": {
-                "type": "string",
-                "format": "uuid"
-            }
-        },
-        "responses": {
-            "base_error": {
-                "type": "object",
-                "properties": {
-                    "error": {
-                        "type": "string"
-                    },
-                    "message": {
-                        "type": "string"
-                    }
-                }
-            },
-            "404-object-by-id-not-found": {
-                "description": "Object requested by identifier not found",
-                "content": {
-                    "application/json": {}
-                }
-            },
-            "401-unauthorized": {
-                "description": "Authentication required",
-                "content": {
-                    "application/json": {}
-                }
-            }
-        },
-        "parameters": {
-            "page-offset": {
-                "name": "page-offset",
-                "description": "Pagination offset",
-                "in": "query",
-                "required": false,
-                "schema": {
-                    "type": "number",
-                    "format": "int64",
-                    "default": 0
-                }
-            },
-            "page-size": {
-                "name": "page-size",
-                "description": "Pagination offset",
-                "in": "query",
-                "required": false,
-                "schema": {
-                    "type": "number",
-                    "format": "int64",
-                    "default": 100
-                }
-            },
-            "tei_urn": {
-                "name": "tei_urn",
-                "description": "Transparency Exchange Identifier (URN)",
-                "in": "path",
-                "required": true,
-                "schema": {
-                    "type": "string"
-                }
-            },
-            "tea_product_identifier": {
-                "name": "tea_product_identifier",
-                "description": "TEA Product Identifier",
-                "in": "path",
-                "required": true,
-                "schema": {
-                    "type": "string"
-                }
-            },
-            "product_version": {
-                "name": "product_version",
-                "description": "Product Version string",
-                "in": "path",
-                "required": true,
-                "schema": {
-                    "type": "string"
-                }
-            },
-            "tea_collection_identifier": {
-                "name": "tea_collection_identifier",
-                "description": "TEA Collection Identifier",
-                "in": "path",
-                "required": true,
-                "schema": {
-                    "type": "string"
-                }
-            },
-            "tea_leaf_identifier": {
-                "name": "tea_leaf_identifier",
-                "description": "TEA Leaf Identifier",
-                "in": "path",
-                "required": true,
-                "schema": {
-                    "type": "string"
-                }
-            },
-            "purl": {
-                "name": "purl",
-                "description": "Package URL (PURL)",
-                "in": "query",
-                "required": false,
-                "schema": {
-                    "type": "string"
-                }
-            },
-            "barcode": {
-                "name": "barcode",
-                "description": "Barcode",
-                "in": "query",
-                "required": false,
-                "schema": {
-                    "type": "string"
-                }
-            },
-            "sku": {
-                "name": "sku",
-                "description": "Product SKU",
-                "in": "query",
-                "required": false,
-                "schema": {
-                    "type": "string"
-                }
-            },
-            "vendor_uuid": {
-                "name": "vendor_uuid",
-                "description": "Vendor UUID",
-                "in": "query",
-                "required": false,
-                "schema": {
-                    "$ref": "#/components/schemas/type_uuid"
-                }
-            }
-        },
-        "securitySchemes": {
-            "bearerAuth": {
-                "type": "http",
-                "scheme": "bearer"
-            },
-            "basicAuth": {
-                "type": "http",
-                "scheme": "basic"
-            }
-        },
-        "security_requirements": {
-            "standard_auth": [
-                {
-                    "bearerAuth": []
-                },
-                {
-                    "basicAuth": []
-                }
-            ]
-        },
-        "responses": {
-            "standard_errors": {
-                "400": {
-                    "description": "Invalid request body",
-                    "content": {
-                        "application/json": {}
-                    }
-                },
-                "401": {
-                    "$ref": "#/components/responses/401-unauthorized"
-                },
-                "404": {
-                    "$ref": "#/components/responses/404-object-by-id-not-found"
-                }
-            },
-            "standard_delete": {
-                "204": {
-                    "description": "Resource successfully deleted"
-                }
-            }
-        },
-        "parameters": {
-            "standard_pagination": {
-                "page_offset": {
-                    "$ref": "#/components/parameters/page-offset"
-                },
-                "page_size": {
-                    "$ref": "#/components/parameters/page-size"
-                }
-            }
-        },
-        "operations": {
-            "standard_delete": {
-                "responses": {
-                    "$ref": "#/components/responses/standard_delete"
-                },
-                "security": {
-                    "$ref": "#/components/security_requirements/standard_auth"
-                }
-            }
-        }
-    },
-    "security": [
-        {
-            "bearerAuth": []
-        },
-        {
-            "basicAuth": []
-        }
-    ],
-    "tags": [
-        "TEA Collection",
-        "TEA Product",
-        "TEA Leaf"
-    ],
-    "externalDocs": {
-        "description": "Transparency Exchange API specification",
-        "url": "https://github.com/CycloneDX/transparency-exchange-api"
+    "license": {
+      "name": "Apache 2.0",
+      "url": "https://github.com/CycloneDX/transparency-exchange-api/blob/main/LICENSE"
     }
+  },
+  "servers": [
+    {
+      "url": "http://localhost",
+      "description": "Local development base URL; publisher paths are rooted under /v1/publisher."
+    }
+  ],
+  "externalDocs": {
+    "description": "Canonical publisher protobuf contract",
+    "url": "../proto/tea/v1/publisher.proto"
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "Products",
+      "description": "Publisher operations for product metadata and releases."
+    },
+    {
+      "name": "Components",
+      "description": "Publisher operations for component metadata."
+    },
+    {
+      "name": "Product Releases",
+      "description": "Publisher operations for product release lifecycle management."
+    },
+    {
+      "name": "Component Releases",
+      "description": "Publisher operations for component release lifecycle management."
+    },
+    {
+      "name": "Artifacts",
+      "description": "Publisher operations for immutable artifact registration and deletion."
+    },
+    {
+      "name": "Collections",
+      "description": "Publisher operations for versioned artifact collections."
+    }
+  ],
+  "x-tea-canonical-contract": "proto/tea/v1/publisher.proto",
+  "x-tea-reference-implementation": "tea-server",
+  "paths": {
+    "/v1/publisher/products": {
+      "post": {
+        "operationId": "CreateProduct",
+        "summary": "Create a product",
+        "description": "Create a product record. Client-supplied UUIDs may be preserved when provided.",
+        "tags": [
+          "Products"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-tea-proto-rpc": "CreateProduct",
+        "x-reference-status": "implemented",
+        "x-canonical-contract": "proto/tea/v1/publisher.proto",
+        "responses": {
+          "200": {
+            "description": "The created product.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                },
+                "examples": {
+                  "createdProduct": {
+                    "$ref": "#/components/examples/product"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateProductRequest"
+              },
+              "examples": {
+                "log4jProduct": {
+                  "$ref": "#/components/examples/createProductRequest"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/publisher/products/{uuid}": {
+      "put": {
+        "operationId": "UpdateProduct",
+        "summary": "Update a product",
+        "description": "Apply only the fields listed in updateMask and preserve all unspecified fields.",
+        "tags": [
+          "Products"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-tea-proto-rpc": "UpdateProduct",
+        "x-reference-status": "implemented",
+        "x-canonical-contract": "proto/tea/v1/publisher.proto",
+        "responses": {
+          "200": {
+            "description": "The updated product.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                },
+                "examples": {
+                  "updatedProduct": {
+                    "$ref": "#/components/examples/product"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/UuidPath"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProductBody"
+              },
+              "examples": {
+                "maskedUpdate": {
+                  "$ref": "#/components/examples/updateProductBody"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "DeleteProduct",
+        "summary": "Delete a product",
+        "description": "Delete a product. When cascade=false, implementations should reject deletion if dependent product releases still exist.",
+        "tags": [
+          "Products"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-tea-proto-rpc": "DeleteProduct",
+        "x-reference-status": "implemented",
+        "x-canonical-contract": "proto/tea/v1/publisher.proto",
+        "responses": {
+          "200": {
+            "description": "Deletion result including cascade side effects.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteProductResponse"
+                },
+                "examples": {
+                  "deletedProduct": {
+                    "$ref": "#/components/examples/deleteProductResponse"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/FailedPrecondition"
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/UuidPath"
+          },
+          {
+            "$ref": "#/components/parameters/CascadeQuery"
+          }
+        ]
+      }
+    },
+    "/v1/publisher/product-releases": {
+      "post": {
+        "operationId": "CreateProductRelease",
+        "summary": "Create a product release",
+        "description": "Create a product release linked to an existing product when productUuid is supplied.",
+        "tags": [
+          "Product Releases"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-tea-proto-rpc": "CreateProductRelease",
+        "x-reference-status": "implemented",
+        "x-canonical-contract": "proto/tea/v1/publisher.proto",
+        "responses": {
+          "200": {
+            "description": "The created product release.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductRelease"
+                },
+                "examples": {
+                  "createdProductRelease": {
+                    "$ref": "#/components/examples/productRelease"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "409": {
+            "$ref": "#/components/responses/FailedPrecondition"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateProductReleaseRequest"
+              },
+              "examples": {
+                "productRelease": {
+                  "$ref": "#/components/examples/createProductReleaseRequest"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/publisher/product-releases/{uuid}": {
+      "put": {
+        "operationId": "UpdateProductRelease",
+        "summary": "Update a product release",
+        "description": "Apply only the fields listed in updateMask and preserve all unspecified fields.",
+        "tags": [
+          "Product Releases"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-tea-proto-rpc": "UpdateProductRelease",
+        "x-reference-status": "implemented",
+        "x-canonical-contract": "proto/tea/v1/publisher.proto",
+        "responses": {
+          "200": {
+            "description": "The updated product release.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductRelease"
+                },
+                "examples": {
+                  "updatedProductRelease": {
+                    "$ref": "#/components/examples/productRelease"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/UuidPath"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProductReleaseBody"
+              },
+              "examples": {
+                "maskedUpdate": {
+                  "$ref": "#/components/examples/updateProductReleaseBody"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "DeleteProductRelease",
+        "summary": "Delete a product release",
+        "description": "Delete one product release.",
+        "tags": [
+          "Product Releases"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-tea-proto-rpc": "DeleteProductRelease",
+        "x-reference-status": "implemented",
+        "x-canonical-contract": "proto/tea/v1/publisher.proto",
+        "responses": {
+          "200": {
+            "description": "Deletion result for the addressed product release.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteProductReleaseResponse"
+                },
+                "examples": {
+                  "deletedProductRelease": {
+                    "$ref": "#/components/examples/deleteProductReleaseResponse"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/UuidPath"
+          }
+        ]
+      }
+    },
+    "/v1/publisher/components": {
+      "post": {
+        "operationId": "CreateComponent",
+        "summary": "Create a component",
+        "description": "Create a component lineage record.",
+        "tags": [
+          "Components"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-tea-proto-rpc": "CreateComponent",
+        "x-reference-status": "implemented",
+        "x-canonical-contract": "proto/tea/v1/publisher.proto",
+        "responses": {
+          "200": {
+            "description": "The created component.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Component"
+                },
+                "examples": {
+                  "createdComponent": {
+                    "$ref": "#/components/examples/component"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateComponentRequest"
+              },
+              "examples": {
+                "log4jCore": {
+                  "$ref": "#/components/examples/createComponentRequest"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/publisher/components/{uuid}": {
+      "put": {
+        "operationId": "UpdateComponent",
+        "summary": "Update a component",
+        "description": "Apply only the fields listed in updateMask and preserve all unspecified fields.",
+        "tags": [
+          "Components"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-tea-proto-rpc": "UpdateComponent",
+        "x-reference-status": "implemented",
+        "x-canonical-contract": "proto/tea/v1/publisher.proto",
+        "responses": {
+          "200": {
+            "description": "The updated component.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Component"
+                },
+                "examples": {
+                  "updatedComponent": {
+                    "$ref": "#/components/examples/component"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/UuidPath"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateComponentBody"
+              },
+              "examples": {
+                "maskedUpdate": {
+                  "$ref": "#/components/examples/updateComponentBody"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "DeleteComponent",
+        "summary": "Delete a component",
+        "description": "Delete a component. When cascade=false, implementations should reject deletion if dependent releases still exist.",
+        "tags": [
+          "Components"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-tea-proto-rpc": "DeleteComponent",
+        "x-reference-status": "implemented",
+        "x-canonical-contract": "proto/tea/v1/publisher.proto",
+        "responses": {
+          "200": {
+            "description": "Deletion result including any cascaded component release deletions.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteComponentResponse"
+                },
+                "examples": {
+                  "deletedComponent": {
+                    "$ref": "#/components/examples/deleteComponentResponse"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/FailedPrecondition"
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/UuidPath"
+          },
+          {
+            "$ref": "#/components/parameters/CascadeQuery"
+          }
+        ]
+      }
+    },
+    "/v1/publisher/component-releases": {
+      "post": {
+        "operationId": "CreateComponentRelease",
+        "summary": "Create a component release",
+        "description": "Create a component release linked to an existing component.",
+        "tags": [
+          "Component Releases"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-tea-proto-rpc": "CreateComponentRelease",
+        "x-reference-status": "implemented",
+        "x-canonical-contract": "proto/tea/v1/publisher.proto",
+        "responses": {
+          "200": {
+            "description": "The created component release.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComponentRelease"
+                },
+                "examples": {
+                  "createdComponentRelease": {
+                    "$ref": "#/components/examples/componentRelease"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "409": {
+            "$ref": "#/components/responses/FailedPrecondition"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateComponentReleaseRequest"
+              },
+              "examples": {
+                "componentRelease": {
+                  "$ref": "#/components/examples/createComponentReleaseRequest"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/publisher/component-releases/{uuid}": {
+      "put": {
+        "operationId": "UpdateComponentRelease",
+        "summary": "Update a component release",
+        "description": "Apply only the fields listed in updateMask. Implementations must not allow preRelease to move from false back to true.",
+        "tags": [
+          "Component Releases"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-tea-proto-rpc": "UpdateComponentRelease",
+        "x-reference-status": "implemented",
+        "x-canonical-contract": "proto/tea/v1/publisher.proto",
+        "responses": {
+          "200": {
+            "description": "The updated component release.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComponentRelease"
+                },
+                "examples": {
+                  "updatedComponentRelease": {
+                    "$ref": "#/components/examples/componentRelease"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/UuidPath"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateComponentReleaseBody"
+              },
+              "examples": {
+                "maskedUpdate": {
+                  "$ref": "#/components/examples/updateComponentReleaseBody"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "DeleteComponentRelease",
+        "summary": "Delete a component release",
+        "description": "Delete one component release.",
+        "tags": [
+          "Component Releases"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-tea-proto-rpc": "DeleteComponentRelease",
+        "x-reference-status": "implemented",
+        "x-canonical-contract": "proto/tea/v1/publisher.proto",
+        "responses": {
+          "200": {
+            "description": "Deletion result for the addressed component release.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteComponentReleaseResponse"
+                },
+                "examples": {
+                  "deletedComponentRelease": {
+                    "$ref": "#/components/examples/deleteComponentReleaseResponse"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/UuidPath"
+          }
+        ]
+      }
+    },
+    "/v1/publisher/artifacts": {
+      "post": {
+        "operationId": "UploadArtifact",
+        "summary": "Upload an artifact",
+        "description": "Client-streaming artifact upload. The first frame carries metadata; subsequent frames carry content bytes. This remains intentionally unsupported in the current reference server.",
+        "tags": [
+          "Artifacts"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-tea-proto-rpc": "UploadArtifact",
+        "x-reference-status": "intentionally_unimplemented",
+        "x-canonical-contract": "proto/tea/v1/publisher.proto",
+        "responses": {
+          "200": {
+            "description": "The created immutable artifact.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Artifact"
+                },
+                "examples": {
+                  "artifact": {
+                    "$ref": "#/components/examples/artifact"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "422": {
+            "$ref": "#/components/responses/InvalidContent"
+          },
+          "501": {
+            "$ref": "#/components/responses/UnsupportedCapability"
+          }
+        },
+        "x-tea-streaming": "client",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-ndjson": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadArtifactFrame"
+              },
+              "examples": {
+                "metadataFrame": {
+                  "$ref": "#/components/examples/uploadArtifactMetadataFrame"
+                },
+                "contentFrame": {
+                  "$ref": "#/components/examples/uploadArtifactContentFrame"
+                }
+              }
+            }
+          },
+          "description": "Documentation-only HTTP framing for the client-streaming UploadArtifact RPC."
+        }
+      }
+    },
+    "/v1/publisher/artifacts/from-url": {
+      "post": {
+        "operationId": "CreateArtifactFromUrl",
+        "summary": "Register an artifact from a source URL",
+        "description": "Fetch immutable content from a source URL, verify declared checksums, and register the artifact metadata. Implementations may reject non-HTTPS or private-network URLs.",
+        "tags": [
+          "Artifacts"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-tea-proto-rpc": "CreateArtifactFromUrl",
+        "x-reference-status": "implemented",
+        "x-canonical-contract": "proto/tea/v1/publisher.proto",
+        "responses": {
+          "200": {
+            "description": "The created immutable artifact.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Artifact"
+                },
+                "examples": {
+                  "createdArtifact": {
+                    "$ref": "#/components/examples/artifact"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "422": {
+            "$ref": "#/components/responses/InvalidContent"
+          },
+          "502": {
+            "$ref": "#/components/responses/UpstreamFetchFailed"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateArtifactFromUrlRequest"
+              },
+              "examples": {
+                "artifactFromUrl": {
+                  "$ref": "#/components/examples/createArtifactFromUrlRequest"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/publisher/artifacts/{uuid}": {
+      "delete": {
+        "operationId": "DeleteArtifact",
+        "summary": "Delete an artifact",
+        "description": "Delete an artifact only when it is not referenced, unless the implementation explicitly supports safe force-delete semantics.",
+        "tags": [
+          "Artifacts"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-tea-proto-rpc": "DeleteArtifact",
+        "x-reference-status": "implemented",
+        "x-canonical-contract": "proto/tea/v1/publisher.proto",
+        "responses": {
+          "200": {
+            "description": "Deletion result for the addressed artifact.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteArtifactResponse"
+                },
+                "examples": {
+                  "deletedArtifact": {
+                    "$ref": "#/components/examples/deleteArtifactResponse"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/FailedPrecondition"
+          },
+          "501": {
+            "$ref": "#/components/responses/UnsupportedCapability"
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/UuidPath"
+          },
+          {
+            "$ref": "#/components/parameters/ForceQuery"
+          }
+        ]
+      }
+    },
+    "/v1/publisher/collections": {
+      "post": {
+        "operationId": "CreateCollection",
+        "summary": "Create version 1 of a collection",
+        "description": "Create version 1 of a logical collection stream. All referenced artifacts must already exist.",
+        "tags": [
+          "Collections"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-tea-proto-rpc": "CreateCollection",
+        "x-reference-status": "implemented",
+        "x-canonical-contract": "proto/tea/v1/publisher.proto",
+        "responses": {
+          "200": {
+            "description": "The created collection version.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Collection"
+                },
+                "examples": {
+                  "collection": {
+                    "$ref": "#/components/examples/collection"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "409": {
+            "$ref": "#/components/responses/FailedPrecondition"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCollectionRequest"
+              },
+              "examples": {
+                "collectionV1": {
+                  "$ref": "#/components/examples/createCollectionRequest"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/publisher/collections/{uuid}/versions": {
+      "post": {
+        "operationId": "UpdateCollection",
+        "summary": "Create a new immutable collection version",
+        "description": "Create the next immutable version of an existing collection. Prior versions remain addressable.",
+        "tags": [
+          "Collections"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-tea-proto-rpc": "UpdateCollection",
+        "x-reference-status": "implemented",
+        "x-canonical-contract": "proto/tea/v1/publisher.proto",
+        "responses": {
+          "200": {
+            "description": "The new collection version.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Collection"
+                },
+                "examples": {
+                  "collectionV2": {
+                    "$ref": "#/components/examples/collection"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/FailedPrecondition"
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/UuidPath"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCollectionBody"
+              },
+              "examples": {
+                "nextVersion": {
+                  "$ref": "#/components/examples/updateCollectionBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/publisher/collections/{uuid}/sign": {
+      "post": {
+        "operationId": "SignCollection",
+        "summary": "Sign a collection version",
+        "description": "Sign one collection version and return the updated metadata. This remains intentionally unsupported in the current reference server until a real signing and storage flow exists.",
+        "tags": [
+          "Collections"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-tea-proto-rpc": "SignCollection",
+        "x-reference-status": "intentionally_unimplemented",
+        "x-canonical-contract": "proto/tea/v1/publisher.proto",
+        "responses": {
+          "200": {
+            "description": "The signed collection version.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Collection"
+                },
+                "examples": {
+                  "collection": {
+                    "$ref": "#/components/examples/collection"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "501": {
+            "$ref": "#/components/responses/UnsupportedCapability"
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/UuidPath"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignCollectionBody"
+              },
+              "examples": {
+                "signVersion": {
+                  "$ref": "#/components/examples/signCollectionBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/publisher/artifacts/batch": {
+      "post": {
+        "operationId": "BatchUploadArtifacts",
+        "summary": "Batch upload artifacts",
+        "description": "Advanced optional client-streaming batch upload capability. This remains intentionally unsupported in the current reference server.",
+        "tags": [
+          "Artifacts"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-tea-proto-rpc": "BatchUploadArtifacts",
+        "x-reference-status": "intentionally_unimplemented",
+        "x-canonical-contract": "proto/tea/v1/publisher.proto",
+        "responses": {
+          "200": {
+            "description": "Per-artifact batch upload results.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchUploadArtifactsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "501": {
+            "$ref": "#/components/responses/UnsupportedCapability"
+          }
+        },
+        "x-tea-streaming": "client",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-ndjson": {
+              "schema": {
+                "$ref": "#/components/schemas/BatchUploadArtifactsFrame"
+              },
+              "examples": {
+                "batchMetadata": {
+                  "$ref": "#/components/examples/batchUploadArtifactsFrame"
+                }
+              }
+            }
+          },
+          "description": "Documentation-only HTTP framing for the client-streaming BatchUploadArtifacts RPC."
+        }
+      }
+    },
+    "/v1/publisher/import": {
+      "post": {
+        "operationId": "ImportCollection",
+        "summary": "Import collections and artifacts",
+        "description": "Advanced optional client-streaming migration capability for importing collections plus artifact data. This remains intentionally unsupported in the current reference server.",
+        "tags": [
+          "Collections"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-tea-proto-rpc": "ImportCollection",
+        "x-reference-status": "intentionally_unimplemented",
+        "x-canonical-contract": "proto/tea/v1/publisher.proto",
+        "responses": {
+          "200": {
+            "description": "Import summary and per-entity failures.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportCollectionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "501": {
+            "$ref": "#/components/responses/UnsupportedCapability"
+          }
+        },
+        "x-tea-streaming": "client",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-ndjson": {
+              "schema": {
+                "$ref": "#/components/schemas/ImportCollectionFrame"
+              },
+              "examples": {
+                "importMetadata": {
+                  "$ref": "#/components/examples/importCollectionFrame"
+                }
+              }
+            }
+          },
+          "description": "Documentation-only HTTP framing for the client-streaming ImportCollection RPC."
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "All publisher operations require authentication; deployments define the exact JWT issuer, audience, and write scope vocabulary."
+      }
+    },
+    "parameters": {
+      "UuidPath": {
+        "name": "uuid",
+        "in": "path",
+        "required": true,
+        "description": "UUID of the addressed TEA resource.",
+        "schema": {
+          "$ref": "#/components/schemas/Uuid"
+        }
+      },
+      "CascadeQuery": {
+        "name": "cascade",
+        "in": "query",
+        "required": false,
+        "description": "Whether dependent releases should also be deleted.",
+        "schema": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "ForceQuery": {
+        "name": "force",
+        "in": "query",
+        "required": false,
+        "description": "Whether deletion should proceed even if the artifact is referenced. Implementations may reject this flag when safe cleanup is not supported.",
+        "schema": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "schemas": {
+      "Uuid": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "Timestamp": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "FieldMask": {
+        "type": "string",
+        "description": "Protobuf FieldMask JSON encoding: a comma-separated list of lowerCamel field paths.",
+        "examples": [
+          "name,description",
+          "releaseDate,preRelease"
+        ]
+      },
+      "Identifier": {
+        "type": "object",
+        "properties": {
+          "idType": {
+            "type": "string",
+            "description": "Identifier enum name from tea.v1.IdentifierType.",
+            "examples": [
+              "IDENTIFIER_TYPE_PURL",
+              "IDENTIFIER_TYPE_TEI"
+            ]
+          },
+          "idValue": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "idType",
+          "idValue"
+        ],
+        "description": "Canonical identifier shape from proto/tea/v1/common.proto."
+      },
+      "Contact": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "phone": {
+            "type": "string"
+          }
+        },
+        "description": "Vendor contact details."
+      },
+      "Vendor": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "uuid": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "contacts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Contact"
+            }
+          }
+        },
+        "description": "Product vendor or publisher metadata."
+      },
+      "LicenseInfo": {
+        "type": "object",
+        "properties": {
+          "spdxId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "description": "License metadata for a component."
+      },
+      "Checksum": {
+        "type": "object",
+        "properties": {
+          "algType": {
+            "type": "string",
+            "description": "Checksum enum name from tea.v1.ChecksumAlgorithm.",
+            "examples": [
+              "CHECKSUM_ALGORITHM_SHA256"
+            ]
+          },
+          "algValue": {
+            "type": "string",
+            "pattern": "^[a-f0-9]+$"
+          }
+        },
+        "required": [
+          "algType",
+          "algValue"
+        ]
+      },
+      "Distribution": {
+        "type": "object",
+        "properties": {
+          "distributionType": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "identifiers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "signatureUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "checksums": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Checksum"
+            }
+          },
+          "sizeBytes": {
+            "type": "integer"
+          },
+          "mimeType": {
+            "type": "string"
+          }
+        },
+        "description": "A delivery-specific variant of a component release."
+      },
+      "Deprecation": {
+        "type": "object",
+        "description": "Canonical deprecation structure from proto/tea/v1/common.proto.",
+        "additionalProperties": true
+      },
+      "LifecycleStatus": {
+        "type": "object",
+        "description": "Lifecycle metadata from proto/tea/v1/product.proto.",
+        "additionalProperties": true
+      },
+      "ComponentRef": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "release": {
+            "$ref": "#/components/schemas/Uuid"
+          }
+        },
+        "required": [
+          "uuid"
+        ],
+        "description": "Reference to a component, optionally pinned to a specific component release."
+      },
+      "Product": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "identifiers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          "vendor": {
+            "$ref": "#/components/schemas/Vendor"
+          },
+          "createdDate": {
+            "$ref": "#/components/schemas/Timestamp"
+          },
+          "modifiedDate": {
+            "$ref": "#/components/schemas/Timestamp"
+          },
+          "homepageUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "documentationUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "vcsUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "deprecation": {
+            "$ref": "#/components/schemas/Deprecation"
+          }
+        },
+        "required": [
+          "uuid",
+          "name"
+        ],
+        "description": "Canonical product resource defined in proto/tea/v1/product.proto.",
+        "example": {
+          "uuid": "11111111-1111-4111-8111-111111111111",
+          "name": "Apache Log4j 2",
+          "description": "Java logging framework product line maintained by Apache.",
+          "identifiers": [
+            {
+              "idType": "IDENTIFIER_TYPE_PURL",
+              "idValue": "pkg:maven/org.apache.logging.log4j/log4j-core"
+            }
+          ],
+          "vendor": {
+            "name": "Apache Software Foundation",
+            "url": "https://logging.apache.org/log4j/2.x/"
+          },
+          "createdDate": "2026-03-28T15:00:00Z",
+          "modifiedDate": "2026-03-28T15:00:00Z",
+          "homepageUrl": "https://logging.apache.org/log4j/2.x/",
+          "documentationUrl": "https://logging.apache.org/log4j/2.x/manual/",
+          "vcsUrl": "https://github.com/apache/logging-log4j2"
+        }
+      },
+      "ProductRelease": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "product": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "version": {
+            "type": "string"
+          },
+          "createdDate": {
+            "$ref": "#/components/schemas/Timestamp"
+          },
+          "releaseDate": {
+            "$ref": "#/components/schemas/Timestamp"
+          },
+          "preRelease": {
+            "type": "boolean"
+          },
+          "identifiers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          "components": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ComponentRef"
+            }
+          },
+          "lifecycleStatus": {
+            "$ref": "#/components/schemas/LifecycleStatus"
+          },
+          "deprecation": {
+            "$ref": "#/components/schemas/Deprecation"
+          }
+        },
+        "required": [
+          "uuid",
+          "version"
+        ],
+        "description": "Canonical product release resource.",
+        "example": {
+          "uuid": "22222222-2222-4222-8222-222222222222",
+          "product": "11111111-1111-4111-8111-111111111111",
+          "version": "2.24.3",
+          "createdDate": "2026-03-28T15:02:00Z",
+          "releaseDate": "2026-03-01T00:00:00Z",
+          "preRelease": false,
+          "identifiers": [
+            {
+              "idType": "IDENTIFIER_TYPE_TEI",
+              "idValue": "urn:tei:uuid:cyclonedx.org:22222222-2222-4222-8222-222222222222"
+            }
+          ],
+          "components": [
+            {
+              "uuid": "33333333-3333-4333-8333-333333333333",
+              "release": "44444444-4444-4444-8444-444444444444"
+            }
+          ]
+        }
+      },
+      "Component": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "identifiers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          "createdDate": {
+            "$ref": "#/components/schemas/Timestamp"
+          },
+          "modifiedDate": {
+            "$ref": "#/components/schemas/Timestamp"
+          },
+          "componentType": {
+            "type": "string",
+            "description": "Enum name from tea.v1.ComponentType.",
+            "examples": [
+              "COMPONENT_TYPE_LIBRARY"
+            ]
+          },
+          "licenses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LicenseInfo"
+            }
+          },
+          "publisher": {
+            "type": "string"
+          },
+          "homepageUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "vcsUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "deprecation": {
+            "$ref": "#/components/schemas/Deprecation"
+          }
+        },
+        "required": [
+          "uuid",
+          "name"
+        ],
+        "description": "Canonical component resource defined in proto/tea/v1/component.proto.",
+        "example": {
+          "uuid": "33333333-3333-4333-8333-333333333333",
+          "name": "Apache Log4j Core",
+          "description": "Core logging library component.",
+          "identifiers": [
+            {
+              "idType": "IDENTIFIER_TYPE_PURL",
+              "idValue": "pkg:maven/org.apache.logging.log4j/log4j-core"
+            }
+          ],
+          "createdDate": "2026-03-28T15:03:00Z",
+          "modifiedDate": "2026-03-28T15:03:00Z",
+          "componentType": "COMPONENT_TYPE_LIBRARY",
+          "licenses": [
+            {
+              "spdxId": "Apache-2.0"
+            }
+          ],
+          "publisher": "Apache Software Foundation",
+          "homepageUrl": "https://logging.apache.org/log4j/2.x/",
+          "vcsUrl": "https://github.com/apache/logging-log4j2"
+        }
+      },
+      "ComponentRelease": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "component": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "version": {
+            "type": "string"
+          },
+          "createdDate": {
+            "$ref": "#/components/schemas/Timestamp"
+          },
+          "releaseDate": {
+            "$ref": "#/components/schemas/Timestamp"
+          },
+          "preRelease": {
+            "type": "boolean"
+          },
+          "identifiers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          "distributions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Distribution"
+            }
+          },
+          "deprecation": {
+            "$ref": "#/components/schemas/Deprecation"
+          }
+        },
+        "required": [
+          "uuid",
+          "component",
+          "version"
+        ],
+        "description": "Canonical component release resource.",
+        "example": {
+          "uuid": "44444444-4444-4444-8444-444444444444",
+          "component": "33333333-3333-4333-8333-333333333333",
+          "version": "2.24.3",
+          "createdDate": "2026-03-28T15:04:00Z",
+          "releaseDate": "2026-03-01T00:00:00Z",
+          "preRelease": false,
+          "identifiers": [
+            {
+              "idType": "IDENTIFIER_TYPE_PURL",
+              "idValue": "pkg:maven/org.apache.logging.log4j/log4j-core@2.24.3"
+            }
+          ],
+          "distributions": [
+            {
+              "distributionType": "jar",
+              "description": "Maven Central JAR",
+              "url": "https://repo1.maven.org/maven2/org/apache/logging/log4j/log4j-core/2.24.3/log4j-core-2.24.3.jar",
+              "checksums": [
+                {
+                  "algType": "CHECKSUM_ALGORITHM_SHA256",
+                  "algValue": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                }
+              ],
+              "sizeBytes": 2147483,
+              "mimeType": "application/java-archive"
+            }
+          ]
+        }
+      },
+      "ArtifactFormat": {
+        "type": "object",
+        "properties": {
+          "mimeType": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "signatureUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "checksums": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Checksum"
+            }
+          },
+          "sizeBytes": {
+            "type": "integer"
+          },
+          "encoding": {
+            "type": "string"
+          },
+          "specVersion": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "mimeType",
+          "url",
+          "checksums"
+        ]
+      },
+      "ArtifactSubject": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "Enum name from tea.v1.SubjectType.",
+            "examples": [
+              "SUBJECT_TYPE_COMPONENT"
+            ]
+          },
+          "identifiers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          "name": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          }
+        },
+        "description": "What an artifact describes."
+      },
+      "ArtifactMetadata": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "description": "Enum name from tea.v1.ArtifactType.",
+            "examples": [
+              "ARTIFACT_TYPE_BOM"
+            ]
+          },
+          "mimeType": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "componentDistributions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "subject": {
+            "$ref": "#/components/schemas/ArtifactSubject"
+          },
+          "specVersion": {
+            "type": "string"
+          },
+          "uuid": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "expectedChecksums": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Checksum"
+            }
+          }
+        },
+        "required": [
+          "name",
+          "type",
+          "mimeType"
+        ],
+        "description": "Artifact metadata used for upload or URL-backed registration."
+      },
+      "Artifact": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "description": "Enum name from tea.v1.ArtifactType.",
+            "examples": [
+              "ARTIFACT_TYPE_BOM"
+            ]
+          },
+          "componentDistributions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "formats": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ArtifactFormat"
+            },
+            "minItems": 1
+          },
+          "createdDate": {
+            "$ref": "#/components/schemas/Timestamp"
+          },
+          "description": {
+            "type": "string"
+          },
+          "subject": {
+            "$ref": "#/components/schemas/ArtifactSubject"
+          },
+          "deprecation": {
+            "$ref": "#/components/schemas/Deprecation"
+          }
+        },
+        "required": [
+          "uuid",
+          "name",
+          "type",
+          "formats"
+        ],
+        "description": "Canonical artifact resource defined in proto/tea/v1/artifact.proto.",
+        "example": {
+          "uuid": "55555555-5555-4555-8555-555555555555",
+          "name": "Log4j SBOM",
+          "type": "ARTIFACT_TYPE_BOM",
+          "componentDistributions": [
+            "jar"
+          ],
+          "formats": [
+            {
+              "mimeType": "application/vnd.cyclonedx+json",
+              "description": "CycloneDX SBOM (JSON)",
+              "url": "https://downloads.example.org/log4j/2.24.3/log4j-core-2.24.3.cdx.json",
+              "signatureUrl": "https://downloads.example.org/log4j/2.24.3/log4j-core-2.24.3.cdx.json.sig",
+              "checksums": [
+                {
+                  "algType": "CHECKSUM_ALGORITHM_SHA256",
+                  "algValue": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+                }
+              ],
+              "sizeBytes": 20480,
+              "specVersion": "1.6"
+            }
+          ],
+          "createdDate": "2026-03-28T15:05:00Z",
+          "description": "CycloneDX SBOM for Log4j Core 2.24.3.",
+          "subject": {
+            "type": "SUBJECT_TYPE_COMPONENT",
+            "name": "Apache Log4j Core",
+            "version": "2.24.3",
+            "identifiers": [
+              {
+                "idType": "IDENTIFIER_TYPE_PURL",
+                "idValue": "pkg:maven/org.apache.logging.log4j/log4j-core@2.24.3"
+              }
+            ]
+          }
+        }
+      },
+      "UpdateReason": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "Enum name from tea.v1.UpdateReasonType.",
+            "examples": [
+              "UPDATE_REASON_TYPE_ARTIFACT_UPDATED"
+            ]
+          },
+          "comment": {
+            "type": "string"
+          },
+          "affectedArtifactUuids": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Uuid"
+            }
+          }
+        },
+        "description": "Why a new collection version exists."
+      },
+      "SigstoreBundle": {
+        "type": "object",
+        "properties": {
+          "rekorLogUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "rekorLogId": {
+            "type": "string"
+          },
+          "fulcioCertificate": {
+            "type": "string"
+          },
+          "timestampAuthorityResponse": {
+            "type": "string",
+            "contentEncoding": "base64"
+          }
+        }
+      },
+      "CollectionSignature": {
+        "type": "object",
+        "properties": {
+          "algorithm": {
+            "type": "string",
+            "description": "Enum name from tea.v1.SignatureAlgorithm.",
+            "examples": [
+              "SIGNATURE_ALGORITHM_EDDSA"
+            ]
+          },
+          "value": {
+            "type": "string"
+          },
+          "signedAt": {
+            "$ref": "#/components/schemas/Timestamp"
+          },
+          "keyId": {
+            "type": "string"
+          },
+          "certificateChain": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "sigstoreBundle": {
+            "$ref": "#/components/schemas/SigstoreBundle"
+          }
+        },
+        "required": [
+          "algorithm",
+          "value"
+        ]
+      },
+      "Collection": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "date": {
+            "$ref": "#/components/schemas/Timestamp"
+          },
+          "belongsTo": {
+            "type": "string",
+            "description": "Enum name from tea.v1.CollectionScope.",
+            "examples": [
+              "COLLECTION_SCOPE_RELEASE"
+            ]
+          },
+          "updateReason": {
+            "$ref": "#/components/schemas/UpdateReason"
+          },
+          "artifacts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Artifact"
+            }
+          },
+          "signature": {
+            "$ref": "#/components/schemas/CollectionSignature"
+          },
+          "createdDate": {
+            "$ref": "#/components/schemas/Timestamp"
+          },
+          "deprecation": {
+            "$ref": "#/components/schemas/Deprecation"
+          },
+          "conformanceVectors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "uuid",
+          "version"
+        ],
+        "description": "Canonical collection resource defined in proto/tea/v1/collection.proto.",
+        "example": {
+          "uuid": "44444444-4444-4444-8444-444444444444",
+          "version": 2,
+          "date": "2026-03-28T15:06:00Z",
+          "belongsTo": "COLLECTION_SCOPE_RELEASE",
+          "updateReason": {
+            "type": "UPDATE_REASON_TYPE_ARTIFACT_ADDED",
+            "comment": "Add VEX alongside the original SBOM.",
+            "affectedArtifactUuids": [
+              "66666666-6666-4666-8666-666666666666"
+            ]
+          },
+          "artifacts": [
+            {
+              "uuid": "55555555-5555-4555-8555-555555555555",
+              "name": "Log4j SBOM",
+              "type": "ARTIFACT_TYPE_BOM",
+              "formats": [
+                {
+                  "mimeType": "application/vnd.cyclonedx+json",
+                  "url": "https://downloads.example.org/log4j/2.24.3/log4j-core-2.24.3.cdx.json",
+                  "checksums": [
+                    {
+                      "algType": "CHECKSUM_ALGORITHM_SHA256",
+                      "algValue": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "createdDate": "2026-03-28T15:06:00Z",
+          "conformanceVectors": [
+            "OWASP SCVS",
+            "SLSA"
+          ]
+        }
+      },
+      "CreateProductRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "description": {
+            "type": "string"
+          },
+          "identifiers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          "vendor": {
+            "$ref": "#/components/schemas/Vendor"
+          },
+          "homepageUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "documentationUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "vcsUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "uuid": {
+            "$ref": "#/components/schemas/Uuid"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "example": {
+          "uuid": "11111111-1111-4111-8111-111111111111",
+          "name": "Apache Log4j 2",
+          "description": "Java logging framework product line maintained by Apache.",
+          "identifiers": [
+            {
+              "idType": "IDENTIFIER_TYPE_PURL",
+              "idValue": "pkg:maven/org.apache.logging.log4j/log4j-core"
+            }
+          ],
+          "vendor": {
+            "name": "Apache Software Foundation",
+            "url": "https://logging.apache.org/log4j/2.x/"
+          },
+          "homepageUrl": "https://logging.apache.org/log4j/2.x/",
+          "documentationUrl": "https://logging.apache.org/log4j/2.x/manual/",
+          "vcsUrl": "https://github.com/apache/logging-log4j2"
+        }
+      },
+      "UpdateProductBody": {
+        "type": "object",
+        "properties": {
+          "updateMask": {
+            "$ref": "#/components/schemas/FieldMask"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "identifiers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          "vendor": {
+            "$ref": "#/components/schemas/Vendor"
+          },
+          "homepageUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "documentationUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "vcsUrl": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "description": "Body fields for UpdateProduct. The resource UUID is carried in the path and maps to the protobuf uuid field.",
+        "example": {
+          "updateMask": "description,documentationUrl",
+          "description": "Java logging framework product line with maintained transparency metadata.",
+          "documentationUrl": "https://logging.apache.org/log4j/2.x/manual/index.html"
+        }
+      },
+      "DeleteProductResponse": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "releasesDeleted": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "uuid"
+        ],
+        "example": {
+          "uuid": "11111111-1111-4111-8111-111111111111",
+          "releasesDeleted": 2
+        }
+      },
+      "CreateProductReleaseRequest": {
+        "type": "object",
+        "properties": {
+          "productUuid": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "version": {
+            "type": "string",
+            "minLength": 1
+          },
+          "releaseDate": {
+            "$ref": "#/components/schemas/Timestamp"
+          },
+          "preRelease": {
+            "type": "boolean"
+          },
+          "identifiers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          "components": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ComponentRef"
+            }
+          },
+          "uuid": {
+            "$ref": "#/components/schemas/Uuid"
+          }
+        },
+        "required": [
+          "version"
+        ],
+        "example": {
+          "uuid": "22222222-2222-4222-8222-222222222222",
+          "productUuid": "11111111-1111-4111-8111-111111111111",
+          "version": "2.24.3",
+          "releaseDate": "2026-03-01T00:00:00Z",
+          "preRelease": false,
+          "identifiers": [
+            {
+              "idType": "IDENTIFIER_TYPE_TEI",
+              "idValue": "urn:tei:uuid:cyclonedx.org:22222222-2222-4222-8222-222222222222"
+            }
+          ],
+          "components": [
+            {
+              "uuid": "33333333-3333-4333-8333-333333333333",
+              "release": "44444444-4444-4444-8444-444444444444"
+            }
+          ]
+        }
+      },
+      "UpdateProductReleaseBody": {
+        "type": "object",
+        "properties": {
+          "updateMask": {
+            "$ref": "#/components/schemas/FieldMask"
+          },
+          "version": {
+            "type": "string"
+          },
+          "releaseDate": {
+            "$ref": "#/components/schemas/Timestamp"
+          },
+          "preRelease": {
+            "type": "boolean"
+          },
+          "identifiers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          "components": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ComponentRef"
+            }
+          }
+        },
+        "description": "Body fields for UpdateProductRelease. Unspecified fields must be preserved.",
+        "example": {
+          "updateMask": "releaseDate,preRelease",
+          "releaseDate": "2026-03-02T00:00:00Z",
+          "preRelease": false
+        }
+      },
+      "DeleteProductReleaseResponse": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "$ref": "#/components/schemas/Uuid"
+          }
+        },
+        "required": [
+          "uuid"
+        ],
+        "example": {
+          "uuid": "22222222-2222-4222-8222-222222222222"
+        }
+      },
+      "CreateComponentRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": {
+            "type": "string"
+          },
+          "identifiers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          "componentType": {
+            "type": "string",
+            "description": "Enum name from tea.v1.ComponentType."
+          },
+          "licenses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LicenseInfo"
+            }
+          },
+          "publisher": {
+            "type": "string"
+          },
+          "homepageUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "vcsUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "uuid": {
+            "$ref": "#/components/schemas/Uuid"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "example": {
+          "uuid": "33333333-3333-4333-8333-333333333333",
+          "name": "Apache Log4j Core",
+          "description": "Core logging library component.",
+          "identifiers": [
+            {
+              "idType": "IDENTIFIER_TYPE_PURL",
+              "idValue": "pkg:maven/org.apache.logging.log4j/log4j-core"
+            }
+          ],
+          "componentType": "COMPONENT_TYPE_LIBRARY",
+          "licenses": [
+            {
+              "spdxId": "Apache-2.0"
+            }
+          ],
+          "publisher": "Apache Software Foundation",
+          "homepageUrl": "https://logging.apache.org/log4j/2.x/",
+          "vcsUrl": "https://github.com/apache/logging-log4j2"
+        }
+      },
+      "UpdateComponentBody": {
+        "type": "object",
+        "properties": {
+          "updateMask": {
+            "$ref": "#/components/schemas/FieldMask"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "identifiers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          "componentType": {
+            "type": "string",
+            "description": "Enum name from tea.v1.ComponentType."
+          },
+          "licenses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LicenseInfo"
+            }
+          },
+          "publisher": {
+            "type": "string"
+          },
+          "homepageUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "vcsUrl": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "description": "Body fields for UpdateComponent. The path UUID maps to the protobuf uuid field.",
+        "example": {
+          "updateMask": "description,homepageUrl",
+          "description": "Core logging library component with transparency metadata.",
+          "homepageUrl": "https://logging.apache.org/log4j/2.x/components.html"
+        }
+      },
+      "DeleteComponentResponse": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "releasesDeleted": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "uuid"
+        ],
+        "example": {
+          "uuid": "33333333-3333-4333-8333-333333333333",
+          "releasesDeleted": 1
+        }
+      },
+      "CreateComponentReleaseRequest": {
+        "type": "object",
+        "properties": {
+          "componentUuid": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "version": {
+            "type": "string",
+            "minLength": 1
+          },
+          "releaseDate": {
+            "$ref": "#/components/schemas/Timestamp"
+          },
+          "preRelease": {
+            "type": "boolean"
+          },
+          "identifiers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          "distributions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Distribution"
+            }
+          },
+          "uuid": {
+            "$ref": "#/components/schemas/Uuid"
+          }
+        },
+        "required": [
+          "componentUuid",
+          "version"
+        ],
+        "example": {
+          "uuid": "44444444-4444-4444-8444-444444444444",
+          "componentUuid": "33333333-3333-4333-8333-333333333333",
+          "version": "2.24.3",
+          "releaseDate": "2026-03-01T00:00:00Z",
+          "preRelease": false,
+          "identifiers": [
+            {
+              "idType": "IDENTIFIER_TYPE_PURL",
+              "idValue": "pkg:maven/org.apache.logging.log4j/log4j-core@2.24.3"
+            }
+          ],
+          "distributions": [
+            {
+              "distributionType": "jar",
+              "description": "Maven Central JAR",
+              "url": "https://repo1.maven.org/maven2/org/apache/logging/log4j/log4j-core/2.24.3/log4j-core-2.24.3.jar",
+              "checksums": [
+                {
+                  "algType": "CHECKSUM_ALGORITHM_SHA256",
+                  "algValue": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                }
+              ],
+              "sizeBytes": 2147483,
+              "mimeType": "application/java-archive"
+            }
+          ]
+        }
+      },
+      "UpdateComponentReleaseBody": {
+        "type": "object",
+        "properties": {
+          "updateMask": {
+            "$ref": "#/components/schemas/FieldMask"
+          },
+          "version": {
+            "type": "string"
+          },
+          "releaseDate": {
+            "$ref": "#/components/schemas/Timestamp"
+          },
+          "preRelease": {
+            "type": "boolean"
+          },
+          "identifiers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Identifier"
+            }
+          },
+          "distributions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Distribution"
+            }
+          }
+        },
+        "description": "Body fields for UpdateComponentRelease. Implementations must not allow preRelease to move from false back to true.",
+        "example": {
+          "updateMask": "releaseDate,identifiers",
+          "releaseDate": "2026-03-02T00:00:00Z",
+          "identifiers": [
+            {
+              "idType": "IDENTIFIER_TYPE_PURL",
+              "idValue": "pkg:maven/org.apache.logging.log4j/log4j-core@2.24.3"
+            }
+          ]
+        }
+      },
+      "DeleteComponentReleaseResponse": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "$ref": "#/components/schemas/Uuid"
+          }
+        },
+        "required": [
+          "uuid"
+        ],
+        "example": {
+          "uuid": "44444444-4444-4444-8444-444444444444"
+        }
+      },
+      "UploadArtifactFrame": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "metadata": {
+                "$ref": "#/components/schemas/ArtifactMetadata"
+              }
+            },
+            "required": [
+              "metadata"
+            ],
+            "description": "First frame: artifact metadata."
+          },
+          {
+            "type": "object",
+            "properties": {
+              "content": {
+                "type": "string",
+                "contentEncoding": "base64"
+              }
+            },
+            "required": [
+              "content"
+            ],
+            "description": "Subsequent frames: artifact content chunks encoded as base64."
+          }
+        ],
+        "description": "Client-streaming upload frame. Metadata must be sent before any content chunks.",
+        "example": {
+          "metadata": {
+            "uuid": "55555555-5555-4555-8555-555555555555",
+            "name": "Log4j SBOM",
+            "type": "ARTIFACT_TYPE_BOM",
+            "mimeType": "application/vnd.cyclonedx+json",
+            "description": "CycloneDX SBOM for Log4j Core 2.24.3.",
+            "subject": {
+              "type": "SUBJECT_TYPE_COMPONENT",
+              "name": "Apache Log4j Core",
+              "version": "2.24.3",
+              "identifiers": [
+                {
+                  "idType": "IDENTIFIER_TYPE_PURL",
+                  "idValue": "pkg:maven/org.apache.logging.log4j/log4j-core@2.24.3"
+                }
+              ]
+            },
+            "componentDistributions": [
+              "jar"
+            ],
+            "specVersion": "1.6",
+            "expectedChecksums": [
+              {
+                "algType": "CHECKSUM_ALGORITHM_SHA256",
+                "algValue": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+              }
+            ]
+          }
+        }
+      },
+      "CreateArtifactFromUrlRequest": {
+        "type": "object",
+        "properties": {
+          "metadata": {
+            "$ref": "#/components/schemas/ArtifactMetadata"
+          },
+          "sourceUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "expectedChecksums": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Checksum"
+            }
+          },
+          "signatureUrl": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "required": [
+          "metadata",
+          "sourceUrl"
+        ],
+        "example": {
+          "metadata": {
+            "uuid": "55555555-5555-4555-8555-555555555555",
+            "name": "Log4j SBOM",
+            "type": "ARTIFACT_TYPE_BOM",
+            "mimeType": "application/vnd.cyclonedx+json",
+            "description": "CycloneDX SBOM for Log4j Core 2.24.3.",
+            "subject": {
+              "type": "SUBJECT_TYPE_COMPONENT",
+              "name": "Apache Log4j Core",
+              "version": "2.24.3",
+              "identifiers": [
+                {
+                  "idType": "IDENTIFIER_TYPE_PURL",
+                  "idValue": "pkg:maven/org.apache.logging.log4j/log4j-core@2.24.3"
+                }
+              ]
+            },
+            "componentDistributions": [
+              "jar"
+            ],
+            "specVersion": "1.6",
+            "expectedChecksums": [
+              {
+                "algType": "CHECKSUM_ALGORITHM_SHA256",
+                "algValue": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+              }
+            ]
+          },
+          "sourceUrl": "https://downloads.example.org/log4j/2.24.3/log4j-core-2.24.3.cdx.json",
+          "signatureUrl": "https://downloads.example.org/log4j/2.24.3/log4j-core-2.24.3.cdx.json.sig",
+          "expectedChecksums": [
+            {
+              "algType": "CHECKSUM_ALGORITHM_SHA256",
+              "algValue": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            }
+          ]
+        }
+      },
+      "DeleteArtifactResponse": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "affectedCollectionUuids": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Uuid"
+            }
+          }
+        },
+        "required": [
+          "uuid"
+        ],
+        "example": {
+          "uuid": "55555555-5555-4555-8555-555555555555",
+          "affectedCollectionUuids": []
+        }
+      },
+      "CreateCollectionRequest": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "belongsTo": {
+            "type": "string",
+            "description": "Enum name from tea.v1.CollectionScope.",
+            "examples": [
+              "COLLECTION_SCOPE_RELEASE"
+            ]
+          },
+          "artifactUuids": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Uuid"
+            }
+          },
+          "updateReason": {
+            "$ref": "#/components/schemas/UpdateReason"
+          }
+        },
+        "required": [
+          "uuid",
+          "belongsTo"
+        ],
+        "example": {
+          "uuid": "44444444-4444-4444-8444-444444444444",
+          "belongsTo": "COLLECTION_SCOPE_RELEASE",
+          "artifactUuids": [
+            "55555555-5555-4555-8555-555555555555"
+          ],
+          "updateReason": {
+            "type": "UPDATE_REASON_TYPE_INITIAL_RELEASE",
+            "comment": "Initial transparency artifact publication.",
+            "affectedArtifactUuids": [
+              "55555555-5555-4555-8555-555555555555"
+            ]
+          }
+        }
+      },
+      "UpdateCollectionBody": {
+        "type": "object",
+        "properties": {
+          "artifactUuids": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Uuid"
+            }
+          },
+          "updateReason": {
+            "$ref": "#/components/schemas/UpdateReason"
+          }
+        },
+        "required": [
+          "updateReason"
+        ],
+        "description": "Body fields for UpdateCollection. The path UUID maps to the protobuf uuid field and creates a new immutable collection version.",
+        "example": {
+          "artifactUuids": [
+            "55555555-5555-4555-8555-555555555555",
+            "66666666-6666-4666-8666-666666666666"
+          ],
+          "updateReason": {
+            "type": "UPDATE_REASON_TYPE_ARTIFACT_ADDED",
+            "comment": "Add VEX alongside the original SBOM.",
+            "affectedArtifactUuids": [
+              "66666666-6666-4666-8666-666666666666"
+            ]
+          }
+        }
+      },
+      "SignCollectionBody": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "keyId": {
+            "type": "string"
+          },
+          "useSigstore": {
+            "type": "boolean"
+          }
+        },
+        "description": "Signing parameters for one collection version.",
+        "example": {
+          "version": 2,
+          "keyId": "sigstore-prod-key",
+          "useSigstore": true
+        }
+      },
+      "BatchArtifactMetadata": {
+        "type": "object",
+        "properties": {
+          "totalCount": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "collectionUuid": {
+            "$ref": "#/components/schemas/Uuid"
+          }
+        },
+        "required": [
+          "totalCount"
+        ]
+      },
+      "BatchUploadArtifactsFrame": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "batchMetadata": {
+                "$ref": "#/components/schemas/BatchArtifactMetadata"
+              }
+            },
+            "required": [
+              "batchMetadata"
+            ],
+            "description": "First frame: batch metadata."
+          },
+          {
+            "type": "object",
+            "properties": {
+              "artifact": {
+                "$ref": "#/components/schemas/UploadArtifactFrame"
+              }
+            },
+            "required": [
+              "artifact"
+            ],
+            "description": "Subsequent frames: nested per-artifact frames."
+          }
+        ],
+        "description": "Client-streaming batch upload frame.",
+        "example": {
+          "batchMetadata": {
+            "totalCount": 2,
+            "collectionUuid": "44444444-4444-4444-8444-444444444444"
+          }
+        }
+      },
+      "BatchUploadError": {
+        "type": "object",
+        "properties": {
+          "index": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "error": {
+            "$ref": "#/components/schemas/ErrorDetail"
+          }
+        },
+        "required": [
+          "index",
+          "error"
+        ]
+      },
+      "BatchUploadArtifactsResponse": {
+        "type": "object",
+        "properties": {
+          "artifacts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Artifact"
+            }
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BatchUploadError"
+            }
+          }
+        }
+      },
+      "ImportMetadata": {
+        "type": "object",
+        "properties": {
+          "sourceSystem": {
+            "type": "string"
+          },
+          "totalCollections": {
+            "type": "integer"
+          },
+          "totalArtifacts": {
+            "type": "integer"
+          },
+          "overwrite": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ArtifactFormatContent": {
+        "type": "object",
+        "properties": {
+          "mimeType": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string",
+            "contentEncoding": "base64"
+          }
+        },
+        "required": [
+          "mimeType",
+          "content"
+        ]
+      },
+      "ArtifactWithContent": {
+        "type": "object",
+        "properties": {
+          "artifact": {
+            "$ref": "#/components/schemas/Artifact"
+          },
+          "formatContents": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ArtifactFormatContent"
+            }
+          }
+        },
+        "required": [
+          "artifact",
+          "formatContents"
+        ]
+      },
+      "ImportCollectionFrame": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "importMetadata": {
+                "$ref": "#/components/schemas/ImportMetadata"
+              }
+            },
+            "required": [
+              "importMetadata"
+            ],
+            "description": "First frame: import session metadata."
+          },
+          {
+            "type": "object",
+            "properties": {
+              "collection": {
+                "$ref": "#/components/schemas/Collection"
+              }
+            },
+            "required": [
+              "collection"
+            ],
+            "description": "Collection payload frame."
+          },
+          {
+            "type": "object",
+            "properties": {
+              "artifact": {
+                "$ref": "#/components/schemas/ArtifactWithContent"
+              }
+            },
+            "required": [
+              "artifact"
+            ],
+            "description": "Artifact payload frame with embedded content."
+          }
+        ],
+        "description": "Client-streaming import frame.",
+        "example": {
+          "importMetadata": {
+            "sourceSystem": "legacy-tea",
+            "totalCollections": 1,
+            "totalArtifacts": 2,
+            "overwrite": false
+          }
+        }
+      },
+      "ImportError": {
+        "type": "object",
+        "properties": {
+          "entityType": {
+            "type": "string"
+          },
+          "uuid": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "error": {
+            "$ref": "#/components/schemas/ErrorDetail"
+          }
+        },
+        "required": [
+          "entityType",
+          "error"
+        ]
+      },
+      "ImportCollectionResponse": {
+        "type": "object",
+        "properties": {
+          "collectionsImported": {
+            "type": "integer"
+          },
+          "artifactsImported": {
+            "type": "integer"
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ImportError"
+            }
+          }
+        }
+      },
+      "ErrorDetail": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "Enum name from tea.v1.ErrorCode.",
+            "examples": [
+              "ERROR_CODE_INVALID_ARGUMENT"
+            ]
+          },
+          "message": {
+            "type": "string"
+          },
+          "field": {
+            "type": "string"
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ]
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "Enum name from tea.v1.ErrorCode.",
+            "examples": [
+              "ERROR_CODE_INVALID_ARGUMENT"
+            ]
+          },
+          "message": {
+            "type": "string"
+          },
+          "details": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ErrorDetail"
+            }
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "documentationUrl": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ],
+        "description": "Canonical error envelope from proto/tea/v1/common.proto.",
+        "example": {
+          "code": "ERROR_CODE_INVALID_ARGUMENT",
+          "message": "updateMask includes unsupported field 'fooBar'",
+          "details": [
+            {
+              "code": "ERROR_CODE_INVALID_ARGUMENT",
+              "message": "unsupported update mask path",
+              "field": "updateMask",
+              "metadata": {
+                "path": "fooBar"
+              }
+            }
+          ],
+          "requestId": "req-1234abcd"
+        }
+      }
+    },
+    "responses": {
+      "InvalidRequest": {
+        "description": "The request was malformed, failed validation, or violated a canonical publisher rule.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
+            "examples": {
+              "invalidRequest": {
+                "$ref": "#/components/examples/errorResponse"
+              }
+            }
+          }
+        }
+      },
+      "Unauthenticated": {
+        "description": "Authentication is required for every publisher operation.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
+            "examples": {
+              "unauthenticated": {
+                "$ref": "#/components/examples/errorResponse"
+              }
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "The addressed publisher resource does not exist.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
+            "examples": {
+              "notFound": {
+                "$ref": "#/components/examples/errorResponse"
+              }
+            }
+          }
+        }
+      },
+      "FailedPrecondition": {
+        "description": "The request was rejected because referential integrity or explicit cascade policy requirements were not met.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
+            "examples": {
+              "failedPrecondition": {
+                "$ref": "#/components/examples/errorResponse"
+              }
+            }
+          }
+        }
+      },
+      "InvalidContent": {
+        "description": "The request payload or fetched content failed checksum or semantic verification.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
+            "examples": {
+              "invalidContent": {
+                "$ref": "#/components/examples/errorResponse"
+              }
+            }
+          }
+        }
+      },
+      "UpstreamFetchFailed": {
+        "description": "The server could not safely fetch or verify the requested upstream artifact content.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
+            "examples": {
+              "upstreamFetchFailed": {
+                "$ref": "#/components/examples/errorResponse"
+              }
+            }
+          }
+        }
+      },
+      "UnsupportedCapability": {
+        "description": "This optional publisher capability remains intentionally unsupported in the current reference implementation and must fail explicitly.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
+            "examples": {
+              "unsupportedCapability": {
+                "$ref": "#/components/examples/errorResponse"
+              }
+            }
+          }
+        }
+      }
+    },
+    "examples": {
+      "createProductRequest": {
+        "summary": "Create a product for the Log4j product line",
+        "value": {
+          "uuid": "11111111-1111-4111-8111-111111111111",
+          "name": "Apache Log4j 2",
+          "description": "Java logging framework product line maintained by Apache.",
+          "identifiers": [
+            {
+              "idType": "IDENTIFIER_TYPE_PURL",
+              "idValue": "pkg:maven/org.apache.logging.log4j/log4j-core"
+            }
+          ],
+          "vendor": {
+            "name": "Apache Software Foundation",
+            "url": "https://logging.apache.org/log4j/2.x/"
+          },
+          "homepageUrl": "https://logging.apache.org/log4j/2.x/",
+          "documentationUrl": "https://logging.apache.org/log4j/2.x/manual/",
+          "vcsUrl": "https://github.com/apache/logging-log4j2"
+        }
+      },
+      "product": {
+        "summary": "Created product resource",
+        "value": {
+          "uuid": "11111111-1111-4111-8111-111111111111",
+          "name": "Apache Log4j 2",
+          "description": "Java logging framework product line maintained by Apache.",
+          "identifiers": [
+            {
+              "idType": "IDENTIFIER_TYPE_PURL",
+              "idValue": "pkg:maven/org.apache.logging.log4j/log4j-core"
+            }
+          ],
+          "vendor": {
+            "name": "Apache Software Foundation",
+            "url": "https://logging.apache.org/log4j/2.x/"
+          },
+          "createdDate": "2026-03-28T15:00:00Z",
+          "modifiedDate": "2026-03-28T15:00:00Z",
+          "homepageUrl": "https://logging.apache.org/log4j/2.x/",
+          "documentationUrl": "https://logging.apache.org/log4j/2.x/manual/",
+          "vcsUrl": "https://github.com/apache/logging-log4j2"
+        }
+      },
+      "updateProductBody": {
+        "summary": "Update selected product fields with an update mask",
+        "value": {
+          "updateMask": "description,documentationUrl",
+          "description": "Java logging framework product line with maintained transparency metadata.",
+          "documentationUrl": "https://logging.apache.org/log4j/2.x/manual/index.html"
+        }
+      },
+      "deleteProductResponse": {
+        "summary": "Deleted product with cascaded release cleanup",
+        "value": {
+          "uuid": "11111111-1111-4111-8111-111111111111",
+          "releasesDeleted": 2
+        }
+      },
+      "createProductReleaseRequest": {
+        "summary": "Create product release 2.24.3",
+        "value": {
+          "uuid": "22222222-2222-4222-8222-222222222222",
+          "productUuid": "11111111-1111-4111-8111-111111111111",
+          "version": "2.24.3",
+          "releaseDate": "2026-03-01T00:00:00Z",
+          "preRelease": false,
+          "identifiers": [
+            {
+              "idType": "IDENTIFIER_TYPE_TEI",
+              "idValue": "urn:tei:uuid:cyclonedx.org:22222222-2222-4222-8222-222222222222"
+            }
+          ],
+          "components": [
+            {
+              "uuid": "33333333-3333-4333-8333-333333333333",
+              "release": "44444444-4444-4444-8444-444444444444"
+            }
+          ]
+        }
+      },
+      "productRelease": {
+        "summary": "Created product release resource",
+        "value": {
+          "uuid": "22222222-2222-4222-8222-222222222222",
+          "product": "11111111-1111-4111-8111-111111111111",
+          "version": "2.24.3",
+          "createdDate": "2026-03-28T15:02:00Z",
+          "releaseDate": "2026-03-01T00:00:00Z",
+          "preRelease": false,
+          "identifiers": [
+            {
+              "idType": "IDENTIFIER_TYPE_TEI",
+              "idValue": "urn:tei:uuid:cyclonedx.org:22222222-2222-4222-8222-222222222222"
+            }
+          ],
+          "components": [
+            {
+              "uuid": "33333333-3333-4333-8333-333333333333",
+              "release": "44444444-4444-4444-8444-444444444444"
+            }
+          ]
+        }
+      },
+      "updateProductReleaseBody": {
+        "summary": "Update selected product release fields",
+        "value": {
+          "updateMask": "releaseDate,preRelease",
+          "releaseDate": "2026-03-02T00:00:00Z",
+          "preRelease": false
+        }
+      },
+      "deleteProductReleaseResponse": {
+        "summary": "Deleted product release",
+        "value": {
+          "uuid": "22222222-2222-4222-8222-222222222222"
+        }
+      },
+      "createComponentRequest": {
+        "summary": "Create a component lineage",
+        "value": {
+          "uuid": "33333333-3333-4333-8333-333333333333",
+          "name": "Apache Log4j Core",
+          "description": "Core logging library component.",
+          "identifiers": [
+            {
+              "idType": "IDENTIFIER_TYPE_PURL",
+              "idValue": "pkg:maven/org.apache.logging.log4j/log4j-core"
+            }
+          ],
+          "componentType": "COMPONENT_TYPE_LIBRARY",
+          "licenses": [
+            {
+              "spdxId": "Apache-2.0"
+            }
+          ],
+          "publisher": "Apache Software Foundation",
+          "homepageUrl": "https://logging.apache.org/log4j/2.x/",
+          "vcsUrl": "https://github.com/apache/logging-log4j2"
+        }
+      },
+      "component": {
+        "summary": "Created component resource",
+        "value": {
+          "uuid": "33333333-3333-4333-8333-333333333333",
+          "name": "Apache Log4j Core",
+          "description": "Core logging library component.",
+          "identifiers": [
+            {
+              "idType": "IDENTIFIER_TYPE_PURL",
+              "idValue": "pkg:maven/org.apache.logging.log4j/log4j-core"
+            }
+          ],
+          "createdDate": "2026-03-28T15:03:00Z",
+          "modifiedDate": "2026-03-28T15:03:00Z",
+          "componentType": "COMPONENT_TYPE_LIBRARY",
+          "licenses": [
+            {
+              "spdxId": "Apache-2.0"
+            }
+          ],
+          "publisher": "Apache Software Foundation",
+          "homepageUrl": "https://logging.apache.org/log4j/2.x/",
+          "vcsUrl": "https://github.com/apache/logging-log4j2"
+        }
+      },
+      "updateComponentBody": {
+        "summary": "Update a component description and homepage",
+        "value": {
+          "updateMask": "description,homepageUrl",
+          "description": "Core logging library component with transparency metadata.",
+          "homepageUrl": "https://logging.apache.org/log4j/2.x/components.html"
+        }
+      },
+      "deleteComponentResponse": {
+        "summary": "Deleted component with cascaded release cleanup",
+        "value": {
+          "uuid": "33333333-3333-4333-8333-333333333333",
+          "releasesDeleted": 1
+        }
+      },
+      "createComponentReleaseRequest": {
+        "summary": "Create component release 2.24.3",
+        "value": {
+          "uuid": "44444444-4444-4444-8444-444444444444",
+          "componentUuid": "33333333-3333-4333-8333-333333333333",
+          "version": "2.24.3",
+          "releaseDate": "2026-03-01T00:00:00Z",
+          "preRelease": false,
+          "identifiers": [
+            {
+              "idType": "IDENTIFIER_TYPE_PURL",
+              "idValue": "pkg:maven/org.apache.logging.log4j/log4j-core@2.24.3"
+            }
+          ],
+          "distributions": [
+            {
+              "distributionType": "jar",
+              "description": "Maven Central JAR",
+              "url": "https://repo1.maven.org/maven2/org/apache/logging/log4j/log4j-core/2.24.3/log4j-core-2.24.3.jar",
+              "checksums": [
+                {
+                  "algType": "CHECKSUM_ALGORITHM_SHA256",
+                  "algValue": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                }
+              ],
+              "sizeBytes": 2147483,
+              "mimeType": "application/java-archive"
+            }
+          ]
+        }
+      },
+      "componentRelease": {
+        "summary": "Created component release resource",
+        "value": {
+          "uuid": "44444444-4444-4444-8444-444444444444",
+          "component": "33333333-3333-4333-8333-333333333333",
+          "version": "2.24.3",
+          "createdDate": "2026-03-28T15:04:00Z",
+          "releaseDate": "2026-03-01T00:00:00Z",
+          "preRelease": false,
+          "identifiers": [
+            {
+              "idType": "IDENTIFIER_TYPE_PURL",
+              "idValue": "pkg:maven/org.apache.logging.log4j/log4j-core@2.24.3"
+            }
+          ],
+          "distributions": [
+            {
+              "distributionType": "jar",
+              "description": "Maven Central JAR",
+              "url": "https://repo1.maven.org/maven2/org/apache/logging/log4j/log4j-core/2.24.3/log4j-core-2.24.3.jar",
+              "checksums": [
+                {
+                  "algType": "CHECKSUM_ALGORITHM_SHA256",
+                  "algValue": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                }
+              ],
+              "sizeBytes": 2147483,
+              "mimeType": "application/java-archive"
+            }
+          ]
+        }
+      },
+      "updateComponentReleaseBody": {
+        "summary": "Update selected component release fields",
+        "value": {
+          "updateMask": "releaseDate,identifiers",
+          "releaseDate": "2026-03-02T00:00:00Z",
+          "identifiers": [
+            {
+              "idType": "IDENTIFIER_TYPE_PURL",
+              "idValue": "pkg:maven/org.apache.logging.log4j/log4j-core@2.24.3"
+            }
+          ]
+        }
+      },
+      "deleteComponentReleaseResponse": {
+        "summary": "Deleted component release",
+        "value": {
+          "uuid": "44444444-4444-4444-8444-444444444444"
+        }
+      },
+      "uploadArtifactMetadataFrame": {
+        "summary": "First upload frame containing artifact metadata",
+        "value": {
+          "metadata": {
+            "uuid": "55555555-5555-4555-8555-555555555555",
+            "name": "Log4j SBOM",
+            "type": "ARTIFACT_TYPE_BOM",
+            "mimeType": "application/vnd.cyclonedx+json",
+            "description": "CycloneDX SBOM for Log4j Core 2.24.3.",
+            "subject": {
+              "type": "SUBJECT_TYPE_COMPONENT",
+              "name": "Apache Log4j Core",
+              "version": "2.24.3",
+              "identifiers": [
+                {
+                  "idType": "IDENTIFIER_TYPE_PURL",
+                  "idValue": "pkg:maven/org.apache.logging.log4j/log4j-core@2.24.3"
+                }
+              ]
+            },
+            "componentDistributions": [
+              "jar"
+            ],
+            "specVersion": "1.6",
+            "expectedChecksums": [
+              {
+                "algType": "CHECKSUM_ALGORITHM_SHA256",
+                "algValue": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+              }
+            ]
+          }
+        }
+      },
+      "uploadArtifactContentFrame": {
+        "summary": "Subsequent upload frame containing content bytes",
+        "value": {
+          "content": "ZXhhbXBsZS1hcnRpZmFjdC1ieXRlcy0x"
+        }
+      },
+      "createArtifactFromUrlRequest": {
+        "summary": "Register a CycloneDX SBOM from an immutable URL",
+        "value": {
+          "metadata": {
+            "uuid": "55555555-5555-4555-8555-555555555555",
+            "name": "Log4j SBOM",
+            "type": "ARTIFACT_TYPE_BOM",
+            "mimeType": "application/vnd.cyclonedx+json",
+            "description": "CycloneDX SBOM for Log4j Core 2.24.3.",
+            "subject": {
+              "type": "SUBJECT_TYPE_COMPONENT",
+              "name": "Apache Log4j Core",
+              "version": "2.24.3",
+              "identifiers": [
+                {
+                  "idType": "IDENTIFIER_TYPE_PURL",
+                  "idValue": "pkg:maven/org.apache.logging.log4j/log4j-core@2.24.3"
+                }
+              ]
+            },
+            "componentDistributions": [
+              "jar"
+            ],
+            "specVersion": "1.6",
+            "expectedChecksums": [
+              {
+                "algType": "CHECKSUM_ALGORITHM_SHA256",
+                "algValue": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+              }
+            ]
+          },
+          "sourceUrl": "https://downloads.example.org/log4j/2.24.3/log4j-core-2.24.3.cdx.json",
+          "signatureUrl": "https://downloads.example.org/log4j/2.24.3/log4j-core-2.24.3.cdx.json.sig",
+          "expectedChecksums": [
+            {
+              "algType": "CHECKSUM_ALGORITHM_SHA256",
+              "algValue": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            }
+          ]
+        }
+      },
+      "artifact": {
+        "summary": "Registered immutable artifact resource",
+        "value": {
+          "uuid": "55555555-5555-4555-8555-555555555555",
+          "name": "Log4j SBOM",
+          "type": "ARTIFACT_TYPE_BOM",
+          "componentDistributions": [
+            "jar"
+          ],
+          "formats": [
+            {
+              "mimeType": "application/vnd.cyclonedx+json",
+              "description": "CycloneDX SBOM (JSON)",
+              "url": "https://downloads.example.org/log4j/2.24.3/log4j-core-2.24.3.cdx.json",
+              "signatureUrl": "https://downloads.example.org/log4j/2.24.3/log4j-core-2.24.3.cdx.json.sig",
+              "checksums": [
+                {
+                  "algType": "CHECKSUM_ALGORITHM_SHA256",
+                  "algValue": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+                }
+              ],
+              "sizeBytes": 20480,
+              "specVersion": "1.6"
+            }
+          ],
+          "createdDate": "2026-03-28T15:05:00Z",
+          "description": "CycloneDX SBOM for Log4j Core 2.24.3.",
+          "subject": {
+            "type": "SUBJECT_TYPE_COMPONENT",
+            "name": "Apache Log4j Core",
+            "version": "2.24.3",
+            "identifiers": [
+              {
+                "idType": "IDENTIFIER_TYPE_PURL",
+                "idValue": "pkg:maven/org.apache.logging.log4j/log4j-core@2.24.3"
+              }
+            ]
+          }
+        }
+      },
+      "deleteArtifactResponse": {
+        "summary": "Deleted artifact that was not referenced",
+        "value": {
+          "uuid": "55555555-5555-4555-8555-555555555555",
+          "affectedCollectionUuids": []
+        }
+      },
+      "createCollectionRequest": {
+        "summary": "Create version 1 of a component release collection",
+        "value": {
+          "uuid": "44444444-4444-4444-8444-444444444444",
+          "belongsTo": "COLLECTION_SCOPE_RELEASE",
+          "artifactUuids": [
+            "55555555-5555-4555-8555-555555555555"
+          ],
+          "updateReason": {
+            "type": "UPDATE_REASON_TYPE_INITIAL_RELEASE",
+            "comment": "Initial transparency artifact publication.",
+            "affectedArtifactUuids": [
+              "55555555-5555-4555-8555-555555555555"
+            ]
+          }
+        }
+      },
+      "updateCollectionBody": {
+        "summary": "Create a new immutable collection version",
+        "value": {
+          "artifactUuids": [
+            "55555555-5555-4555-8555-555555555555",
+            "66666666-6666-4666-8666-666666666666"
+          ],
+          "updateReason": {
+            "type": "UPDATE_REASON_TYPE_ARTIFACT_ADDED",
+            "comment": "Add VEX alongside the original SBOM.",
+            "affectedArtifactUuids": [
+              "66666666-6666-4666-8666-666666666666"
+            ]
+          }
+        }
+      },
+      "collection": {
+        "summary": "Versioned collection resource",
+        "value": {
+          "uuid": "44444444-4444-4444-8444-444444444444",
+          "version": 2,
+          "date": "2026-03-28T15:06:00Z",
+          "belongsTo": "COLLECTION_SCOPE_RELEASE",
+          "updateReason": {
+            "type": "UPDATE_REASON_TYPE_ARTIFACT_ADDED",
+            "comment": "Add VEX alongside the original SBOM.",
+            "affectedArtifactUuids": [
+              "66666666-6666-4666-8666-666666666666"
+            ]
+          },
+          "artifacts": [
+            {
+              "uuid": "55555555-5555-4555-8555-555555555555",
+              "name": "Log4j SBOM",
+              "type": "ARTIFACT_TYPE_BOM",
+              "formats": [
+                {
+                  "mimeType": "application/vnd.cyclonedx+json",
+                  "url": "https://downloads.example.org/log4j/2.24.3/log4j-core-2.24.3.cdx.json",
+                  "checksums": [
+                    {
+                      "algType": "CHECKSUM_ALGORITHM_SHA256",
+                      "algValue": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "createdDate": "2026-03-28T15:06:00Z",
+          "conformanceVectors": [
+            "OWASP SCVS",
+            "SLSA"
+          ]
+        }
+      },
+      "signCollectionBody": {
+        "summary": "Request signing of collection version 2",
+        "value": {
+          "version": 2,
+          "keyId": "sigstore-prod-key",
+          "useSigstore": true
+        }
+      },
+      "batchUploadArtifactsFrame": {
+        "summary": "First batch upload frame with batch metadata",
+        "value": {
+          "batchMetadata": {
+            "totalCount": 2,
+            "collectionUuid": "44444444-4444-4444-8444-444444444444"
+          }
+        }
+      },
+      "importCollectionFrame": {
+        "summary": "First import frame with session metadata",
+        "value": {
+          "importMetadata": {
+            "sourceSystem": "legacy-tea",
+            "totalCollections": 1,
+            "totalArtifacts": 2,
+            "overwrite": false
+          }
+        }
+      },
+      "errorResponse": {
+        "summary": "Structured validation error",
+        "value": {
+          "code": "ERROR_CODE_INVALID_ARGUMENT",
+          "message": "updateMask includes unsupported field 'fooBar'",
+          "details": [
+            {
+              "code": "ERROR_CODE_INVALID_ARGUMENT",
+              "message": "unsupported update mask path",
+              "field": "updateMask",
+              "metadata": {
+                "path": "fooBar"
+              }
+            }
+          ],
+          "requestId": "req-1234abcd"
+        }
+      }
+    }
+  }
 }

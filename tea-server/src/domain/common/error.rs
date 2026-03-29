@@ -8,8 +8,6 @@ pub enum RepositoryError {
     Conflict,
     #[error("Database error: {0}")]
     Database(#[from] sqlx::Error),
-    #[error("Redis error: {0}")]
-    Redis(#[from] redis::RedisError),
 }
 
 #[derive(Error, Debug)]

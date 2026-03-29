@@ -1,6 +1,7 @@
 # Buf V2 code generation configuration for TEA
 # https://buf.build/docs/configuration/v2/buf-gen-yaml
 version: v2
+clean: true
 
 # Code generation plugins
 plugins:
@@ -17,12 +18,6 @@ plugins:
       - paths=source_relative
       - require_unimplemented_servers=false
 
-  # Rust protobuf messages and gRPC stubs
-  - remote: buf.build/protocolbuffers/rust:v26.1
-    out: ../../tea-server/gen
-    opt:
-      - experimental_allow_proto3_optional
-
 managed:
   enabled: true
   disable:
@@ -31,3 +26,5 @@ managed:
 inputs:
   # Generate from local proto files
   - directory: .
+    exclude_paths:
+      - .buf-deps

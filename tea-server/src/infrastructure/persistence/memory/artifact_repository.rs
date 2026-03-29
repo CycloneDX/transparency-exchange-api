@@ -4,9 +4,9 @@ use std::sync::Arc;
 use tokio::sync::RwLock;
 use uuid::Uuid;
 
-use crate::domain::common::error::RepositoryError;
 use crate::domain::artifact::entity::Artifact;
 use crate::domain::artifact::repository::ArtifactRepository;
+use crate::domain::common::error::RepositoryError;
 
 pub struct InMemoryArtifactRepository {
     storage: Arc<RwLock<HashMap<Uuid, Artifact>>>,

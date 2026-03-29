@@ -5,6 +5,8 @@ version: v2
 modules:
   - path: .
     name: buf.build/cyclonedx/tea
+    excludes:
+      - .buf-deps
 
 # Dependencies from Buf Schema Registry
 deps:
@@ -21,6 +23,12 @@ lint:
   except:
     # Allow v1 instead of requiring v1beta1 for initial release
     - PACKAGE_VERSION_SUFFIX
+    # TEA intentionally returns canonical resource messages directly for many
+    # read/write RPCs, so the standard request/response wrapper naming rules
+    # are too restrictive for this schema.
+    - RPC_REQUEST_RESPONSE_UNIQUE
+    - RPC_REQUEST_STANDARD_NAME
+    - RPC_RESPONSE_STANDARD_NAME
   disallow_comment_ignores: true
   enum_zero_value_suffix: _UNSPECIFIED
   rpc_allow_same_request_response: false

@@ -70,12 +70,18 @@ impl ComponentRepository for InMemoryComponentRepository {
         Ok(())
     }
 
-    async fn find_release_by_uuid(&self, uuid: &Uuid) -> Result<Option<ComponentRelease>, RepositoryError> {
+    async fn find_release_by_uuid(
+        &self,
+        uuid: &Uuid,
+    ) -> Result<Option<ComponentRelease>, RepositoryError> {
         let storage = self.release_storage.read().await;
         Ok(storage.get(uuid).cloned())
     }
 
-    async fn find_releases_by_component(&self, component_uuid: &Uuid) -> Result<Vec<ComponentRelease>, RepositoryError> {
+    async fn find_releases_by_component(
+        &self,
+        component_uuid: &Uuid,
+    ) -> Result<Vec<ComponentRelease>, RepositoryError> {
         let storage = self.release_storage.read().await;
         let releases: Vec<ComponentRelease> = storage
             .values()

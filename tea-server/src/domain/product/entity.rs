@@ -27,6 +27,31 @@ pub struct Product {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ProductRelease {
+    #[serde(skip_deserializing, default)]
+    pub uuid: Uuid,
+    pub product_uuid: Uuid,
+    pub version: String,
+    #[serde(skip_deserializing, default = "crate::domain::common::now")]
+    pub created_date: DateTime<Utc>,
+    #[serde(skip_deserializing, default = "crate::domain::common::now")]
+    pub modified_date: DateTime<Utc>,
+    pub release_date: Option<DateTime<Utc>>,
+    #[serde(default)]
+    pub pre_release: bool,
+    #[serde(default)]
+    pub identifiers: Vec<Identifier>,
+    #[serde(default)]
+    pub components: Vec<ComponentRef>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct ComponentRef {
+    pub component_uuid: Uuid,
+    pub release_uuid: Uuid,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Vendor {
     /// Vendor display name — required.
     pub name: String,

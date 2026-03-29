@@ -14,28 +14,67 @@ on:
     paths:
       - 'tea-server/**'
       - 'proto/**'
+      - 'spec/**'
+      - 'tools/**'
       - '.github/workflows/ci.yaml'
   pull_request:
     branches: [main]
     paths:
       - 'tea-server/**'
       - 'proto/**'
+      - 'spec/**'
+      - 'tools/**'
       - '.github/workflows/ci.yaml'
 
 permissions:
   contents: read
 
 env:
+  BUF_VERSION: "1.66.1"
   CARGO_TERM_COLOR: always
   RUST_BACKTRACE: 1
 
 jobs:
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Proto verification
+  # ─────────────────────────────────────────────────────────────────────────────
+  proto:
+    name: Proto Verify
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Buf CLI
+        uses: bufbuild/buf-setup-action@v1
+        with:
+          version: ${{ env.BUF_VERSION }}
+
+      - name: Install protoc
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y protobuf-compiler
+
+      - name: Cache cargo artifacts
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: tea-server -> target
+          key: ${{ runner.os }}-rust-${{ hashFiles('tea-server/Cargo.lock') }}
+
+      - name: Verify proto pipeline
+        run: make -C proto verify
+
   # ─────────────────────────────────────────────────────────────────────────────
   # Build and Test
   # ─────────────────────────────────────────────────────────────────────────────
   build:
     name: Build & Test
     runs-on: ubuntu-latest
+    needs: proto
     defaults:
       run:
         working-directory: tea-server
@@ -49,11 +88,24 @@ jobs:
         with:
           components: clippy, rustfmt
 
+      - name: Install Buf CLI
+        uses: bufbuild/buf-setup-action@v1
+        with:
+          version: ${{ env.BUF_VERSION }}
+
+      - name: Install protoc
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y protobuf-compiler
+
       - name: Cache cargo artifacts
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: tea-server -> target
           key: ${{ runner.os }}-rust-${{ hashFiles('tea-server/Cargo.lock') }}
+
+      - name: Export proto dependencies
+        run: make -C ../proto export-deps
 
       - name: Check formatting
         run: cargo fmt -- --check
@@ -64,11 +116,73 @@ jobs:
       - name: Run clippy
         run: cargo clippy -- -D warnings
 
-      - name: Run tests
-        run: cargo test --locked
-        env:
-          # Disable integration tests that need Docker
-          RUST_TEST_SKIP_INTEGRATION: 1
+      - name: Run unit and binary tests
+        run: cargo test --locked --lib --bins
+
+      - name: Validate publisher conformance checklist
+        run: python3 ../tools/validate_publisher_conformance.py
+
+      - name: Check generated publisher OpenAPI profile
+        run: python3 ../tools/generate_publisher_openapi.py --check
+
+      - name: Check generated aggregate OpenAPI publisher fragment
+        run: python3 ../tools/render_aggregate_openapi_publisher_fragment.py --check
+
+      - name: Check generated aggregate OpenAPI publisher block
+        run: python3 ../tools/sync_aggregate_openapi_publisher_block.py --check
+
+      - name: Check generated sbom-tools publisher examples
+        run: python3 ../tools/render_sbom_tools_publisher_examples.py --check
+
+      - name: Check generated sbom-tools reqwest snippets
+        run: python3 ../tools/render_sbom_tools_reqwest_snippets.py --check
+
+      - name: Validate publisher OpenAPI profile
+        run: python3 ../tools/validate_publisher_openapi.py
+
+      - name: Render publisher conformance report
+        run: python3 ../tools/render_publisher_conformance_report.py --output ../publisher-conformance-report.md --html-output ../publisher-conformance-report.html --summary-output ../publisher-conformance-summary.md
+
+      - name: Check publisher release-doc bundle inputs
+        run: python3 ../tools/build_publisher_release_doc_bundle.py --check
+
+      - name: Publish publisher conformance summary
+        if: ${{ always() }}
+        run: cat ../publisher-conformance-summary.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Build publisher release-doc bundle
+        run: python3 ../tools/build_publisher_release_doc_bundle.py --output-dir ../publisher-release-doc-bundle
+
+      - name: Validate publisher release-doc bundle
+        run: python3 ../tools/validate_publisher_release_doc_bundle.py --bundle-dir ../publisher-release-doc-bundle
+
+      - name: Run publisher gRPC reference-profile tests
+        run: cargo test --locked --test grpc_smoke --test publisher_conformance --test publisher_capability_coverage
+
+      - name: Upload publisher conformance reports
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: publisher-conformance-report
+          path: |
+            publisher-conformance-report.md
+            publisher-conformance-report.html
+            publisher-conformance-summary.md
+          if-no-files-found: ignore
+
+      - name: Upload publisher release-doc bundle
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: publisher-release-doc-bundle
+          path: |
+            publisher-release-doc-bundle
+            publisher-release-doc-bundle.tar.gz
+            publisher-release-doc-bundle.tar.gz.sha256
+          if-no-files-found: ignore
+
+      - name: Run doctests
+        run: cargo test --locked --doc
 
   # ─────────────────────────────────────────────────────────────────────────────
   # Security Audit
@@ -111,10 +225,23 @@ jobs:
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
 
+      - name: Install Buf CLI
+        uses: bufbuild/buf-setup-action@v1
+        with:
+          version: ${{ env.BUF_VERSION }}
+
+      - name: Install protoc
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y protobuf-compiler
+
       - name: Cache cargo artifacts
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: tea-server -> target
+
+      - name: Export proto dependencies
+        run: make -C ../proto export-deps
 
       - name: Run integration tests
         run: cargo test --test integration
@@ -138,10 +265,23 @@ jobs:
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
 
+      - name: Install Buf CLI
+        uses: bufbuild/buf-setup-action@v1
+        with:
+          version: ${{ env.BUF_VERSION }}
+
+      - name: Install protoc
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y protobuf-compiler
+
       - name: Cache cargo artifacts
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: tea-server -> target
+
+      - name: Export proto dependencies
+        run: make -C ../proto export-deps
 
       - name: Run E2E conformance tests
         run: cargo test --test e2e_conformance

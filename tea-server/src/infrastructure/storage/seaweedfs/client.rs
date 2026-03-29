@@ -1,5 +1,5 @@
-use aws_sdk_s3::Client;
 use anyhow::Result;
+use aws_sdk_s3::Client;
 
 pub struct SeaweedFSClient {
     client: Client,

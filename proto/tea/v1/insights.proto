@@ -292,29 +292,45 @@ message VulnerabilitySummary {
 
 // VulnerabilitySeverity levels.
 enum VulnerabilitySeverity {
+  // Severity could not be determined.
   VULNERABILITY_SEVERITY_UNSPECIFIED = 0;
+  // No vulnerability is present.
   VULNERABILITY_SEVERITY_NONE = 1;
+  // Vulnerability has low impact.
   VULNERABILITY_SEVERITY_LOW = 2;
+  // Vulnerability has medium impact.
   VULNERABILITY_SEVERITY_MEDIUM = 3;
+  // Vulnerability has high impact.
   VULNERABILITY_SEVERITY_HIGH = 4;
+  // Vulnerability has critical impact.
   VULNERABILITY_SEVERITY_CRITICAL = 5;
 }
 
 // VulnerabilityCounts by severity.
 message VulnerabilityCounts {
+  // Number of critical vulnerabilities.
   int32 critical = 1;
+  // Number of high-severity vulnerabilities.
   int32 high = 2;
+  // Number of medium-severity vulnerabilities.
   int32 medium = 3;
+  // Number of low-severity vulnerabilities.
   int32 low = 4;
+  // Number of explicitly non-applicable vulnerabilities.
   int32 none = 5;
+  // Number of vulnerabilities with unknown severity.
   int32 unknown = 6;
 }
 
 // VexStatusCounts by VEX status.
 message VexStatusCounts {
+  // Number of affected findings.
   int32 affected = 1;
+  // Number of findings marked not affected.
   int32 not_affected = 2;
+  // Number of findings marked fixed.
   int32 fixed = 3;
+  // Number of findings still under investigation.
   int32 under_investigation = 4 [json_name = "underInvestigation"];
 }
 
@@ -344,10 +360,15 @@ message VulnerabilityInfo {
 
 // VexStatus from VEX documents.
 enum VexStatus {
+  // No VEX status is available.
   VEX_STATUS_UNSPECIFIED = 0;
+  // The product is affected by the vulnerability.
   VEX_STATUS_AFFECTED = 1;
+  // The product is not affected by the vulnerability.
   VEX_STATUS_NOT_AFFECTED = 2;
+  // The vulnerability has been fixed.
   VEX_STATUS_FIXED = 3;
+  // Impact analysis is still in progress.
   VEX_STATUS_UNDER_INVESTIGATION = 4;
 }
 

@@ -44,6 +44,7 @@ services:
         condition: service_healthy
     environment:
       # Database connection
+      TEA_PERSISTENCE_BACKEND: postgres
       TEA_DATABASE_URL: postgres://tea:tea-dev-password@postgres:5432/tea
       
       # JWT configuration (dev only - use secure secret in production)
@@ -51,6 +52,9 @@ services:
       
       # Server configuration
       TEA_PORT: 8734
+      TEA_GRPC_ENABLED: "true"
+      TEA_GRPC_PORT: 50051
+      TEA_GRPC_PUBLISHER_ENABLED: "false"
       TEA_SERVER_URL: http://localhost:8734
       
       # Logging
@@ -63,21 +67,8 @@ services:
       TEA_SIGNING_MODE: disabled
     ports:
       - "8734:8734"
+      - "50051:50051"
     restart: unless-stopped
-
-  # ─────────────────────────────────────────────────────────────────────────────
-  # Redis (optional, for distributed rate limiting)
-  # ─────────────────────────────────────────────────────────────────────────────
-  redis:
-    image: redis:7-alpine
-    container_name: tea-redis
-    ports:
-      - "6379:6379"
-    profiles:
-      - redis
-    volumes:
-      - redis_data:/data
 
 volumes:
   postgres_data:
-  redis_data:

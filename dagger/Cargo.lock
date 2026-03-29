@@ -9,6 +9,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "320119579fcad9c21884f5c4861d16174d0e06250625266f50fe6898340abefa"
 
 [[package]]
+name = "anyhow"
+version = "1.0.102"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7f202df86484c868dbad7eaa557ef785d5c66295e41b460ef922eca0723b842c"
+
+[[package]]
 name = "async-trait"
 version = "0.1.89"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -130,9 +136,9 @@ dependencies = [
 
 [[package]]
 name = "dagger-sdk"
-version = "0.9.8"
+version = "0.20.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "79bc59868e62ea1451f158aeb8fbb36c5dd2fb098f31bf408dbd165251674edf"
+checksum = "a5c6556e786a750ca94de6b018ac8392cebf1311e2c6f0203ec2aec682e2968e"
 dependencies = [
  "async-trait",
  "base64",
@@ -147,6 +153,7 @@ dependencies = [
  "platform-info",
  "reqwest",
  "serde",
+ "serde_graphql_input",
  "serde_json",
  "sha2",
  "tar",
@@ -1168,6 +1175,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "serde_graphql_input"
+version = "0.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e7b3ed302fb48549bd1b0df59d180655f0eb621d71a3924c68e1af9aed4f6a6a"
+dependencies = [
+ "anyhow",
+ "itoa",
+ "serde",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
 name = "serde_json"
 version = "1.0.148"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1354,6 +1374,7 @@ name = "tea-dagger"
 version = "0.1.0"
 dependencies = [
  "dagger-sdk",
+ "eyre",
  "tokio",
 ]
 

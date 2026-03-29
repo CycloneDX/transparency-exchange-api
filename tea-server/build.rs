@@ -1,58 +1,106 @@
+use std::{
+    fs,
+    path::{Path, PathBuf},
+};
+
 fn main() {
     let proto_root = "../proto";
+    let buf_export_dir = format!("{proto_root}/.buf-deps");
 
-    let mut include_dirs: Vec<String> = vec![proto_root.to_string()];
-
-    let common_include_candidates: &[&str] = &["/usr/local/include", "/usr/include"];
-    for candidate in common_include_candidates {
-        if std::path::Path::new(&format!("{candidate}/google/api/annotations.proto")).exists() {
-            include_dirs.push(candidate.to_string());
-            break;
-        }
+    if !Path::new(&buf_export_dir).exists() {
+        panic!(
+            "missing exported Buf dependencies at {buf_export_dir}; run `make -C ../proto export-deps` before building tea-server"
+        );
     }
 
-    let result = tonic_build::configure()
+    // Compile the full TEA surface so Rust bindings stay in lockstep with Buf.
+    tonic_build::configure()
         .build_server(true)
-        .build_client(false)
-        .out_dir("src/gen")
+        .build_client(true)
         .compile_protos(
             &[
-                "../proto/tea/v1/publisher.proto",
+                "../proto/tea/v1/common.proto",
                 "../proto/tea/v1/product.proto",
                 "../proto/tea/v1/component.proto",
                 "../proto/tea/v1/artifact.proto",
                 "../proto/tea/v1/collection.proto",
-                "../proto/tea/v1/common.proto",
+                "../proto/tea/v1/discovery.proto",
+                "../proto/tea/v1/consumer.proto",
+                "../proto/tea/v1/publisher.proto",
+                "../proto/tea/v1/insights.proto",
             ],
-            &include_dirs
-                .iter()
-                .map(|s| s.as_str())
-                .collect::<Vec<_>>(),
-        );
+            &[proto_root, &buf_export_dir],
+        )
+        .unwrap_or_else(|e| panic!("failed to compile TEA protobuf definitions: {e}"));
 
-    if let Err(e) = result {
-        let err_str = e.to_string();
-        // L4 fix: only suppress errors that are clearly caused by missing well-known
-        // proto dependencies (validate.proto, annotations.proto, etc.) that aren't
-        // bundled in the build environment.
-        // Real structural errors (syntax, type errors, import cycles) propagate so CI
-        // catches proto regressions.
-        let is_missing_dep = err_str.contains("File not found")
-            || err_str.contains("not found")
-            || err_str.contains("No such file")
-            || err_str.contains("validate.proto")
-            || err_str.contains("annotations.proto");
+    let out_dir = PathBuf::from(std::env::var("OUT_DIR").expect("OUT_DIR must be set"));
+    for generated in ["buf.validate.rs", "google.api.rs"] {
+        strip_generated_docs(&out_dir.join(generated));
+    }
+    normalize_generated_docs(&out_dir.join("tea.v1.rs"));
 
-        if is_missing_dep {
-            println!(
-                "cargo:warning=protoc compilation skipped — proto dependencies not found: {e}"
-            );
+    println!("cargo:rerun-if-changed=../proto/buf.yaml");
+    println!("cargo:rerun-if-changed=../proto/buf.gen.yaml");
+    println!("cargo:rerun-if-changed=../proto/buf.lock");
+    println!("cargo:rerun-if-changed=../proto/tea");
+}
+
+fn normalize_generated_docs(path: &Path) {
+    let Ok(contents) = fs::read_to_string(path) else {
+        return;
+    };
+
+    let mut normalized = String::with_capacity(contents.len());
+    let mut in_fence = false;
+    let mut changed = false;
+
+    for line in contents.lines() {
+        if line.trim_end() == "/// ```" {
+            if in_fence {
+                normalized.push_str("/// ```\n");
+            } else {
+                // Generated dependency docs often contain proto or grammar examples,
+                // which rustdoc otherwise tries to compile as Rust doctests.
+                normalized.push_str("/// ```text\n");
+            }
+            in_fence = !in_fence;
+            changed = true;
         } else {
-            // Propagate real proto errors
-            panic!("protoc failed with a structural error: {e}");
+            normalized.push_str(line);
+            normalized.push('\n');
         }
     }
 
-    // Re-run if proto files change
-    println!("cargo:rerun-if-changed=../proto");
+    if changed {
+        fs::write(path, normalized).unwrap_or_else(|e| {
+            panic!(
+                "failed to normalize generated docs for {}: {e}",
+                path.display()
+            )
+        });
+    }
+}
+
+fn strip_generated_docs(path: &Path) {
+    let Ok(contents) = fs::read_to_string(path) else {
+        return;
+    };
+
+    let mut stripped = String::with_capacity(contents.len());
+    let mut changed = false;
+
+    for line in contents.lines() {
+        if line.trim_start().starts_with("///") {
+            changed = true;
+            continue;
+        }
+        stripped.push_str(line);
+        stripped.push('\n');
+    }
+
+    if changed {
+        fs::write(path, stripped).unwrap_or_else(|e| {
+            panic!("failed to strip generated docs for {}: {e}", path.display())
+        });
+    }
 }

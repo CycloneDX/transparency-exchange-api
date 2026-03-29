@@ -6,7 +6,9 @@ use super::repository::ArtifactRepository;
 use crate::domain::common::deprecation::Deprecation;
 use crate::domain::common::error::DomainError;
 use crate::domain::common::pagination::{Page, PaginationParams};
-use crate::domain::common::validation::{validate_max_len, validate_non_empty, validate_optional_url, validate_url};
+use crate::domain::common::validation::{
+    validate_max_len, validate_non_empty, validate_optional_url, validate_url,
+};
 
 pub struct ArtifactService<R: ArtifactRepository> {
     repository: R,
@@ -16,6 +18,29 @@ impl<R> ArtifactService<R>
 where
     R: ArtifactRepository + Send + Sync,
 {
+    fn validate_artifact(artifact: &Artifact) -> Result<(), DomainError> {
+        validate_non_empty("name", &artifact.name)?;
+        validate_max_len("name", &artifact.name, 4096)?;
+
+        if artifact.formats.is_empty() {
+            return Err(DomainError::Validation(
+                "Artifact must have at least one format".to_string(),
+            ));
+        }
+
+        for (i, fmt) in artifact.formats.iter().enumerate() {
+            validate_url(&format!("formats[{i}].url"), &fmt.url)?;
+            if let Some(ref sig_url) = fmt.signature_url {
+                validate_optional_url(
+                    &format!("formats[{i}].signature_url"),
+                    &Some(sig_url.clone()),
+                )?;
+            }
+        }
+
+        Ok(())
+    }
+
     pub fn new(repository: R) -> Self {
         Self { repository }
     }
@@ -27,30 +52,24 @@ where
             .map_err(DomainError::Repository)
     }
 
-    pub async fn list_artifacts(&self, params: PaginationParams) -> Result<Page<Artifact>, DomainError> {
-        let all = self.repository.find_by_name("").await.map_err(DomainError::Repository)?;
+    pub async fn list_artifacts(
+        &self,
+        params: PaginationParams,
+    ) -> Result<Page<Artifact>, DomainError> {
+        let all = self
+            .repository
+            .find_by_name("")
+            .await
+            .map_err(DomainError::Repository)?;
         Ok(Page::new(all, &params))
     }
 
     pub async fn create_artifact(&self, mut artifact: Artifact) -> Result<Artifact, DomainError> {
-        validate_non_empty("name", &artifact.name)?;
-        validate_max_len("name", &artifact.name, 4096)?;
+        Self::validate_artifact(&artifact)?;
 
-        if artifact.formats.is_empty() {
-            return Err(DomainError::Validation(
-                "Artifact must have at least one format".to_string(),
-            ));
+        if artifact.uuid.is_nil() {
+            artifact.uuid = Uuid::new_v4();
         }
-
-        // H3 fix: validate all format URLs
-        for (i, fmt) in artifact.formats.iter().enumerate() {
-            validate_url(&format!("formats[{i}].url"), &fmt.url)?;
-            if let Some(ref sig_url) = fmt.signature_url {
-                validate_optional_url(&format!("formats[{i}].signature_url"), &Some(sig_url.clone()))?;
-            }
-        }
-
-        artifact.uuid = Uuid::new_v4();
         artifact.created_date = Utc::now();
         artifact.modified_date = Utc::now();
 
@@ -62,6 +81,7 @@ where
     }
 
     pub async fn update_artifact(&self, mut artifact: Artifact) -> Result<Artifact, DomainError> {
+        Self::validate_artifact(&artifact)?;
         artifact.modified_date = Utc::now();
         self.repository
             .update(&artifact)

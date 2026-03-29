@@ -752,7 +752,7 @@ C4Container
         Container(auth, "Auth Interceptor", "Rust", "Token/mTLS validation")
         
         ContainerDb(postgres, "PostgreSQL", "PostgreSQL 16", "Metadata store")
-        ContainerDb(redis, "Redis", "Redis 7", "Cache, rate limits")
+        ContainerDb(valkey, "Valkey", "Valkey 8", "Optional distributed cache, rate limits")
     }
     
     Container_Ext(storage, "SeaweedFS", "Object Storage", "Artifact blobs")
@@ -768,7 +768,7 @@ C4Container
     Rel(insights, postgres, "Queries", "SQL")
     Rel(consumer, storage, "Reads", "S3")
     Rel(publisher, storage, "Writes", "S3")
-    Rel(gateway, redis, "Caches", "Redis Protocol")
+    Rel(gateway, valkey, "Caches when enabled", "RESP")
     Rel(gateway, otel, "Exports", "OTLP")
 ```
 
@@ -779,7 +779,7 @@ C4Container
 | Language | Rust | Memory safety, performance, type safety |
 | Web Framework | Axum + Tonic | gRPC-native with HTTP/REST via gateway |
 | Database | PostgreSQL 16 | ACID, JSON support, mature |
-| Cache | Redis 7 | Rate limiting, session cache |
+| Cache | Valkey 8 (optional) | Distributed rate limiting, ephemeral cache |
 | Object Storage | SeaweedFS | Rust-friendly, S3-compatible |
 | Auth | Custom + SPIFFE | mTLS, bearer token validation |
 | Observability | OpenTelemetry | Vendor-neutral traces/metrics/logs |
@@ -826,7 +826,7 @@ tea-server/
 │   │   ├── mod.rs
 │   │   ├── persistence/
 │   │   │   ├── postgres/
-│   │   │   └── redis/
+│   │   │   └── valkey/                 # Optional future distributed cache adapter
 │   │   ├── storage/
 │   │   │   └── seaweedfs/
 │   │   ├── auth/

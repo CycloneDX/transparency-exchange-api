@@ -1,6 +1,5 @@
 use async_trait::async_trait;
-use chrono::Utc;
-use sqlx::{PgPool, Row};
+use sqlx::{PgPool, Postgres, Row, Transaction};
 use uuid::Uuid;
 
 use crate::domain::collection::entity::{Collection, CollectionScope, UpdateReason};
@@ -22,6 +21,67 @@ impl PostgresCollectionRepository {
 // ─── error helper ──────────────────────────────────────────────────────────
 fn json_err(e: serde_json::Error) -> RepositoryError {
     RepositoryError::Database(sqlx::Error::Decode(e.into()))
+}
+
+async fn load_artifacts(
+    pool: &PgPool,
+    collection_uuid: Uuid,
+    collection_version: i32,
+) -> Result<Vec<Uuid>, RepositoryError> {
+    let rows = sqlx::query(
+        r#"
+        SELECT artifact_uuid
+        FROM collection_artifacts
+        WHERE collection_uuid = $1 AND collection_version = $2
+        ORDER BY position ASC, added_date ASC, artifact_uuid ASC
+        "#,
+    )
+    .bind(collection_uuid)
+    .bind(collection_version)
+    .fetch_all(pool)
+    .await?;
+
+    rows.into_iter()
+        .map(|row| {
+            row.try_get("artifact_uuid")
+                .map_err(RepositoryError::Database)
+        })
+        .collect()
+}
+
+async fn replace_artifacts(
+    tx: &mut Transaction<'_, Postgres>,
+    collection: &Collection,
+) -> Result<(), RepositoryError> {
+    sqlx::query(
+        r#"
+        DELETE FROM collection_artifacts
+        WHERE collection_uuid = $1 AND collection_version = $2
+        "#,
+    )
+    .bind(collection.uuid)
+    .bind(collection.version)
+    .execute(&mut **tx)
+    .await?;
+
+    for (position, artifact_uuid) in collection.artifacts.iter().enumerate() {
+        sqlx::query(
+            r#"
+            INSERT INTO collection_artifacts (
+                collection_uuid, collection_version, artifact_uuid, position
+            )
+            VALUES ($1, $2, $3, $4)
+            "#,
+        )
+        .bind(collection.uuid)
+        .bind(collection.version)
+        .bind(artifact_uuid)
+        .bind(position as i32)
+        .execute(&mut **tx)
+        .await?;
+    }
+
+    Ok(())
 }
 
 fn parse_scope(s: Option<&str>) -> CollectionScope {
@@ -62,8 +122,24 @@ fn reason_str(r: &UpdateReason) -> &'static str {
     }
 }
 
+fn db_state(deprecation: Option<&Deprecation>) -> String {
+    match deprecation {
+        Some(dep) => format!("{:?}", dep.state),
+        None => format!("{:?}", DeprecationState::Active),
+    }
+}
+
+fn parse_state(state: &str) -> DeprecationState {
+    match state {
+        "Active" | "ACTIVE" => DeprecationState::Active,
+        "Deprecated" | "DEPRECATED" => DeprecationState::Deprecated,
+        "Retired" | "RETIRED" => DeprecationState::Retired,
+        _ => DeprecationState::Unspecified,
+    }
+}
+
 fn map_collection_row(row: &sqlx::postgres::PgRow) -> Result<Collection, RepositoryError> {
-    let artifacts: Vec<String> =
+    let artifacts: Vec<Uuid> =
         serde_json::from_value(row.try_get("artifacts")?).unwrap_or_default();
     let belongs_to: Option<String> = row.try_get("belongs_to")?;
     let update_reason: Option<String> = row.try_get("update_reason")?;
@@ -72,12 +148,7 @@ fn map_collection_row(row: &sqlx::postgres::PgRow) -> Result<Collection, Reposit
         serde_json::from_value(row.try_get("dependencies")?).unwrap_or_default();
 
     let deprecation = deprecation_state.map(|state| Deprecation {
-        state: match state.as_str() {
-            "ACTIVE" => DeprecationState::Active,
-            "DEPRECATED" => DeprecationState::Deprecated,
-            "RETIRED" => DeprecationState::Retired,
-            _ => DeprecationState::Unspecified,
-        },
+        state: parse_state(&state),
         reason: row.try_get("deprecation_reason").ok().flatten(),
         announced_date: None,
         effective_date: row.try_get("deprecated_date").ok().flatten(),
@@ -99,6 +170,18 @@ fn map_collection_row(row: &sqlx::postgres::PgRow) -> Result<Collection, Reposit
     })
 }
 
+async fn load_collection(
+    pool: &PgPool,
+    row: &sqlx::postgres::PgRow,
+) -> Result<Collection, RepositoryError> {
+    let mut collection = map_collection_row(row)?;
+    let linked_artifacts = load_artifacts(pool, collection.uuid, collection.version).await?;
+    if !linked_artifacts.is_empty() || collection.artifacts.is_empty() {
+        collection.artifacts = linked_artifacts;
+    }
+    Ok(collection)
+}
+
 const SELECT_COLS: &str = r#"
     uuid, name, version, date, created_date, modified_date,
     belongs_to, update_reason, artifacts, dependencies,
@@ -116,28 +199,47 @@ impl CollectionRepository for PostgresCollectionRepository {
             .fetch_optional(&self.pool)
             .await?;
 
-        row.map(|r| map_collection_row(&r)).transpose()
+        match row {
+            Some(row) => load_collection(&self.pool, &row).await.map(Some),
+            None => Ok(None),
+        }
+    }
+
+    async fn find_versions_by_uuid(&self, uuid: &Uuid) -> Result<Vec<Collection>, RepositoryError> {
+        let query = format!(
+            "SELECT {SELECT_COLS} FROM tea_collections WHERE uuid = $1 ORDER BY version DESC"
+        );
+        let rows = sqlx::query(&query).bind(uuid).fetch_all(&self.pool).await?;
+        let mut collections = Vec::with_capacity(rows.len());
+        for row in rows {
+            collections.push(load_collection(&self.pool, &row).await?);
+        }
+        Ok(collections)
     }
 
     async fn find_by_name(&self, name: &str) -> Result<Vec<Collection>, RepositoryError> {
         let rows = if name.is_empty() {
-            let query = format!(
-                "SELECT {SELECT_COLS} FROM tea_collections ORDER BY created_date DESC"
-            );
+            let query =
+                format!("SELECT {SELECT_COLS} FROM tea_collections ORDER BY created_date DESC, version DESC");
             sqlx::query(&query).fetch_all(&self.pool).await?
         } else {
             let query = format!(
-                "SELECT {SELECT_COLS} FROM tea_collections WHERE name ILIKE $1 ORDER BY created_date DESC"
+                "SELECT {SELECT_COLS} FROM tea_collections WHERE name ILIKE $1 ORDER BY created_date DESC, version DESC"
             );
             sqlx::query(&query)
                 .bind(format!("%{name}%"))
                 .fetch_all(&self.pool)
                 .await?
         };
-        rows.iter().map(map_collection_row).collect()
+        let mut collections = Vec::with_capacity(rows.len());
+        for row in rows {
+            collections.push(load_collection(&self.pool, &row).await?);
+        }
+        Ok(collections)
     }
 
     async fn save(&self, collection: &Collection) -> Result<(), RepositoryError> {
+        let mut tx = self.pool.begin().await?;
         let result = sqlx::query(
             r#"
             INSERT INTO tea_collections (
@@ -146,7 +248,7 @@ impl CollectionRepository for PostgresCollectionRepository {
                 deprecation_state, deprecation_reason, deprecated_date
             )
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
-            ON CONFLICT (uuid) DO NOTHING
+            ON CONFLICT (uuid, version) DO NOTHING
             "#,
         )
         .bind(collection.uuid)
@@ -159,19 +261,32 @@ impl CollectionRepository for PostgresCollectionRepository {
         .bind(reason_str(&collection.update_reason))
         .bind(serde_json::to_value(&collection.artifacts).map_err(json_err)?)
         .bind(serde_json::to_value(&collection.dependencies).map_err(json_err)?)
-        .bind(collection.deprecation.as_ref().map(|d| format!("{:?}", d.state).to_uppercase()))
-        .bind(collection.deprecation.as_ref().and_then(|d| d.reason.as_deref()))
-        .bind(collection.deprecation.as_ref().and_then(|d| d.effective_date))
-        .execute(&self.pool)
+        .bind(db_state(collection.deprecation.as_ref()))
+        .bind(
+            collection
+                .deprecation
+                .as_ref()
+                .and_then(|d| d.reason.as_deref()),
+        )
+        .bind(
+            collection
+                .deprecation
+                .as_ref()
+                .and_then(|d| d.effective_date),
+        )
+        .execute(&mut *tx)
         .await?;
 
         if result.rows_affected() == 0 {
             return Err(RepositoryError::Conflict);
         }
+        replace_artifacts(&mut tx, collection).await?;
+        tx.commit().await?;
         Ok(())
     }
 
     async fn update(&self, collection: &Collection) -> Result<(), RepositoryError> {
+        let mut tx = self.pool.begin().await?;
         let result = sqlx::query(
             r#"
             UPDATE tea_collections
@@ -179,7 +294,7 @@ impl CollectionRepository for PostgresCollectionRepository {
                 belongs_to = $5, update_reason = $6, artifacts = $7,
                 dependencies = $8,
                 deprecation_state = $9, deprecation_reason = $10, deprecated_date = $11
-            WHERE uuid = $1
+            WHERE uuid = $1 AND version = $3
             "#,
         )
         .bind(collection.uuid)
@@ -190,24 +305,39 @@ impl CollectionRepository for PostgresCollectionRepository {
         .bind(reason_str(&collection.update_reason))
         .bind(serde_json::to_value(&collection.artifacts).map_err(json_err)?)
         .bind(serde_json::to_value(&collection.dependencies).map_err(json_err)?)
-        .bind(collection.deprecation.as_ref().map(|d| format!("{:?}", d.state).to_uppercase()))
-        .bind(collection.deprecation.as_ref().and_then(|d| d.reason.as_deref()))
-        .bind(collection.deprecation.as_ref().and_then(|d| d.effective_date))
-        .execute(&self.pool)
+        .bind(db_state(collection.deprecation.as_ref()))
+        .bind(
+            collection
+                .deprecation
+                .as_ref()
+                .and_then(|d| d.reason.as_deref()),
+        )
+        .bind(
+            collection
+                .deprecation
+                .as_ref()
+                .and_then(|d| d.effective_date),
+        )
+        .execute(&mut *tx)
         .await?;
 
         // C2 fix: detect missing entity
         if result.rows_affected() == 0 {
             return Err(RepositoryError::NotFound);
         }
+        replace_artifacts(&mut tx, collection).await?;
+        tx.commit().await?;
         Ok(())
     }
 
     async fn delete(&self, uuid: &Uuid) -> Result<(), RepositoryError> {
-        sqlx::query("DELETE FROM tea_collections WHERE uuid = $1")
+        let result = sqlx::query("DELETE FROM tea_collections WHERE uuid = $1")
             .bind(uuid)
             .execute(&self.pool)
             .await?;
+        if result.rows_affected() == 0 {
+            return Err(RepositoryError::NotFound);
+        }
         Ok(())
     }
 }

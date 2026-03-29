@@ -17,6 +17,7 @@
 
 use axum::{
     body::Body,
+    extract::ConnectInfo,
     extract::State,
     http::{Request, StatusCode},
     middleware::Next,
@@ -109,6 +110,12 @@ impl RateLimiter {
         let now = Instant::now();
         let window_duration = Duration::from_secs(60);
 
+        if clients.len() >= 1024 {
+            clients.retain(|_, (_, window_start)| {
+                now.duration_since(*window_start) <= window_duration * 2
+            });
+        }
+
         // Get or create entry for this client
         let entry = clients.entry(client_ip.to_string()).or_insert((0, now));
 
@@ -136,13 +143,16 @@ impl RateLimiter {
     /// Clean up expired entries to prevent memory growth.
     pub async fn cleanup(&self) {
         let mut clients = self.clients.write().await;
-        let now = Instant::now();
-        let window_duration = Duration::from_secs(60);
-
-        clients.retain(|_, (_, window_start)| {
-            now.duration_since(*window_start) <= window_duration * 2
-        });
+        cleanup_clients(&mut clients, Instant::now(), Duration::from_secs(60));
     }
+}
+
+fn cleanup_clients(
+    clients: &mut HashMap<String, (u32, Instant)>,
+    now: Instant,
+    window_duration: Duration,
+) {
+    clients.retain(|_, (_, window_start)| now.duration_since(*window_start) <= window_duration * 2);
 }
 
 /// Rate limiting error.
@@ -174,27 +184,14 @@ impl IntoResponse for RateLimitError {
 
 /// Extract client IP from request.
 ///
-/// Checks X-Forwarded-For, X-Real-IP, then falls back to socket addr.
+/// Uses the socket address injected by Axum's `into_make_service_with_connect_info`.
+/// Forwarded headers are ignored here unless a trusted proxy layer normalizes them first.
 fn extract_client_ip(req: &Request<Body>) -> String {
-    // Check X-Forwarded-For header (most common for proxies)
-    if let Some(forwarded) = req.headers().get("x-forwarded-for") {
-        if let Ok(forwarded_str) = forwarded.to_str() {
-            // Take the first IP in the chain (original client)
-            if let Some(ip) = forwarded_str.split(',').next() {
-                return ip.trim().to_string();
-            }
-        }
+    if let Some(ConnectInfo(addr)) = req.extensions().get::<ConnectInfo<std::net::SocketAddr>>() {
+        return addr.ip().to_string();
     }
 
-    // Check X-Real-IP header
-    if let Some(real_ip) = req.headers().get("x-real-ip") {
-        if let Ok(ip) = real_ip.to_str() {
-            return ip.to_string();
-        }
-    }
-
-    // Fallback to a unique identifier (no socket access in middleware)
-    // In production, use tower-service's ConnectInfo for socket addr
+    // Conservatively bucket requests together when peer identity is unavailable.
     "unknown".to_string()
 }
 
@@ -223,7 +220,7 @@ pub async fn rate_limit(
 
 /// Rate limiting middleware for write endpoints (stricter limits).
 ///
-/// Applies a 10x stricter rate limit for POST/PUT/DELETE operations.
+/// Applies the provided limiter only to POST/PUT/DELETE operations.
 pub async fn rate_limit_writes(
     State(limiter): State<Arc<RateLimiter>>,
     req: Request<Body>,
@@ -237,14 +234,7 @@ pub async fn rate_limit_writes(
         method,
         axum::http::Method::POST | axum::http::Method::PUT | axum::http::Method::DELETE
     ) {
-        // Create a stricter limiter for writes (1/10th the normal limit)
-        let write_limiter = RateLimiter::new(RateLimitConfig {
-            requests_per_minute: limiter.config.requests_per_minute / 10,
-            burst: limiter.config.burst / 5,
-            enabled: limiter.config.enabled,
-        });
-
-        match write_limiter.check(&client_ip).await {
+        match limiter.check(&client_ip).await {
             Ok(()) => next.run(req).await,
             Err(err) => err.into_response(),
         }

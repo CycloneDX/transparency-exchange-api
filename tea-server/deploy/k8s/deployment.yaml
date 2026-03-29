@@ -21,6 +21,7 @@ spec:
         prometheus.io/port: "8734"
         prometheus.io/path: "/metrics"
     spec:
+      terminationGracePeriodSeconds: 30
       serviceAccountName: tea-server
       securityContext:
         runAsNonRoot: true
@@ -34,14 +35,28 @@ spec:
             - name: http
               containerPort: 8734
               protocol: TCP
+            - name: grpc
+              containerPort: 50051
+              protocol: TCP
           env:
             - name: TEA_PORT
               value: "8734"
+            - name: TEA_GRPC_ENABLED
+              value: "true"
+            - name: TEA_GRPC_PORT
+              value: "50051"
+            - name: TEA_GRPC_PUBLISHER_ENABLED
+              value: "false"
             - name: TEA_SERVER_URL
               valueFrom:
                 configMapKeyRef:
                   name: tea-server-config
                   key: server-url
+            - name: TEA_PERSISTENCE_BACKEND
+              valueFrom:
+                configMapKeyRef:
+                  name: tea-server-config
+                  key: persistence-backend
             - name: TEA_JWT_SECRET
               valueFrom:
                 secretKeyRef:
@@ -66,19 +81,24 @@ spec:
             limits:
               cpu: 1000m
               memory: 512Mi
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 12
           livenessProbe:
             httpGet:
               path: /health
               port: http
-            initialDelaySeconds: 10
-            periodSeconds: 10
-            timeoutSeconds: 5
+            periodSeconds: 15
+            timeoutSeconds: 3
             failureThreshold: 3
           readinessProbe:
             httpGet:
-              path: /health
+              path: /ready
               port: http
-            initialDelaySeconds: 5
             periodSeconds: 5
             timeoutSeconds: 3
             failureThreshold: 3
@@ -111,6 +131,11 @@ spec:
       targetPort: http
       protocol: TCP
       name: http
+    - port: 50051
+      targetPort: grpc
+      protocol: TCP
+      name: grpc
+      appProtocol: kubernetes.io/h2c
   selector:
     app.kubernetes.io/name: tea-server
 ---
@@ -120,17 +145,10 @@ metadata:
   name: tea-server-config
 data:
   server-url: "https://tea.example.com"
-  signing-mode: "keyless"
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: tea-server-secrets
-type: Opaque
-stringData:
-  # These must be set before deployment
-  jwt-secret: "CHANGE-ME-32-bytes-minimum-required"
-  database-url: "postgres://tea:CHANGE-ME@postgres:5432/tea"
+  persistence-backend: "postgres"
+  signing-mode: "disabled"
+# Create `tea-server-secrets` out of band before deploying.
+# This manifest intentionally does not embed deployable placeholder secrets.
 ---
 apiVersion: v1
 kind: ServiceAccount

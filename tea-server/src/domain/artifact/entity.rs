@@ -16,9 +16,17 @@ pub struct Artifact {
     #[serde(rename = "componentDistributions", default)]
     pub component_distributions: Vec<String>,
     pub formats: Vec<ArtifactFormat>,
-    #[serde(rename = "createdDate", skip_deserializing, default = "crate::domain::common::now")]
+    #[serde(
+        rename = "createdDate",
+        skip_deserializing,
+        default = "crate::domain::common::now"
+    )]
     pub created_date: DateTime<Utc>,
-    #[serde(rename = "modifiedDate", skip_deserializing, default = "crate::domain::common::now")]
+    #[serde(
+        rename = "modifiedDate",
+        skip_deserializing,
+        default = "crate::domain::common::now"
+    )]
     pub modified_date: DateTime<Utc>,
     pub description: Option<String>,
     pub subject: Option<Subject>,

@@ -6,7 +6,6 @@ syntax = "proto3";
 package tea.v1;
 
 import "buf/validate/validate.proto";
-import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/CycloneDX/transparency-exchange-api/gen/go/tea/v1;teav1";

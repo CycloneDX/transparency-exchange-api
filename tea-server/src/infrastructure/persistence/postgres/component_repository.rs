@@ -1,5 +1,4 @@
 use async_trait::async_trait;
-use chrono::Utc;
 use sqlx::{PgPool, Row};
 use uuid::Uuid;
 
@@ -57,6 +56,22 @@ fn parse_component_type(s: Option<&str>) -> ComponentType {
     }
 }
 
+fn db_state(deprecation: Option<&Deprecation>) -> String {
+    match deprecation {
+        Some(dep) => format!("{:?}", dep.state),
+        None => format!("{:?}", DeprecationState::Active),
+    }
+}
+
+fn parse_state(state: &str) -> DeprecationState {
+    match state {
+        "Active" | "ACTIVE" => DeprecationState::Active,
+        "Deprecated" | "DEPRECATED" => DeprecationState::Deprecated,
+        "Retired" | "RETIRED" => DeprecationState::Retired,
+        _ => DeprecationState::Unspecified,
+    }
+}
+
 // ─── row mappers ───────────────────────────────────────────────────────────
 fn map_component_row(row: &sqlx::postgres::PgRow) -> Result<Component, RepositoryError> {
     let identifiers: Vec<Identifier> =
@@ -66,12 +81,7 @@ fn map_component_row(row: &sqlx::postgres::PgRow) -> Result<Component, Repositor
     let component_type: Option<String> = row.try_get("component_type")?;
     let deprecation_state: Option<String> = row.try_get("deprecation_state")?;
     let deprecation = deprecation_state.map(|state| Deprecation {
-        state: match state.as_str() {
-            "ACTIVE" => DeprecationState::Active,
-            "DEPRECATED" => DeprecationState::Deprecated,
-            "RETIRED" => DeprecationState::Retired,
-            _ => DeprecationState::Unspecified,
-        },
+        state: parse_state(&state),
         reason: row.try_get("deprecation_reason").ok().flatten(),
         announced_date: None,
         effective_date: row.try_get("deprecated_date").ok().flatten(),
@@ -184,9 +194,19 @@ impl ComponentRepository for PostgresComponentRepository {
         .bind(&component.vcs_url)
         .bind(component.created_date)
         .bind(component.modified_date)
-        .bind(component.deprecation.as_ref().map(|d| format!("{:?}", d.state).to_uppercase()))
-        .bind(component.deprecation.as_ref().and_then(|d| d.reason.as_deref()))
-        .bind(component.deprecation.as_ref().and_then(|d| d.effective_date))
+        .bind(db_state(component.deprecation.as_ref()))
+        .bind(
+            component
+                .deprecation
+                .as_ref()
+                .and_then(|d| d.reason.as_deref()),
+        )
+        .bind(
+            component
+                .deprecation
+                .as_ref()
+                .and_then(|d| d.effective_date),
+        )
         .execute(&self.pool)
         .await?;
 
@@ -217,9 +237,19 @@ impl ComponentRepository for PostgresComponentRepository {
         .bind(&component.homepage_url)
         .bind(&component.vcs_url)
         .bind(component.modified_date)
-        .bind(component.deprecation.as_ref().map(|d| format!("{:?}", d.state).to_uppercase()))
-        .bind(component.deprecation.as_ref().and_then(|d| d.reason.as_deref()))
-        .bind(component.deprecation.as_ref().and_then(|d| d.effective_date))
+        .bind(db_state(component.deprecation.as_ref()))
+        .bind(
+            component
+                .deprecation
+                .as_ref()
+                .and_then(|d| d.reason.as_deref()),
+        )
+        .bind(
+            component
+                .deprecation
+                .as_ref()
+                .and_then(|d| d.effective_date),
+        )
         .execute(&self.pool)
         .await?;
 

@@ -5,7 +5,6 @@
 //! tests for basic API functionality, error handling, and conformance to
 //! defined standards.
 
-use std::collections::HashMap;
 use reqwest::Client;
 
 /// Result of a harness test.
@@ -41,7 +40,8 @@ impl TeaHarness {
         let mut results = Vec::new();
 
         results.push(self.test_health_endpoint().await);
-        results.push(self.test_discovery_endpoint().await);
+        results.push(self.test_readiness_endpoint().await);
+        results.push(self.test_discovery_document().await);
         results.push(self.test_product_listing().await);
         // Add more tests as needed
 
@@ -70,22 +70,44 @@ impl TeaHarness {
         }
     }
 
-    /// Test the discovery endpoint.
-    async fn test_discovery_endpoint(&self) -> HarnessResult {
-        let url = format!("{}/discovery", self.base_url);
+    /// Test the readiness endpoint.
+    async fn test_readiness_endpoint(&self) -> HarnessResult {
+        let url = format!("{}/ready", self.base_url);
         match self.client.get(&url).send().await {
             Ok(response) if response.status().is_success() => HarnessResult {
-                test_name: "Discovery Endpoint".to_string(),
+                test_name: "Readiness Endpoint".to_string(),
                 passed: true,
                 error: None,
             },
             Ok(response) => HarnessResult {
-                test_name: "Discovery Endpoint".to_string(),
+                test_name: "Readiness Endpoint".to_string(),
                 passed: false,
                 error: Some(format!("Unexpected status: {}", response.status())),
             },
             Err(e) => HarnessResult {
-                test_name: "Discovery Endpoint".to_string(),
+                test_name: "Readiness Endpoint".to_string(),
+                passed: false,
+                error: Some(format!("Request failed: {}", e)),
+            },
+        }
+    }
+
+    /// Test the well-known discovery document.
+    async fn test_discovery_document(&self) -> HarnessResult {
+        let url = format!("{}/.well-known/tea", self.base_url);
+        match self.client.get(&url).send().await {
+            Ok(response) if response.status().is_success() => HarnessResult {
+                test_name: "Discovery Document".to_string(),
+                passed: true,
+                error: None,
+            },
+            Ok(response) => HarnessResult {
+                test_name: "Discovery Document".to_string(),
+                passed: false,
+                error: Some(format!("Unexpected status: {}", response.status())),
+            },
+            Err(e) => HarnessResult {
+                test_name: "Discovery Document".to_string(),
                 passed: false,
                 error: Some(format!("Request failed: {}", e)),
             },
@@ -94,7 +116,7 @@ impl TeaHarness {
 
     /// Test product listing endpoint.
     async fn test_product_listing(&self) -> HarnessResult {
-        let url = format!("{}/products", self.base_url);
+        let url = format!("{}/v1/products", self.base_url);
         match self.client.get(&url).send().await {
             Ok(response) if response.status().is_success() => HarnessResult {
                 test_name: "Product Listing".to_string(),

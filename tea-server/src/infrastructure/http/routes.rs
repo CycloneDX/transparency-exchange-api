@@ -4,24 +4,37 @@
 
 use axum::{
     extract::{Path, State},
-    http::StatusCode,
+    http::{Method, StatusCode},
+    middleware,
+    response::{IntoResponse, Response},
     Json, Router,
 };
 use serde::{Deserialize, Serialize};
+use std::sync::Arc;
+use tower_http::limit::RequestBodyLimitLayer;
 use uuid::Uuid;
 
 use crate::application::publisher::service::PublisherApplicationService;
+use crate::domain::common::error::DomainError;
+use crate::infrastructure::auth::jwt::require_auth;
+use crate::infrastructure::middleware::rate_limit::{
+    rate_limit, rate_limit_writes, RateLimitConfig, RateLimiter,
+};
 
 /// Create the HTTP router for the TEA API.
 pub fn create_router<A: PublisherApplicationService + Clone + Send + Sync + 'static>(
     app_service: A,
 ) -> Router {
-    Router::new()
+    let global_rate_limit_config = RateLimitConfig::from_env();
+    let global_rate_limiter = Arc::new(RateLimiter::new(global_rate_limit_config.clone()));
+    let write_rate_limiter = Arc::new(RateLimiter::new(RateLimitConfig {
+        requests_per_minute: 10,
+        burst: 2,
+        enabled: global_rate_limit_config.enabled,
+    }));
+
+    let write_routes = Router::new()
         .route("/api/v1/products", axum::routing::post(create_product::<A>))
-        .route(
-            "/api/v1/products/:uuid",
-            axum::routing::get(get_product::<A>),
-        )
         .route(
             "/api/v1/products/:uuid",
             axum::routing::put(update_product::<A>),
@@ -37,10 +50,6 @@ pub fn create_router<A: PublisherApplicationService + Clone + Send + Sync + 'sta
         .route(
             "/api/v1/artifacts",
             axum::routing::post(create_artifact::<A>),
-        )
-        .route(
-            "/api/v1/artifacts/:uuid",
-            axum::routing::get(get_artifact::<A>),
         )
         .route(
             "/api/v1/artifacts/:uuid",
@@ -60,10 +69,6 @@ pub fn create_router<A: PublisherApplicationService + Clone + Send + Sync + 'sta
         )
         .route(
             "/api/v1/collections/:uuid",
-            axum::routing::get(get_collection::<A>),
-        )
-        .route(
-            "/api/v1/collections/:uuid",
             axum::routing::put(update_collection::<A>),
         )
         .route(
@@ -74,7 +79,59 @@ pub fn create_router<A: PublisherApplicationService + Clone + Send + Sync + 'sta
             "/api/v1/collections/:uuid/deprecate",
             axum::routing::post(deprecate_collection::<A>),
         )
+        .route_layer(middleware::from_fn_with_state(
+            write_rate_limiter,
+            rate_limit_writes,
+        ))
+        .route_layer(middleware::from_fn(require_auth));
+
+    Router::new()
+        .route(
+            "/api/v1/products/:uuid",
+            axum::routing::get(get_product::<A>),
+        )
+        .route(
+            "/api/v1/artifacts/:uuid",
+            axum::routing::get(get_artifact::<A>),
+        )
+        .route(
+            "/api/v1/collections/:uuid",
+            axum::routing::get(get_collection::<A>),
+        )
+        .merge(write_routes)
+        .layer(middleware::from_fn_with_state(
+            global_rate_limiter,
+            rate_limit,
+        ))
+        .layer(RequestBodyLimitLayer::new(64 * 1024))
+        .layer(middleware::from_fn(require_json_content_type))
         .with_state(app_service)
+}
+
+async fn require_json_content_type(
+    req: axum::extract::Request,
+    next: middleware::Next,
+) -> Response {
+    let needs_body = matches!(req.method(), &Method::POST | &Method::PUT | &Method::PATCH);
+    if needs_body {
+        let ct = req
+            .headers()
+            .get(axum::http::header::CONTENT_TYPE)
+            .and_then(|v| v.to_str().ok())
+            .unwrap_or("");
+        if !ct.starts_with("application/json") {
+            return (
+                StatusCode::UNSUPPORTED_MEDIA_TYPE,
+                Json(ErrorResponse {
+                    error: "Unsupported Media Type".to_string(),
+                    message: "Content-Type must be application/json".to_string(),
+                }),
+            )
+                .into_response();
+        }
+    }
+
+    next.run(req).await
 }
 
 // ─── Request/Response DTOs ─────────────────────────────────────────────────────
@@ -253,7 +310,7 @@ async fn create_product<A: PublisherApplicationService>(
     let created = app_service
         .create_product(product)
         .await
-        .map_err(|e| error_response(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
+        .map_err(domain_error_response)?;
 
     Ok(Json(product_to_response(created)))
 }
@@ -269,7 +326,7 @@ async fn get_product<A: PublisherApplicationService>(
     let product = app_service
         .get_product(&uuid)
         .await
-        .map_err(|e| error_response(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?
+        .map_err(domain_error_response)?
         .ok_or_else(|| error_response(StatusCode::NOT_FOUND, "Product not found"))?;
 
     Ok(Json(product_to_response(product)))
@@ -315,7 +372,7 @@ async fn update_product<A: PublisherApplicationService>(
     let updated = app_service
         .update_product(product)
         .await
-        .map_err(|e| error_response(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
+        .map_err(domain_error_response)?;
 
     Ok(Json(product_to_response(updated)))
 }
@@ -331,7 +388,7 @@ async fn delete_product<A: PublisherApplicationService>(
     app_service
         .delete_product(&uuid)
         .await
-        .map_err(|e| error_response(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
+        .map_err(domain_error_response)?;
 
     Ok(StatusCode::NO_CONTENT)
 }
@@ -356,7 +413,7 @@ async fn deprecate_product<A: PublisherApplicationService>(
     let product = app_service
         .deprecate_product(uuid, deprecation)
         .await
-        .map_err(|e| error_response(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
+        .map_err(domain_error_response)?;
 
     Ok(Json(product_to_response(product)))
 }
@@ -411,7 +468,7 @@ async fn create_artifact<A: PublisherApplicationService>(
     let created = app_service
         .create_artifact(artifact)
         .await
-        .map_err(|e| error_response(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
+        .map_err(domain_error_response)?;
 
     Ok(Json(artifact_to_response(created)))
 }
@@ -427,7 +484,7 @@ async fn get_artifact<A: PublisherApplicationService>(
     let artifact = app_service
         .get_artifact(&uuid)
         .await
-        .map_err(|e| error_response(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?
+        .map_err(domain_error_response)?
         .ok_or_else(|| error_response(StatusCode::NOT_FOUND, "Artifact not found"))?;
 
     Ok(Json(artifact_to_response(artifact)))
@@ -455,7 +512,7 @@ async fn delete_artifact<A: PublisherApplicationService>(
     app_service
         .delete_artifact(&uuid)
         .await
-        .map_err(|e| error_response(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
+        .map_err(domain_error_response)?;
 
     Ok(StatusCode::NO_CONTENT)
 }
@@ -480,7 +537,7 @@ async fn deprecate_artifact<A: PublisherApplicationService>(
     let artifact = app_service
         .deprecate_artifact(uuid, deprecation)
         .await
-        .map_err(|e| error_response(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
+        .map_err(domain_error_response)?;
 
     Ok(Json(artifact_to_response(artifact)))
 }
@@ -508,7 +565,7 @@ async fn create_collection<A: PublisherApplicationService>(
     let created = app_service
         .create_collection(collection)
         .await
-        .map_err(|e| error_response(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
+        .map_err(domain_error_response)?;
 
     Ok(Json(collection_to_response(created)))
 }
@@ -524,7 +581,7 @@ async fn get_collection<A: PublisherApplicationService>(
     let collection = app_service
         .get_collection(&uuid)
         .await
-        .map_err(|e| error_response(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?
+        .map_err(domain_error_response)?
         .ok_or_else(|| error_response(StatusCode::NOT_FOUND, "Collection not found"))?;
 
     Ok(Json(collection_to_response(collection)))
@@ -552,7 +609,7 @@ async fn delete_collection<A: PublisherApplicationService>(
     app_service
         .delete_collection(&uuid)
         .await
-        .map_err(|e| error_response(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
+        .map_err(domain_error_response)?;
 
     Ok(StatusCode::NO_CONTENT)
 }
@@ -577,7 +634,7 @@ async fn deprecate_collection<A: PublisherApplicationService>(
     let collection = app_service
         .deprecate_collection(uuid, deprecation)
         .await
-        .map_err(|e| error_response(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
+        .map_err(domain_error_response)?;
 
     Ok(Json(collection_to_response(collection)))
 }
@@ -592,6 +649,23 @@ fn error_response(status: StatusCode, message: &str) -> (StatusCode, Json<ErrorR
             message: message.to_string(),
         }),
     )
+}
+
+fn domain_error_response(err: DomainError) -> (StatusCode, Json<ErrorResponse>) {
+    match err {
+        DomainError::NotFound(message) => error_response(StatusCode::NOT_FOUND, &message),
+        DomainError::Conflict(message) => error_response(StatusCode::CONFLICT, &message),
+        DomainError::Validation(message) => {
+            error_response(StatusCode::UNPROCESSABLE_ENTITY, &message)
+        }
+        DomainError::Repository(repo_err) => {
+            tracing::error!(error = %repo_err, "Alternate HTTP router repository error");
+            error_response(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "An internal error occurred. Please try again later.",
+            )
+        }
+    }
 }
 
 fn product_to_response(product: crate::domain::product::entity::Product) -> ProductResponse {

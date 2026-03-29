@@ -7,12 +7,25 @@ Reference implementation of the [CycloneDX Transparency Exchange API (TEA)](../R
 
 ## Features
 
-- **Full TEA API**: Products, Components, Collections, Artifacts, Deprecation
+- **TEA HTTP + gRPC runtime**: Public reads, authenticated writes, discovery, and consumer APIs
 - **Multiple identifier types**: TEI, PURL, CPE, SWID, GAV, GTIN, GMN, UDI, ASIN, Hash
 - **Supply chain security**: Sigstore attestation signing, SLSA provenance, SBOM generation
 - **Transport security**: TLS and mTLS with client certificate authentication
 - **Observability**: OpenTelemetry tracing, structured logging, Prometheus metrics
-- **Database support**: PostgreSQL (production), in-memory (development/testing)
+- **Database support**: in-memory runtime in the current reference binary, with PostgreSQL migrations and repository adapters available
+
+## Positioning
+
+This server is the Rust reference implementation of the TEA contracts, not the
+only intended production deployment shape.
+
+- `proto/` remains the canonical TEA specification surface
+- `tea-server` demonstrates the stable, normative flows end to end
+- optional publisher capabilities that are not ready yet fail closed with
+  `UNIMPLEMENTED` instead of pretending to work
+
+For the explicit spec-vs-reference-server contract, see
+[`docs/reference-implementation-profile.md`](../docs/reference-implementation-profile.md).
 
 ## Quick Start
 
@@ -30,6 +43,7 @@ docker compose up -d
 ```
 
 Server will be available at http://localhost:8734
+and gRPC will be available at `localhost:50051` when enabled.
 
 ### Run Locally
 
@@ -39,7 +53,7 @@ export TEA_JWT_SECRET="$(openssl rand -hex 32)"
 export TEA_DATABASE_URL="postgres://tea:tea@localhost:5432/tea"
 
 # Run database migrations
-sqlx migrate run
+DATABASE_URL="$TEA_DATABASE_URL" sqlx migrate run
 
 # Start the server
 cargo run --release
@@ -51,14 +65,58 @@ cargo run --release
 |----------|-------------|---------|----------|
 | `TEA_PORT` | Server listen port | `8734` | No |
 | `TEA_SERVER_URL` | Public server URL | `http://localhost:8734` | No |
+| `TEA_PERSISTENCE_BACKEND` | Persistence backend: `memory` or `postgres` | `memory` | No |
 | `TEA_JWT_SECRET` | JWT signing key | - | **Yes** (release) |
-| `TEA_DATABASE_URL` | PostgreSQL connection string | - | Yes (with DB) |
+| `TEA_DATABASE_URL` | Canonical database DSN for runtime config and migration handoff | - | No |
+| `TEA_ALLOWED_ORIGINS` | Comma-separated allowed CORS origins | empty | No |
+| `TEA_REQUEST_TIMEOUT_SECS` | Per-request timeout | `30` | No |
+| `TEA_RATE_LIMIT_CLEANUP_SECS` | Rate limiter cleanup interval | `300` | No |
+| `TEA_GRPC_ENABLED` | Enable discovery/consumer gRPC listener | `false` | No |
+| `TEA_GRPC_PORT` | gRPC listen port | `50051` | No |
+| `TEA_GRPC_PUBLISHER_ENABLED` | Expose supported publisher gRPC handlers (product/product-release/component/component-release lifecycle plus safe artifact delete) | `false` | No |
+| `TEA_RATE_LIMIT_ENABLED` | Enable or disable rate limiting | `true` | No |
+| `TEA_RATE_LIMIT_RPM` | Requests per minute per IP | `60` | No |
+| `TEA_RATE_LIMIT_BURST` | Burst allowance | `10` | No |
 | `TEA_TLS_CERT_PATH` | TLS certificate path | - | No |
 | `TEA_TLS_KEY_PATH` | TLS private key path | - | No |
 | `TEA_TLS_CLIENT_CA_PATH` | mTLS client CA path | - | No |
 | `TEA_SIGNING_MODE` | Attestation signing mode | `disabled` | No |
-| `TEA_RATE_LIMIT_RPM` | Requests per minute per IP | `60` | No |
-| `TEA_RATE_LIMIT_BURST` | Burst allowance | `10` | No |
+| `TEA_SIGNING_KEY_PATH` | Private key path for `TEA_SIGNING_MODE=key` | - | No |
+| `TEA_REKOR_UPLOAD` | Upload signatures to Rekor when signing is enabled | release-dependent | No |
+| `TEA_JWT_ISSUER` | Expected JWT issuer claim | unset | No |
+| `TEA_JWT_AUDIENCE` | Expected JWT audience claim | `tea-api` | No |
+| `TEA_JWT_WRITE_SCOPE` | Required JWT write scope | `tea:write` | No |
+| `TEA_JWT_WRITE_ROLE` | Required JWT write role | `tea-writer` | No |
+| `SEAWEEDFS_ENDPOINT` | S3-compatible object storage endpoint | - | No |
+| `SEAWEEDFS_BUCKET` | Object storage bucket name | - | No |
+
+Notes:
+
+- `TEA_DATABASE_URL` is the canonical application variable. `DATABASE_URL` is still accepted as a deprecated runtime fallback and remains the variable used by the `sqlx` CLI.
+- Set `TEA_PERSISTENCE_BACKEND=postgres` to run the live server against PostgreSQL. Leave it unset to keep the in-memory reference mode.
+- Set `TEA_GRPC_ENABLED=true` to serve the TEA discovery/consumer gRPC APIs on `TEA_GRPC_PORT`.
+- Set `TEA_GRPC_PUBLISHER_ENABLED=true` only when you want the currently supported publisher gRPC subset; unsupported RPCs still fail closed with `UNIMPLEMENTED`.
+
+## Transport Support Matrix
+
+### HTTP/JSON
+
+- Public reads: `GET /v1/products`, `GET /v1/components`, `GET /v1/artifacts`, `GET /v1/collections`
+- Authenticated writes: `POST /v1/products`, `PUT /v1/products/{uuid}`, `DELETE /v1/products/{uuid}?cascade=true`
+- Authenticated writes: `POST /v1/components`, `PUT /v1/components/{uuid}`, `DELETE /v1/components/{uuid}?cascade=true`
+- Authenticated writes: `POST /v1/artifacts`, `DELETE /v1/artifacts/{uuid}`
+- Public collection version reads: `GET /v1/collections/{uuid}/versions`, `GET /v1/collections/{uuid}/versions/{version}`, `GET /v1/collections/{uuid}/compare`
+- Authenticated writes: `POST /v1/collections`, `POST /v1/collections/{uuid}/versions`, `DELETE /v1/collections/{uuid}`
+- Authenticated deprecation: `POST /v1/*/{uuid}/deprecate`
+
+### gRPC
+
+- Discovery and consumer services are live when `TEA_GRPC_ENABLED=true`
+- Publisher gRPC currently supports product, product-release, component, component-release, `CreateArtifactFromUrl`, collection create/update operations, and safe artifact delete when `TEA_GRPC_PUBLISHER_ENABLED=true`
+- Collection updates are immutable version bumps: `UpdateCollection` creates the next collection version for the same logical UUID
+- Collection signing/import and streaming artifact upload RPCs intentionally fail closed with `UNIMPLEMENTED`
+
+For a practical producer-facing integration guide, including a path tailored for the Rust `sbom-tools` project, see [`docs/sbom-tools-integration.md`](../docs/sbom-tools-integration.md).
 
 ### TLS Configuration
 
@@ -74,54 +132,54 @@ export TEA_TLS_CLIENT_CA_PATH=/path/to/client-ca.crt
 ### Attestation Signing
 
 ```bash
-# Keyless signing via Sigstore (requires OIDC token)
-export TEA_SIGNING_MODE=keyless
+# Disabled by default unless a real signing backend is configured
+export TEA_SIGNING_MODE=disabled
 
 # Key-based signing
 export TEA_SIGNING_MODE=key
 export TEA_SIGNING_KEY_PATH=/path/to/private.key
 ```
 
+Keyless signing is not production-ready in this reference server yet; leave
+`TEA_SIGNING_MODE=disabled` unless you have configured a real key-based signer.
+
 ## API Endpoints
 
-### Products
+### Public HTTP reads
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/v1/products` | List products |
+| `GET` | `/v1/products/{uuid}` | Get a product |
+| `GET` | `/v1/components` | List components |
+| `GET` | `/v1/components/{uuid}` | Get a component |
+| `GET` | `/v1/artifacts` | List artifacts |
+| `GET` | `/v1/artifacts/{uuid}` | Get an artifact |
+| `GET` | `/v1/collections` | List collections |
+| `GET` | `/v1/collections/{uuid}` | Get a collection |
+| `GET` | `/v1/collections/{uuid}/versions` | List collection versions |
+| `GET` | `/v1/collections/{uuid}/versions/{version}` | Get a specific collection version |
+| `GET` | `/v1/collections/{uuid}/compare?base_version=1&target_version=2` | Compare two collection versions |
+
+### Authenticated HTTP writes
 
 | Method | Path | Description |
 |--------|------|-------------|
 | `POST` | `/v1/products` | Create a product |
-| `GET` | `/v1/products/{uuid}` | Get a product |
-| `PUT` | `/v1/products/{uuid}` | Update a product |
-| `DELETE` | `/v1/products/{uuid}` | Delete a product |
+| `PUT` | `/v1/products/{uuid}` | Replace mutable product fields |
+| `DELETE` | `/v1/products/{uuid}` | Delete a product; use `?cascade=true` to remove product releases first |
 | `POST` | `/v1/products/{uuid}/deprecate` | Deprecate a product |
-
-### Components
-
-| Method | Path | Description |
-|--------|------|-------------|
 | `POST` | `/v1/components` | Create a component |
-| `GET` | `/v1/components/{uuid}` | Get a component |
-| `PUT` | `/v1/components/{uuid}` | Update a component |
-| `DELETE` | `/v1/components/{uuid}` | Delete a component |
+| `PUT` | `/v1/components/{uuid}` | Replace mutable component fields |
+| `DELETE` | `/v1/components/{uuid}` | Delete a component; use `?cascade=true` to remove component releases first |
 | `POST` | `/v1/components/{uuid}/deprecate` | Deprecate a component |
-
-### Collections
-
-| Method | Path | Description |
-|--------|------|-------------|
-| `POST` | `/v1/collections` | Create a collection |
-| `GET` | `/v1/collections/{uuid}` | Get a collection |
-| `GET` | `/v1/collections/{uuid}/versions/{version}` | Get collection version |
-| `PUT` | `/v1/collections/{uuid}` | Update a collection |
+| `POST` | `/v1/artifacts` | Register an artifact and its distribution URLs |
+| `DELETE` | `/v1/artifacts/{uuid}` | Delete an artifact when no collection still references it |
+| `POST` | `/v1/artifacts/{uuid}/deprecate` | Deprecate an artifact |
+| `POST` | `/v1/collections` | Create a collection; referenced artifacts must already exist |
+| `POST` | `/v1/collections/{uuid}/versions` | Create the next immutable collection version |
 | `DELETE` | `/v1/collections/{uuid}` | Delete a collection |
-
-### Artifacts
-
-| Method | Path | Description |
-|--------|------|-------------|
-| `POST` | `/v1/artifacts` | Create an artifact |
-| `GET` | `/v1/artifacts/{uuid}` | Get an artifact |
-| `PUT` | `/v1/artifacts/{uuid}` | Update an artifact |
-| `DELETE` | `/v1/artifacts/{uuid}` | Delete an artifact |
+| `POST` | `/v1/collections/{uuid}/deprecate` | Deprecate a collection |
 
 ## Development
 
@@ -158,10 +216,10 @@ cargo audit
 sqlx migrate add <name>
 
 # Run migrations
-sqlx migrate run
+DATABASE_URL="$TEA_DATABASE_URL" sqlx migrate run
 
 # Revert last migration
-sqlx migrate revert
+DATABASE_URL="$TEA_DATABASE_URL" sqlx migrate revert
 ```
 
 ## Deployment
@@ -174,8 +232,10 @@ docker build -t tea-server .
 
 # Run container
 docker run -p 8734:8734 \
+  -p 50051:50051 \
   -e TEA_JWT_SECRET=your-secret \
   -e TEA_DATABASE_URL=postgres://... \
+  -e TEA_GRPC_ENABLED=true \
   tea-server
 ```
 
@@ -200,7 +260,7 @@ tea-server/
 │   │   └── artifact/     # Artifact entity
 │   ├── infrastructure/   # Technical implementations
 │   │   ├── http/         # HTTP routes and handlers
-│   │   ├── grpc/         # gRPC services (stub)
+│   │   ├── grpc/         # Discovery/consumer gRPC + supported publisher writes
 │   │   ├── persistence/  # Repository implementations
 │   │   ├── auth/         # Authentication (JWT, mTLS)
 │   │   ├── evidence/     # Attestation signing

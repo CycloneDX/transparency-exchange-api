@@ -4,10 +4,11 @@ use serde::{Deserialize, Serialize};
 ///
 /// These identifier types correspond to the TEA specification and proto enum values.
 /// The numeric values match the proto enum for direct conversion.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Default)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 #[repr(i32)]
 pub enum IdentifierType {
+    #[default]
     Unspecified = 0,
     Tei = 1,
     Purl = 2,
@@ -64,12 +65,6 @@ impl IdentifierType {
             Self::Hash => "hash",
             Self::Conformance => "conformance",
         }
-    }
-}
-
-impl Default for IdentifierType {
-    fn default() -> Self {
-        Self::Unspecified
     }
 }
 

@@ -1,0 +1,197 @@
+{
+  "version": 1,
+  "canonicalContract": "proto/tea/v1/publisher.proto",
+  "referenceImplementation": "tea-server",
+  "entries": [
+    {
+      "id": "publisher.create_product",
+      "rpc": "CreateProduct",
+      "referenceStatus": "implemented",
+      "coverage": "direct",
+      "tests": [
+        "publisher_conformance::publisher_grpc_requires_auth_before_returning_unimplemented"
+      ]
+    },
+    {
+      "id": "publisher.update_product",
+      "rpc": "UpdateProduct",
+      "referenceStatus": "implemented",
+      "coverage": "direct",
+      "tests": [
+        "publisher_conformance::publisher_grpc_requires_auth_before_returning_unimplemented",
+        "publisher_conformance::publisher_grpc_reports_explicit_conformance_failures"
+      ]
+    },
+    {
+      "id": "publisher.delete_product",
+      "rpc": "DeleteProduct",
+      "referenceStatus": "implemented",
+      "coverage": "direct",
+      "tests": [
+        "publisher_conformance::publisher_grpc_requires_auth_before_returning_unimplemented",
+        "grpc_smoke::publisher_grpc_can_manage_product_releases_and_product_cascade_delete"
+      ]
+    },
+    {
+      "id": "publisher.create_product_release",
+      "rpc": "CreateProductRelease",
+      "referenceStatus": "implemented",
+      "coverage": "direct",
+      "tests": [
+        "publisher_conformance::publisher_grpc_requires_parent_product_for_product_releases",
+        "grpc_smoke::publisher_grpc_can_manage_product_releases_and_product_cascade_delete"
+      ]
+    },
+    {
+      "id": "publisher.update_product_release",
+      "rpc": "UpdateProductRelease",
+      "referenceStatus": "implemented",
+      "coverage": "direct",
+      "tests": [
+        "grpc_smoke::publisher_grpc_can_manage_product_releases_and_product_cascade_delete"
+      ]
+    },
+    {
+      "id": "publisher.delete_product_release",
+      "rpc": "DeleteProductRelease",
+      "referenceStatus": "implemented",
+      "coverage": "direct",
+      "tests": [
+        "publisher_capability_coverage::publisher_grpc_can_delete_product_releases_directly"
+      ]
+    },
+    {
+      "id": "publisher.create_component",
+      "rpc": "CreateComponent",
+      "referenceStatus": "implemented",
+      "coverage": "direct",
+      "tests": [
+        "grpc_smoke::publisher_grpc_can_manage_component_releases_and_cascade_delete",
+        "publisher_conformance::publisher_grpc_rejects_component_release_pre_release_promotion"
+      ]
+    },
+    {
+      "id": "publisher.update_component",
+      "rpc": "UpdateComponent",
+      "referenceStatus": "implemented",
+      "coverage": "direct",
+      "tests": [
+        "publisher_capability_coverage::publisher_grpc_can_update_components"
+      ]
+    },
+    {
+      "id": "publisher.delete_component",
+      "rpc": "DeleteComponent",
+      "referenceStatus": "implemented",
+      "coverage": "direct",
+      "tests": [
+        "grpc_smoke::publisher_grpc_can_manage_component_releases_and_cascade_delete"
+      ]
+    },
+    {
+      "id": "publisher.create_component_release",
+      "rpc": "CreateComponentRelease",
+      "referenceStatus": "implemented",
+      "coverage": "direct",
+      "tests": [
+        "grpc_smoke::publisher_grpc_can_manage_component_releases_and_cascade_delete",
+        "publisher_conformance::publisher_grpc_rejects_component_release_pre_release_promotion"
+      ]
+    },
+    {
+      "id": "publisher.update_component_release",
+      "rpc": "UpdateComponentRelease",
+      "referenceStatus": "implemented",
+      "coverage": "direct",
+      "tests": [
+        "grpc_smoke::publisher_grpc_can_manage_component_releases_and_cascade_delete",
+        "publisher_conformance::publisher_grpc_rejects_component_release_pre_release_promotion"
+      ]
+    },
+    {
+      "id": "publisher.delete_component_release",
+      "rpc": "DeleteComponentRelease",
+      "referenceStatus": "implemented",
+      "coverage": "direct",
+      "tests": [
+        "publisher_capability_coverage::publisher_grpc_can_delete_component_releases_directly"
+      ]
+    },
+    {
+      "id": "publisher.upload_artifact",
+      "rpc": "UploadArtifact",
+      "referenceStatus": "intentionally_unimplemented",
+      "coverage": "direct",
+      "tests": [
+        "publisher_capability_coverage::publisher_grpc_upload_artifact_fails_closed"
+      ]
+    },
+    {
+      "id": "publisher.create_artifact_from_url",
+      "rpc": "CreateArtifactFromUrl",
+      "referenceStatus": "implemented",
+      "coverage": "direct",
+      "tests": [
+        "grpc_smoke::publisher_grpc_can_create_artifact_from_url",
+        "publisher_conformance::publisher_grpc_reports_explicit_conformance_failures",
+        "publisher_conformance::publisher_grpc_blocks_private_source_urls_when_not_allowed"
+      ]
+    },
+    {
+      "id": "publisher.delete_artifact",
+      "rpc": "DeleteArtifact",
+      "referenceStatus": "implemented",
+      "coverage": "direct",
+      "tests": [
+        "publisher_conformance::publisher_grpc_reports_explicit_conformance_failures"
+      ]
+    },
+    {
+      "id": "publisher.create_collection",
+      "rpc": "CreateCollection",
+      "referenceStatus": "implemented",
+      "coverage": "direct",
+      "tests": [
+        "grpc_smoke::publisher_grpc_can_create_and_version_collections",
+        "publisher_conformance::publisher_grpc_rejects_collections_with_unknown_artifacts"
+      ]
+    },
+    {
+      "id": "publisher.update_collection",
+      "rpc": "UpdateCollection",
+      "referenceStatus": "implemented",
+      "coverage": "direct",
+      "tests": [
+        "grpc_smoke::publisher_grpc_can_create_and_version_collections",
+        "publisher_conformance::publisher_grpc_reports_explicit_conformance_failures"
+      ]
+    },
+    {
+      "id": "publisher.sign_collection",
+      "rpc": "SignCollection",
+      "referenceStatus": "intentionally_unimplemented",
+      "coverage": "direct",
+      "tests": [
+        "publisher_conformance::publisher_grpc_requires_auth_before_returning_unimplemented"
+      ]
+    },
+    {
+      "id": "publisher.batch_upload_artifacts",
+      "rpc": "BatchUploadArtifacts",
+      "referenceStatus": "intentionally_unimplemented",
+      "coverage": "direct",
+      "tests": [
+        "publisher_capability_coverage::publisher_grpc_batch_upload_artifacts_fails_closed"
+      ]
+    },
+    {
+      "id": "publisher.import_collection",
+      "rpc": "ImportCollection",
+      "referenceStatus": "intentionally_unimplemented",
+      "coverage": "direct",
+      "tests": [
+        "publisher_capability_coverage::publisher_grpc_import_collection_fails_closed"
+      ]
+    }
+  ]
+}

@@ -13,9 +13,17 @@ pub struct Collection {
     pub version: i32,
     #[serde(skip_deserializing, default = "crate::domain::common::now")]
     pub date: DateTime<Utc>,
-    #[serde(rename = "createdDate", skip_deserializing, default = "crate::domain::common::now")]
+    #[serde(
+        rename = "createdDate",
+        skip_deserializing,
+        default = "crate::domain::common::now"
+    )]
     pub created_date: DateTime<Utc>,
-    #[serde(rename = "modifiedDate", skip_deserializing, default = "crate::domain::common::now")]
+    #[serde(
+        rename = "modifiedDate",
+        skip_deserializing,
+        default = "crate::domain::common::now"
+    )]
     pub modified_date: DateTime<Utc>,
     pub belongs_to: CollectionScope,
     pub update_reason: UpdateReason,

@@ -23,9 +23,7 @@ pub struct TeaEndpoint {
 }
 
 /// SA-15: Uses AppState.base_url — no longer re-reads env var on every request.
-pub async fn well_known_tea(
-    State(base_url): State<Arc<String>>,
-) -> impl IntoResponse {
+pub async fn well_known_tea(State(base_url): State<Arc<String>>) -> impl IntoResponse {
     let index = TeaServerIndex {
         spec_version: "1.0.0".to_string(),
         server_url: base_url.as_ref().clone(),

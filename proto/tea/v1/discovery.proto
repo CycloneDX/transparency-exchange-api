@@ -9,7 +9,6 @@ import "buf/validate/validate.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
 import "tea/v1/common.proto";
-import "tea/v1/product.proto";
 
 option go_package = "github.com/CycloneDX/transparency-exchange-api/gen/go/tea/v1;teav1";
 option java_package = "org.cyclonedx.tea.v1";

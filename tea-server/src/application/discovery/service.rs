@@ -40,8 +40,8 @@ impl DiscoveryApplicationService {
     }
 
     pub async fn get_well_known(&self) -> Result<WellKnownResponse, DomainError> {
-        let base_url = std::env::var("TEA_SERVER_URL")
-            .unwrap_or_else(|_| "http://localhost:8734".to_string());
+        let base_url =
+            std::env::var("TEA_SERVER_URL").unwrap_or_else(|_| "http://localhost:8734".to_string());
         Ok(WellKnownResponse {
             schema_version: 1,
             endpoints: vec![Endpoint {

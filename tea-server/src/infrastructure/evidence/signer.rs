@@ -46,6 +46,10 @@ pub enum SigningError {
     FulcioError(String),
     #[error("Rekor upload failed: {0}")]
     RekorError(String),
+    #[error("Signing mode is not implemented securely: {0}")]
+    UnsupportedMode(String),
+    #[error("Public key required for signature verification")]
+    PublicKeyRequired,
 }
 
 /// DSSE envelope containing signed attestation.
@@ -112,21 +116,12 @@ impl SignerConfig {
     /// Load signing configuration from environment variables.
     ///
     /// Environment variables:
-    /// - `TEA_SIGNING_MODE`: "keyless", "key", or "disabled" (default: disabled in debug, keyless in release)
+    /// - `TEA_SIGNING_MODE`: "keyless", "key", or "disabled" (default: disabled)
     /// - `TEA_SIGNING_KEY_PATH`: Path to private key file (required for key mode)
     /// - `TEA_REKOR_UPLOAD`: "true" to upload to transparency log (default: true in release)
     pub fn from_env() -> Self {
         let mode = match std::env::var("TEA_SIGNING_MODE")
-            .unwrap_or_else(|_| {
-                #[cfg(debug_assertions)]
-                {
-                    "disabled".to_string()
-                }
-                #[cfg(not(debug_assertions))]
-                {
-                    "keyless".to_string()
-                }
-            })
+            .unwrap_or_else(|_| "disabled".to_string())
             .to_lowercase()
             .as_str()
         {
@@ -208,12 +203,20 @@ impl Signer {
 
     /// Create an unsigned envelope (for development only).
     fn sign_disabled(&self, attestation: &Attestation) -> Result<SignedEnvelope, SigningError> {
+        #[cfg(not(debug_assertions))]
+        {
+            let _ = attestation;
+            return Err(SigningError::UnsupportedMode(
+                "disabled signing cannot be used in release builds".to_string(),
+            ));
+        }
+
         let payload = serde_json::to_vec(attestation)
             .map_err(|e| SigningError::SigningFailed(format!("JSON serialization: {e}")))?;
 
         tracing::warn!(
             "Attestation signing is DISABLED. This is only acceptable for development. \
-             Set TEA_SIGNING_MODE=keyless or key for production."
+             Set TEA_SIGNING_MODE only when a real signing backend is configured."
         );
 
         Ok(SignedEnvelope {
@@ -233,27 +236,11 @@ impl Signer {
         &self,
         attestation: &Attestation,
     ) -> Result<SignedEnvelope, SigningError> {
-        let payload = serde_json::to_vec(attestation)
-            .map_err(|e| SigningError::SigningFailed(format!("JSON serialization: {e}")))?;
-
-        // Create PAE (Pre-Auth Encoding) per DSSE spec
-        let pae = create_pae("application/vnd.in-toto+json", &payload);
-
-        // Sign using ed25519 or ECDSA (simplified - production would use sigstore-rs)
-        let signature = self.sign_bytes(&pae).await?;
-
-        let keyid = self.compute_key_fingerprint()?;
-
-        Ok(SignedEnvelope {
-            payload_type: "application/vnd.in-toto+json".to_string(),
-            payload: BASE64.encode(&payload),
-            signatures: vec![Signature {
-                keyid,
-                sig: BASE64.encode(&signature),
-                certificate: None,
-                integrated_time: None,
-            }],
-        })
+        let _ = attestation;
+        let _ = self.compute_key_fingerprint()?;
+        Err(SigningError::UnsupportedMode(
+            "key-based signing requires a real asymmetric signing implementation".to_string(),
+        ))
     }
 
     /// Sign using Sigstore keyless (Fulcio + Rekor).
@@ -268,50 +255,11 @@ impl Signer {
             .or_else(|_| std::env::var("ACTIONS_ID_TOKEN_REQUEST_TOKEN"))
             .map_err(|_| SigningError::OidcTokenUnavailable)?;
 
-        let payload = serde_json::to_vec(attestation)
-            .map_err(|e| SigningError::SigningFailed(format!("JSON serialization: {e}")))?;
-
-        // Create PAE
-        let _pae = create_pae("application/vnd.in-toto+json", &payload);
-
-        // TODO: Integrate with sigstore-rs or cosign binary for actual signing
-        // For now, return a placeholder that indicates keyless signing is configured
-        tracing::info!(
-            oidc_token_present = true,
-            "Keyless signing configured. Full integration requires sigstore-rs or cosign."
-        );
-
-        // Placeholder signature - production would call Fulcio API
+        let _ = attestation;
         let identity = extract_identity_from_token(&oidc_token);
-
-        Ok(SignedEnvelope {
-            payload_type: "application/vnd.in-toto+json".to_string(),
-            payload: BASE64.encode(&payload),
-            signatures: vec![Signature {
-                keyid: identity,
-                sig: "PENDING_FULCIO_INTEGRATION".to_string(),
-                certificate: None,
-                integrated_time: None,
-            }],
-        })
-    }
-
-    /// Sign raw bytes using the configured private key.
-    async fn sign_bytes(&self, data: &[u8]) -> Result<Vec<u8>, SigningError> {
-        let key_bytes = self
-            .private_key
-            .as_ref()
-            .ok_or(SigningError::KeyNotConfigured)?;
-
-        // For now, use a simple HMAC-based signature placeholder
-        // Production would use proper Ed25519 or ECDSA signing via sigstore-rs
-        use hmac::{Hmac, Mac};
-        type HmacSha256 = Hmac<Sha256>;
-
-        let mut mac = HmacSha256::new_from_slice(key_bytes)
-            .map_err(|e| SigningError::SigningFailed(format!("HMAC init: {e}")))?;
-        mac.update(data);
-        Ok(mac.finalize().into_bytes().to_vec())
+        Err(SigningError::UnsupportedMode(format!(
+            "keyless signing requested for identity {identity}, but Fulcio/Rekor integration is not implemented"
+        )))
     }
 
     /// Compute fingerprint of the signing key for keyid.
@@ -382,28 +330,26 @@ pub fn verify(envelope: &SignedEnvelope, public_key: Option<&[u8]>) -> Result<()
         }
 
         if sig.sig == "PENDING_FULCIO_INTEGRATION" {
-            // Placeholder for keyless - would verify Fulcio cert chain
-            tracing::warn!("Keyless signature verification pending Fulcio integration");
-            continue;
+            return Err(SigningError::UnsupportedMode(
+                "placeholder keyless signatures are never valid".to_string(),
+            ));
         }
 
-        // Verify signature with provided public key
-        if let Some(pk) = public_key {
-            use hmac::{Hmac, Mac};
-            type HmacSha256 = Hmac<Sha256>;
+        let pk = public_key.ok_or(SigningError::PublicKeyRequired)?;
+        use hmac::{Hmac, Mac};
+        type HmacSha256 = Hmac<Sha256>;
 
-            let sig_bytes = BASE64
-                .decode(&sig.sig)
-                .map_err(|e| SigningError::SigningFailed(format!("Signature decode: {e}")))?;
+        let sig_bytes = BASE64
+            .decode(&sig.sig)
+            .map_err(|e| SigningError::SigningFailed(format!("Signature decode: {e}")))?;
 
-            let mut mac = HmacSha256::new_from_slice(pk)
-                .map_err(|e| SigningError::SigningFailed(format!("HMAC init: {e}")))?;
-            mac.update(&pae);
+        let mut mac = HmacSha256::new_from_slice(pk)
+            .map_err(|e| SigningError::SigningFailed(format!("HMAC init: {e}")))?;
+        mac.update(&pae);
 
-            mac.verify_slice(&sig_bytes).map_err(|_| {
-                SigningError::SigningFailed("Signature verification failed".to_string())
-            })?;
-        }
+        mac.verify_slice(&sig_bytes).map_err(|_| {
+            SigningError::SigningFailed("Signature verification failed".to_string())
+        })?;
     }
 
     Ok(())
@@ -462,6 +408,22 @@ mod tests {
             signatures: vec![Signature {
                 keyid: "none".to_string(),
                 sig: "UNSIGNED".to_string(),
+                certificate: None,
+                integrated_time: None,
+            }],
+        };
+
+        assert!(verify(&envelope, None).is_err());
+    }
+
+    #[test]
+    fn test_verify_placeholder_keyless_fails() {
+        let envelope = SignedEnvelope {
+            payload_type: "application/vnd.in-toto+json".to_string(),
+            payload: BASE64.encode(b"test"),
+            signatures: vec![Signature {
+                keyid: "keyless:oidc:test".to_string(),
+                sig: "PENDING_FULCIO_INTEGRATION".to_string(),
                 certificate: None,
                 integrated_time: None,
             }],

@@ -6,7 +6,9 @@ use super::repository::ComponentRepository;
 use crate::domain::common::deprecation::Deprecation;
 use crate::domain::common::error::DomainError;
 use crate::domain::common::pagination::{Page, PaginationParams};
-use crate::domain::common::validation::{validate_max_len, validate_non_empty, validate_optional_url};
+use crate::domain::common::validation::{
+    validate_max_len, validate_non_empty, validate_optional_url,
+};
 
 pub struct ComponentService<R: ComponentRepository> {
     repository: R,
@@ -16,6 +18,14 @@ impl<R> ComponentService<R>
 where
     R: ComponentRepository + Send + Sync,
 {
+    fn validate_component(component: &Component) -> Result<(), DomainError> {
+        validate_non_empty("name", &component.name)?;
+        validate_max_len("name", &component.name, 4096)?;
+        validate_optional_url("homepage_url", &component.homepage_url)?;
+        validate_optional_url("vcs_url", &component.vcs_url)?;
+        Ok(())
+    }
+
     pub fn new(repository: R) -> Self {
         Self { repository }
     }
@@ -27,8 +37,15 @@ where
             .map_err(DomainError::Repository)
     }
 
-    pub async fn list_components(&self, params: PaginationParams) -> Result<Page<Component>, DomainError> {
-        let all = self.repository.find_by_name("").await.map_err(DomainError::Repository)?;
+    pub async fn list_components(
+        &self,
+        params: PaginationParams,
+    ) -> Result<Page<Component>, DomainError> {
+        let all = self
+            .repository
+            .find_by_name("")
+            .await
+            .map_err(DomainError::Repository)?;
         Ok(Page::new(all, &params))
     }
 
@@ -36,12 +53,11 @@ where
         &self,
         mut component: Component,
     ) -> Result<Component, DomainError> {
-        validate_non_empty("name", &component.name)?;
-        validate_max_len("name", &component.name, 4096)?;
-        validate_optional_url("homepage_url", &component.homepage_url)?;
-        validate_optional_url("vcs_url", &component.vcs_url)?;
+        Self::validate_component(&component)?;
 
-        component.uuid = Uuid::new_v4();
+        if component.uuid.is_nil() {
+            component.uuid = Uuid::new_v4();
+        }
         component.created_date = Utc::now();
         component.modified_date = Utc::now();
 
@@ -56,6 +72,7 @@ where
         &self,
         mut component: Component,
     ) -> Result<Component, DomainError> {
+        Self::validate_component(&component)?;
         component.modified_date = Utc::now();
         self.repository
             .update(&component)
@@ -124,7 +141,9 @@ where
         validate_non_empty("version", &release.version)?;
         validate_max_len("version", &release.version, 256)?;
 
-        release.uuid = Uuid::new_v4();
+        if release.uuid.is_nil() {
+            release.uuid = Uuid::new_v4();
+        }
 
         self.repository
             .save_release(&release)
