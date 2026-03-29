@@ -1,0 +1,29 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://cyclonedx.org/schema/tea/v1/pagination.schema.json",
+    "type": "object",
+    "title": "TEA Pagination",
+    "description": "Pagination parameters for list operations.",
+    "properties": {
+        "pageSize": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100,
+            "description": "Maximum number of items to return per page. Server may return fewer items. Default is 20, maximum is 100."
+        },
+        "pageToken": {
+            "type": "string",
+            "description": "Opaque token for fetching the next page of results. Obtained from PageResponse.next_page_token of a previous request. Omit for the first page."
+        },
+        "nextPageToken": {
+            "type": "string",
+            "description": "Token to retrieve the next page of results. Empty if there are no more results."
+        },
+        "totalCount": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Total number of items across all pages (if known). May be omitted if the total is expensive to compute."
+        }
+    },
+    "additionalProperties": false
+}

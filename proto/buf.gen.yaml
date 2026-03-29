@@ -1,0 +1,30 @@
+# Buf V2 code generation configuration for TEA
+# https://buf.build/docs/configuration/v2/buf-gen-yaml
+version: v2
+clean: true
+
+# Code generation plugins
+plugins:
+  # Go protobuf messages and gRPC stubs
+  - remote: buf.build/protocolbuffers/go:v1.36.5
+    out: gen/go
+    opt:
+      - paths=source_relative
+
+  # Go gRPC stubs
+  - remote: buf.build/grpc/go:v1.6.0
+    out: gen/go
+    opt:
+      - paths=source_relative
+      - require_unimplemented_servers=false
+
+managed:
+  enabled: true
+  disable:
+    - file_option: go_package
+      module: buf.build/bufbuild/protovalidate
+inputs:
+  # Generate from local proto files
+  - directory: .
+    exclude_paths:
+      - .buf-deps

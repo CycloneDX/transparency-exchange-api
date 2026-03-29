@@ -1,0 +1,89 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://cyclonedx.org/schema/tea/v1/error.schema.json",
+    "type": "object",
+    "title": "TEA Error",
+    "description": "Standard error response format for TEA APIs.",
+    "properties": {
+        "code": {
+            "type": "string",
+            "enum": [
+                "ERROR_CODE_UNSPECIFIED",
+                "ERROR_CODE_INVALID_ARGUMENT",
+                "ERROR_CODE_UNAUTHENTICATED",
+                "ERROR_CODE_PERMISSION_DENIED",
+                "ERROR_CODE_NOT_FOUND",
+                "ERROR_CODE_ALREADY_EXISTS",
+                "ERROR_CODE_RESOURCE_EXHAUSTED",
+                "ERROR_CODE_CANCELLED",
+                "ERROR_CODE_INTERNAL",
+                "ERROR_CODE_UNAVAILABLE"
+            ],
+            "description": "Machine-readable error code."
+        },
+        "message": {
+            "type": "string",
+            "description": "Human-readable error message."
+        },
+        "field": {
+            "type": "string",
+            "description": "Field that caused the error (for validation errors)."
+        },
+        "details": {
+            "type": "array",
+            "items": {
+                "$ref": "#/$defs/ErrorDetail"
+            },
+            "description": "Detailed error information."
+        },
+        "requestId": {
+            "type": "string",
+            "description": "Unique request ID for tracing."
+        },
+        "documentationUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "Optional documentation URL for this error type."
+        }
+    },
+    "required": [
+        "code",
+        "message"
+    ],
+    "additionalProperties": false,
+    "$defs": {
+        "ErrorDetail": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string",
+                    "enum": [
+                        "ERROR_CODE_UNSPECIFIED",
+                        "ERROR_CODE_INVALID_ARGUMENT",
+                        "ERROR_CODE_UNAUTHENTICATED",
+                        "ERROR_CODE_PERMISSION_DENIED",
+                        "ERROR_CODE_NOT_FOUND",
+                        "ERROR_CODE_ALREADY_EXISTS",
+                        "ERROR_CODE_RESOURCE_EXHAUSTED",
+                        "ERROR_CODE_CANCELLED",
+                        "ERROR_CODE_INTERNAL",
+                        "ERROR_CODE_UNAVAILABLE"
+                    ]
+                },
+                "message": {
+                    "type": "string"
+                },
+                "field": {
+                    "type": "string"
+                },
+                "metadata": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                }
+            },
+            "additionalProperties": false
+        }
+    }
+}

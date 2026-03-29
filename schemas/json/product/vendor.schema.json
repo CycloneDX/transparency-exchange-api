@@ -1,0 +1,32 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://cyclonedx.org/schema/tea/v1/vendor.schema.json",
+    "type": "object",
+    "title": "TEA Vendor",
+    "description": "Represents a product vendor or publisher.",
+    "properties": {
+        "name": {
+            "type": "string",
+            "maxLength": 512,
+            "description": "Vendor name."
+        },
+        "uuid": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Optional vendor UUID (if registered in this TEA instance)."
+        },
+        "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Optional vendor URL."
+        },
+        "contacts": {
+            "type": "array",
+            "items": {
+                "$ref": "contact.schema.json"
+            },
+            "description": "Optional contact information."
+        }
+    },
+    "additionalProperties": false
+}
