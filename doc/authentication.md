@@ -1,97 +1,90 @@
 # Authentication
 
-The Transparency Exchange API (TEA) supports two primary authentication mechanisms: Bearer Token authentication and Mutual TLS (mTLS) authentication. Implementations MUST support at least one of these mechanisms, and SHOULD support both for maximum compatibility.
+TEA deployments need a way to distinguish public discovery from protected read
+and write operations. This document describes common authentication patterns
+without requiring one identity stack for every TEA deployment.
 
-## Bearer Token Authentication
+## Base expectations
 
-Bearer token authentication uses JSON Web Tokens (JWTs) issued by an external identity provider. This is the recommended authentication mechanism for most use cases.
+The base TEA specification does not mandate a single identity provider, token
+format, or client certificate profile. An implementation is compliant if it can:
 
-### Token Acquisition
+- authenticate callers for protected operations
+- bind authenticated identities to local authorization policy
+- protect authenticated traffic with TLS
 
-Tokens are acquired out-of-band from the TEA server. The exact process depends on the service provider's identity management system, but typically involves:
+A deployment MAY expose some discovery or read-only endpoints publicly.
+Publisher or other mutating operations SHOULD require an authenticated caller.
 
-1. User or service authenticates with the provider's portal or API
-2. Provider issues a short-lived JWT (recommended: < 1 hour)
-3. Client includes the token in API requests
+## Bearer tokens
 
-### Token Format
+Bearer tokens are a common choice for HTTP and gRPC deployments.
 
-Tokens MUST be valid JWTs conforming to RFC 7519. The token payload SHOULD include:
+- Clients send bearer credentials in the `Authorization` header.
+- Token format is deployment-defined. JWT is common, but opaque access tokens
+    are also valid if the server can validate them.
+- Servers SHOULD validate token lifetime, issuing authority, intended audience
+    or resource, and any permissions or claims used for authorization.
 
-- `iss`: Issuer identifier
-- `sub`: Subject (user or service identifier)
-- `aud`: Audience (TEA server identifier)
-- `exp`: Expiration time
-- `iat`: Issued at time
-- `scope`: Space-separated list of authorized scopes
+Example:
 
-### Request Format
-
-Include the token in the `Authorization` header:
-
-```
-Authorization: Bearer <token>
-```
-
-### Token Validation
-
-Servers MUST validate:
-
-- Token signature using the issuer's public key
-- Token expiration (`exp` claim)
-- Token audience (`aud` claim)
-- Required scopes for the operation
-
-## Mutual TLS Authentication
-
-Mutual TLS authentication uses client certificates for mutual authentication between client and server.
-
-### Certificate Requirements
-
-- Client certificates MUST use ECDSA P-384 or Ed25519 algorithms
-- Certificates MUST be issued by a trusted Certificate Authority (CA)
-- Certificate Subject Alternative Name (SAN) MUST include the client identifier
-
-### TLS Configuration
-
-- Minimum TLS version: 1.3
-- Server MUST request client certificates
-- Server MUST validate certificate chain
-- Client MUST present valid certificate
-
-### Authorization Mapping
-
-The client certificate's subject or SAN is mapped to TEA identities and scopes through server-side configuration.
-
-## Authentication Flow
-
-```mermaid
-sequenceDiagram
-    participant Client
-    participant TEA Server
-    participant IdP
-    
-    alt Bearer Token
-        Client->>IdP: Acquire token
-        IdP-->>Client: JWT token
-        Client->>TEA Server: Request + Authorization: Bearer <token>
-        TEA Server->>TEA Server: Validate token
-    else mTLS
-        Client->>TEA Server: TLS handshake with client cert
-        TEA Server->>TEA Server: Validate certificate
-    end
-    
-    TEA Server-->>Client: Authenticated response
+```text
+Authorization: Bearer <access-token>
 ```
 
-## Error Responses
+## Mutual TLS
 
-- `401 Unauthorized`: Missing or invalid credentials
-- `403 Forbidden`: Valid credentials but insufficient permissions
+Mutual TLS is appropriate for closed ecosystems and higher-assurance
+machine-to-machine integrations.
 
-## Security Considerations
+- The server validates the client certificate chain and certificate status
+    according to local PKI policy.
+- The server binds the certificate identity, such as subject, subject
+    alternative name, or a mapped identifier, to local authorization policy.
+- The base TEA guidance does not require one client certificate algorithm, one
+    certificate subject model, or one CA topology for every deployment.
 
-- Tokens SHOULD be short-lived (< 1 hour)
-- mTLS certificates SHOULD have short validity periods
-- Implement token revocation mechanisms
-- Log authentication failures for security monitoring
+OWASP recommends considering mTLS for high-value applications and APIs.
+
+## Transport security
+
+Authenticated TEA endpoints, and any endpoint carrying non-public data, MUST
+only be exposed over TLS.
+
+This base guidance intentionally does not set one mandatory TLS version or one
+universal certificate and key profile for every TEA deployment. Those choices
+are environment-specific and should come from an applicable TEA profile or
+deployment baseline.
+
+Examples:
+
+- OWASP recommends defaulting to TLS 1.3 and supporting TLS 1.2 if necessary
+    for general-purpose web applications.
+- NIST SP 800-52 Rev. 2 defines a stricter government TLS baseline for federal
+    systems.
+- Frameworks such as NIS2 or ITSG-33 can drive additional organizational
+    requirements, but they do not by themselves create one universal TEA
+    transport profile.
+
+## Error responses
+
+- `401 Unauthorized`: missing or invalid credentials
+- `403 Forbidden`: authenticated, but not authorized for the requested
+    operation
+
+## Operational notes
+
+- Log authentication and certificate validation failures for audit and incident
+    response.
+- Rotate bearer credentials and client certificates according to local policy.
+- Prefer profile-level or deployment-level guidance for stricter transport
+    baselines.
+
+## Non-normative references
+
+- RFC 6750: OAuth 2.0 Bearer Token Usage
+- RFC 5280: Internet X.509 Public Key Infrastructure Certificate and CRL
+    Profile
+- OWASP Transport Layer Security Cheat Sheet
+- NIST SP 800-52 Rev. 2: Guidelines for the Selection, Configuration, and Use
+    of TLS Implementations
