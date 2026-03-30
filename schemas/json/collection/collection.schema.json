@@ -1,0 +1,61 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://cyclonedx.org/schema/tea/v1/collection.schema.json",
+    "type": "object",
+    "title": "TEA Collection",
+    "description": "Represents a TEA Collection - a versioned set of artifacts associated with a release.",
+    "properties": {
+        "uuid": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for this TEA Collection."
+        },
+        "version": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Version number of this collection."
+        },
+        "date": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date when this collection version was created."
+        },
+        "belongsTo": {
+            "type": "string",
+            "enum": [
+                "COLLECTION_SCOPE_UNSPECIFIED",
+                "COLLECTION_SCOPE_RELEASE",
+                "COLLECTION_SCOPE_PRODUCT_RELEASE"
+            ],
+            "description": "Scope of the collection (component release or product release)."
+        },
+        "updateReason": {
+            "$ref": "update-reason.schema.json"
+        },
+        "artifacts": {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "format": "uuid"
+            },
+            "description": "UUIDs of artifacts in this collection."
+        },
+        "createdDate": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when this collection was created."
+        },
+        "modifiedDate": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when this collection was last modified."
+        }
+    },
+    "required": [
+        "uuid",
+        "version",
+        "belongsTo",
+        "updateReason"
+    ],
+    "additionalProperties": false
+}

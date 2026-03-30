@@ -1,0 +1,52 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://cyclonedx.org/schema/tea/v1/product-release.schema.json",
+    "type": "object",
+    "title": "TEA Product Release",
+    "description": "Represents a TEA Product Release - a specific version of a product with associated components.",
+    "properties": {
+        "uuid": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for this TEA Product Release."
+        },
+        "productUuid": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the parent product."
+        },
+        "version": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Version string of this release."
+        },
+        "releaseDate": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Release date."
+        },
+        "preRelease": {
+            "type": "boolean",
+            "description": "Whether this is a pre-release version."
+        },
+        "identifiers": {
+            "type": "array",
+            "items": {
+                "$ref": "../common/identifier.schema.json"
+            },
+            "description": "List of identifiers for this release."
+        },
+        "components": {
+            "type": "array",
+            "items": {
+                "$ref": "component-ref.schema.json"
+            },
+            "description": "References to components included in this product release."
+        }
+    },
+    "required": [
+        "uuid",
+        "version"
+    ],
+    "additionalProperties": false
+}

@@ -1,0 +1,30 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://cyclonedx.org/schema/tea/v1/contact.schema.json",
+    "type": "object",
+    "title": "TEA Contact",
+    "description": "Represents contact information for a vendor or organization.",
+    "properties": {
+        "type": {
+            "type": "string",
+            "enum": [
+                "CONTACT_TYPE_UNSPECIFIED",
+                "CONTACT_TYPE_EMAIL",
+                "CONTACT_TYPE_PHONE",
+                "CONTACT_TYPE_URL",
+                "CONTACT_TYPE_OTHER"
+            ],
+            "description": "Type of contact information."
+        },
+        "value": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Contact value (email address, phone number, URL, etc.)."
+        }
+    },
+    "required": [
+        "type",
+        "value"
+    ],
+    "additionalProperties": false
+}

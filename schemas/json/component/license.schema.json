@@ -1,0 +1,33 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://cyclonedx.org/schema/tea/v1/license.schema.json",
+    "type": "object",
+    "title": "TEA License Info",
+    "description": "Represents license information for a component.",
+    "properties": {
+        "licenseType": {
+            "type": "string",
+            "enum": [
+                "LICENSE_TYPE_UNSPECIFIED",
+                "LICENSE_TYPE_SPDX",
+                "LICENSE_TYPE_OTHER"
+            ],
+            "description": "Type of license identifier."
+        },
+        "licenseId": {
+            "type": "string",
+            "minLength": 1,
+            "description": "License identifier (SPDX license ID or custom)."
+        },
+        "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Optional URL to the full license text."
+        }
+    },
+    "required": [
+        "licenseType",
+        "licenseId"
+    ],
+    "additionalProperties": false
+}

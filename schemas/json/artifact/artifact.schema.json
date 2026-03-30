@@ -1,0 +1,116 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://cyclonedx.org/schema/tea/v1/artifact.schema.json",
+    "type": "object",
+    "title": "TEA Artifact",
+    "description": "Represents a TEA Artifact - a security-related document or file linked to a component release.",
+    "properties": {
+        "uuid": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for this TEA Artifact."
+        },
+        "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512,
+            "description": "Human-readable name for the artifact."
+        },
+        "type": {
+            "type": "string",
+            "enum": [
+                "ARTIFACT_TYPE_UNSPECIFIED",
+                "ARTIFACT_TYPE_ATTESTATION",
+                "ARTIFACT_TYPE_BOM",
+                "ARTIFACT_TYPE_BUILD_META",
+                "ARTIFACT_TYPE_CERTIFICATION",
+                "ARTIFACT_TYPE_FORMULATION",
+                "ARTIFACT_TYPE_LICENSE",
+                "ARTIFACT_TYPE_RELEASE_NOTES",
+                "ARTIFACT_TYPE_SECURITY_TXT",
+                "ARTIFACT_TYPE_THREAT_MODEL",
+                "ARTIFACT_TYPE_VULNERABILITIES",
+                "ARTIFACT_TYPE_CLE",
+                "ARTIFACT_TYPE_CDXA",
+                "ARTIFACT_TYPE_CBOM",
+                "ARTIFACT_TYPE_MODEL_CARD",
+                "ARTIFACT_TYPE_STATIC_ANALYSIS",
+                "ARTIFACT_TYPE_DYNAMIC_ANALYSIS",
+                "ARTIFACT_TYPE_PENTEST_REPORT",
+                "ARTIFACT_TYPE_RISK_ASSESSMENT",
+                "ARTIFACT_TYPE_POAM",
+                "ARTIFACT_TYPE_QUALITY_METRICS",
+                "ARTIFACT_TYPE_HARNESS",
+                "ARTIFACT_TYPE_CONFORMANCE",
+                "ARTIFACT_TYPE_OTHER"
+            ],
+            "description": "Type of the artifact."
+        },
+        "componentDistributions": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            },
+            "description": "Distribution types this artifact applies to."
+        },
+        "formats": {
+            "type": "array",
+            "items": {
+                "$ref": "artifact-format.schema.json"
+            },
+            "minItems": 1,
+            "description": "Available formats for this artifact."
+        },
+        "createdDate": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when this artifact was created in the TEA system."
+        },
+        "description": {
+            "type": "string",
+            "maxLength": 4096,
+            "description": "Optional description of the artifact."
+        },
+        "subject": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "SUBJECT_TYPE_UNSPECIFIED",
+                        "SUBJECT_TYPE_COMPONENT",
+                        "SUBJECT_TYPE_PRODUCT",
+                        "SUBJECT_TYPE_SERVICE",
+                        "SUBJECT_TYPE_ORGANIZATION",
+                        "SUBJECT_TYPE_BUILD"
+                    ],
+                    "description": "Type of subject."
+                },
+                "identifiers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "../common/identifier.schema.json"
+                    },
+                    "description": "Identifiers for the subject."
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Human-readable name of the subject."
+                },
+                "version": {
+                    "type": "string",
+                    "description": "Version of the subject (if applicable)."
+                }
+            },
+            "additionalProperties": false,
+            "description": "Subject of the artifact (what it describes)."
+        }
+    },
+    "required": [
+        "uuid",
+        "name",
+        "type",
+        "formats"
+    ],
+    "additionalProperties": false
+}

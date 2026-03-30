@@ -1,0 +1,57 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://cyclonedx.org/schema/tea/v1/artifact-format.schema.json",
+    "type": "object",
+    "title": "TEA Artifact Format",
+    "description": "Represents a specific encoding/format of an artifact.",
+    "properties": {
+        "mimeType": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "description": "MIME type of the document."
+        },
+        "description": {
+            "type": "string",
+            "maxLength": 1024,
+            "description": "Human-readable description of this format."
+        },
+        "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Direct download URL for the artifact in this format."
+        },
+        "signatureUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "Optional URL for a detached digital signature."
+        },
+        "checksums": {
+            "type": "array",
+            "items": {
+                "$ref": "../common/checksum.schema.json"
+            },
+            "minItems": 1,
+            "description": "Checksums for integrity verification."
+        },
+        "sizeBytes": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "File size in bytes."
+        },
+        "encoding": {
+            "type": "string",
+            "description": "Encoding of the content (e.g., 'utf-8', 'base64')."
+        },
+        "specVersion": {
+            "type": "string",
+            "description": "Specification version (for typed artifacts)."
+        }
+    },
+    "required": [
+        "mimeType",
+        "url",
+        "checksums"
+    ],
+    "additionalProperties": false
+}

@@ -1,0 +1,334 @@
+// Copyright 2024-2026 CycloneDX Contributors
+// SPDX-License-Identifier: Apache-2.0
+
+syntax = "proto3";
+
+package tea.v1;
+
+import "buf/validate/validate.proto";
+import "google/protobuf/timestamp.proto";
+import "tea/v1/common.proto";
+
+option go_package = "github.com/CycloneDX/transparency-exchange-api/gen/go/tea/v1;teav1";
+option java_package = "org.cyclonedx.tea.v1";
+option java_multiple_files = true;
+option csharp_namespace = "CycloneDX.Tea.V1";
+
+// ============================================================================
+// TEA Component
+// ============================================================================
+
+// Component represents a TEA Component - a component lineage.
+// A product release may be constructed with one or multiple TEA Components,
+// each with their own set of releases and related artifacts.
+//
+// Example: "Apache Log4j Core" is a Component with multiple ComponentReleases
+// like 2.24.3, 2.24.2, etc.
+message Component {
+  // Unique identifier for this TEA Component.
+  // Format: UUID v4 or v7.
+  string uuid = 1 [
+    (buf.validate.field).string.uuid = true,
+    (buf.validate.field).required = true
+  ];
+
+  // Human-readable name of the component.
+  string name = 2 [
+    (buf.validate.field).string.min_len = 1,
+    (buf.validate.field).string.max_len = 512
+  ];
+
+  // Optional description of the component.
+  string description = 3 [(buf.validate.field).string.max_len = 4096];
+
+  // List of identifiers for this component.
+  // A component may have multiple identifiers (e.g., both CPE and PURL).
+  repeated Identifier identifiers = 4;
+
+  // Timestamp when this component was created in the TEA system.
+  google.protobuf.Timestamp created_date = 5 [json_name = "createdDate"];
+
+  // Timestamp when this component was last modified.
+  google.protobuf.Timestamp modified_date = 6 [json_name = "modifiedDate"];
+
+  // Component type classification.
+  ComponentType component_type = 7 [json_name = "componentType"];
+
+  // Optional license information for the component.
+  repeated LicenseInfo licenses = 8;
+
+  // Optional publisher/author information.
+  string publisher = 9;
+
+  // Optional URL to the component's homepage.
+  string homepage_url = 10 [
+    (buf.validate.field).string.uri = true,
+    (buf.validate.field).ignore = IGNORE_IF_ZERO_VALUE,
+    json_name = "homepageUrl"
+  ];
+
+  // Optional URL to the component's VCS repository.
+  string vcs_url = 11 [
+    (buf.validate.field).string.uri = true,
+    (buf.validate.field).ignore = IGNORE_IF_ZERO_VALUE,
+    json_name = "vcsUrl"
+  ];
+
+  // Optional deprecation information.
+  optional Deprecation deprecation = 12;
+}
+
+// ComponentType classifies the type of component.
+enum ComponentType {
+  // Unspecified component type.
+  COMPONENT_TYPE_UNSPECIFIED = 0;
+
+  // A software application.
+  COMPONENT_TYPE_APPLICATION = 1;
+
+  // A software framework.
+  COMPONENT_TYPE_FRAMEWORK = 2;
+
+  // A software library.
+  COMPONENT_TYPE_LIBRARY = 3;
+
+  // An operating system.
+  COMPONENT_TYPE_OPERATING_SYSTEM = 4;
+
+  // A physical or virtual device.
+  COMPONENT_TYPE_DEVICE = 5;
+
+  // A firmware image.
+  COMPONENT_TYPE_FIRMWARE = 6;
+
+  // A software file (not a library/application).
+  COMPONENT_TYPE_FILE = 7;
+
+  // A container image (Docker, OCI).
+  COMPONENT_TYPE_CONTAINER = 8;
+
+  // A platform (cloud service, runtime).
+  COMPONENT_TYPE_PLATFORM = 9;
+
+  // A machine learning model.
+  COMPONENT_TYPE_MACHINE_LEARNING_MODEL = 10;
+
+  // A dataset used for ML or other purposes.
+  COMPONENT_TYPE_DATA = 11;
+
+  // Cryptographic asset (key, certificate).
+  COMPONENT_TYPE_CRYPTOGRAPHIC_ASSET = 12;
+}
+
+// LicenseInfo contains license information for a component.
+message LicenseInfo {
+  // SPDX license identifier (e.g., "Apache-2.0", "MIT").
+  string spdx_id = 1 [json_name = "spdxId"];
+
+  // License name (if not SPDX-recognized).
+  string name = 2;
+
+  // URL to the license text.
+  string url = 3 [
+    (buf.validate.field).string.uri = true,
+    (buf.validate.field).ignore = IGNORE_IF_ZERO_VALUE
+  ];
+}
+
+// ============================================================================
+// TEA Component Release
+// ============================================================================
+
+// ComponentRelease represents a specific version of a TEA Component.
+// Each release may include multiple distributions and has an associated
+// TEA Collection containing security artifacts.
+//
+// The UUID of a ComponentRelease is identical to the UUID of its associated
+// TEA Collection.
+message ComponentRelease {
+  // Unique identifier for this component release.
+  // This is also the UUID of the associated TEA Collection.
+  // Format: UUID v4 or v7.
+  string uuid = 1 [
+    (buf.validate.field).string.uuid = true,
+    (buf.validate.field).required = true
+  ];
+
+  // UUID of the TEA Component this release belongs to.
+  string component = 2 [
+    (buf.validate.field).string.uuid = true,
+    (buf.validate.field).required = true
+  ];
+
+  // Human-readable version string.
+  // Can follow any versioning scheme (semver, calver, etc.).
+  string version = 3 [
+    (buf.validate.field).string.min_len = 1,
+    (buf.validate.field).string.max_len = 256
+  ];
+
+  // Timestamp when this release was created in the TEA system.
+  google.protobuf.Timestamp created_date = 4 [json_name = "createdDate"];
+
+  // Upstream release timestamp.
+  // This is the actual release date, not when it was added to TEA.
+  google.protobuf.Timestamp release_date = 5 [json_name = "releaseDate"];
+
+  // Indicates if this is a pre-release (beta, RC, milestone, etc.).
+  // This flag can be disabled (set to false) after creation, but not enabled.
+  bool pre_release = 6 [json_name = "preRelease"];
+
+  // List of identifiers for this release.
+  repeated Identifier identifiers = 7;
+
+  // List of distributions for this release.
+  // Distributions capture variations such as architecture, packaging, or
+  // localization of the same release.
+  repeated Distribution distributions = 8;
+
+  // Optional deprecation information.
+  optional Deprecation deprecation = 9;
+}
+
+// ============================================================================
+// Distribution
+// ============================================================================
+
+// Distribution represents a specific variant of a ComponentRelease.
+// For software, each distribution typically corresponds to a different
+// digital file delivered to users (e.g., by platform or packaging type).
+// For hardware, distributions may reflect differences in packaging, language,
+// or other physical attributes.
+message Distribution {
+  // Unique identifier for this distribution type.
+  // Defined by the producer and used to associate TEA Artifacts.
+  // Examples: "jar", "tar.gz", "windows-x64.zip", "windows-x64.exe"
+  string distribution_type = 1 [
+    (buf.validate.field).string.min_len = 1,
+    (buf.validate.field).string.max_len = 128,
+    (buf.validate.field).string.pattern = "^[a-zA-Z0-9][a-zA-Z0-9._-]*$",
+    json_name = "distributionType"
+  ];
+
+  // Human-readable description of the distribution.
+  string description = 2 [(buf.validate.field).string.max_len = 1024];
+
+  // Identifiers specific to this distribution.
+  // Example: PURL with type qualifier for specific packaging.
+  repeated Identifier identifiers = 3;
+
+  // Direct download URL for the distribution.
+  string url = 4 [
+    (buf.validate.field).string.uri = true,
+    (buf.validate.field).ignore = IGNORE_IF_ZERO_VALUE
+  ];
+
+  // Direct download URL for the distribution's external signature.
+  string signature_url = 5 [
+    (buf.validate.field).string.uri = true,
+    (buf.validate.field).ignore = IGNORE_IF_ZERO_VALUE,
+    json_name = "signatureUrl"
+  ];
+
+  // Checksums for the distribution file.
+  // At least SHA-256 is recommended.
+  repeated Checksum checksums = 6;
+
+  // File size in bytes (if known).
+  optional int64 size_bytes = 7 [json_name = "sizeBytes"];
+
+  // MIME type of the distribution file.
+  string mime_type = 8 [json_name = "mimeType"];
+}
+
+// ============================================================================
+// Request/Response Messages
+// ============================================================================
+
+// ListComponentsRequest is the request for listing components.
+message ListComponentsRequest {
+  // Pagination parameters.
+  PageRequest pagination = 1;
+
+  // Optional search query (matches name, description).
+  string query = 2 [(buf.validate.field).string.max_len = 256];
+
+  // Filter by component type.
+  ComponentType component_type = 3 [json_name = "componentType"];
+
+  // Filter by identifier.
+  optional Identifier identifier = 4;
+
+  // Optional sort specification.
+  SortSpec sort = 5;
+}
+
+// ListComponentsResponse is the response for listing components.
+message ListComponentsResponse {
+  // List of components.
+  repeated Component components = 1;
+
+  // Pagination information.
+  PageResponse pagination = 2;
+}
+
+// GetComponentRequest is the request for getting a single component.
+message GetComponentRequest {
+  // UUID of the component to retrieve.
+  string uuid = 1 [(buf.validate.field).string.uuid = true, (buf.validate.field).required = true];
+}
+
+// ListComponentReleasesRequest is the request for listing releases of a component.
+message ListComponentReleasesRequest {
+  // UUID of the component.
+  string component_uuid = 1 [
+    (buf.validate.field).string.uuid = true,
+    (buf.validate.field).required = true,
+    json_name = "componentUuid"
+  ];
+
+  // Pagination parameters.
+  PageRequest pagination = 2;
+
+  // Include pre-releases in the response.
+  bool include_pre_releases = 3 [json_name = "includePreReleases"];
+
+  // Filter by release date range.
+  DateRange release_date_range = 4 [json_name = "releaseDateRange"];
+
+  // Optional sort specification.
+  SortSpec sort = 5;
+}
+
+// ListComponentReleasesResponse is the response for listing component releases.
+message ListComponentReleasesResponse {
+  // List of component releases.
+  repeated ComponentRelease releases = 1;
+
+  // Pagination information.
+  PageResponse pagination = 2;
+}
+
+// GetComponentReleaseRequest is the request for getting a single component release.
+message GetComponentReleaseRequest {
+  // UUID of the component release to retrieve.
+  string uuid = 1 [(buf.validate.field).string.uuid = true, (buf.validate.field).required = true];
+}
+
+// SearchByChecksumRequest finds releases by distribution checksum.
+message SearchByChecksumRequest {
+  // Checksum to search for.
+  Checksum checksum = 1 [(buf.validate.field).required = true];
+
+  // Pagination parameters.
+  PageRequest pagination = 2;
+}
+
+// SearchByChecksumResponse contains matching releases.
+message SearchByChecksumResponse {
+  // Matching component releases.
+  repeated ComponentRelease releases = 1;
+
+  // Pagination information.
+  PageResponse pagination = 2;
+}

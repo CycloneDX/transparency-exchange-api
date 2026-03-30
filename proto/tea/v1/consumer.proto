@@ -1,0 +1,386 @@
+// Copyright 2024-2026 CycloneDX Contributors
+// SPDX-License-Identifier: Apache-2.0
+
+syntax = "proto3";
+
+package tea.v1;
+
+import "buf/validate/validate.proto";
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+import "tea/v1/common.proto";
+import "tea/v1/product.proto";
+import "tea/v1/component.proto";
+import "tea/v1/collection.proto";
+import "tea/v1/artifact.proto";
+
+option go_package = "github.com/CycloneDX/transparency-exchange-api/gen/go/tea/v1;teav1";
+option java_package = "org.cyclonedx.tea.v1";
+option java_multiple_files = true;
+option csharp_namespace = "CycloneDX.Tea.V1";
+
+// ============================================================================
+// Consumer Service
+// ============================================================================
+
+// ConsumerService provides read-only access to TEA transparency artifacts.
+// This is the primary API for TEA consumers (customers, auditors, automated
+// systems) to discover and retrieve artifacts.
+//
+// All endpoints support optional authentication. Some endpoints may require
+// authentication depending on the server's authorization policy.
+//
+// This service implements the TEA Consumer API specification.
+service ConsumerService {
+  // ==========================================================================
+  // Product Operations
+  // ==========================================================================
+
+  // ListProducts returns a paginated list of available products.
+  // Products are optional higher-level groupings of product releases.
+  rpc ListProducts(ListProductsRequest) returns (ListProductsResponse) {
+    option (google.api.http) = {
+      get: "/v1/products"
+    };
+  }
+
+  // GetProduct retrieves a single product by UUID.
+  rpc GetProduct(GetProductRequest) returns (Product) {
+    option (google.api.http) = {
+      get: "/v1/products/{uuid}"
+    };
+  }
+
+  // ListProductReleases returns releases for a specific product.
+  rpc ListProductReleases(ListProductReleasesRequest) returns (ListProductReleasesResponse) {
+    option (google.api.http) = {
+      get: "/v1/products/{product_uuid}/releases"
+    };
+  }
+
+  // GetProductRelease retrieves a single product release by UUID.
+  rpc GetProductRelease(GetProductReleaseRequest) returns (ProductRelease) {
+    option (google.api.http) = {
+      get: "/v1/product-releases/{uuid}"
+    };
+  }
+
+  // GetProductReleaseCollection retrieves the collection for a product release.
+  rpc GetProductReleaseCollection(GetProductReleaseCollectionRequest) returns (Collection) {
+    option (google.api.http) = {
+      get: "/v1/product-releases/{uuid}/collection"
+    };
+  }
+
+  // ==========================================================================
+  // Component Operations
+  // ==========================================================================
+
+  // ListComponents returns a paginated list of available components.
+  rpc ListComponents(ListComponentsRequest) returns (ListComponentsResponse) {
+    option (google.api.http) = {
+      get: "/v1/components"
+    };
+  }
+
+  // GetComponent retrieves a single component by UUID.
+  rpc GetComponent(GetComponentRequest) returns (Component) {
+    option (google.api.http) = {
+      get: "/v1/components/{uuid}"
+    };
+  }
+
+  // ListComponentReleases returns releases for a specific component.
+  rpc ListComponentReleases(ListComponentReleasesRequest) returns (ListComponentReleasesResponse) {
+    option (google.api.http) = {
+      get: "/v1/components/{component_uuid}/releases"
+    };
+  }
+
+  // GetComponentRelease retrieves a single component release by UUID.
+  rpc GetComponentRelease(GetComponentReleaseRequest) returns (ComponentRelease) {
+    option (google.api.http) = {
+      get: "/v1/component-releases/{uuid}"
+    };
+  }
+
+  // GetComponentReleaseCollection retrieves the collection for a component release.
+  rpc GetComponentReleaseCollection(GetComponentReleaseCollectionRequest) returns (Collection) {
+    option (google.api.http) = {
+      get: "/v1/component-releases/{uuid}/collection"
+    };
+  }
+
+  // ==========================================================================
+  // Collection Operations
+  // ==========================================================================
+
+  // GetCollection retrieves the latest version of a collection.
+  rpc GetCollection(GetCollectionRequest) returns (Collection) {
+    option (google.api.http) = {
+      get: "/v1/collections/{uuid}"
+    };
+  }
+
+  // ListCollectionVersions returns all versions of a collection.
+  rpc ListCollectionVersions(ListCollectionVersionsRequest) returns (ListCollectionVersionsResponse) {
+    option (google.api.http) = {
+      get: "/v1/collections/{uuid}/versions"
+    };
+  }
+
+  // GetCollectionVersion retrieves a specific version of a collection.
+  rpc GetCollectionVersion(GetCollectionVersionRequest) returns (Collection) {
+    option (google.api.http) = {
+      get: "/v1/collections/{uuid}/versions/{version}"
+    };
+  }
+
+  // CompareCollectionVersions shows differences between two versions.
+  rpc CompareCollectionVersions(CompareCollectionVersionsRequest) returns (CompareCollectionVersionsResponse) {
+    option (google.api.http) = {
+      get: "/v1/collections/{uuid}/compare"
+    };
+  }
+
+  // ==========================================================================
+  // Artifact Operations
+  // ==========================================================================
+
+  // GetArtifact retrieves artifact metadata by UUID.
+  rpc GetArtifact(GetArtifactRequest) returns (Artifact) {
+    option (google.api.http) = {
+      get: "/v1/artifacts/{uuid}"
+    };
+  }
+
+  // GetArtifactContent downloads artifact content.
+  // Supports conditional requests (If-None-Match) and range requests.
+  // For large artifacts, consider using the streaming variant.
+  rpc GetArtifactContent(GetArtifactContentRequest) returns (GetArtifactContentResponse) {
+    option (google.api.http) = {
+      get: "/v1/artifacts/{uuid}/content"
+    };
+  }
+
+  // StreamArtifactContent streams artifact content in chunks.
+  // Recommended for large artifacts.
+  rpc StreamArtifactContent(GetArtifactContentRequest) returns (stream ArtifactContentChunk) {
+    option (google.api.http) = {
+      get: "/v1/artifacts/{uuid}/stream"
+    };
+  }
+
+  // HeadArtifactContent checks artifact status without downloading.
+  // Returns ETag and Last-Modified for conditional requests.
+  rpc HeadArtifactContent(HeadArtifactContentRequest) returns (HeadArtifactContentResponse) {
+    option (google.api.http) = {
+      // Note: gRPC-Gateway will convert this to HEAD
+      get: "/v1/artifacts/{uuid}/content/head"
+    };
+  }
+
+  // ==========================================================================
+  // Search Operations
+  // ==========================================================================
+
+  // SearchByIdentifier finds entities matching an identifier.
+  rpc SearchByIdentifier(SearchByIdentifierRequest) returns (SearchByIdentifierResponse) {
+    option (google.api.http) = {
+      get: "/v1/search/identifier"
+    };
+  }
+
+  // SearchByChecksum finds releases by distribution checksum.
+  rpc SearchByChecksum(SearchByChecksumRequest) returns (SearchByChecksumResponse) {
+    option (google.api.http) = {
+      get: "/v1/search/checksum"
+    };
+  }
+
+  // SearchArtifacts finds artifacts matching criteria.
+  rpc SearchArtifacts(SearchArtifactsRequest) returns (SearchArtifactsResponse) {
+    option (google.api.http) = {
+      get: "/v1/search/artifacts"
+    };
+  }
+}
+
+// ============================================================================
+// Additional Request/Response Messages
+// ============================================================================
+
+// GetProductReleaseCollectionRequest is the request for getting a product release's collection.
+message GetProductReleaseCollectionRequest {
+  // UUID of the product release.
+  string uuid = 1 [(buf.validate.field).string.uuid = true, (buf.validate.field).required = true];
+
+  // Collection version to retrieve (latest if omitted).
+  optional int32 version = 2;
+}
+
+// GetComponentReleaseCollectionRequest is the request for getting a component release's collection.
+message GetComponentReleaseCollectionRequest {
+  // UUID of the component release.
+  string uuid = 1 [(buf.validate.field).string.uuid = true, (buf.validate.field).required = true];
+
+  // Collection version to retrieve (latest if omitted).
+  optional int32 version = 2;
+}
+
+// HeadArtifactContentRequest checks artifact without downloading.
+message HeadArtifactContentRequest {
+  // UUID of the artifact.
+  string uuid = 1 [(buf.validate.field).string.uuid = true, (buf.validate.field).required = true];
+
+  // Preferred format (MIME type).
+  string preferred_format = 2 [json_name = "preferredFormat"];
+}
+
+// HeadArtifactContentResponse contains artifact metadata without content.
+message HeadArtifactContentResponse {
+  // ETag for conditional requests.
+  string etag = 1;
+
+  // Last modification timestamp.
+  google.protobuf.Timestamp last_modified = 2 [json_name = "lastModified"];
+
+  // Content length in bytes.
+  int64 content_length = 3 [json_name = "contentLength"];
+
+  // Content MIME type.
+  string content_type = 4 [json_name = "contentType"];
+
+  // Whether the artifact accepts range requests.
+  bool accept_ranges = 5 [json_name = "acceptRanges"];
+
+  // Checksums for the content.
+  repeated Checksum checksums = 6;
+}
+
+// SearchByIdentifierRequest finds entities by identifier.
+message SearchByIdentifierRequest {
+  // Identifier to search for.
+  Identifier identifier = 1 [(buf.validate.field).required = true];
+
+  // Types of entities to search (empty = all).
+  repeated EntityType entity_types = 2 [json_name = "entityTypes"];
+
+  // Pagination parameters.
+  PageRequest pagination = 3;
+}
+
+// EntityType specifies what kind of entity to search for.
+enum EntityType {
+  // Unspecified entity type.
+  ENTITY_TYPE_UNSPECIFIED = 0;
+
+  // Search for products.
+  ENTITY_TYPE_PRODUCT = 1;
+
+  // Search for product releases.
+  ENTITY_TYPE_PRODUCT_RELEASE = 2;
+
+  // Search for components.
+  ENTITY_TYPE_COMPONENT = 3;
+
+  // Search for component releases.
+  ENTITY_TYPE_COMPONENT_RELEASE = 4;
+
+  // Search for artifacts.
+  ENTITY_TYPE_ARTIFACT = 5;
+}
+
+// SearchByIdentifierResponse contains matching entities.
+message SearchByIdentifierResponse {
+  // Matching products.
+  repeated Product products = 1;
+
+  // Matching product releases.
+  repeated ProductRelease product_releases = 2 [json_name = "productReleases"];
+
+  // Matching components.
+  repeated Component components = 3;
+
+  // Matching component releases.
+  repeated ComponentRelease component_releases = 4 [json_name = "componentReleases"];
+
+  // Pagination information.
+  PageResponse pagination = 5;
+}
+
+// SearchArtifactsRequest searches for artifacts.
+message SearchArtifactsRequest {
+  // Filter by artifact type.
+  ArtifactType artifact_type = 1 [json_name = "artifactType"];
+
+  // Filter by MIME type.
+  string mime_type = 2 [json_name = "mimeType"];
+
+  // Filter by subject identifier.
+  optional Identifier subject_identifier = 3 [json_name = "subjectIdentifier"];
+
+  // Filter by creation date range.
+  DateRange created_date_range = 4 [json_name = "createdDateRange"];
+
+  // Text search query.
+  string query = 5;
+
+  // Pagination parameters.
+  PageRequest pagination = 6;
+
+  // Sort specification.
+  SortSpec sort = 7;
+}
+
+// SearchArtifactsResponse contains matching artifacts.
+message SearchArtifactsResponse {
+  // Matching artifacts.
+  repeated Artifact artifacts = 1;
+
+  // Pagination information.
+  PageResponse pagination = 2;
+}
+
+// ============================================================================
+// Batch Operations
+// ============================================================================
+
+// BatchGetArtifactsRequest retrieves multiple artifacts at once.
+message BatchGetArtifactsRequest {
+  // UUIDs of artifacts to retrieve.
+  repeated string uuids = 1 [
+    (buf.validate.field).repeated.min_items = 1,
+    (buf.validate.field).repeated.max_items = 100
+  ];
+}
+
+// BatchGetArtifactsResponse contains multiple artifacts.
+message BatchGetArtifactsResponse {
+  // Retrieved artifacts (in request order).
+  repeated Artifact artifacts = 1;
+
+  // UUIDs that were not found.
+  repeated string not_found_uuids = 2 [json_name = "notFoundUuids"];
+}
+
+// BatchGetCollectionsRequest retrieves multiple collections at once.
+message BatchGetCollectionsRequest {
+  // UUIDs of collections to retrieve.
+  repeated string uuids = 1 [
+    (buf.validate.field).repeated.min_items = 1,
+    (buf.validate.field).repeated.max_items = 50
+  ];
+
+  // Include artifacts in response.
+  bool include_artifacts = 2 [json_name = "includeArtifacts"];
+}
+
+// BatchGetCollectionsResponse contains multiple collections.
+message BatchGetCollectionsResponse {
+  // Retrieved collections.
+  repeated Collection collections = 1;
+
+  // UUIDs that were not found.
+  repeated string not_found_uuids = 2 [json_name = "notFoundUuids"];
+}
