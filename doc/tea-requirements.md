@@ -1,7 +1,6 @@
 # TEA Requirements
 
 ## Repository discovery
-
 Based on an identifier a repository URL needs to be found. The identifier can be:
 
 - PURL
@@ -35,9 +34,6 @@ Collections are OPTIONAL.
 - VDR - Vulnerability Disclosure Report
 - VEX - Vulnerability Exploitability eXchange
 - CDXA - Attestation
-- ML-BOM - Machine Learning Bill of Material (profile of SBOM)
-- DATA-BOM - Data Bill of Material (profile of SBOM)
-- AI-BOM - Artificial Intelligence Bill of Material (profile of SBOM)
 
 Authn/Authz MUST be supported
 
@@ -65,7 +61,7 @@ Authn/Authz MUST be supported
 
 ## Artefact Publishing
 
-The API MUST provide a way to publish an artefact, either standalone or to a collection.
+The API MUST provide a way to publish an artefact, either standalone or to a collection. 
 The detection of duplicate artefacts with the same identity MUST be handled and prevented.
 Authn/Authz MUST be supported
 
@@ -89,11 +85,11 @@ PURL, CPE, SWID, GAV, GTIN, and GMN.
 
 For example:
 
-- Return the identity of all BOMs that have a vulnerable version of Apache Log4J:
+- Return the identity of all BOMs that have a vulnerable version of Apache Log4J: 
   `pkg:maven/org.apache.logging.log4j/log4j-core@2.10.0`
 
-The API MUST provide a way to search for the metadata component across all available BOMs.
-The API SHOULD support multiple identity formats including PURL, CPE, SWID, GAV, GTIN, and GMN.
+The API MUST provide a way to search for the metadata component across all available BOMs. 
+The API SHOULD support multiple identity formats including PURL, CPE, SWID, GAV, GTIN, and GMN. 
 For example:
 
 - Return the identity of all artefacts that describe `cpe:/a:acme:commerce_suite:1.0`.
