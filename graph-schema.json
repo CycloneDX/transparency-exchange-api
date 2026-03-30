@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Dependency Graph Schema",
+  "description": "Minimal JSON schema for dependency graph with nodes and edges.",
+  "type": "object",
+  "properties": {
+    "nodes": {
+      "type": "array",
+      "description": "List of dependency nodes.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "purl": {
+            "type": "string",
+            "description": "Package URL (PURL) identifier."
+          },
+          "name": {
+            "type": "string",
+            "description": "Package name."
+          },
+          "version": {
+            "type": "string",
+            "description": "Exact version."
+          },
+          "digest": {
+            "type": "string",
+            "description": "Content digest (e.g., SHA256)."
+          },
+          "license": {
+            "type": "string",
+            "description": "License SPDX identifier."
+          },
+          "source_repo": {
+            "type": "string",
+            "description": "Source repository URL."
+          },
+          "lifecycle_state": {
+            "enum": ["ACTIVE", "DEPRECATED", "QUARANTINED", "RETIRED"],
+            "description": "Lifecycle state for deprecation protocol."
+          }
+        },
+        "required": ["purl", "name", "version", "digest", "lifecycle_state"]
+      }
+    },
+    "edges": {
+      "type": "array",
+      "description": "List of dependency edges.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "from_purl": {
+            "type": "string",
+            "description": "PURL of the dependent package."
+          },
+          "to_purl": {
+            "type": "string",
+            "description": "PURL of the dependency."
+          },
+          "scope": {
+            "enum": ["build", "runtime"],
+            "description": "Scope of the dependency."
+          },
+          "reason": {
+            "enum": ["direct", "transitive"],
+            "description": "Direct or transitive dependency."
+          }
+        },
+        "required": ["from_purl", "to_purl", "scope", "reason"]
+      }
+    }
+  },
+  "required": ["nodes", "edges"]
+}
