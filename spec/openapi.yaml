@@ -1497,6 +1497,66 @@ components:
       required:
         - hasNext
         - nextPageToken
+    paginated-product-response:
+      description: A paginated response containing TEA Products
+      allOf:
+        - $ref: "#/components/schemas/pagination-details"
+        - type: object
+          properties:
+            results:
+              type: array
+              items:
+                $ref: "#/components/schemas/product"
+          required:
+            - results
+    paginated-product-release-response:
+      description: A paginated response containing TEA Product Releases
+      allOf:
+        - $ref: "#/components/schemas/pagination-details"
+        - type: object
+          properties:
+            results:
+              type: array
+              items:
+                $ref: "#/components/schemas/productRelease"
+          required:
+            - results
+    paginated-component-response:
+      description: A paginated response containing TEA Components
+      allOf:
+        - $ref: "#/components/schemas/pagination-details"
+        - type: object
+          properties:
+            results:
+              type: array
+              items:
+                $ref: "#/components/schemas/component"
+          required:
+            - results
+    paginated-component-release-response:
+      description: A paginated response containing TEA Component Releases
+      allOf:
+        - $ref: "#/components/schemas/pagination-details"
+        - type: object
+          properties:
+            results:
+              type: array
+              items:
+                $ref: "#/components/schemas/release"
+          required:
+            - results
+    paginated-collection-response:
+      description: A paginated response containing TEA Collections
+      allOf:
+        - $ref: "#/components/schemas/pagination-details"
+        - type: object
+          properties:
+            results:
+              type: array
+              items:
+                $ref: "#/components/schemas/collection"
+          required:
+            - results
 
   responses:
     204-common-delete:
@@ -1530,78 +1590,31 @@ components:
       content:
         application/json:
           schema:
-            type: object
-            description: A paginated response containing TEA Products
-            allOf:
-              - $ref: "#/components/schemas/pagination-details"
-              - type: object
-                properties:
-                  results:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/product"
-                required:
-                  - results
+            $ref: "#/components/schemas/paginated-product-response"
     paginated-product-release:
       description: A paginated response containing TEA Product Releases
       content:
         application/json:
           schema:
-            allOf:
-              - $ref: "#/components/schemas/pagination-details"
-              - type: object
-                properties:
-                  results:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/productRelease"
-                required:
-                  - results
+            $ref: "#/components/schemas/paginated-product-release-response"
     paginated-component:
       description: A paginated response containing TEA Components
       content:
         application/json:
           schema:
-            allOf:
-              - $ref: "#/components/schemas/pagination-details"
-              - type: object
-                properties:
-                  results:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/component"
-                required:
-                  - results
+            $ref: "#/components/schemas/paginated-component-response"
     paginated-component-release:
       description: A paginated response containing TEA Component Releases
       content:
         application/json:
           schema:
-            allOf:
-              - $ref: "#/components/schemas/pagination-details"
-              - type: object
-                properties:
-                  results:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/release"
-                required:
-                  - results
+            $ref: "#/components/schemas/paginated-component-release-response"
     paginated-collection:
       description: A paginated response containing TEA Collections
       content:
         application/json:
           schema:
-            allOf:
-              - $ref: "#/components/schemas/pagination-details"
-              - type: object
-                properties:
-                  results:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/collection"
-                required:
-                  - results
+            $ref: "#/components/schemas/paginated-collection-response"
                     
   parameters:
     # Pagination
