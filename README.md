@@ -67,6 +67,8 @@ The working group has produced a list of use cases and requirements for the prot
 - [TEA Collection](tea-collection/tea-collection.md): A versioned list of artefacts for a specific Release (Component Release) or Product Release. Collections are versioned to indicate changes, e.g., an updated VEX or corrected SBOM.
 - [TEA Artifacts](tea-artifact/tea-artifact.md): Files associated with a Collection. A single TEA Artifact can appear in multiple Collections. Note that a TEA Artifact is a named term introduced by the TEA standard.
 
+See [TEA UUID Scope and Stability](doc/tea-uuid-scope.md) for uniqueness and stability rules that apply to all UUIDs in the data model above.
+
 ## Artefacts available of the API
 
 The Transparency Exchange API (TEA) supports publication and retrieval of a set of transparency exchange artefacts. The API itself is not restricting the types of the artefacts published. A few examples:
