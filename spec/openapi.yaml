@@ -1053,7 +1053,7 @@ components:
           description: URI of a human-readable web page with information about the error.
     identifier:
       type: object
-      description: An identifier with a specified type
+      description: An identifier of the component with a specified type
       properties:
         idType:
           description: Type of identifier, e.g. `TEI`, `PURL`, `CPE`
@@ -1098,6 +1098,7 @@ components:
         - TISAX
         - CYBER_ESSENTIALS
         - CYBER_ESSENTIALS_PLUS
+        - EU_DECLARATION_OF_CONFORMITY
     uuid:
       type: string
       description: A UUID in lower case (RFC 9562)
