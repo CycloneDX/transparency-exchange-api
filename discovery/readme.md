@@ -14,6 +14,24 @@
 
 ## From product identifier to API endpoint
 
+Discovery is the **first step in all TEA interactions**, enabling a consumer to map an identifier to a service endpoint.
+
+This specification defines:
+
+- how discovery is initiated  
+- how discovery documents are retrieved  
+- how API endpoints are obtained
+
+TEA separates:
+
+- **identity** → TEI  
+- **location** → discovery  
+- **data retrieval** → API  
+
+Discovery answers the question:
+
+> “Where can I retrieve authoritative TEA data for this identifier?”
+
 TEA Discovery is the connection between a product release identifier and the API endpoint.
 A "product release" is something that the customer aquires or downloads - hardware and/or software.
 
@@ -288,6 +306,16 @@ Example:
 }
 ```
 
+### Discovery data caching and freshness
+
+Discovery documents MAY be cached.
+
+Implementations SHOULD:
+
+- respect HTTP caching headers  
+- periodically refresh discovery data  
+- handle endpoint changes gracefully  
+
 ## Port resolution
 
 Currently, the port number is not part of the TEI but it is needed to connect to the API.
@@ -345,10 +373,35 @@ exponential backoff strategy for retries.
 Client implementations needs to indicate authentication errors clearly to the users,
 to indicate that there are no updates. An expired token or TLS Client Cert will
 mean that new versions of a product or updated artefacts will not be accessed.
+
+### Error handling
+
 Authentication error codes (401, 403) should not lead to failover to the next endpoint
 in the list.
 
 How this is communicated to the client users is implementation specific.
+
+Common errors:
+
+#### 404 Not Found
+
+- discovery endpoint not present  
+
+#### 503 Service Unavailable
+
+- temporary failure  
+
+#### TLS failure
+
+- certificate validation error
+
+### Client behavior
+
+Clients SHOULD:
+
+- retry with backoff  
+- validate TLS certificates  
+- fail closed if discovery cannot be validated
 
 ## Notes Regarding .well-known
 
