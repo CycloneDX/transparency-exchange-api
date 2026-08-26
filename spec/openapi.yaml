@@ -1303,7 +1303,7 @@ components:
             May be disabled after the creation of the release object, but can't be enabled after creation of an object.
         identifiers:
           type: array
-          description: List of identifiers for the component
+          description: Array of identifiers for the component
           items:
             "$ref": "#/components/schemas/identifier"
         distributions:
@@ -1377,14 +1377,14 @@ components:
       type: object
       properties:
         distributionId:
-          description: A unique identifier for the TEA Distribution object
+          description: A unique identifier for the TEA Distribution object (uuid)
           "$ref": "#/components/schemas/uuid"
         description:
           type: string
-          description: Free-text description of the distribution.
+          description: Free-text description of the distribution
         identifiers:
           type: array
-          description: List of identifiers specific to this distribution.
+          description: Array of identifiers specific to this distribution
           items:
             $ref: "#/components/schemas/identifier"
         url:
@@ -1406,7 +1406,7 @@ components:
         checksums:
           type: array
           description: |
-            List of checksums for the distribution payload retrieved from `url`
+            Array of checksums for the distribution payload retrieved from `url`
             (the distribution bytes, not the signature at `signatureUrl`).
           items:
             "$ref": "#/components/schemas/checksum"
@@ -1543,7 +1543,7 @@ components:
           "$ref": "#/components/schemas/collection-update-reason"
         artifacts:
           type: array
-          description: List of TEA Artifact objects (may be empty).
+          description: Array of TEA Artifact objects (may be empty).
           items:
             "$ref": "#/components/schemas/artifact"
       required:
@@ -1637,17 +1637,17 @@ components:
           default: 1
         name:
           type: string
-          description: Name of TEA Artifact
+          description: A human-readable name for the artefact
         type:
           description: Type of TEA Artifact
           "$ref": "#/components/schemas/artifact-type"
         createdDate:
-          description: The date when the TEA Artifact revision was created.
+          description: The date and time the TEA Artifact revision was created.
           "$ref": "#/components/schemas/date-time"
         distributionIds:
           type: array
           description: |
-            List of TEA Component Release distributions that this TEA Artifact applies to.
+            Array of TEA Component Release distributions that this TEA Artifact applies to.
             If absent or empty, the TEA Artifact applies to all distributions.
           items:
             "$ref": "#/components/schemas/uuid"
@@ -1766,7 +1766,7 @@ components:
         checksums:
           type: array
           description: |
-            List of checksums for this artifact format's content bytes (the payload
+            Array of checksums for this artifact format's content bytes (the payload
             retrieved from `url` or from the artifact download endpoint for this
             `mediaType`), not the detached signature.
           items:
