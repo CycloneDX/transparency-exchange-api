@@ -12,7 +12,7 @@ info:
   license:
     name: Apache 2.0
     url: https://github.com/CycloneDX/transparency-exchange-api/blob/main/LICENSE
-  version: 0.4.0
+  version: 0.5.0
 servers:
   - url: http://localhost/tea/v1
     description: Local development
@@ -548,6 +548,43 @@ paths:
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
         - TEA Artifact
+  /token:
+    post:
+      description: |
+        Exchange credentials for a TEA access token.
+
+        A TEA server that requires authentication shall implement this endpoint, and
+        shall support the `client_credentials` grant type with HTTP Basic client
+        authentication (RFC 6749 section 2.3.1, RFC 7617): the API key identifier is
+        sent as the user-id and the API key secret as the password.
+
+        Servers may support additional grant types for federated identity, for example
+        SAML 2.0 assertions (RFC 7522), JWT assertions (RFC 7523), or token exchange
+        (RFC 8693), and may authenticate the client with mutual TLS (RFC 8705) instead
+        of Basic. Whichever grant type is used, the token returned by this endpoint is
+        the only credential accepted on the other TEA endpoints.
+
+        The access token is opaque to the client: clients shall not inspect, parse, or
+        depend on its contents.
+      operationId: requestToken
+      security:
+        - basicAuth: []
+        - {}
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/token-request"
+      responses:
+        '200':
+          $ref: "#/components/responses/token-issued"
+        '400':
+          $ref: "#/components/responses/400-token-error"
+        '401':
+          $ref: "#/components/responses/401-token-error"
+      tags:
+        - TEA Authentication
   /discovery:
     get:
       description: Discovery endpoint which resolves TEI into product release UUID.
@@ -580,6 +617,85 @@ components:
       format: date-time
       pattern: "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
       example: '2024-03-20T15:30:00Z'
+    token-request:
+      type: object
+      description: |
+        Token request, as defined in RFC 6749 section 4.4.2 for the client-credentials
+        grant. Additional parameters apply only to the optional grant types.
+      required:
+        - grant_type
+      properties:
+        grant_type:
+          type: string
+          description: |
+            OAuth 2.0 grant type. Servers shall support `client_credentials`. Servers may
+            support assertion grants (`urn:ietf:params:oauth:grant-type:saml2-bearer`,
+            `urn:ietf:params:oauth:grant-type:jwt-bearer`) or token exchange
+            (`urn:ietf:params:oauth:grant-type:token-exchange`).
+          example: client_credentials
+        scope:
+          type: string
+          description: |
+            Optional space-delimited scope request (RFC 6749 section 3.3). TEA does not
+            define scope values; servers may ignore this parameter.
+        assertion:
+          type: string
+          description: Assertion value, when an assertion grant type is used (RFC 7521 section 4.1).
+        subject_token:
+          type: string
+          description: Subject token, when the token-exchange grant type is used (RFC 8693 section 2.1).
+        subject_token_type:
+          type: string
+          description: Type of `subject_token`, when the token-exchange grant type is used (RFC 8693 section 2.1).
+    token-response:
+      type: object
+      description: Successful token response, as defined in RFC 6749 section 5.1.
+      required:
+        - access_token
+        - token_type
+      properties:
+        access_token:
+          type: string
+          description: |
+            The issued access token, presented on other TEA endpoints as
+            `Authorization: Bearer <access_token>`. Opaque to the client.
+          example: 2YotnFZFEjr1zCsicMWpAA
+        token_type:
+          type: string
+          description: Token type. Always `Bearer` in TEA.
+          const: Bearer
+        expires_in:
+          type: integer
+          description: |
+            Lifetime of the access token in seconds. Servers should include this so that
+            clients can re-authenticate before expiry rather than on failure.
+          example: 3600
+        scope:
+          type: string
+          description: Granted scope, when it differs from the scope requested.
+    token-error-response:
+      type: object
+      description: Token error response, as defined in RFC 6749 section 5.2.
+      required:
+        - error
+      properties:
+        error:
+          type: string
+          description: Error code as defined in RFC 6749 section 5.2.
+          enum:
+            - invalid_request
+            - invalid_client
+            - invalid_grant
+            - unauthorized_client
+            - unsupported_grant_type
+            - invalid_scope
+        error_description:
+          type: string
+          description: Human-readable text providing additional information about the error.
+        error_uri:
+          type: string
+          format: uri
+          description: URI of a human-readable web page with information about the error.
     identifier:
       type: object
       description: An identifier with a specified type
@@ -1605,9 +1721,53 @@ components:
       content:
         application/json: {}
     401-unauthorized:
-      description: Authentication required
+      description: |
+        Authentication required, or the presented access token is expired, revoked, or
+        otherwise invalid. Servers shall include a `WWW-Authenticate` header as defined
+        in RFC 6750 section 3. On the `invalid_token` error a client may obtain a fresh
+        token from `/token` and retry the request once (RFC 6750 section 3.1).
+      headers:
+        WWW-Authenticate:
+          description: Bearer challenge, as defined in RFC 6750 section 3.
+          schema:
+            type: string
+            example: Bearer realm="tea", error="invalid_token", error_description="The access token expired"
       content:
         application/json: {}
+    token-issued:
+      description: Credentials accepted, access token issued
+      headers:
+        Cache-Control:
+          description: Servers shall set `no-store` on token responses (RFC 6749 section 5.1).
+          schema:
+            type: string
+            example: no-store
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/token-response"
+    400-token-error:
+      description: |
+        The token request was malformed, used an unsupported grant type, or the
+        credentials presented were not valid for the requested grant.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/token-error-response"
+    401-token-error:
+      description: |
+        Client authentication failed. Returned instead of 400 when the client attempted
+        to authenticate using the `Authorization` header (RFC 6749 section 5.2).
+      headers:
+        WWW-Authenticate:
+          description: Challenge indicating the client authentication methods supported by the token endpoint.
+          schema:
+            type: string
+            example: Basic realm="tea"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/token-error-response"
     404-object-by-id-not-found:
       description: Object requested by identifier not found
       content:
@@ -1851,13 +2011,22 @@ components:
     bearerAuth:
       type: http
       scheme: bearer
+      description: |
+        A TEA access token obtained from `/token`, presented as
+        `Authorization: Bearer <access_token>` (RFC 6750). This is the only credential
+        accepted on TEA endpoints other than `/token`.
     basicAuth:
       type: http
       scheme: basic
+      description: |
+        API key credentials, presented to `/token` only: the API key identifier as the
+        user-id and the API key secret as the password (RFC 7617, RFC 6749 section
+        2.3.1). Servers shall not accept API key credentials directly on other TEA
+        endpoints; clients shall exchange them for an access token first.
 security:
   - bearerAuth: []
-  - basicAuth: []
 tags:
+  - name: TEA Authentication
   - name: TEA Product
   - name: TEA Product Release
   - name: TEA Component
