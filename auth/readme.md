@@ -76,7 +76,7 @@ Basic for clients that were issued a secret.
 ```http
 POST /token HTTP/1.1
 Host: tea.example.com
-Authorization: Basic dGVhLWtleS0xMjM6czNjcjN0
+Authorization: Basic <base64 of "key-id:key-secret">
 Content-Type: application/x-www-form-urlencoded
 
 grant_type=client_credentials
