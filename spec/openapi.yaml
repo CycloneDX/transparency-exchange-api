@@ -1277,7 +1277,7 @@ components:
       description: A TEA Component Release
       properties:
         uuid:
-          description: A unique identifier for the TEA Component Release
+          description: A unique identifier of the TEA Component Release
           "$ref": "#/components/schemas/uuid"
         component:
           description: UUID of the TEA Component this release belongs to
@@ -1287,7 +1287,7 @@ components:
           type: string
           example: tomcat
         version:
-          description: Version number
+          description: Human-readable version string
           type: string
           example: 1.2.3
         createdDate:

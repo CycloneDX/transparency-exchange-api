@@ -1,19 +1,44 @@
-# TEA Component Release
+# TEA Component Release Object
 
 ## Overview
 
-A TEA Component Release represents a specific version of a TEA Component lineage. It is the concrete, versioned entity which has collections of security-related artefacts (SBOM, VDR/VEX, attestations, etc.).
+A __TEA Component Release__ represents a specific version of a TEA Component lineage. It is the concrete, versioned entity which has collections of security-related artifacts (SBOM, VDR/VEX, attestations, etc.).
 
 Key attributes:
-- uuid: Unique identifier of the component release
-- component: UUID of the TEA Component this release belongs to
-- version: Human-readable version string
-- createdDate: Timestamp when the release was created in TEA
-- releaseDate: Upstream release timestamp
-- preRelease: Indicates pre-release/beta status
-- identifiers: Array of identifiers (idType: CPE/TEI/PURL; idValue: string)
 
-Collections for a release contain artefacts relevant to that specific release.
+- __uuid__: Unique identifier of the TEA Component Release (uuid)
+- __component__: UUID of the TEA Component this release belongs to
+- __componentName__: Name of the TEA Component this release belongs to
+- __version__: Human-readable version string
+- __createdDate__: Timestamp when this Release was created in TEA (for sorting purposes)
+- __releaseDate__: Timestamp of the release
+- __preRelease__: A flag indicating pre-release (or beta) status. May be disabled after the creation of the release object, but can't be enabled after creation of an object.
+- __identifiers__: Array of identifiers for the component
+- __distributions__: List of different formats of this component release
+
+Collections for a release contain artifacts relevant to that specific release.
+
+Required fields:
+
+- uuid, version, createdDate
+
+## TEA component release distribution object
+
+Distribution are object to declare different distribution formats of a component,
+like source code or a package for a specific Linux distribution or a CPU type
+
+Key attributes:
+
+- __distributionId__: A unique identifier for the TEA Distribution object (uuid)
+- __description__: Free-text description of the distribution.
+- __identifiers__: Array of identifiers for the distribution of the release
+- __url__: Direct download URL for the distribution
+- __signatureUrl__: Direct download URL for the distribution's detached signature
+- __checksums__: Array of checksums for the distribution
+
+Required fields:
+
+- distributionId
 
 ## JSON examples
 
@@ -63,6 +88,18 @@ The following examples are reused from the OpenAPI schema (`components/schemas/r
   ]
 }
 ```
+## Handling the Pre-Release flag
+
+The "Pre-release" flag is used to indicate that this is not a final release.
+For a given Component with a UUID, the flag can be set to indicate a "test", "beta", "alpha"
+or similar non-deployed release. It can only be set when creating the Component.
+The TEA implementation may allow it to be unset (False) once. This is to support
+situations where a object is promoted as is after testing to production version. The flag can not
+be set after initial creation and publication of the Component.
+
+If the final version is different from the pre-release (bugs fixed, code changed, different binary)
+a new Component with a new UUID and version needs to be created.
+
 
 Notes:
 - Use uppercase idType values exactly as defined by the schema enum: CPE, TEI, PURL.
