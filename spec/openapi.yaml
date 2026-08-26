@@ -118,7 +118,7 @@ paths:
         - name: uuid
           in: path
           required: true
-          description: UUID of TEA Product Release in the TEA server
+          description: Unique UUID of TEA Product Release in the TEA server
           schema:
             "$ref": "#/components/schemas/uuid"
       responses:
@@ -1157,7 +1157,7 @@ components:
           type: string
           example: Apache Log4j 2
         version:
-          description: Version number of the product release
+          description: Human-readable version string of the product release
           type: string
           example: 2.24.3
         createdDate:
@@ -1173,13 +1173,14 @@ components:
             May be disabled after the creation of the release object, but can't be enabled after creation of an object.
         identifiers:
           type: array
-          description: List of identifiers for the product release
+          description: |
+            Array of identifiers for the product release (idType: CPE/TEI/PURL; idValue: string)
           items:
             "$ref": "#/components/schemas/identifier"
         components:
           type: array
           description: |
-            List of component references that compose this product release. A component reference can optionally include
+            Array of component references that compose this product release. A component reference can optionally include
             the UUID of a specific component release to pin the exact version.
           items:
             "$ref": "#/components/schemas/component-ref"
