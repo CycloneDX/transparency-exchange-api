@@ -6,9 +6,8 @@ info:
   summary: The OWASP Transparency Exchange API specification for consumers and publishers
   description: TBC
   contact:
-    name: TEA Working Group
-    email: tbc@somewhere.tld
-    url: https://github.com/CycloneDX/transparency-exchange-api
+    name: ECMA International, TC54 tg1
+    url: https://tc54.org/tea/
   license:
     name: Apache 2.0
     url: https://github.com/CycloneDX/transparency-exchange-api/blob/main/LICENSE
