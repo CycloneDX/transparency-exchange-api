@@ -3,8 +3,18 @@ openapi: 3.1.1
 jsonSchemaDialect: https://spec.openapis.org/oas/3.1/dialect/base
 info:
   title: Transparency Exchange API
-  summary: The OWASP Transparency Exchange API specification for consumers and publishers
-  description: TBC
+  summary: The OWASP Transparency Exchange API specification for consumers
+  description: |
+    The Transparency Exchange API (TEA) aims to facilitate the automated exchange
+    of supply chain artifacts such as Software Bill of Materials (SBOM),
+    Vulnerability Exploitability eXchange (VEX), and attestations,
+    allowing users to automatically discover and consume transparency-related
+    artifacts for a product. The TEA enhances transparency across the software
+    supply chain by providing a standardized method to share and access critical
+    security and compliance information. This automation benefits release management
+    and optimizes procurement processes, ensuring timely updates and improving risk management.
+    TEA is developed within the OWASP CycloneDX project and standardised in ECMA International
+    technical Committee 54, task group 1.
   contact:
     name: ECMA International, TC54 tg1
     url: https://tc54.org/tea/
