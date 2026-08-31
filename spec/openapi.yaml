@@ -937,7 +937,7 @@ components:
         - CYBER_ESSENTIALS_PLUS
     uuid:
       type: string
-      description: A UUID
+      description: A UUID in lower case (RFC 9562)
       format: uuid
       pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
 
