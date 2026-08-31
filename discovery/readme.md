@@ -127,12 +127,21 @@ tei://cyclonedx.org/purl/cGtnOnB5cGkvY3ljbG9uZWR4LXB5dGhvbi1saWJAOC40LjA_ZXh0ZW5
 
 #### SWID
 
-Where the `unique-identifier` is a SWID.
+Where the `unique-identifier` is a ISO-IEC 19770-2 Software Identification (SWID) tag.
+The unique-identifier is BASE64URL encoded.
 
 Syntax:
 
 ```text
 tei://<domain-name>/swid/<swid>
+```
+
+Example:
+
+com.example.acmevision-ls-v4-1-5-0
+
+```text
+tei://example.com/swid/Y29tLmV4YW1wbGUuYWNtZXZpc2lvbi1scy12NC0xLTUtMA
 ```
 
 Note that there is a TEI SWID type as well as a PURL SWID type.
