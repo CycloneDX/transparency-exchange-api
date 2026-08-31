@@ -889,6 +889,9 @@ components:
         idValue:
           description: Identifier value
           type: string
+      required:
+        - idType
+        - idValue
     identifier-type:
       type: string
       description: Enumeration of identifiers types
