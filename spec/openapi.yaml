@@ -1398,6 +1398,8 @@ components:
         comment:
           type: string
           description: Free text description
+      required:
+        - type
     collection-update-reason-type:
       type: string
       description: Type of TEA collection update
