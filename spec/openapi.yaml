@@ -1348,6 +1348,12 @@ components:
           description: List of TEA Artifact objects.
           items:
             "$ref": "#/components/schemas/artifact"
+      required:
+        - uuid
+        - version
+        - date
+        - belongsTo
+        - updateReason
       examples:
         # Documents in the latest release of Log4j Core
         - uuid: 4c72fe22-9d83-4c2f-8eba-d6db484f32c8
@@ -1455,6 +1461,8 @@ components:
         - uuid
         - type
         - formats
+        - createdDate
+        - version
       examples:
         - uuid: 1cb47b95-8bf8-3bad-a5a4-0d54d86e10ce
           name: Build SBOM
