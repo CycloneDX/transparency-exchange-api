@@ -14,10 +14,10 @@ which capture variations such as architecture, packaging, or localization.
   (e.g., by platform or packaging type).
 - For hardware components, distributions may reflect differences in packaging, language, or other physical attributes.
 
-Each distribution is assigned a unique `distributionType`, defined by the producer,
+Each distribution is assigned a unique `distributionOd`, defined by the producer,
 which is used to associate relevant TEA Artifacts with that distribution.
 Since TEA Artifacts can be associated with multiple release objects,
-the taxonomy for `distributionType` values should be defined on a TEA service level
+the taxonomy for `distributionId` values should be defined on a TEA service level
 and consistently applied to all TEA Artifacts published by that producer.
 This ensures global uniqueness and reliable association across releases.
 
@@ -134,7 +134,7 @@ This structure also allows for future extensibility if additional distributions 
   ],
   "distributions": [
     {
-      "distributionType": "jar",
+      "distributionId": "jar",
       "description": "Binary distribution",
       "identifiers": [
         {
@@ -159,7 +159,7 @@ This structure also allows for future extensibility if additional distributions 
 #### Multiple distributions
 
 This is an example of a TEA Component Release for Apache Tomcat 11.0.7 binary distributions.
-The example defines four distinct `distributionType`s,
+The example defines four distinct `distributionId`s,
 which is essential not only for associating the correct SBOMs with each distribution,
 but also for accurately tracking and reporting vulnerabilities that may affect only specific distributions.
 For instance:
@@ -172,7 +172,7 @@ For instance:
   but is packaged as a self-extracting installer
   created by the [Nullsoft Scriptable Install System](https://nsis.sourceforge.io/Main_Page).
 
-By defining separate `distributionType`s,
+By defining separate `distributionId`s,
 it becomes possible to precisely associate artefacts and vulnerability disclosures with the affected distributions,
 ensuring accurate risk assessment and remediation.
 
@@ -193,7 +193,7 @@ ensuring accurate risk assessment and remediation.
   ],
   "distributions": [
     {
-      "distributionType": "zip",
+      "distributionId": "zip",
       "description": "Core binary distribution, zip archive",
       "identifiers": [
         {
@@ -211,7 +211,7 @@ ensuring accurate risk assessment and remediation.
       "signatureUrl": "https://repo.maven.apache.org/maven2/org/apache/tomcat/tomcat/11.0.7/tomcat-11.0.7.zip.asc"
     },
     {
-      "distributionType": "tar.gz",
+      "distributionId": "tar.gz",
       "description": "Core binary distribution, tar.gz archive",
       "identifiers": [
         {
@@ -229,7 +229,7 @@ ensuring accurate risk assessment and remediation.
       "signatureUrl": "https://repo.maven.apache.org/maven2/org/apache/tomcat/tomcat/11.0.7/tomcat-11.0.7.tar.gz.asc"
     },
     {
-      "distributionType": "windows-x64.zip",
+      "distributionId": "windows-x64.zip",
       "description": "Core binary distribution, Windows x64 zip archive",
       "identifiers": [
         {
@@ -247,7 +247,7 @@ ensuring accurate risk assessment and remediation.
       "signatureUrl": "https://repo.maven.apache.org/maven2/org/apache/tomcat/tomcat/11.0.7/tomcat-11.0.7.zip.asc"
     },
     {
-      "distributionType": "windows-x64.exe",
+      "distributionId": "windows-x64.exe",
       "description": "Core binary distribution, Windows Service Installer (MSI)",
       "checksums": [
         {
