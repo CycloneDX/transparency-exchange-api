@@ -1140,6 +1140,7 @@ components:
         - uuid
         - version
         - createdDate
+        - component
       examples:
         # Apache Tomcat 11.0.7
         - uuid: 605d0ecb-1057-40e4-9abf-c400b10f0345
