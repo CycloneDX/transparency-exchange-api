@@ -1053,7 +1053,7 @@ components:
           description: URI of a human-readable web page with information about the error.
     identifier:
       type: object
-      description: An identifier of the component with a specified type
+      description: An identifier of a TEA object with a specified type
       properties:
         idType:
           description: Type of identifier, e.g. `TEI`, `PURL`, `CPE`
