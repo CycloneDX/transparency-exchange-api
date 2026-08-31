@@ -1343,7 +1343,7 @@ components:
           description: |
             TEA Collection version, incremented each time its content changes.
             Versions start with 1.
-        date:
+        createdDate:
           description: The date when the TEA Collection version was created.
           "$ref": "#/components/schemas/date-time"
         belongsTo:
@@ -1360,7 +1360,7 @@ components:
       required:
         - uuid
         - version
-        - date
+        - createdDate
         - belongsTo
         - updateReason
       examples:
