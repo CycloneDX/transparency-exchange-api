@@ -66,7 +66,8 @@ required for a given product release. This identifier is called the Transparency
 The TEI identifier is based on DNS, which assures a uniqueness per vendor (or open source project)
 and gives the vendor a namespace to define product release identifiers based on existing or new identifiers
 like EAN/UPC bar code, PURLs or other existing schemes. A given product release may have multiple identifiers
-as long as they all resolve into the same destination.
+as long as they all resolve into the same destination. In some cases, these identifiers has to be applied
+for to the corresponding standards organisation.
 
 The vendor needs to make sure that the TEI is unique within the vendor's namespace. There is no
 intention to create any TEI registries.
@@ -87,15 +88,16 @@ barcode and one with the vendor's product number.
 The TEI consists of three core parts
 
 ```text
-tei://<domain-name>/<type>/<unique-identifier-BASE64>
+tei://<domain-name>/<type>/<unique-identifier>
 ````
 
 - The **`domain-name`** part resolves into a web server, which may not be the API host.
   - The uniqueness of the name is the domain name part that has to be registred at creation of the TEI.
-- The **`type`** which defines the syntax of the unique identifier part
+- The **`type`** which defines the syntax of the unique identifier part. Types are declared in the
+  specification. If there is a need for new types, please inform ECMA TC54.
 - The **`unique-identifier`** has to be unique within the `domain-name`.
   Recommendation is to use a UUID but it can be an existing article code too. The
-  identifier is encoded using BASE64URL encoding (RFC 4648 section 5).
+  identifier is in some cases (depending on type) encoded using BASE64URL encoding (RFC 4648 section 5).
 
 
 ### TEI types
@@ -107,6 +109,7 @@ Reminder: the `unique-identifer` component of the TEI needs only be unique withi
 #### PURL - Package URL
 
 Where the `unique-identifier` is a PURL in it's canonical string form.
+A PURL identifier is encoded using BASE64URL.
 
 Syntax:
 
@@ -148,10 +151,9 @@ tei://<domain-name>/hash/<hashtype>/<hash>
 
 Example:
 
-HASH fd44efd601f651c8865acf0dfeacb0df19a2b50ec69ead0262096fd2f67197b9
-
 ```text
-tei://cyclonedx.org/hash/SHA256/ZmQ0NGVmZDYwMWY2NTFjODg2NWFjZjBkZmVhY2IwZGYxOWEyYjUwZWM2OWVhZDAyNjIwOTZmZDJmNjcxOTdiOQ
+tei://cyclonedx.org/hash/SHA256/fd44efd601f651c8865acf0dfeacb0df19a2b50ec69ead0262096fd2f67197b9
+
 ```
 
 The origin of the hash is up to the vendor to define.
@@ -168,10 +170,8 @@ tei://<domain-name>/uuid/<uuid>
 
 Example:
 
-UUID d4d9f54a-abcf-11ee-ac79-1a52914d44b1
-
 ```text
-tei://cyclonedx.org/uuid/ZDRkOWY1NGEtYWJjZi0xMWVlLWFjNzktMWE1MjkxNGQ0NGIxCg
+tei://cyclonedx.org/uuid/d4d9f54a-abcf-11ee-ac79-1a52914d44b1
 ```
 
 #### EAN/UPC
@@ -186,10 +186,8 @@ tei://<domain-name>/eanupc/<ean/upc-number>
 
 Example:
 
-EAN 1234567890123
-
 ```text
-tei://example.com/eanupc/MTIzNDU2Nzg5MDEyMw
+tei://example.com/eanupc/1234567890123
 ```
 
 #### GTIN
@@ -204,10 +202,8 @@ tei://<domain-name>/gtin/<gtin-number>
 
 Example:
 
-GTIN 0234567890123
-
 ```text
-tei://example.org/gtin:/MDIzNDU2Nzg5MDEyMw
+tei://example.org/gtin/0234567890123
 ```
 
 #### ASIN
@@ -222,10 +218,8 @@ tei://<domain-name>/asin/<asin-identifier>
 
 Example:
 
-ASIN B07FZ8S74R
-
 ```text
-tei://example.com/asin/QjA3Rlo4Uzc0Ug
+tei://example.com/asin/B07FZ8S74R
 ```
 
 
@@ -241,10 +235,8 @@ tei://<domain-name>/udi/<udi-identifier>
 
 Example:
 
-UDI 00123456789012
-
 ```text
-tei://cyclonedx.org/udi/MDAxMjM0NTY3ODkwMTI
+tei://cyclonedx.org/udi/00123456789012
 ```
 
 Note that if the same identifier, like EAN, is used for multiple different product releases
@@ -276,7 +268,9 @@ the certificate. The URL is composed of the host name with the `/.well-known/tea
 This results in the base URL such as
 `https://products.example.com/.well-known/tea`
 
-This response must contain json object that lists the available TEA server endpoints and supported versions.
+### TEA Discovery document
+
+The response must contain a json object that lists the available TEA server endpoints and supported versions.
 The json must conform to the [TEA Well-Known Schema](tea-well-known.schema.json).
 
 Example:
@@ -406,7 +400,8 @@ Clients SHOULD:
 ## Notes Regarding .well-known
 
 Servers MUST NOT locate the actual TEA service endpoint at the
-`.well-known` URI as per Section 1.1 of [RFC5785].
+`.well-known` URI as per Section 1.1 of [RFC5785]. This endpoint is only for distribution
+of the TEA discovery document.
 
 ### TLS Encryption
 
