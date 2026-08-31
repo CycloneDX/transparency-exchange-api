@@ -1213,11 +1213,11 @@ components:
         url:
           type: string
           description: Direct download URL for the distribution.
-          format: url
+          format: uri
         signatureUrl:
           type: string
           description: Direct download URL for the distribution's external signature.
-          format: url
+          format: uri
         checksums:
           type: array
           description: List of checksums for the distribution.
