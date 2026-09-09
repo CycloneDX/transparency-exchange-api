@@ -97,7 +97,7 @@ paths:
         - name: uuid
           in: path
           required: true
-          description: UUID of TEA Product Release in the TEA server
+          description: Unique UUID of TEA Product Release in the TEA server
           schema:
             "$ref": "#/components/schemas/uuid"
       responses:
@@ -602,7 +602,7 @@ paths:
           description: Transparency Exchange Identifier (TEI) for the product being discovered. Provide the TEI as a URL-encoded string per RFC 3986, RFC 3987.
           schema:
             type: string
-            example: urn%3Atei%3Auuid%3Aproducts.example.com%3Ad4d9f54a-abcf-11ee-ac79-1a52914d44b
+            example: tei%3A%2F%2Fproducts.example.com%2Fuuid%2F1a38cf78-a554-11f1-8712-1a52914d44b2%0A
       responses:
         '200':
           $ref: "#/components/responses/discovery-response"
@@ -619,7 +619,7 @@ components:
     #
     date-time:
       type: string
-      description: Timestamp
+      description: Timestamp in RFC 9557 format
       format: date-time
       pattern: "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
       example: '2024-03-20T15:30:00Z'
@@ -704,7 +704,7 @@ components:
           description: URI of a human-readable web page with information about the error.
     identifier:
       type: object
-      description: An identifier with a specified type
+      description: An identifier of a TEA object with a specified type
       properties:
         idType:
           description: Type of identifier, e.g. `TEI`, `PURL`, `CPE`
@@ -746,6 +746,7 @@ components:
         - TISAX
         - CYBER_ESSENTIALS
         - CYBER_ESSENTIALS_PLUS
+        - EU_DECLARATION_OF_CONFORMITY
     uuid:
       type: string
       description: A UUID
@@ -801,7 +802,7 @@ components:
           type: string
           example: Apache Log4j 2
         version:
-          description: Version number of the product release
+          description: Human-readable version string of the product release
           type: string
           example: 2.24.3
         createdDate:
@@ -817,13 +818,14 @@ components:
             May be disabled after the creation of the release object, but can't be enabled after creation of an object.
         identifiers:
           type: array
-          description: List of identifiers for the product release
+          description: |
+            Array of identifiers for the product release (idType: CPE/TEI/PURL; idValue: string)
           items:
             "$ref": "#/components/schemas/identifier"
         components:
           type: array
           description: |
-            List of component references that compose this product release. A component reference can optionally include
+            Array of component references that compose this product release. A component reference can optionally include
             the UUID of a specific component release to pin the exact version.
           items:
             "$ref": "#/components/schemas/component-ref"
@@ -839,7 +841,7 @@ components:
           releaseDate: 2025-04-01T15:43:00Z
           identifiers:
             - idType: TEI
-              idValue: tei:vendor:product@2.24.3
+              idValue: tei://example.com/uuid/1a38cf78-a554-11f1-8712-1a52914d44b2
           components:
             - uuid: 3910e0fd-aff4-48d6-b75f-8bf6b84687f0
             - uuid: b844c9bd-55d6-478c-af59-954a932b6ad3
@@ -913,7 +915,7 @@ components:
       description: A TEA Component Release
       properties:
         uuid:
-          description: A unique identifier for the TEA Component Release
+          description: A unique identifier of the TEA Component Release
           "$ref": "#/components/schemas/uuid"
         component:
           description: UUID of the TEA Component this release belongs to
@@ -923,7 +925,7 @@ components:
           type: string
           example: tomcat
         version:
-          description: Version number
+          description: Human-readable version string
           type: string
           example: 1.2.3
         createdDate:
@@ -939,7 +941,7 @@ components:
             May be disabled after the creation of the release object, but can't be enabled after creation of an object.
         identifiers:
           type: array
-          description: List of identifiers for the component
+          description: Array of identifiers for the component
           items:
             "$ref": "#/components/schemas/identifier"
         distributions:
@@ -1010,27 +1012,27 @@ components:
       type: object
       properties:
         distributionId:
-          description: A unique identifier for the TEA Distribution object
+          description: A unique identifier for the TEA Distribution object (uuid)
           "$ref": "#/components/schemas/uuid"
         description:
           type: string
-          description: Free-text description of the distribution.
+          description: Free-text description of the distribution
         identifiers:
           type: array
-          description: List of identifiers specific to this distribution.
+          description: Array of identifiers specific to this distribution
           items:
             $ref: "#/components/schemas/identifier"
         url:
           type: string
-          description: Direct download URL for the distribution.
+          description: Direct download URL for the distribution
           format: url
         signatureUrl:
           type: string
-          description: Direct download URL for the distribution's external signature.
+          description: Direct download URL for the distribution's detached signature
           format: url
         checksums:
           type: array
-          description: List of checksums for the distribution.
+          description: Array of checksums for the distribution
           items:
             "$ref": "#/components/schemas/checksum"
       required:
@@ -1144,8 +1146,8 @@ components:
           description: |
             TEA Collection version, incremented each time its content changes.
             Versions start with 1.
-        date:
-          description: The date when the TEA Collection version was created.
+        createdDate:
+          description: Timestamp when the TEA Collection version was created.
           "$ref": "#/components/schemas/date-time"
         belongsTo:
           description: Indicates whether this collection belongs to a Component Release or a Product Release
@@ -1155,7 +1157,7 @@ components:
           "$ref": "#/components/schemas/collection-update-reason"
         artifacts:
           type: array
-          description: List of TEA Artifact objects.
+          description: Array of TEA Artifact objects.
           items:
             "$ref": "#/components/schemas/artifact"
       examples:
@@ -1238,17 +1240,17 @@ components:
           default: 1
         name:
           type: string
-          description: Name of TEA Artifact
+          description: A human-readable name for the artefact
         type:
           description: Type of TEA Artifact
           "$ref": "#/components/schemas/artifact-type"
         createdDate:
-          description: The date when the TEA Artifact revision was created.
+          description: The date and time the TEA Artifact revision was created.
           "$ref": "#/components/schemas/date-time"
         distributionIds:
           type: array
           description: |
-            List of TEA Component Release distributions that this TEA Artifact applies to.
+            Array of TEA Component Release distributions that this TEA Artifact applies to.
             If absent or empty, the TEA Artifact applies to all distributions.
           items:
             "$ref": "#/components/schemas/uuid"
@@ -1317,15 +1319,15 @@ components:
           description: A free text describing the TEA Artifact
         url:
           type: string
-          description: Direct download URL for the TEA Artifact
+          description: Direct download URL for the TEA Artifact. This must point to an immutable resource.
           format: url
         signatureUrl:
           type: string
-          description: Direct download URL for an external signature of the TEA Artifact
+          description: Direct download URL for an detached signature of the TEA Artifact, if available
           format: url
         checksums:
           type: array
-          description: List of checksums for the TEA Artifact
+          description: Array of checksums for the TEA Artifact
           items:
             "$ref": "#/components/schemas/checksum"
     checksum:
