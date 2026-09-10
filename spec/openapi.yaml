@@ -763,20 +763,20 @@ paths:
 
         Discovery by TEI resolves the product across TEA servers, using the domain carried
         by the TEI. Discovery by PURL resolves the product within the inventory of the TEA
-        server that receives the request; a PURL carries no domain.
+        server that receives the request.
       operationId: discoveryByTei
       parameters:
         - name: tei
           in: query
           required: false
-          description: Transparency Exchange Identifier (TEI) for the product being discovered. Provide the TEI as a URL-encoded string per RFC 3986, RFC 3987. Mutually exclusive with `purl`.
+          description: Transparency Exchange Identifier (TEI) for the product being discovered. Provide the TEI as a URL-encoded string per RFC 3986, RFC 3987 or the PURL under purl parameter.
           schema:
             type: string
             example: urn%3Atei%3Auuid%3Aproducts.example.com%3Ad4d9f54a-abcf-11ee-ac79-1a52914d44b
         - name: purl
           in: query
           required: false
-          description: Package URL (PURL) of the product being discovered, resolved within this TEA server's inventory. Provide the PURL as a URL-encoded string per RFC 3986. Mutually exclusive with `tei`.
+          description: Package URL (PURL) of the product being discovered, resolved within this TEA server's inventory. Provide the PURL as a URL-encoded string per RFC 3986 or the TEI under tei parameter.
           schema:
             type: string
             example: pkg%3Amaven%2Forg.apache.logging.log4j%2Flog4j-core%402.24.3
