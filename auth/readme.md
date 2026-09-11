@@ -203,7 +203,10 @@ certificate. This restates RFC 6749 section 3.2 and RFC 6750 section 5.
 ## Client flow
 
 Whether a server requires authentication is discovered by using it, not by configuration and not by
-probing the token endpoint. The complete flow for a client that does not know in advance:
+probing the token endpoint. In the OpenAPI document, resource operations list both Bearer
+authentication and an empty security requirement so open and mixed deployments are representable;
+a `401` with a `WWW-Authenticate: Bearer` challenge on a given endpoint is still the runtime signal
+that a token is required there. The complete flow for a client that does not know in advance:
 
 1. The client sends the resource request it wants, with no credentials.
 2. If the server does not require authentication for that endpoint, it answers `200` with the
@@ -212,7 +215,10 @@ probing the token endpoint. The complete flow for a client that does not know in
    the `Bearer` scheme, as described in RFC 6750 section 3. This challenge is the only signal a
    client needs.
 4. The client calls `POST /token` with its credential - for the baseline, the API key over HTTP
-   Basic - and receives an access token.
+   Basic - and receives an access token. Unauthenticated `client_credentials` requests are not
+   permitted; an empty OpenAPI security requirement on `/token` allows alternate client
+   authentication (for example, mutual TLS, `private_key_jwt`, or credentials in the
+   request body), not anonymous token issuance.
 5. The client repeats the resource request with `Authorization: Bearer <access_token>`, and presents
    the same token on subsequent requests until it expires or is rejected.
 6. When a later request fails with `401` and `error="invalid_token"`, the client obtains a fresh
@@ -261,7 +267,8 @@ authentication:
 
 Authorization - which of the protected data an authenticated client may see - is the server's
 decision and is not constrained by this specification; a client with a valid token may still receive
-a filtered view, or `403`/`404` for individual objects.
+a filtered view, `403 Forbidden`, or a concealing `404 Not Found` for individual objects. Clients
+shall not infer from `404` alone whether the object is absent or withheld.
 
 ### Protected resource metadata
 
