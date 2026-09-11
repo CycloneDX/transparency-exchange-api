@@ -217,7 +217,8 @@ that a token is required there. The complete flow for a client that does not kno
 4. The client calls `POST /token` with its credential - for the baseline, the API key over HTTP
    Basic - and receives an access token. Unauthenticated `client_credentials` requests are not
    permitted; an empty OpenAPI security requirement on `/token` allows alternate client
-   authentication (for example mutual TLS), not anonymous token issuance.
+   authentication (for example, mutual TLS, `private_key_jwt`, or credentials in the
+   request body), not anonymous token issuance.
 5. The client repeats the resource request with `Authorization: Bearer <access_token>`, and presents
    the same token on subsequent requests until it expires or is rejected.
 6. When a later request fails with `401` and `error="invalid_token"`, the client obtains a fresh

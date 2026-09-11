@@ -840,9 +840,10 @@ paths:
 
         The empty security requirement on this operation does not authorize anonymous
         `client_credentials` issuance. It only allows the alternate client-authentication
-        methods described above (for example mutual TLS). For the baseline
-        `client_credentials` grant, servers shall require HTTP Basic client authentication
-        and shall reject unauthenticated token requests with `401`.
+        methods described above (for example, mutual TLS, `private_key_jwt`, or
+        credentials in the request body). For the baseline `client_credentials` grant,
+        servers shall require HTTP Basic client authentication and shall reject
+        unauthenticated token requests with `401`.
       operationId: requestToken
       security:
         - basicAuth: []
