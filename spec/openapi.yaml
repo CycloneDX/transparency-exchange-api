@@ -597,8 +597,10 @@ paths:
         `url` targets are retrieved without it - they are either openly accessible,
         pre-signed, or covered by credentials the client arranges separately.
 
-        Because a TEA Artifact revision is immutable, the response is cacheable
-        indefinitely and servers should return a strong `ETag`.
+        Because a TEA Artifact revision is immutable, servers should return a strong
+        `ETag`. How long a cache may retain the response depends on whether the content
+        is publicly accessible: see `artifact-cache-control-immutable`. Immutability does
+        not imply that shared caches may store access-controlled responses.
       operationId: downloadArtifactByVersion
       parameters:
         - name: uuid
@@ -1955,22 +1957,37 @@ components:
         type: string
     artifact-cache-control-immutable:
       description: |
-        Servers should mark the content of a specific revision as immutable and
-        cacheable: the bytes for a given uuid, version and format never change.
+        Cache policy for a specific artifact or signature revision. The bytes for a
+        given uuid, version and format never change, so long-lived caching with
+        `immutable` is appropriate when the content is publicly accessible without
+        authorization.
+
+        Responses containing access-controlled content shall use `Cache-Control`
+        `private` or `no-store`. Servers shall use `public` only for content available
+        without authorization. Immutability does not imply public accessibility (see
+        RFC 9111 section 5.2.2.9).
       schema:
         type: string
         examples:
           - 'public, max-age=31536000, immutable'
+          - 'private, max-age=31536000, immutable'
+          - 'no-store'
     artifact-cache-control-latest:
       description: |
         The latest revision is a moving target: which revision it resolves to changes
         when a new revision is published. Servers shall not mark it immutable and
         should require revalidation, so that a cache reuses stored content only after
         confirming, through the `ETag`, that the latest revision has not changed.
+
+        As with versioned downloads, responses containing access-controlled content
+        shall use `private` or `no-store` (for example `private, no-cache`). Servers
+        shall use `public` only for content available without authorization.
       schema:
         type: string
         examples:
           - 'no-cache'
+          - 'private, no-cache'
+          - 'no-store'
     artifact-content-location:
       description: |
         The versioned download URL of the revision this response was resolved to,
