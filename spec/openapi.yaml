@@ -2149,6 +2149,13 @@ components:
           schema:
             type: string
             example: no-store
+        Pragma:
+          description: |
+            Servers shall set `no-cache` on token responses (RFC 6749 section 5.1), for
+            compatibility with HTTP/1.0 caches.
+          schema:
+            type: string
+            example: no-cache
       content:
         application/json:
           schema:
@@ -2464,7 +2471,11 @@ components:
       description: |
         API key credentials, presented to `/token` only: the API key identifier as the
         user-id and the API key secret as the password (RFC 7617, RFC 6749 section
-        2.3.1). Servers shall not accept API key credentials directly on other TEA
+        2.3.1). Per RFC 6749 section 2.3.1, the identifier and secret are each encoded as
+        `application/x-www-form-urlencoded` before they are joined with a colon and
+        Base64-encoded for the `Authorization` header. Clients and servers shall apply
+        that encoding so credentials containing `:`, `@`, or other reserved characters
+        interoperate. Servers shall not accept API key credentials directly on other TEA
         endpoints; clients shall exchange them for an access token first.
 security:
   - bearerAuth: []

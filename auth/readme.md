@@ -101,6 +101,7 @@ A successful response is the standard OAuth 2.0 token response (RFC 6749 section
 HTTP/1.1 200 OK
 Content-Type: application/json;charset=UTF-8
 Cache-Control: no-store
+Pragma: no-cache
 
 {
   "access_token": "2YotnFZFEjr1zCsicMWpAA",
