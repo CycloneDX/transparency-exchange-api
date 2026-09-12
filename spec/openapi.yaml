@@ -1020,7 +1020,7 @@ components:
           releaseDate: 2025-04-01T15:43:00Z
           identifiers:
             - idType: TEI
-              idValue: tei:vendor:product@2.24.3
+              idValue: tei://vendor.example.com:product@2.24.3
           components:
             - uuid: 3910e0fd-aff4-48d6-b75f-8bf6b84687f0
             - uuid: b844c9bd-55d6-478c-af59-954a932b6ad3

@@ -171,7 +171,7 @@ nothing to them.
 | Use case | Grant type | Specification |
 |---|---|---|
 | Enterprise SSO where the customer's identity provider issues SAML assertions | `urn:ietf:params:oauth:grant-type:saml2-bearer` | [RFC 7522](https://www.rfc-editor.org/rfc/rfc7522) |
-| OpenID Connect, or any provider issuing signed JWTs, including workload identity in CI systems | `urn:ietf:params:oauth:grant-type:jwt-bearer` | [RFC 7523](https://www.rfc-editor.org/rfc/rfc7523) |
+| OpenID Connect, or any provider issuing signed JWTs, including workload identity in CI systems | `ietf:params:oauth:grant-type:jwt-bearer` | [RFC 7523](https://www.rfc-editor.org/rfc/rfc7523) |
 | A client already holding a token from another security domain, exchanged for a TEA token | `urn:ietf:params:oauth:grant-type:token-exchange` | [RFC 8693](https://www.rfc-editor.org/rfc/rfc8693) |
 | A client authenticated by a TLS client certificate rather than a shared secret | `client_credentials` with mutual TLS client authentication | [RFC 8705](https://www.rfc-editor.org/rfc/rfc8705) |
 
