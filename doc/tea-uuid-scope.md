@@ -10,7 +10,7 @@ A TEA UUID alone is **not** globally unique. Global uniqueness in TEA is achieve
 authoritative domain  +  object type  +  UUID
 ```
 
-- The **authoritative domain** is supplied by the TEI (`urn:tei:<type>:<domain-name>:<unique-identifier>`); see [discovery](../discovery/readme.md). TEA itself has no centralized authority that can police UUIDs across servers, so cross-server uniqueness is not enforceable and is not claimed.
+- The **authoritative domain** is supplied by the TEI (`tei://<domain-name>/<type>/<unique-identifier>`); see [discovery](../discovery/readme.md). TEA itself has no centralized authority that can police UUIDs across servers, so cross-server uniqueness is not enforceable and is not claimed.
 - The **object type** scopes uniqueness to a single object class (Product, Product Release, Component, Release, Collection, Artifact). A TEA server MUST guarantee that UUIDs are unique within `(authoritative domain, object type)`. UUIDs are not required to be unique across object types.
 
 The per-object-type scoping reflects how TEA servers are typically implemented: each object type lives in its own database table, where uniqueness is trivially enforced by a primary key. Cross-table uniqueness offers no functional benefit - TEA has no operation that resolves a UUID without already knowing its object type.
