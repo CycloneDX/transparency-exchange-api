@@ -1486,7 +1486,7 @@ components:
               url: https://repo.maven.apache.org/maven2/org/apache/logging/log4j/log4j-core/2.24.3/log4j-core-2.24.3-cyclonedx.xml
               signatureUrl: https://repo.maven.apache.org/maven2/org/apache/logging/log4j/log4j-core/2.24.3/log4j-core-2.24.3-cyclonedx.xml.asc
               checksums:
-                - algType: MD5
+                - algType: SHA_256
                   algValue: 2e1a525afc81b0a8ecff114b8b743de9
                 - algType: SHA-1
                   algValue: 5a7d4caef63c5c5ccdf07c39337323529eb5a770
