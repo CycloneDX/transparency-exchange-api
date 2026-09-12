@@ -1029,6 +1029,7 @@ components:
       examples:
         - uuid: 123e4567-e89b-12d3-a456-426614174000
           version: "2.24.3"
+          product: c71b316e-ae77-11f1-aafb-1a52914d44b2
           createdDate: 2025-04-01T15:43:00Z
           releaseDate: 2025-04-01T15:43:00Z
           identifiers:
@@ -1154,6 +1155,7 @@ components:
         # Apache Tomcat 11.0.7
         - uuid: 605d0ecb-1057-40e4-9abf-c400b10f0345
           version: "11.0.7"
+          component: c71b316e-ae77-11f1-aafb-1a52914d44b2
           createdDate: 2025-05-07T18:08:00Z
           releaseDate: 2025-05-12T18:08:00Z
           identifiers:
@@ -1368,6 +1370,7 @@ components:
         - uuid: 4c72fe22-9d83-4c2f-8eba-d6db484f32c8
           version: 10
           createdDate: 2024-12-13T00:00:00Z
+          belongsTo: COMPONENT_RELEASE
           updateReason:
             type: ARTIFACT_UPDATED
             comment: VDR file updated
@@ -1476,6 +1479,7 @@ components:
         - uuid: 1cb47b95-8bf8-3bad-a5a4-0d54d86e10ce
           name: Build SBOM
           type: BOM
+          createdDate: 2026-05-15T00:00:00Z
           formats:
             - mediaType: application/vnd.cyclonedx+xml
               description: CycloneDX SBOM (XML)
@@ -1490,6 +1494,7 @@ components:
           version: 7
           name: Vulnerability Disclosure Report
           type: VULNERABILITIES
+          createdDate: 2026-05-15T00:00:00Z
           formats:
             - mediaType: application/vnd.cyclonedx+xml
               description: CycloneDX VDR (XML)
