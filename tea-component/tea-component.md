@@ -12,7 +12,7 @@ name, hash or anything else.
 
 ## Versions and TEIs
 
-Each product object has one or multiple TEI URNs.
+Each product object has one or multiple TEI URLs.
 
 For the API to be able to present a list of versions in a cronological order,
 a timestamp for a release is required.

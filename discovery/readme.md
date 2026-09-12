@@ -242,7 +242,7 @@ product transparency exchange information.
 At the URL a well-known name space is used to find out where the API endpoint is hosted.
 This is solved by using the ".well-known" name space as defined by the IETF.
 
-- `tei://<domain-name>/uuid/ZDRkOWY1NGEtYWJjZi0xMWVlLWFjNzktMWE1MjkxNGQ0NGIx`
+- `tei://<domain-name>/uuid/62f2cf92-ae88-11f1-a698-1a52914d44b2`
 - Syntax: `tei://<domain-name>/uuid/<unique identifier>`
 
 The name in the DNS name part points to a set of DNS records.
@@ -329,10 +329,10 @@ plus "/discovery?tei=", plus the TEI that is url-encoded according to [RFC3986]
 and [RFC3986]).
 
 Examples:
-1. For TEI `tei://<domain-name>/uuid:products.example.com:d4d9f54a-abcf-11ee-ac79-1a52914d44b`
+1. For TEI `tei://<domain-name>/uuid/products.example.com:d4d9f54a-abcf-11ee-ac79-1a52914d44b`
 `https://api.teaexample.com/v0.2.0-beta.2/discovery?tei=tei%3A//products.example.com/uuid/d4d9f54a-abcf-11ee-ac79-1a52914d44b`
-2. For TEI `tei://<domain-name>/purl:products.example.com:pkg:deb/debian/curl@7.50.3-1?arch=i386&distro=jessie`
-`https://api2.teaexample.com/mytea/v1.0.0/discovery?tei=tei%3A//products.example.com%3Apurl%3Apkg%3Adeb%2Fdebian%2Fcurl%407.50.3-1%3Farch%3Di386%26distro%3Djessie`
+2. For TEI `tei://<domain-name>/purl/cGtnOmRlYi9kZWJpYW4vY3VybEA3LjUwLjMtMT9hcmNoPWkzODYmZGlzdHJvPWplc3NpZQ`
+`https://api2.example.com/mytea/v1.0.0/discovery?tei=tei%3A//products.example.com%3Apurl%3Apkg%3Adeb%2Fdebian%2Fcurl%407.50.3-1%3Farch%3Di386%26distro%3Djessie`
 
 The discovery endpoint is a part of the TEA OpenAPI specification.
 
