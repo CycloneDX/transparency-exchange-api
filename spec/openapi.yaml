@@ -3,12 +3,21 @@ openapi: 3.1.1
 jsonSchemaDialect: https://spec.openapis.org/oas/3.1/dialect/base
 info:
   title: Transparency Exchange API
-  summary: The OWASP Transparency Exchange API specification for consumers and publishers
-  description: TBC
+  summary: The OWASP Transparency Exchange API specification for consumers
+  description: |
+    The Transparency Exchange API (TEA) aims to facilitate the automated exchange
+    of supply chain artifacts such as Software Bill of Materials (SBOM),
+    Vulnerability Exploitability eXchange (VEX), and attestations,
+    allowing users to automatically discover and consume transparency-related
+    artifacts for a product. The TEA enhances transparency across the software
+    supply chain by providing a standardized method to share and access critical
+    security and compliance information. This automation benefits release management
+    and optimizes procurement processes, ensuring timely updates and improving risk management.
+    TEA is developed within the OWASP CycloneDX project and standardised in ECMA International
+    technical Committee 54, task group 1.
   contact:
-    name: TEA Working Group
-    email: tbc@somewhere.tld
-    url: https://github.com/CycloneDX/transparency-exchange-api
+    name: ECMA International, TC54 tg1
+    url: https://tc54.org/tea/
   license:
     name: Apache 2.0
     url: https://github.com/CycloneDX/transparency-exchange-api/blob/main/LICENSE
@@ -889,6 +898,9 @@ components:
         idValue:
           description: Identifier value
           type: string
+      required:
+        - idType
+        - idValue
     identifier-type:
       type: string
       description: Enumeration of identifiers types
@@ -925,7 +937,7 @@ components:
         - CYBER_ESSENTIALS_PLUS
     uuid:
       type: string
-      description: A UUID
+      description: A UUID in lower case (RFC 9562)
       format: uuid
       pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
 
@@ -1013,9 +1025,11 @@ components:
         - version
         - createdDate
         - components
+        - product
       examples:
         - uuid: 123e4567-e89b-12d3-a456-426614174000
           version: "2.24.3"
+          product: c71b316e-ae77-11f1-aafb-1a52914d44b2
           createdDate: 2025-04-01T15:43:00Z
           releaseDate: 2025-04-01T15:43:00Z
           identifiers:
@@ -1136,10 +1150,12 @@ components:
         - uuid
         - version
         - createdDate
+        - component
       examples:
         # Apache Tomcat 11.0.7
         - uuid: 605d0ecb-1057-40e4-9abf-c400b10f0345
           version: "11.0.7"
+          component: c71b316e-ae77-11f1-aafb-1a52914d44b2
           createdDate: 2025-05-07T18:08:00Z
           releaseDate: 2025-05-12T18:08:00Z
           identifiers:
@@ -1208,11 +1224,11 @@ components:
         url:
           type: string
           description: Direct download URL for the distribution.
-          format: url
+          format: uri
         signatureUrl:
           type: string
           description: Direct download URL for the distribution's external signature.
-          format: url
+          format: uri
         checksums:
           type: array
           description: List of checksums for the distribution.
@@ -1284,7 +1300,7 @@ components:
           latestCollection:
             uuid: 605d0ecb-1057-40e4-9abf-c400b10f0345
             version: 2
-            date: 2025-05-12T18:08:00Z
+            createdDate: 2025-05-12T18:08:00Z
             belongsTo: COMPONENT_RELEASE
             updateReason:
               type: INITIAL_RELEASE
@@ -1329,7 +1345,7 @@ components:
           description: |
             TEA Collection version, incremented each time its content changes.
             Versions start with 1.
-        date:
+        createdDate:
           description: The date when the TEA Collection version was created.
           "$ref": "#/components/schemas/date-time"
         belongsTo:
@@ -1343,11 +1359,18 @@ components:
           description: List of TEA Artifact objects.
           items:
             "$ref": "#/components/schemas/artifact"
+      required:
+        - uuid
+        - version
+        - createdDate
+        - belongsTo
+        - updateReason
       examples:
         # Documents in the latest release of Log4j Core
         - uuid: 4c72fe22-9d83-4c2f-8eba-d6db484f32c8
           version: 10
-          date: 2024-12-13T00:00:00Z
+          createdDate: 2024-12-13T00:00:00Z
+          belongsTo: COMPONENT_RELEASE
           updateReason:
             type: ARTIFACT_UPDATED
             comment: VDR file updated
@@ -1361,8 +1384,6 @@ components:
                   url: https://repo.maven.apache.org/maven2/org/apache/logging/log4j/log4j-core/2.24.3/log4j-core-2.24.3-cyclonedx.xml
                   signatureUrl: https://repo.maven.apache.org/maven2/org/apache/logging/log4j/log4j-core/2.24.3/log4j-core-2.24.3-cyclonedx.xml.asc
                   checksums:
-                    - algType: MD5
-                      algValue: 2e1a525afc81b0a8ecff114b8b743de9
                     - algType: SHA-1
                       algValue: 5a7d4caef63c5c5ccdf07c39337323529eb5a770
             - uuid: dfa35519-9734-4259-bba1-3e825cf4be06
@@ -1387,6 +1408,8 @@ components:
         comment:
           type: string
           description: Free text description
+      required:
+        - type
     collection-update-reason-type:
       type: string
       description: Type of TEA collection update
@@ -1450,17 +1473,20 @@ components:
         - uuid
         - type
         - formats
+        - createdDate
+        - version
       examples:
         - uuid: 1cb47b95-8bf8-3bad-a5a4-0d54d86e10ce
           name: Build SBOM
           type: BOM
+          createdDate: 2026-05-15T00:00:00Z
           formats:
             - mediaType: application/vnd.cyclonedx+xml
               description: CycloneDX SBOM (XML)
               url: https://repo.maven.apache.org/maven2/org/apache/logging/log4j/log4j-core/2.24.3/log4j-core-2.24.3-cyclonedx.xml
               signatureUrl: https://repo.maven.apache.org/maven2/org/apache/logging/log4j/log4j-core/2.24.3/log4j-core-2.24.3-cyclonedx.xml.asc
               checksums:
-                - algType: MD5
+                - algType: SHA_256
                   algValue: 2e1a525afc81b0a8ecff114b8b743de9
                 - algType: SHA-1
                   algValue: 5a7d4caef63c5c5ccdf07c39337323529eb5a770
@@ -1468,6 +1494,7 @@ components:
           version: 7
           name: Vulnerability Disclosure Report
           type: VULNERABILITIES
+          createdDate: 2026-05-15T00:00:00Z
           formats:
             - mediaType: application/vnd.cyclonedx+xml
               description: CycloneDX VDR (XML)
@@ -1562,7 +1589,6 @@ components:
       type: string
       description: Checksum algorithm
       enum:
-        - MD5
         - SHA-1
         - SHA-256
         - SHA-384

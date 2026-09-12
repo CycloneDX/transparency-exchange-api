@@ -23,12 +23,6 @@ We encourage developers to start with both client and server implementations of 
 participate in interoperability tests. These will be organised both as hackathons and
 informally using the Slack channel.
 
-
-Priority issues for v1.0:
-
-- E2e poc of authn/z workflow with TEA consumer spec, including consumer spec adjustment to better support authn/z
-- Compliance document workflow, see https://github.com/CycloneDX/transparency-exchange-api/issues/205
-
 Check the list of [implementations](doc/tea-implementations.md) that are available.
 
 ## Introduction
