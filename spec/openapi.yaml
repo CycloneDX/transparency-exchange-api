@@ -2149,13 +2149,6 @@ components:
           schema:
             type: string
             example: no-store
-        Pragma:
-          description: |
-            Servers shall set `no-cache` on token responses (RFC 6749 section 5.1), for
-            compatibility with HTTP/1.0 caches.
-          schema:
-            type: string
-            example: no-cache
       content:
         application/json:
           schema:
