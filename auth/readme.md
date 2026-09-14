@@ -172,8 +172,15 @@ nothing to them.
 |---|---|---|
 | Enterprise SSO where the customer's identity provider issues SAML assertions | `urn:ietf:params:oauth:grant-type:saml2-bearer` | [RFC 7522](https://www.rfc-editor.org/rfc/rfc7522) |
 | OpenID Connect, or any provider issuing signed JWTs, including workload identity in CI systems | `urn:ietf:params:oauth:grant-type:jwt-bearer` | [RFC 7523](https://www.rfc-editor.org/rfc/rfc7523) |
-| A client already holding a token from another security domain, exchanged for a TEA token | `urn:ietf:params:oauth:grant-type:token-exchange` | [RFC 8693](https://www.rfc-editor.org/rfc/rfc8693) |
 | A client authenticated by a TLS client certificate rather than a shared secret | `client_credentials` with mutual TLS client authentication | [RFC 8705](https://www.rfc-editor.org/rfc/rfc8705) |
+
+[RFC 8693](https://www.rfc-editor.org/rfc/rfc8693) token exchange
+(`urn:ietf:params:oauth:grant-type:token-exchange`) is outside the scope of the TEA 1.0
+interoperable authentication profile. TEA 1.0 does not specify the request or response
+contract for this grant. Implementations __may__ support it as an extension by separate
+agreement, but clients __shall not__ assume its availability based solely on TEA 1.0
+conformance. Such extensions do not remove the requirement for servers requiring
+authentication to support the `client_credentials` baseline.
 
 [RFC 7521](https://www.rfc-editor.org/rfc/rfc7521) defines the common framework the two assertion
 grants share.
@@ -279,7 +286,7 @@ and it does not replace the challenge as the way a client discovers that authent
 * RFC 7521: Assertion Framework for OAuth 2.0 Client Authentication and Authorization Grants (https://www.rfc-editor.org/rfc/rfc7521)
 * RFC 7522: SAML 2.0 Profile for OAuth 2.0 Client Authentication and Authorization Grants (https://www.rfc-editor.org/rfc/rfc7522)
 * RFC 7523: JWT Profile for OAuth 2.0 Client Authentication and Authorization Grants (https://www.rfc-editor.org/rfc/rfc7523)
-* RFC 8693: OAuth 2.0 Token Exchange (https://www.rfc-editor.org/rfc/rfc8693)
+* RFC 8693: OAuth 2.0 Token Exchange (https://www.rfc-editor.org/rfc/rfc8693) — outside the TEA 1.0 interoperable authentication profile
 * RFC 8705: OAuth 2.0 Mutual-TLS Client Authentication and Certificate-Bound Access Tokens (https://www.rfc-editor.org/rfc/rfc8705)
 * RFC 9068: JSON Web Token (JWT) Profile for OAuth 2.0 Access Tokens (https://www.rfc-editor.org/rfc/rfc9068)
 * RFC 9728: OAuth 2.0 Protected Resource Metadata (https://www.rfc-editor.org/rfc/rfc9728)
