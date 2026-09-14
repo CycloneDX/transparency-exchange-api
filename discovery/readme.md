@@ -329,14 +329,17 @@ Clients shall pick an endpoint from the `.well-known/tea` JSON response that lis
 at least one API version supported by the client. The client shall prefer endpoints
 whose highest mutually supported version is greatest, based on SemVer 2.0.0
 specification comparison [rules](https://semver.org/#spec-item-11).
-If several endpoints remain after that preference, the client SHOULD pick the endpoint
-with the highest `priority` value (a float between 0 and 1). If `priority` is absent on
-a well-known endpoint object, the client shall treat it as `1` for ordering (JSON Schema
-`default` does not populate omitted fields in the JSON response).
+Advertised API versions are `MAJOR.MINOR.PATCH` with an optional SemVer prerelease;
+build metadata (`+…`) is not used in these strings. If several endpoints remain after
+that preference, the client SHOULD pick the endpoint with the highest `priority` value
+(a float between 0 and 1). If `priority` is absent on a well-known endpoint object, the
+client shall treat it as `1` for ordering (JSON Schema `default` does not populate
+omitted fields in the JSON response).
 
-The client shall then construct the full URL to the API by appending the
-"/v" plus one of the versions listed in the `versions` array of the selected endpoint,
-plus "/discovery?tei=", plus the TEI that is url-encoded according to [RFC3986]
+The client shall then construct the full URL to the API by selecting that highest
+mutually supported version and appending `/v` followed by that exact advertised
+version string (for example `/v1.0.0` or `/v0.2.0-beta.2`), then
+`/discovery?tei=` plus the TEI that is url-encoded according to [RFC3986]
 and [RFC3986]).
 
 Examples:

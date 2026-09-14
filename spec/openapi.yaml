@@ -23,8 +23,8 @@ info:
     url: https://github.com/CycloneDX/transparency-exchange-api/blob/main/LICENSE
   version: 0.5.0
 servers:
-  - url: http://localhost/tea/v1
-    description: Local development
+  - url: http://localhost/tea/v0.5.0
+    description: Local development (path uses /v plus the exact advertised API version)
 paths:
   /product/{uuid}:
     get:
@@ -1685,11 +1685,17 @@ components:
           format: uri
           example: https://api.teaexample.com
         versions:
-          description: Supported TEA API versions at this server without v prefix
+          description: |
+            Supported TEA API versions at this server, without a leading `v`. Each value
+            is MAJOR.MINOR.PATCH with an optional SemVer 2.0.0 prerelease. Build metadata
+            (`+…`) is not used in advertised API path versions. Clients select the highest
+            mutually supported version and append `/v` followed by that exact string.
           type: array
           minItems: 1
           items:
             type: string
+            pattern: '^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?$'
+            description: TEA OpenAPI Spec version identifier (SemVer 2.0.0 core + optional prerelease)
           example: ["0.2.0-beta.2", "1.0.0"]
         priority:
           description: |
