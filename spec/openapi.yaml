@@ -772,22 +772,40 @@ paths:
         Discovery by TEI resolves the product across TEA servers, using the domain carried
         by the TEI. Discovery by PURL resolves the product within the inventory of the TEA
         server that receives the request.
+
+        Parameter values are the identifier itself (not a pre-encoded wire form). Clients
+        shall apply query-parameter serialization once. Servers shall interpret the value
+        after one query-decoding step. Escapes that are part of a PURL value are preserved
+        by that single decode.
+
+        Example request lines after serialization:
+        - `.../discovery?tei=tei%3A%2F%2Fproducts.example.com%2Fuuid%2F47f51950-b0e2-11f1-adc2-1a52914d44b2`
+        - `.../discovery?purl=pkg%3Amaven%2Forg.apache.logging.log4j%2Flog4j-core%402.24.3`
       operationId: discoveryByTei
       parameters:
         - name: tei
           in: query
           required: false
-          description: Transparency Exchange Identifier (TEI) for the product being discovered. Provide the TEI as a URL-encoded string per RFC 3986, RFC 3987 or the PURL under purl parameter.
+          description: |
+            Transparency Exchange Identifier (TEI) for the product being discovered, as the
+            logical TEI string. Do not pre-encode for the schema example or client model;
+            apply query-parameter encoding once when forming the HTTP request.
           schema:
             type: string
-            example: tei://products.example.com/uuid/47f51950-b0e2-11f1-adc2-1a52914d44b2
+            examples:
+              - tei://products.example.com/uuid/47f51950-b0e2-11f1-adc2-1a52914d44b2
         - name: purl
           in: query
           required: false
-          description: Package URL (PURL) of the product being discovered, resolved within this TEA server's inventory. Provide the PURL as a URL-encoded string per RFC 3986 or the TEI under tei parameter.
+          description: |
+            Package URL (PURL) of the product being discovered, resolved within this TEA
+            server's inventory, as the logical PURL string. Do not pre-encode for the schema
+            example or client model; apply query-parameter encoding once when forming the
+            HTTP request.
           schema:
             type: string
-            example: pkg%3Amaven%2Forg.apache.logging.log4j%2Flog4j-core%402.24.3
+            examples:
+              - pkg:maven/org.apache.logging.log4j/log4j-core@2.24.3
       responses:
         '200':
           $ref: "#/components/responses/discovery-response"
@@ -2231,34 +2249,45 @@ components:
       name: mediaType
       description: |
         Selects which of the artifact revision's `formats` to return, by its `mediaType`.
-        Provide the media type as a URL-encoded string per RFC 3986.
+        The parameter value is the media type itself (for example
+        `application/vnd.cyclonedx+json`), not a pre-encoded wire form. Clients shall
+        apply query-parameter serialization once. Servers shall interpret the value after
+        one query-decoding step.
 
         When omitted, the server selects a format using the request's `Accept` header per
         RFC 9110 section 12, and falls back to a format of its choice when `Accept` does
         not constrain the result. In either case the `Content-Type` of the response states
         which format was returned.
+
+        Example after serialization:
+        `.../download?mediaType=application%2Fvnd.cyclonedx%2Bjson`
       in: query
       required: false
       schema:
         type: string
         examples:
-          - application%2Fvnd.cyclonedx%2Bjson
+          - application/vnd.cyclonedx+json
     artifact-signature-media-type:
       name: mediaType
       description: |
         Selects which of the artifact revision's `formats` the returned signature applies
         to, by that format's `mediaType`. This is the media type of the signed content,
-        not of the signature. Provide it as a URL-encoded string per RFC 3986.
+        not of the signature. The parameter value is the media type itself, not a
+        pre-encoded wire form. Clients shall apply query-parameter serialization once.
+        Servers shall interpret the value after one query-decoding step.
 
         When omitted, the server selects a format of its choice. Requests that need a
         specific format's signature should always supply this parameter, since the
         response does not otherwise state which format was signed.
+
+        Example after serialization:
+        `.../download/signature?mediaType=application%2Fvnd.cyclonedx%2Bjson`
       in: query
       required: false
       schema:
         type: string
         examples:
-          - application%2Fvnd.cyclonedx%2Bjson
+          - application/vnd.cyclonedx+json
     # Pagination
     page-size:
       name: pageSize
