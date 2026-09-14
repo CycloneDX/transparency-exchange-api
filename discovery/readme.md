@@ -272,8 +272,6 @@ Example:
       "url": "https://api.teaexample.com",
       "versions": 
         [
-          "0.1.0-beta.1",
-          "0.2.0-beta.2",
           "1.0.0"
         ],
       "priority": 1
@@ -329,22 +327,21 @@ Clients shall pick an endpoint from the `.well-known/tea` JSON response that lis
 at least one API version supported by the client. The client shall prefer endpoints
 whose highest mutually supported version is greatest, based on SemVer 2.0.0
 specification comparison [rules](https://semver.org/#spec-item-11).
-Advertised API versions are `MAJOR.MINOR.PATCH` with an optional SemVer prerelease;
-build metadata (`+…`) is not used in these strings. If several endpoints remain after
-that preference, the client SHOULD pick the endpoint with the highest `priority` value
-(a float between 0 and 1). If `priority` is absent on a well-known endpoint object, the
-client shall treat it as `1` for ordering (JSON Schema `default` does not populate
+Advertised API versions are full SemVer `MAJOR.MINOR.PATCH`. If several endpoints remain
+after that preference, the client SHOULD pick the endpoint with the highest `priority`
+value (a float between 0 and 1). If `priority` is absent on a well-known endpoint object,
+the client shall treat it as `1` for ordering (JSON Schema `default` does not populate
 omitted fields in the JSON response).
 
 The client shall then construct the full URL to the API by selecting that highest
 mutually supported version and appending `/v` followed by that exact advertised
-version string (for example `/v1.0.0` or `/v0.2.0-beta.2`), then
+version string (for example `/v1.0.0`), then
 `/discovery?tei=` plus the TEI that is url-encoded according to [RFC3986]
 and [RFC3986]).
 
 Examples:
 1. For TEI `tei://products.example.com/uuid/d4d9f54a-abcf-11ee-ac79-1a52914d44b1`
-`https://api.teaexample.com/v0.2.0-beta.2/discovery?tei=tei%3A//products.example.com/uuid/d4d9f54a-abcf-11ee-ac79-1a52914d44b1`
+`https://api.teaexample.com/v1.0.0/discovery?tei=tei%3A//products.example.com/uuid/d4d9f54a-abcf-11ee-ac79-1a52914d44b1`
 2. For TEI `tei://products.example.com/purl/cGtnOmRlYi9kZWJpYW4vY3VybEA3LjUwLjMtMT9hcmNoPWkzODYmZGlzdHJvPWplc3NpZQ`
 `https://api2.example.com/mytea/v1.0.0/discovery?tei=tei%3A//products.example.com/purl/cGtnOmRlYi9kZWJpYW4vY3VybEA3LjUwLjMtMT9hcmNoPWkzODYmZGlzdHJvPWplc3NpZQ`
 
