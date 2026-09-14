@@ -726,10 +726,18 @@ paths:
         `404` from this endpoint means only that it is not implemented.
 
         Servers may support additional grant types for federated identity, for example
-        SAML 2.0 assertions (RFC 7522), JWT assertions (RFC 7523), or token exchange
-        (RFC 8693), and may authenticate the client with mutual TLS (RFC 8705) instead
-        of Basic. Whichever grant type is used, the token returned by this endpoint is
-        the only credential accepted on the other TEA endpoints.
+        SAML 2.0 assertions (RFC 7522) or JWT assertions (RFC 7523), and may authenticate
+        the client with mutual TLS (RFC 8705) instead of Basic. Whichever grant type is
+        used, the token returned by this endpoint is the only credential accepted on the
+        other TEA endpoints.
+
+        RFC 8693 token exchange (`urn:ietf:params:oauth:grant-type:token-exchange`) is
+        outside the scope of the TEA 1.0 interoperable authentication profile. TEA 1.0 does
+        not specify the request or response contract for this grant. Implementations may
+        support it as an extension by separate agreement, but clients shall not assume its
+        availability based solely on TEA 1.0 conformance. Such extensions do not remove the
+        requirement for servers requiring authentication to support the
+        `client_credentials` baseline.
 
         The access token is opaque to the client: clients shall not inspect, parse, or
         depend on its contents.
@@ -803,8 +811,10 @@ components:
     token-request:
       type: object
       description: |
-        Token request, as defined in RFC 6749 section 4.4.2 for the client-credentials
-        grant. Additional parameters apply only to the optional grant types.
+        Token request for the `client_credentials` grant, as defined in RFC 6749 section
+        4.4.2, or an optional assertion grant identified below. The `scope` parameter
+        applies to both. The `assertion` parameter applies only to assertion grants.
+        RFC 8693 token exchange is outside the TEA 1.0 profile (see `/token` description).
       required:
         - grant_type
       properties:
@@ -813,8 +823,9 @@ components:
           description: |
             OAuth 2.0 grant type. Servers shall support `client_credentials`. Servers may
             support assertion grants (`urn:ietf:params:oauth:grant-type:saml2-bearer`,
-            `urn:ietf:params:oauth:grant-type:jwt-bearer`) or token exchange
-            (`urn:ietf:params:oauth:grant-type:token-exchange`).
+            `urn:ietf:params:oauth:grant-type:jwt-bearer`). Token exchange
+            (`urn:ietf:params:oauth:grant-type:token-exchange`) is outside the TEA 1.0
+            interoperable authentication profile; see `/token`.
           example: client_credentials
         scope:
           type: string
@@ -824,12 +835,6 @@ components:
         assertion:
           type: string
           description: Assertion value, when an assertion grant type is used (RFC 7521 section 4.1).
-        subject_token:
-          type: string
-          description: Subject token, when the token-exchange grant type is used (RFC 8693 section 2.1).
-        subject_token_type:
-          type: string
-          description: Type of `subject_token`, when the token-exchange grant type is used (RFC 8693 section 2.1).
     token-response:
       type: object
       description: Successful token response, as defined in RFC 6749 section 5.1.
