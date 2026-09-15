@@ -53,14 +53,14 @@ The following example is reused from the OpenAPI schema (`components/schemas/pro
 ## Handling the Pre-Release flag
 
 The "Pre-release" flag is used to indicate that this is not a final release.
-For a given Component with a UUID, the flag can be set to indicate a "test", "beta", "alpha"
-or similar non-deployed release. It can only be set when creating the Component.
+For a given product release with a UUID, the flag can be set to indicate a "test", "beta", "alpha"
+or similar non-deployed release. It can only be set when creating the product release.
 The TEA implementation may allow it to be unset (False) once. This is to support
 situations where a object is promoted as is after testing to production version. The flag can not
-be set after initial creation and publication of the Component.
+be set after initial creation and publication of the product release.
 
 If the final version is different from the pre-release (bugs fixed, code changed, different binary)
-a new Component with a new UUID and version needs to be created.
+a new product release with a new UUID and version needs to be created.
 
 
 ## Notes
