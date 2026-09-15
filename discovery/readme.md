@@ -402,4 +402,3 @@ The .well-known endpoint must only be available via HTTPS. Using unencrypted HTT
 ## References
 
 - [IANA .well-known registry](https://www.iana.org/assignments/well-known-uris/well-known-uris.xhtml)
-- [IANA URI registry](https://www.iana.org/assignments/urn-namespaces/urn-namespaces.xhtml#urn-namespaces-1)
