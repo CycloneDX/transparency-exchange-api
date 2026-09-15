@@ -1574,7 +1574,7 @@ components:
             pre-signed, or covered by credentials the client arranges separately. When
             the URL is pre-signed it may expire; clients should not retain it beyond the
             freshness lifetime of the response that carried it.
-          format: url
+          format: uri
         signatureUrl:
           type: string
           description: |
@@ -1591,7 +1591,7 @@ components:
 
             This specification does not define which signature technology is used, nor
             model the signing algorithm, key, or certificate chain.
-          format: url
+          format: uri
         checksums:
           type: array
           description: List of checksums for the TEA Artifact
