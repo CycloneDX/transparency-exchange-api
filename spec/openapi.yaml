@@ -1501,6 +1501,7 @@ components:
         - version
       examples:
         - uuid: 1cb47b95-8bf8-3bad-a5a4-0d54d86e10ce
+          version: 2
           name: Build SBOM
           type: BOM
           createdDate: 2026-05-15T00:00:00Z
