@@ -1276,7 +1276,7 @@ components:
           $ref: "#/components/schemas/collection"
       required:
         - release
-        - latestCollection 
+        - latestCollection
       examples:
         - release:
             uuid: 605d0ecb-1057-40e4-9abf-c400b10f0345
