@@ -3,7 +3,7 @@
 - [From product identifier to API endpoint](#from-product-identifier-to-api-endpoint)
 - [Advertising the TEI](#advertising-the-tei)
 - [TEA Discovery - defining an extensible identifier](#tea-discovery---defining-an-extensible-identifier)
-- [The TEI URN: An extensible identifier](#the-tei-urn-an-extensible-identifier)
+- [The TEI URI: An extensible identifier](#the-tei-uri-an-extensible-identifier)
   - [TEI syntax](#tei-syntax)
   - [TEI types](#tei-types)
   - [TEI resolution using DNS](#tei-resolution-using-dns)
