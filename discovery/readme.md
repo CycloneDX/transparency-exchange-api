@@ -260,8 +260,8 @@ This results in the base URL such as
 
 ### TEA Discovery document
 
-The response must contain a json object that lists the available TEA server endpoints and supported versions.
-The json must conform to the [TEA Well-Known Schema](tea-well-known.schema.json).
+This response shall contain a JSON object that lists the available TEA server endpoints and supported versions.
+The JSON shall conform to the [TEA Well-Known Schema](tea-well-known.schema.json).
 
 Example:
 ```json
@@ -316,16 +316,15 @@ in the TEI URI running on the default port to enable discovery of the API server
 
 ## Connecting to the API
 
-Clients must pick any one of the endpoints listed in the `.well-known/tea` json
-response. The client SHALL pick an endpoint with the at least one version that is
-supported by the client is using. The client SHALL prioritize endpoints with the
-highest matching version supported both by the client and the endpoint based on
-SemVer 2.0.0 specification comparison [rules](https://semver.org/#spec-item-11).
-If there are several endpoints like these and if the priority field is present,
+Clients shall pick an endpoint from the `.well-known/tea` JSON response that lists
+at least one API version supported by the client. The client shall prefer endpoints
+whose highest mutually supported version is greatest, based on SemVer 2.0.0
+specification comparison [rules](https://semver.org/#spec-item-11).
+If there are several such endpoints and the priority field is present,
 the client SHOULD pick the endpoint with the highest priority value (a float
 between 0 and 1).
 
-The client must then construct the full URL to the API by appending the
+The client shall then construct the full URL to the API by appending the
 "/v" plus one of the versions listed in the `versions` array of the selected endpoint,
 plus "/discovery?tei=", plus the TEI that is url-encoded according to [RFC3986]
 and [RFC3986]).
@@ -338,12 +337,12 @@ Examples:
 
 The discovery endpoint is a part of the TEA OpenAPI specification.
 
-If the TEI is known to the TEA server, the discovery endpoint must return at least
+If the TEI is known to the TEA server, the discovery endpoint shall return at least
 the product release uuid, the root URL of the TEA server, the list of supported
 versions, plus the response may have other fields based on the current version of
 the TEA OpenAPI specification.
 
-If the TEI is not known to the TEA server, the discovery endpoint must return a 404
+If the TEI is not known to the TEA server, the discovery endpoint shall return a 404
 status code with a response describing the error.
 
 If the DNS record for the discovery endpoint cannot be resolved by the client, or
@@ -351,9 +350,9 @@ the discovery endpoint fails with a 5xx error code, or TLS certificate validatio
 the client SHALL select the next untried endpoint that supports a compatible API
 version, if one is available. While doing so the client SHOULD preserve the priority
 order if provided (from highest to lowest priority). Each failover connection is subject
-to the same TLS verification requirement. Clients SHALL limit the total number of
+to the same TLS verification requirement. Clients SHOULD limit the total number of
 attempts for a discovery operation. Additional attempts SHOULD use exponential backoff.
-When the retry limit is reached, the client SHALL report that discovery could not be
+When a retry limit is reached, the client SHALL report that discovery could not be
 completed.
 
 ### Authentication and authorization
@@ -366,9 +365,9 @@ whether authentication is required.
 
 A protected TEA resource endpoint (excluding `/token`) SHALL respond to a request without
 valid authentication with `401 Unauthorized` and a `WWW-Authenticate: Bearer` challenge.
-When that challenge contains `error="invalid_token"`, the client MAY obtain a replacement
-access token from the same service and retry the original request once (RFC 6750
-section 3.1). Clients SHOULD NOT repeat this recovery attempt for the same request. This
+When that challenge contains `error="invalid_token"` (RFC 6750 section 3.1), the client
+MAY obtain a replacement access token from the same service and retry the original
+request once. Clients SHOULD NOT repeat this recovery attempt for the same request. This
 is not OAuth refresh-token use.
 
 If authentication cannot be completed or recovery fails, the client SHALL indicate that
@@ -445,7 +444,7 @@ of the TEA discovery document.
 
 ### TLS Encryption
 
-The `.well-known` endpoint must only be available via HTTPS. Using unencrypted HTTP is not
+The `.well-known` endpoint shall only be available via HTTPS. Using unencrypted HTTP is not
 valid. Clients SHALL verify the server certificate for this connection as for any other
 TEA HTTPS request.
 
