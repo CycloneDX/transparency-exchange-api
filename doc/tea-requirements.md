@@ -81,7 +81,7 @@ Authn/Authz MUST be supported
 
 The API MUST provide a way to search the inventory of a specific BOM or all available BOMs
 for a given component or service. The API SHOULD support multiple identity formats including
-PURL, CPE, SWID, GAV, GTIN, and GMN.
+PURL, CPE, GAV, GTIN, and GMN.
 
 For example:
 
