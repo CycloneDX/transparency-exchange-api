@@ -327,10 +327,13 @@ Clients shall pick an endpoint from the `.well-known/tea` JSON response that lis
 at least one API version supported by the client. The client shall prefer endpoints
 whose highest mutually supported version is greatest, based on SemVer 2.0.0
 specification comparison [rules](https://semver.org/#spec-item-11).
-Advertised API versions are full SemVer `MAJOR.MINOR.PATCH`. If several endpoints remain
-after that preference, the client SHOULD pick the endpoint with the highest `priority`
-value (a float between 0 and 1). If `priority` is absent on a well-known endpoint object,
-the client shall treat it as `1` for ordering (JSON Schema `default` does not populate
+Advertised API versions are full SemVer 2.0.0 (`MAJOR.MINOR.PATCH` with optional
+prerelease and build metadata). Versions that differ only in build metadata have equal
+SemVer precedence; when choosing among them, the client shall preserve the exact
+advertised spelling of the selected string. If several endpoints remain after that
+preference, the client SHOULD pick the endpoint with the highest `priority` value (a
+float between 0 and 1). If `priority` is absent on a well-known endpoint object, the
+client shall treat it as `1` for ordering (JSON Schema `default` does not populate
 omitted fields in the JSON response).
 
 The client shall then construct the full URL to the API by selecting that highest
