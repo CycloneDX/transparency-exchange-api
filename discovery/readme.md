@@ -3,7 +3,7 @@
 - [From product identifier to API endpoint](#from-product-identifier-to-api-endpoint)
 - [Advertising the TEI](#advertising-the-tei)
 - [TEA Discovery - defining an extensible identifier](#tea-discovery---defining-an-extensible-identifier)
-- [The TEI URL: An extensible identifier](#the-tei-url-an-extensible-identifier)
+- [The TEI URL: An extensible identifier](#the-tei-url---an-extensible-identifier)
   - [TEI syntax](#tei-syntax)
   - [TEI types](#tei-types)
   - [TEI resolution using DNS](#tei-resolution-using-dns)
@@ -330,8 +330,8 @@ plus "/discovery?tei=", plus the TEI that is url-encoded according to [RFC3986]
 and [RFC3986]).
 
 Examples:
-1. For TEI `tei://products.example.com/uuid/d4d9f54a-abcf-11ee-ac79-1a52914d44b`
-`https://api.teaexample.com/v0.2.0-beta.2/discovery?tei=tei%3A//products.example.com/uuid/d4d9f54a-abcf-11ee-ac79-1a52914d44b`
+1. For TEI `tei://products.example.com/uuid/d4d9f54a-abcf-11ee-ac79-1a52914d44b1`
+`https://api.teaexample.com/v0.2.0-beta.2/discovery?tei=tei%3A//products.example.com/uuid/d4d9f54a-abcf-11ee-ac79-1a52914d44b1`
 2. For TEI `tei://products.example.com/purl/cGtnOmRlYi9kZWJpYW4vY3VybEA3LjUwLjMtMT9hcmNoPWkzODYmZGlzdHJvPWplc3NpZQ`
 `https://api2.example.com/mytea/v1.0.0/discovery?tei=tei%3A//products.example.com%3Apurl%3AcGtnOmRlYi9kZWJpYW4vY3VybEA3LjUwLjMtMT9hcmNoPWkzODYmZGlzdHJvPWplc3NpZQ`
 
