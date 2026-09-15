@@ -98,6 +98,7 @@ tei://<domain-name>/<type>/<unique-identifier>
 - The **`unique-identifier`** has to be unique within the `domain-name`.
   Recommendation is to use a UUID but it can be an existing article code too. The
   identifier is in some cases (depending on type) encoded using BASE64URL encoding (RFC 4648 section 5).
+- Port number is not allowed in the `domain-name` part of a TEI URL.
 
 
 ### TEI types
