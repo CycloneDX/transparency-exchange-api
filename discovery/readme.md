@@ -67,7 +67,7 @@ The TEI identifier is based on DNS, which assures a uniqueness per vendor (or op
 and gives the vendor a namespace to define product release identifiers based on existing or new identifiers
 like EAN/UPC bar code, PURLs or other existing schemes. A given product release may have multiple identifiers
 as long as they all resolve into the same destination. In some cases, these identifiers has to be applied
-for to the corresponding standards organisation.
+for with the corresponding standards organisation.
 
 The vendor needs to make sure that the TEI is unique within the vendor's namespace. There is no
 intention to create any TEI registries.
