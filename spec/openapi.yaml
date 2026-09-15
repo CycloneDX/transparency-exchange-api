@@ -1634,7 +1634,7 @@ components:
         productReleaseUuid:
           description: UUID of the resolved TEA Product Release
           $ref: "#/components/schemas/uuid"
-          example: d4d9f54a-abcf-11ee-ac79-1a52914d44b
+          example: d4d9f54a-abcf-11ee-ac79-1a52914d44b1
         servers:
           description: Array of TEA server information
           type: array
