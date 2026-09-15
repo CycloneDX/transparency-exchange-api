@@ -317,8 +317,8 @@ in the TEI URI running on the default port to enable discovery of the API server
 ## Connecting to the API
 
 Clients must pick any one of the endpoints listed in the `.well-known/tea` json
-response. The client MUST pick an endpoint with the at least one version that is
-supported by the client is using. The client MUST prioritize endpoints with the
+response. The client SHALL pick an endpoint with the at least one version that is
+supported by the client is using. The client SHALL prioritize endpoints with the
 highest matching version supported both by the client and the endpoint based on
 SemVer 2.0.0 specification comparison [rules](https://semver.org/#spec-item-11).
 If there are several endpoints like these and if the priority field is present,
@@ -348,7 +348,7 @@ status code with a response describing the error.
 
 If the DNS record for the discovery endpoint cannot be resolved by the client, or
 the discovery endpoint fails with a 5xx error code, or TLS certificate validation fails,
-the client MUST select the next untried endpoint that supports a compatible API
+the client SHALL select the next untried endpoint that supports a compatible API
 version, if one is available. While doing so the client SHOULD preserve the priority
 order if provided (from highest to lowest priority). Each failover connection is subject
 to the same TLS verification requirement. Clients SHALL limit the total number of
@@ -393,7 +393,7 @@ The full client authentication flow is described in [Authentication](../auth/rea
 The rules above align discovery with that model and do not replace it.
 
 How authentication or authorization failures are presented to end users is implementation
-specific, but they MUST NOT be reported as evidence that no updates are available.
+specific, but they SHALL NOT be reported as evidence that no updates are available.
 
 ### Common authentication-related responses
 
@@ -439,7 +439,7 @@ Clients SHOULD:
 
 ## Notes Regarding .well-known
 
-Servers MUST NOT locate the actual TEA service endpoint at the
+Servers SHALL NOT locate the actual TEA service endpoint at the
 `.well-known` URI as per Section 1.1 of [RFC5785]. This endpoint is only for distribution
 of the TEA discovery document.
 
