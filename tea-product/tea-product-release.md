@@ -28,6 +28,7 @@ The following example is reused from the OpenAPI schema (`components/schemas/pro
   "version": "2.24.3",
   "createdDate": "2025-04-01T15:43:00Z",
   "releaseDate": "2025-04-01T15:43:00Z",
+  "product": "9c622dd2-b0df-11f1-9796-1a52914d44b2",
   "identifiers": [
     {
       "idType": "TEI",
@@ -47,5 +48,4 @@ The following example is reused from the OpenAPI schema (`components/schemas/pro
 ```
 
 Notes:
-- Property `product` exists in the schema and links a product release to its parent product; it may not be present in all examples.
 - Use uppercase idType values exactly as defined by the schema enum: CPE, TEI, PURL.
