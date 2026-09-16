@@ -465,8 +465,8 @@ Common errors:
   report that as evidence that no updates are available.
 - A `404` that is not a TEA error response may mean the path is not mounted or the host
   is not a TEA API base; treat that as a failed discovery attempt and failover if another
-  compatible endpoint remains. This is distinct from `/token`, where `404` may mean the
-  token endpoint is not implemented.
+  compatible endpoint remains. This is distinct from `/token`, where `404` means only
+  that the token endpoint is not implemented.
 
 #### 503 Service Unavailable
 
