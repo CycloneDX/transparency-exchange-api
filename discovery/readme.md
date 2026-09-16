@@ -42,9 +42,10 @@ A product release identifier is embedded in a URL where the identifier is one of
 identifiers or a random string - like an EAN or UPC bar code, UUID, product
 number or PURL.
 
-The goal is for a user to add this URL to the transparency platform (sometimes with an
-associated authentication token) and have the platform access the required artefacts
-in a highly automated fashion.
+The goal is for a user to add this URL to the transparency platform (sometimes with
+credentials for the selected TEA service, such as an API key) and have the platform
+access the required artefacts in a highly automated fashion. Those credentials are
+provisioned separately and are not embedded in the TEI.
 
 ## Advertising the TEI
 
@@ -251,16 +252,16 @@ The name in the DNS name part points to a set of DNS records.
 A TEI with `domain-name` `tea.example.com` queries DNS for `tea.example.com`, considering `A`, `AAAA` and `CNAME` records.
 These point to the hosts available for the Transparency Exchange API.
 
-The TEA client connects to the host using HTTPS and validates
-the certificate. The URL is composed of the host name with the `/.well-known/tea` path added.
+The TEA client connects to the host using HTTPS and SHALL verify the server
+certificate. The URL is composed of the host name with the `/.well-known/tea` path added.
 
 This results in the base URL such as
 `https://products.example.com/.well-known/tea`
 
 ### TEA Discovery document
 
-The response must contain a json object that lists the available TEA server endpoints and supported versions.
-The json must conform to the [TEA Well-Known Schema](tea-well-known.schema.json).
+This response shall contain a JSON object that lists the available TEA server endpoints and supported versions.
+The JSON shall conform to the [TEA Well-Known Schema](tea-well-known.schema.json).
 
 Example:
 ```json
@@ -315,16 +316,15 @@ in the TEI URI running on the default port to enable discovery of the API server
 
 ## Connecting to the API
 
-Clients must pick any one of the endpoints listed in the `.well-known/tea` json
-response. The client MUST pick an endpoint with the at least one version that is
-supported by the client is using. The client MUST prioritize endpoints with the
-highest matching version supported both by the client and the endpoint based on
-SemVer 2.0.0 specification comparison [rules](https://semver.org/#spec-item-11).
-If there are several endpoints like these and if the priority field is present,
+Clients shall pick an endpoint from the `.well-known/tea` JSON response that lists
+at least one API version supported by the client. The client shall prefer endpoints
+whose highest mutually supported version is greatest, based on SemVer 2.0.0
+specification comparison [rules](https://semver.org/#spec-item-11).
+If there are several such endpoints and the priority field is present,
 the client SHOULD pick the endpoint with the highest priority value (a float
 between 0 and 1).
 
-The client must then construct the full URL to the API by appending the
+The client shall then construct the full URL to the API by appending the
 "/v" plus one of the versions listed in the `versions` array of the selected endpoint,
 plus "/discovery?tei=", plus the TEI that is url-encoded according to [RFC3986]
 and [RFC3986]).
@@ -337,32 +337,82 @@ Examples:
 
 The discovery endpoint is a part of the TEA OpenAPI specification.
 
-If the TEI is known to the TEA server, the discovery endpoint must return at least
+If the TEI is known to the TEA server, the discovery endpoint shall return at least
 the product release uuid, the root URL of the TEA server, the list of supported
 versions, plus the response may have other fields based on the current version of
 the TEA OpenAPI specification.
 
-If the TEI is not known to the TEA server, the discovery endpoint must return a 404
+If the TEI is not known to the TEA server, the discovery endpoint shall return a 404
 status code with a response describing the error.
 
 If the DNS record for the discovery endpoint cannot be resolved by the client, or
-the discovery endpoint fails with 5xx error code, or the TLS certificate cannot be validated,
-the client MUST retry the discovery endpoint with the next endpoint in the list, if another
-endpoint is present. While doing so the client SHOULD preserve the priority order if provided
-(from highest to lowest priority). If no other endpoint is available, the client MUST retry
-the discovery endpoint with the first endpoint in the list. The client SHOULD implement an
-exponential backoff strategy for retries.
+the discovery endpoint fails with a 5xx error code, or TLS certificate validation fails,
+the client SHALL select the next untried endpoint that supports a compatible API
+version, if one is available. While doing so the client SHOULD preserve the priority
+order if provided (from highest to lowest priority). Each failover connection is subject
+to the same TLS verification requirement. Clients SHOULD limit the total number of
+attempts for a discovery operation. Additional attempts SHOULD use exponential backoff.
+When a retry limit is reached, the client SHALL report that discovery could not be
+completed.
 
-Client implementations needs to indicate authentication errors clearly to the users,
-to indicate that there are no updates. An expired token or TLS Client Cert will
-mean that new versions of a product or updated artefacts will not be accessed.
+### Authentication and authorization
 
-### Error handling
+Where authentication is required, clients use credentials configured for the selected
+TEA service, such as an API key, to obtain a TEA access token from that service’s
+`/token` endpoint. Credentials SHALL NOT be embedded in a TEI. API keys are exchanged
+only at the selected API’s `/token` endpoint; clients SHALL NOT probe `/token` to discover
+whether authentication is required.
 
-Authentication error codes (401, 403) should not lead to failover to the next endpoint
-in the list.
+A protected TEA resource endpoint (excluding `/token`) SHALL respond to a request without
+valid authentication with `401 Unauthorized` and a `WWW-Authenticate: Bearer` challenge.
+When that challenge contains `error="invalid_token"` (RFC 6750 section 3.1), the client
+MAY obtain a replacement access token from the same service and retry the original
+request once. Clients SHOULD NOT repeat this recovery attempt for the same request. This
+is not OAuth refresh-token use.
 
-How this is communicated to the client users is implementation specific.
+If authentication cannot be completed or recovery fails, the client SHALL indicate that
+update status could not be determined. Failures that may require user or administrator
+intervention include rejected or revoked credentials, expired client certificates,
+persistent rejection of a replacement token, and insufficient permissions. A
+`403 Forbidden` response indicates denied authorization and SHALL NOT trigger
+token-replacement attempts solely because of that status. Clients SHALL NOT fail over to
+another endpoint solely in response to `401` or `403`.
+
+Clients SHALL verify server certificates for every HTTPS connection used in discovery and
+subsequent API access, and SHALL NOT use connections that fail validation.
+
+Clients SHALL NOT automatically forward a TEA access token to a different origin, or
+outside the authorized API base URL of the service that issued it. API-key Basic
+credentials SHALL NOT be forwarded based merely on a discovery redirect; a different
+service requires independently configured credentials. Redirect targets used during
+discovery or API access SHALL use HTTPS and are subject to the same certificate
+verification requirement.
+
+The full client authentication flow is described in [Authentication](../auth/readme.md).
+The rules above align discovery with that model and do not replace it.
+
+How authentication or authorization failures are presented to end users is implementation
+specific, but they SHALL NOT be reported as evidence that no updates are available.
+
+### Common authentication-related responses
+
+#### 401 Unauthorized
+
+- For an initially unauthenticated resource request, a `WWW-Authenticate: Bearer`
+  challenge without an `error` parameter indicates that authentication is required.
+  A client with configured credentials MAY obtain an access token from the selected
+  API’s `/token` endpoint and retry the resource request.
+- For a resource request rejected with `error="invalid_token"`, the client MAY obtain
+  a replacement access token from the same service and retry the original request once.
+  Clients SHOULD NOT repeat this recovery attempt for the same request.
+
+Other challenges SHALL NOT be interpreted as instructions to repeatedly obtain
+replacement tokens.
+
+#### 403 Forbidden
+
+- Authenticated, but not authorized for this resource. Do not treat as token expiry and do
+  not fail over solely because of this status.
 
 Common errors:
 
@@ -388,13 +438,15 @@ Clients SHOULD:
 
 ## Notes Regarding .well-known
 
-Servers MUST NOT locate the actual TEA service endpoint at the
+Servers SHALL NOT locate the actual TEA service endpoint at the
 `.well-known` URI as per Section 1.1 of [RFC5785]. This endpoint is only for distribution
 of the TEA discovery document.
 
 ### TLS Encryption
 
-The .well-known endpoint must only be available via HTTPS. Using unencrypted HTTP is not valid.
+The `.well-known` endpoint shall only be available via HTTPS. Using unencrypted HTTP is not
+valid. Clients SHALL verify the server certificate for this connection as for any other
+TEA HTTPS request.
 
 - TEI: `tei://products.example.com/uuid/d4d9f54a-abcf-11ee-ac79-1a52914d44b1`
 - URL: `https://products.example.com/.well-known/tea`
