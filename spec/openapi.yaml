@@ -340,7 +340,11 @@ paths:
         - CLE
   /componentRelease/{uuid}/collection/latest:
     get:
-      description: Get the latest TEA Collection belonging to the TEA Component Release
+      description: |
+        Get the latest TEA Collection belonging to the TEA Component Release.
+
+        Latest means the collection with the greatest published `version` (see
+        `content-revision`).
       operationId: getLatestCollection
       parameters:
         - name: uuid
@@ -364,7 +368,11 @@ paths:
         - TEA Component Release
   /productRelease/{uuid}/collection/latest:
     get:
-      description: Get the latest TEA Collection belonging to the TEA Product Release
+      description: |
+        Get the latest TEA Collection belonging to the TEA Product Release.
+
+        Latest means the collection with the greatest published `version` (see
+        `content-revision`).
       operationId: getLatestCollectionForProductRelease
       parameters:
         - name: uuid
@@ -448,9 +456,10 @@ paths:
         - name: collectionVersion
           in: path
           required: true
-          description: Version of TEA Collection
+          description: |
+            Revision of the TEA Collection. Shall be an integer greater than or equal to 1.
           schema:
-            type: integer
+            "$ref": "#/components/schemas/content-revision"
       responses:
         '200':
           description: Requested TEA Collection Version found and returned
@@ -478,9 +487,10 @@ paths:
         - name: collectionVersion
           in: path
           required: true
-          description: Version of TEA Collection
+          description: |
+            Revision of the TEA Collection. Shall be an integer greater than or equal to 1.
           schema:
-            type: integer
+            "$ref": "#/components/schemas/content-revision"
       responses:
         '200':
           description: Requested TEA Collection Version found and returned
@@ -496,7 +506,11 @@ paths:
         - TEA Component Release
   /artifact/{uuid}/latest:
     get:
-      description: Get metadata for latest revision of a specific TEA Artifact
+      description: |
+        Get metadata for the latest revision of a specific TEA Artifact.
+
+        Latest means the artifact revision with the greatest published `version`
+        (see `content-revision`).
       operationId: getLatestArtifact
       parameters:
         - name: uuid
@@ -532,9 +546,10 @@ paths:
         - name: artifactVersion
           in: path
           required: true
-          description: Version of TEA Artifact
+          description: |
+            Revision of the TEA Artifact. Shall be an integer greater than or equal to 1.
           schema:
-            type: integer
+            "$ref": "#/components/schemas/content-revision"
       responses:
         '200':
           description: Requested TEA Artifact metadata found and returned
@@ -553,8 +568,9 @@ paths:
       description: |
         Download the content of the latest revision of a specific TEA Artifact.
 
-        Equivalent to the versioned download endpoint, resolving to whichever revision
-        `/artifact/{uuid}/latest` currently reports. The content this returns changes
+        Equivalent to the versioned download endpoint, resolving to the greatest
+        published artifact `version` (see `content-revision`) — the same revision
+        `/artifact/{uuid}/latest` reports. The content this returns changes
         when a new revision is published, so unlike the versioned endpoint the response
         is not immutable: caches shall revalidate it, which the `ETag` of the resolved
         revision makes cheap. The `Content-Location` header names the versioned URL the
@@ -610,9 +626,10 @@ paths:
         - name: artifactVersion
           in: path
           required: true
-          description: Version of TEA Artifact
+          description: |
+            Revision of the TEA Artifact. Shall be an integer greater than or equal to 1.
           schema:
-            type: integer
+            "$ref": "#/components/schemas/content-revision"
         - $ref: "#/components/parameters/artifact-media-type"
       responses:
         '200':
@@ -632,8 +649,9 @@ paths:
       description: |
         Download the detached signature for the latest revision of a specific TEA Artifact.
 
-        Equivalent to the versioned signature endpoint, resolving to whichever revision
-        `/artifact/{uuid}/latest` currently reports. As with the latest content endpoint,
+        Equivalent to the versioned signature endpoint, resolving to the greatest
+        published artifact `version` (see `content-revision`) — the same revision
+        `/artifact/{uuid}/latest` reports. As with the latest content endpoint,
         the response is not immutable and caches shall revalidate it; `Content-Location`
         names the versioned URL the request was resolved to.
       operationId: downloadLatestArtifactSignature
@@ -692,9 +710,10 @@ paths:
         - name: artifactVersion
           in: path
           required: true
-          description: Version of TEA Artifact
+          description: |
+            Revision of the TEA Artifact. Shall be an integer greater than or equal to 1.
           schema:
-            type: integer
+            "$ref": "#/components/schemas/content-revision"
         - $ref: "#/components/parameters/artifact-signature-media-type"
       responses:
         '200':
@@ -951,6 +970,19 @@ components:
       description: A UUID
       format: uuid
       pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    content-revision:
+      type: integer
+      minimum: 1
+      description: |
+        Positive integer revision of a TEA Collection or TEA Artifact.
+
+        Revisions shall start at 1 and increase monotonically for successive published
+        revisions. Published content and signatures for a given revision shall not
+        change. Metadata that does not alter those bytes (for example a renewed
+        pre-signed external URL) may be refreshed without bumping the revision.
+
+        Where an API path uses `latest`, that resolves to the greatest published
+        revision number for the identified object.
 
     #
     # TEA Product
@@ -1348,10 +1380,11 @@ components:
             When updating a collection, only the `version` is changed.
           "$ref": "#/components/schemas/uuid"
         version:
-          type: integer
           description: |
-            TEA Collection version, incremented each time its content changes.
-            Versions start with 1.
+            TEA Collection revision. Shall start at 1 and increase monotonically when
+            collection content changes (see `content-revision`). Latest collection
+            endpoints resolve to the greatest published revision.
+          "$ref": "#/components/schemas/content-revision"
         date:
           description: The date when the TEA Collection version was created.
           "$ref": "#/components/schemas/date-time"
@@ -1439,10 +1472,12 @@ components:
           "$ref": "#/components/schemas/uuid"
         version:
           description: |
-            An integer with default value 1.
-            Together with *uuid* uniquely identifies the TEA Artifact.
-            This field can be used to designate successive, immutable revisions of an artefact content (e.g. an updated VEX file).
-          type: integer
+            TEA Artifact revision. Together with `uuid` uniquely identifies the revision.
+            Shall start at 1 and increase monotonically for successive immutable content
+            revisions (see `content-revision`). Latest artifact endpoints resolve to the
+            greatest published revision. Defaults to 1 when omitted on create.
+          allOf:
+            - "$ref": "#/components/schemas/content-revision"
           default: 1
         name:
           type: string
