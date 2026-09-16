@@ -328,19 +328,22 @@ at least one API version supported by the client. The client shall prefer endpoi
 whose highest mutually supported version is greatest, based on SemVer 2.0.0
 specification comparison [rules](https://semver.org/#spec-item-11).
 Advertised API versions are full SemVer 2.0.0 (`MAJOR.MINOR.PATCH` with optional
-prerelease and build metadata). Versions that differ only in build metadata have equal
-SemVer precedence; when choosing among them, the client shall preserve the exact
-advertised spelling of the selected string. If several endpoints remain after that
-preference, the client SHOULD pick the endpoint with the highest `priority` value (a
-float between 0 and 1). If `priority` is absent on a well-known endpoint object, the
-client shall treat it as `1` for ordering (JSON Schema `default` does not populate
-omitted fields in the JSON response).
+prerelease and build metadata). Build metadata is ignored when comparing versions
+([SemVer 2.0.0 §10](https://semver.org/#spec-item-10)), both for precedence and for
+determining whether the client supports a version. If the highest mutually supported
+version is advertised with more than one build-metadata spelling, the client may select
+any of them, and shall use the selected string exactly as advertised when constructing
+the path (for example `/v1.0.0+build.5`; `+` is a valid path character per [RFC3986]
+and shall not be percent-encoded). If several endpoints remain after that preference,
+the client should pick the endpoint with the highest `priority` value (a float between
+0 and 1). If `priority` is absent on a well-known endpoint object, the client shall
+treat it as `1` for ordering (JSON Schema `default` does not populate omitted fields in
+the JSON response).
 
 The client shall then construct the full URL to the API by selecting that highest
 mutually supported version and appending `/v` followed by that exact advertised
-version string (for example `/v1.0.0`), then
-`/discovery?tei=` plus the TEI that is url-encoded according to [RFC3986]
-and [RFC3986]).
+version string (for example `/v1.0.0`), then `/discovery?tei=` plus the TEI,
+url-encoded according to [RFC3986].
 
 Examples:
 1. For TEI `tei://products.example.com/uuid/d4d9f54a-abcf-11ee-ac79-1a52914d44b1`
