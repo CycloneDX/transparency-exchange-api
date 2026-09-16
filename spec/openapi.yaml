@@ -840,10 +840,11 @@ paths:
 
         The empty security requirement on this operation does not authorize anonymous
         `client_credentials` issuance. It only allows the alternate client-authentication
-        methods described above (for example, mutual TLS, `private_key_jwt`, or
-        credentials in the request body). For the baseline `client_credentials` grant,
-        servers shall require HTTP Basic client authentication and shall reject
-        unauthenticated token requests with `401`.
+        methods described above (for example, mutual TLS, JWT client assertion
+        (RFC 7523), or credentials in the request body). For the baseline
+        `client_credentials` grant with HTTP Basic, unauthenticated requests shall not be
+        accepted: servers shall respond with `401`, `error: invalid_client`, and a
+        `WWW-Authenticate: Basic` challenge (see `401-token-error`; RFC 6749 section 5.2).
       operationId: requestToken
       security:
         - basicAuth: []
@@ -2140,9 +2141,12 @@ components:
         token from `/token` and retry the request once (RFC 6750 section 3.1).
 
         Servers that require no authentication on any endpoint shall not return this
-        status. On a TEA server where some data is available without authorization, but not
-        all, protected endpoints return `401`; endpoints that do not require authentication
-        answer without requiring a Bearer token.
+        status. On a TEA server where some data is available without authentication, but
+        not all, protected endpoints return `401` when no valid token is presented;
+        endpoints that do not require authentication answer without requiring a Bearer
+        token. A protected object shall not answer `404` solely because the client is
+        unauthenticated: absence of a valid token yields `401`, so the client flow can
+        discover that authentication is required.
       headers:
         WWW-Authenticate:
           description: Bearer challenge, as defined in RFC 6750 section 3.
@@ -2157,13 +2161,12 @@ components:
         perform this operation. Authorization decisions are server-specific and are not
         constrained by this specification.
 
-        Servers may instead conceal the existence of a resource by answering `404` (see
-        `404-object-by-id-not-found`). Clients shall treat `403` and a concealing `404` as
-        non-access; neither implies that retrying with the same token will succeed.
+        Servers may instead conceal the existence of a resource from an authenticated
+        but unauthorized client by answering `404` (see `404-object-by-id-not-found`).
+        Clients shall treat `403` and that concealing `404` as non-access; neither
+        implies that retrying with the same token will succeed.
       content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/error-response"
+        application/json: {}
     artifact-content:
       description: |
         The content of the requested TEA Artifact format.
@@ -2296,8 +2299,11 @@ components:
             $ref: "#/components/schemas/token-error-response"
     401-token-error:
       description: |
-        Client authentication failed. Returned instead of 400 when the client attempted
-        to authenticate using the `Authorization` header (RFC 6749 section 5.2).
+        Client authentication failed (`error: invalid_client`). Returned instead of 400
+        when the client attempted to authenticate using the `Authorization` header
+        (RFC 6749 section 5.2). For the baseline Basic exchange this includes a missing
+        or invalid `Authorization: Basic` credential. Servers shall include
+        `WWW-Authenticate: Basic`.
       headers:
         WWW-Authenticate:
           description: Challenge indicating the client authentication methods supported by the token endpoint.
@@ -2308,12 +2314,17 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/token-error-response"
+          example:
+            error: invalid_client
     404-object-by-id-not-found:
       description: |
         Object requested by identifier not found, or the server intentionally conceals
-        the object's existence from this client (for example when the client is
-        unauthenticated or authenticated but not authorized). Clients shall not infer
-        from `404` alone whether the object is absent or withheld.
+        the object's existence from an authenticated but unauthorized client. Clients
+        shall not infer from `404` alone whether the object is absent or withheld.
+
+        Concealment applies only after authentication. A request to a protected object
+        with no valid access token shall receive `401` (see `401-unauthorized`), not a
+        concealing `404`.
       content:
         application/json:
           schema:
@@ -2603,8 +2614,9 @@ components:
         document alone. A server that requires no authentication shall ignore a presented
         Bearer token. A server that protects some objects but not all may leave some
         endpoints without authentication and protect others. Authorization after
-        authentication (filtered views, `403`, or concealing `404`) remains
-        server-specific.
+        authentication (filtered views, `403`, or a concealing `404` for an authenticated
+        but unauthorized client) remains server-specific. A protected object with no
+        valid token shall answer `401`, not a concealing `404`.
     basicAuth:
       type: http
       scheme: basic

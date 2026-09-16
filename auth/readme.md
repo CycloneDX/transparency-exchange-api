@@ -215,10 +215,10 @@ in advance:
    the `Bearer` scheme, as described in RFC 6750 section 3. This challenge is the only signal a
    client needs.
 4. The client calls `POST /token` with its credential - for the baseline, the API key over HTTP
-   Basic - and receives an access token. Unauthenticated `client_credentials` requests are not
-   permitted; an empty OpenAPI security requirement on `/token` allows alternate client
-   authentication (for example, mutual TLS, `private_key_jwt`, or credentials in the
-   request body), not anonymous token issuance.
+   Basic - and receives an access token. Unauthenticated `client_credentials` requests shall
+   not be accepted; an empty OpenAPI security requirement on `/token` allows alternate client
+   authentication (for example, mutual TLS, JWT client assertion (RFC 7523), or credentials in
+   the request body), not anonymous token issuance.
 5. The client repeats the resource request with `Authorization: Bearer <access_token>`, and presents
    the same token on subsequent requests until it expires or is rejected.
 6. When a later request fails with `401` and `error="invalid_token"`, the client obtains a fresh
@@ -261,15 +261,17 @@ while restricting artifact downloads to customers, as described under
   needs them;
 * endpoints that do not require authentication answer without a token and ignore a token that is
   presented;
-* protected endpoints answer `401` with the `Bearer` challenge when no valid token is presented,
-  which is how a client learns, per endpoint, that a token is needed. A client __should not__ assume
-  that a server which served one object without authentication will serve every object without
-  authentication, nor the reverse.
+* protected endpoints __shall__ answer `401` with the `Bearer` challenge when no valid token is
+  presented, which is how a client learns, per endpoint, that a token is needed. They shall not
+  answer a concealing `404` solely because the client is unauthenticated. A client __should not__
+  assume that a server which served one object without authentication will serve every object
+  without authentication, nor the reverse.
 
 Authorization - which of the protected data an authenticated client may see - is the server's
 decision and is not constrained by this specification; a client with a valid token may still receive
-a filtered view, `403 Forbidden`, or a concealing `404 Not Found` for individual objects. Clients
-shall not infer from `404` alone whether the object is absent or withheld.
+a filtered view, `403 Forbidden`, or a concealing `404 Not Found` for individual objects it is
+not authorized to see. Clients shall not infer from `404` alone whether the object is absent or
+withheld.
 
 ### Protected resource metadata
 
