@@ -2139,8 +2139,9 @@ components:
         in RFC 6750 section 3. On the `invalid_token` error a client may obtain a fresh
         token from `/token` and retry the request once (RFC 6750 section 3.1).
 
-        Open servers that require no authentication on any endpoint shall not return this
-        status. On a mixed server, only protected endpoints return `401`; open endpoints
+        Servers that require no authentication on any endpoint shall not return this
+        status. On a TEA server where some data is available without authorization, but not
+        all, protected endpoints return `401`; endpoints that do not require authentication
         answer without requiring a Bearer token.
       headers:
         WWW-Authenticate:
@@ -2596,11 +2597,12 @@ components:
         accepted on TEA endpoints other than `/token`.
 
         Resource operations declare both this requirement and an empty alternative so
-        that open and mixed servers are representable: a client may call without a
-        token. Whether a given endpoint actually requires a token is discovered at
+        that a server can select which objects require authentication: a client may call
+        without a token. Whether a given endpoint actually requires a token is discovered at
         runtime from a `401` Bearer challenge (see `401-unauthorized`), not from this
-        document alone. Open servers shall ignore a presented Bearer token; mixed
-        servers may leave some endpoints open and protect others. Authorization after
+        document alone. A server that requires no authentication shall ignore a presented
+        Bearer token. A server that protects some objects but not all may leave some
+        endpoints without authentication and protect others. Authorization after
         authentication (filtered views, `403`, or concealing `404`) remains
         server-specific.
     basicAuth:
@@ -2612,8 +2614,8 @@ components:
         2.3.1). Servers shall not accept API key credentials directly on other TEA
         endpoints; clients shall exchange them for an access token first.
 security:
-  # Bearer token, or anonymous access (open endpoint / open server). Protected
-  # endpoints still answer 401 with a Bearer challenge when a valid token is required.
+  # Bearer token, or no token (server or endpoint that does not require authentication).
+  # Protected endpoints still answer 401 with a Bearer challenge when a valid token is required.
   - bearerAuth: []
   - {}
 tags:
