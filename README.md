@@ -23,12 +23,6 @@ We encourage developers to start with both client and server implementations of 
 participate in interoperability tests. These will be organised both as hackathons and
 informally using the Slack channel.
 
-
-Priority issues for v1.0:
-
-- E2e poc of authn/z workflow with TEA consumer spec, including consumer spec adjustment to better support authn/z
-- Compliance document workflow, see https://github.com/CycloneDX/transparency-exchange-api/issues/205
-
 Check the list of [implementations](doc/tea-implementations.md) that are available.
 
 ## Introduction
@@ -60,8 +54,8 @@ The working group has produced a list of use cases and requirements for the prot
 - [TEA use cases](doc/tea-usecases.md)
 
 ## Data model
-- [TEA Product Release](tea-product/tea-product-release.md): The primary entry point. The [Transparency Exchange Identifier, TEI](/discovery/readme.md) resolves to a specific Product Release. A Product Release may optionally belong to a [TEA Product](tea-product/tea-product.md).
-- [TEA Product](tea-product/tea-product.md): An optional higher-level object that groups a set of Product Releases for a product line or family. Products can be discovered and browsed; releases are accessed via `/product/{uuid}/releases`.
+- [TEA Product Release](tea-product/tea-product-release.md): The primary entry point. The [Transparency Exchange Identifier, TEI](/discovery/readme.md) resolves to a specific Product Release. A Product Release belongs to a [TEA Product](tea-product/tea-product.md).
+- [TEA Product](tea-product/tea-product.md): A higher-level object that groups a set of Product Releases for a product line or family. Products can be discovered and browsed; releases are accessed via `/product/{uuid}/releases`.
 - [TEA Component](tea-component/tea-component.md): Represents a component lineage. A Component is a collection of Component Releases (accessible via `/component/{uuid}/releases`).
 - [TEA Release](/tea-component/tea-release.md): A Component Release object. Each Component Release may have its own TEA Collection.
 - [TEA Collection](tea-collection/tea-collection.md): A versioned list of artefacts for a specific Release (Component Release) or Product Release. Collections are versioned to indicate changes, e.g., an updated VEX or corrected SBOM.
