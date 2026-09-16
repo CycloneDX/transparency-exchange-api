@@ -906,8 +906,11 @@ paths:
         - `.../discovery?purl=pkg%3Amaven%2Forg.apache.logging.log4j%2Flog4j-core%402.24.3`
 
         Unlike `/token`, this operation is required on a conforming TEA API base for the
-        advertised version. A TEA `404` here means the identifier is unknown to this
-        server, not that `/discovery` is optional or unimplemented.
+        advertised version. A conforming `404` uses the shared object-not-found response
+        (`error-response`, typically `OBJECT_UNKNOWN`) and means the identifier is unknown
+        to this server, not that `/discovery` is optional or unimplemented. Client
+        recognition of that body and the terminal outcome are defined in the discovery
+        document.
       operationId: discoveryByTei
       parameters:
         - name: tei
@@ -943,7 +946,7 @@ paths:
         '403':
           $ref: "#/components/responses/403-forbidden"
         '404':
-          $ref: "#/components/responses/404-discovery-identifier-not-found"
+          $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
         - TEA Discovery
 components:
@@ -1336,7 +1339,7 @@ components:
                 - algType: SHA-256
                   algValue: 62a5c358d87a8ef21d7ec1b3b63c9bbb577453dda9c00cbb522b16cee6c23fc4
               url: https://repo.maven.apache.org/maven2/org/apache/tomcat/tomcat/11.0.7/tomcat-11.0.7-windows-x64.zip
-              signatureUrl: https://repo.maven.apache.org/maven2/org/apache/tomcat/tomcat/11.0.7/tomcat-11.0.7.zip.asc
+              signatureUrl: https://repo.maven.apache.org/maven2/org/apache/tomcat/tomcat/11.0.7/tomcat-11.0.7-windows-x64.zip.asc
             - distributionId: de45ffaf-e4b5-47b5-be28-444a76df098e
               description: Core binary distribution, Windows Service Installer (MSI)
               checksums:
@@ -1752,7 +1755,7 @@ components:
             Lowercase hexadecimal digest value for `algType`. Do not use Base64 or
             uppercase hex.
           pattern: '^[0-9a-f]+$'
-          minLength: 32
+          minLength: 40
           maxLength: 128
           example: 9da736a1cdd27231e70187cbc67398d29ca0b714f885e7032da9f1fb247693c1
       required:
@@ -1784,7 +1787,11 @@ components:
     #
     error-response:
       type: object
-      description: Error response
+      description: |
+        TEA API error body. Clients recognize a TEA error by an `application/json`
+        response whose JSON object validates against this schema (`additionalProperties`
+        is false; `error` is one of `unknown-error-type`). Other JSON 404 bodies that do
+        not validate are not TEA error responses.
       additionalProperties: false
       properties:
         error:
@@ -2427,19 +2434,9 @@ components:
         Concealment applies only after authentication. A request to a protected object
         with no valid access token shall receive `401` (see `401-unauthorized`), not a
         concealing `404`.
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/error-response"
-    404-discovery-identifier-not-found:
-      description: |
-        The TEI or PURL is unknown to this TEA server. Servers shall return a TEA
-        `error-response` body (typically `error: OBJECT_UNKNOWN`).
 
-        This is not “`/discovery` is missing.” `/discovery` is required on a conforming
-        API base. A generic HTTP `404` without a TEA error body (for example from a web
-        server with an unmounted path) is outside this response definition; clients may
-        treat that as a failed discovery attempt and fail over.
+        Body is a TEA `error-response` (for `/discovery`, typically
+        `error: OBJECT_UNKNOWN`).
       content:
         application/json:
           schema:
