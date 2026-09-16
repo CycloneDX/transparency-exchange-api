@@ -50,7 +50,7 @@
           "minimum": 0,
           "maximum": 1,
           "default": 1,
-          "description": "Optional priority for this endpoint. Higher values indicate higher priority. Range: 0 to 1."
+          "description": "Optional priority for this endpoint. Higher values indicate higher priority. Range: 0 to 1. If omitted in the JSON response, clients shall treat the effective priority as 1 (JSON Schema default does not populate omitted fields)."
         }
       }
     }
