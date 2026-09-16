@@ -316,13 +316,23 @@ in the TEI URI running on the default port to enable discovery of the API server
 
 ## Connecting to the API
 
+Discovery proceeds in two stages that share the same retry, backoff, and attempt-bound
+rules below:
+
+1. **Well-known stage** — retrieve and use `/.well-known/tea` for the TEI’s domain host
+2. **API discovery stage** — call `/discovery` on a selected API base URL constructed from
+   a well-known endpoint entry
+
+### Selecting an API base from `.well-known/tea`
+
 Clients shall pick an endpoint from the `.well-known/tea` JSON response that lists
 at least one API version supported by the client. The client shall prefer endpoints
 whose highest mutually supported version is greatest, based on SemVer 2.0.0
 specification comparison [rules](https://semver.org/#spec-item-11).
-If there are several such endpoints and the priority field is present,
-the client SHOULD pick the endpoint with the highest priority value (a float
-between 0 and 1).
+If several endpoints remain after that preference, the client SHOULD pick the endpoint
+with the highest `priority` value (a float between 0 and 1). If `priority` is absent on
+a well-known endpoint object, the client shall treat it as `1` for ordering (JSON Schema
+`default` does not populate omitted fields in the JSON response).
 
 The client shall then construct the full URL to the API by appending the
 "/v" plus one of the versions listed in the `versions` array of the selected endpoint,
@@ -342,7 +352,9 @@ a given API version shall implement it.
 If the TEI is known to the TEA server, the discovery endpoint shall return at least
 the product release uuid, the root URL of the TEA server, the list of supported
 versions, plus the response may have other fields based on the current version of
-the TEA OpenAPI specification.
+the TEA OpenAPI specification. If `priority` is absent on a discovery `servers[]`
+entry (`tea-server-info`), the client shall treat it as `1` for ordering, the same
+as for well-known endpoints.
 
 If the TEI (or PURL, when discovering by PURL) is not known to the TEA server, the
 discovery endpoint shall return `404` with a TEA error response body (for example
@@ -350,16 +362,32 @@ discovery endpoint shall return `404` with a TEA error response body (for exampl
 The client shall not treat it as “`/discovery` is missing” and shall not fail over to
 another endpoint solely because of that TEA `404`.
 
-If the DNS record for the discovery endpoint cannot be resolved by the client, or
-the discovery endpoint fails with a 5xx error code, or TLS certificate validation fails,
-or the response is `404` without a TEA error body (for example a web server answering
-for an unmounted path), the client SHALL select the next untried endpoint that supports
-a compatible API version, if one is available. While doing so the client SHOULD preserve
-the priority order if provided (from highest to lowest priority). Each failover connection
-is subject to the same TLS verification requirement. Clients SHOULD limit the total number
-of attempts for a discovery operation. Additional attempts SHOULD use exponential backoff.
-When a retry limit is reached, the client SHALL report that discovery could not be
-completed.
+### Failover, invalid documents, and attempt bounds
+
+The following failure classes count as a failed attempt for the current candidate and
+are subject to the same total attempt bound, backoff, and TLS verification rules,
+whether they occur in the well-known stage or the API discovery stage:
+
+- DNS resolution failure for the host being contacted
+- TLS certificate validation failure
+- HTTP `5xx` from the host being contacted
+- A `404` without a TEA error body (for example a web server answering for an
+  unmounted path)
+- A response body that is not usable JSON, or that does not conform to the expected
+  schema for that stage (malformed or non-conforming `.well-known/tea`, or an invalid
+  `/discovery` response body)
+
+A TEA `/discovery` `404` with an error body (`OBJECT_UNKNOWN`) is not a failover
+trigger; see above.
+
+On such a failure, the client shall select the next untried well-known endpoint that
+supports a compatible API version, if one is available. While doing so the client
+SHOULD preserve priority order from highest to lowest (applying the absent-`priority`
+equals `1` rule). Each failover connection is subject to the same TLS verification
+requirement. Clients SHOULD limit the total number of attempts across both stages for
+a discovery operation. Additional attempts SHOULD use exponential backoff. When a retry
+limit is reached, the client shall report that discovery could not be completed,
+indicating which stage failed when that is known.
 
 ### Authentication and authorization
 

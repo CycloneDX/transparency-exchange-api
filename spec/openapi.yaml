@@ -1655,11 +1655,15 @@ components:
             type: string
           example: ["0.2.0-beta.2", "1.0.0"]
         priority:
-          description: Optional priority for this server (0.0 to 1.0, where 1.0 is highest priority)
+          description: |
+            Optional priority for this server (0.0 to 1.0, where 1.0 is highest priority).
+            If omitted in the JSON response, clients shall treat the effective priority as 1.0 when
+            ordering servers (the same rule as for `.well-known/tea` endpoint `priority`).
           type: number
           format: float
           minimum: 0.0
           maximum: 1.0
+          default: 1.0
           example: 0.8
       required:
         - rootUrl
