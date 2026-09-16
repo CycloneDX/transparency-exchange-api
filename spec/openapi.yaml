@@ -458,6 +458,7 @@ paths:
           required: true
           description: |
             Revision of the TEA Collection. Shall be an integer greater than or equal to 1.
+            Each new published collection revision shall be incremented by 1.
           schema:
             "$ref": "#/components/schemas/content-revision"
       responses:
@@ -489,6 +490,7 @@ paths:
           required: true
           description: |
             Revision of the TEA Collection. Shall be an integer greater than or equal to 1.
+            Each new published collection revision shall be incremented by 1.
           schema:
             "$ref": "#/components/schemas/content-revision"
       responses:
@@ -548,6 +550,7 @@ paths:
           required: true
           description: |
             Revision of the TEA Artifact. Shall be an integer greater than or equal to 1.
+            Each new published artifact revision shall be incremented by 1.
           schema:
             "$ref": "#/components/schemas/content-revision"
       responses:
@@ -628,6 +631,7 @@ paths:
           required: true
           description: |
             Revision of the TEA Artifact. Shall be an integer greater than or equal to 1.
+            Each new published artifact revision shall be incremented by 1.
           schema:
             "$ref": "#/components/schemas/content-revision"
         - $ref: "#/components/parameters/artifact-media-type"
@@ -712,6 +716,7 @@ paths:
           required: true
           description: |
             Revision of the TEA Artifact. Shall be an integer greater than or equal to 1.
+            Each new published artifact revision shall be incremented by 1.
           schema:
             "$ref": "#/components/schemas/content-revision"
         - $ref: "#/components/parameters/artifact-signature-media-type"
@@ -976,13 +981,19 @@ components:
       description: |
         Positive integer revision of a TEA Collection or TEA Artifact.
 
-        Revisions shall start at 1 and increase monotonically for successive published
-        revisions. Published content and signatures for a given revision shall not
-        change. Metadata that does not alter those bytes (for example a renewed
-        pre-signed external URL) may be refreshed without bumping the revision.
+        Revisions shall start at 1. Each new published revision shall be incremented
+        by 1 from the previous published revision. Published content and signatures for
+        a given revision shall not change. Metadata that does not alter those bytes
+        (for example a renewed pre-signed external URL) may be refreshed without bumping
+        the revision.
 
-        Where an API path uses `latest`, that resolves to the greatest published
-        revision number for the identified object.
+        Object and path fields that use this schema are named `version`,
+        `collectionVersion`, or `artifactVersion`. The schema id is `content-revision`
+        so it is not confused with SemVer string `version` fields elsewhere.
+
+        Clients retrieve the latest revision via the corresponding `/latest` paths, and
+        a specific (including previous) revision via the versioned paths that take this
+        integer.
 
     #
     # TEA Product
@@ -1381,9 +1392,11 @@ components:
           "$ref": "#/components/schemas/uuid"
         version:
           description: |
-            TEA Collection revision. Shall start at 1 and increase monotonically when
-            collection content changes (see `content-revision`). Latest collection
-            endpoints resolve to the greatest published revision.
+            TEA Collection revision (`version` field). Shall start at 1. Each new
+            published revision shall be incremented by 1 when collection content changes
+            (see `content-revision`). Latest collection endpoints resolve to the greatest
+            published revision; a specific prior revision is addressed by
+            `collectionVersion` on the versioned collection paths.
           "$ref": "#/components/schemas/content-revision"
         date:
           description: The date when the TEA Collection version was created.
@@ -1472,10 +1485,12 @@ components:
           "$ref": "#/components/schemas/uuid"
         version:
           description: |
-            TEA Artifact revision. Together with `uuid` uniquely identifies the revision.
-            Shall start at 1 and increase monotonically for successive immutable content
-            revisions (see `content-revision`). Latest artifact endpoints resolve to the
-            greatest published revision. Defaults to 1 when omitted on create.
+            TEA Artifact revision (`version` field). Together with `uuid` uniquely
+            identifies the revision. Shall start at 1. Each new published immutable
+            content revision shall be incremented by 1 (see `content-revision`). Latest
+            artifact endpoints resolve to the greatest published revision; a specific
+            prior revision is addressed by `artifactVersion` on the versioned artifact
+            paths. Defaults to 1 when omitted on create.
           allOf:
             - "$ref": "#/components/schemas/content-revision"
           default: 1
