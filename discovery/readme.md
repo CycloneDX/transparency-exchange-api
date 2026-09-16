@@ -335,23 +335,29 @@ Examples:
 2. For TEI `tei://products.example.com/purl/cGtnOmRlYi9kZWJpYW4vY3VybEA3LjUwLjMtMT9hcmNoPWkzODYmZGlzdHJvPWplc3NpZQ`
 `https://api2.example.com/mytea/v1.0.0/discovery?tei=tei%3A//products.example.com/purl/cGtnOmRlYi9kZWJpYW4vY3VybEA3LjUwLjMtMT9hcmNoPWkzODYmZGlzdHJvPWplc3NpZQ`
 
-The discovery endpoint is a part of the TEA OpenAPI specification.
+The discovery endpoint is a part of the TEA OpenAPI specification. Unlike `/token`,
+`/discovery` is required on a conforming TEA API base: a conforming server that exposes
+a given API version shall implement it.
 
 If the TEI is known to the TEA server, the discovery endpoint shall return at least
 the product release uuid, the root URL of the TEA server, the list of supported
 versions, plus the response may have other fields based on the current version of
 the TEA OpenAPI specification.
 
-If the TEI is not known to the TEA server, the discovery endpoint shall return a 404
-status code with a response describing the error.
+If the TEI (or PURL, when discovering by PURL) is not known to the TEA server, the
+discovery endpoint shall return `404` with a TEA error response body (for example
+`error: OBJECT_UNKNOWN`). That status means the identifier is unknown to this server.
+The client shall not treat it as “`/discovery` is missing” and shall not fail over to
+another endpoint solely because of that TEA `404`.
 
 If the DNS record for the discovery endpoint cannot be resolved by the client, or
 the discovery endpoint fails with a 5xx error code, or TLS certificate validation fails,
-the client SHALL select the next untried endpoint that supports a compatible API
-version, if one is available. While doing so the client SHOULD preserve the priority
-order if provided (from highest to lowest priority). Each failover connection is subject
-to the same TLS verification requirement. Clients SHOULD limit the total number of
-attempts for a discovery operation. Additional attempts SHOULD use exponential backoff.
+or the response is `404` without a TEA error body (for example a web server answering
+for an unmounted path), the client SHALL select the next untried endpoint that supports
+a compatible API version, if one is available. While doing so the client SHOULD preserve
+the priority order if provided (from highest to lowest priority). Each failover connection
+is subject to the same TLS verification requirement. Clients SHOULD limit the total number
+of attempts for a discovery operation. Additional attempts SHOULD use exponential backoff.
 When a retry limit is reached, the client SHALL report that discovery could not be
 completed.
 
@@ -418,7 +424,12 @@ Common errors:
 
 #### 404 Not Found
 
-- discovery endpoint not present  
+- On a conforming `/discovery` response: the TEI or PURL is unknown to this server
+  (`OBJECT_UNKNOWN` in a TEA error body). Do not fail over solely because of this.
+- A `404` without a TEA error body may mean the path is not mounted or the host is not
+  a TEA API base; treat that as a failed discovery attempt and failover if another
+  compatible endpoint remains. This is distinct from `/token`, where `404` may mean the
+  token endpoint is not implemented.
 
 #### 503 Service Unavailable
 

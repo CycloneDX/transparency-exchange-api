@@ -781,6 +781,10 @@ paths:
         Example request lines after serialization:
         - `.../discovery?tei=tei%3A%2F%2Fproducts.example.com%2Fuuid%2F47f51950-b0e2-11f1-adc2-1a52914d44b2`
         - `.../discovery?purl=pkg%3Amaven%2Forg.apache.logging.log4j%2Flog4j-core%402.24.3`
+
+        Unlike `/token`, this operation is required on a conforming TEA API base for the
+        advertised version. A TEA `404` here means the identifier is unknown to this
+        server, not that `/discovery` is optional or unimplemented.
       operationId: discoveryByTei
       parameters:
         - name: tei
@@ -812,7 +816,7 @@ paths:
         '400':
           $ref: "#/components/responses/400-invalid-request"
         '404':
-          $ref: "#/components/responses/404-object-by-id-not-found"
+          $ref: "#/components/responses/404-discovery-identifier-not-found"
       tags:
         - TEA Discovery
 components:
@@ -2204,6 +2208,21 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/error-response"
+    404-discovery-identifier-not-found:
+      description: |
+        The TEI or PURL is unknown to this TEA server. Servers shall return a TEA
+        `error-response` body (typically `error: OBJECT_UNKNOWN`).
+
+        This is not “`/discovery` is missing.” `/discovery` is required on a conforming
+        API base. A generic HTTP `404` without a TEA error body (for example from a web
+        server with an unmounted path) is outside this response definition; clients may
+        treat that as a failed discovery attempt and fail over.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/error-response"
+          example:
+            error: OBJECT_UNKNOWN
     discovery-response:
       description: Discovery information for the requested TEI
       content:
