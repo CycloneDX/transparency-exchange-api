@@ -907,8 +907,8 @@ paths:
 
         Unlike `/token`, this operation is required on a conforming TEA API base for the
         advertised version. A conforming `404` uses the shared object-not-found response
-        (`error-response`, typically `OBJECT_UNKNOWN`) and means the identifier is unknown
-        to this server, not that `/discovery` is optional or unimplemented. Client
+        (`error-response`, typically `OBJECT_UNKNOWN`) and means this server does not resolve
+        the identifier, not that `/discovery` is optional or unimplemented. Client
         recognition of that body and the terminal outcome are defined in the discovery
         document.
       operationId: discoveryByTei
@@ -1788,10 +1788,11 @@ components:
     error-response:
       type: object
       description: |
-        TEA API error body. Clients recognize a TEA error by an `application/json`
-        response whose JSON object validates against this schema (`additionalProperties`
-        is false; `error` is one of `unknown-error-type`). Other JSON 404 bodies that do
-        not validate are not TEA error responses.
+        TEA API error body. Servers shall emit exactly this shape. Clients recognize a TEA
+        error by an `application/json` response whose body is a JSON object with a string
+        `error` property; they ignore unrecognized properties and tolerate `error` values
+        they do not know, so that later versions can extend this schema. Other JSON 404
+        bodies are not TEA error responses.
       additionalProperties: false
       properties:
         error:
