@@ -898,15 +898,22 @@ paths:
   /discovery:
     get:
       description: |
-        Discovery endpoint which resolves an identifier into product release UUID.
+        Discovery endpoint which resolves an identifier into one or more product release
+        UUIDs.
 
         Exactly one of the `tei` and `purl` query parameters shall be provided. A request
         with neither, or with both, is rejected with `400`. OpenAPI cannot express this
         constraint on query parameters, so both are declared optional here.
 
         Discovery by TEI resolves the product across TEA servers, using the domain carried
-        by the TEI. Discovery by PURL resolves the product within the inventory of the TEA
-        server that receives the request.
+        by the TEI (typically after DNS / `.well-known` selection of an API host).
+        Discovery by PURL requires an already-known API base URL and resolves within that
+        server's inventory.
+
+        A successful response is a non-empty JSON array of `discovery-info` objects,
+        ordered by priority when multiple product releases match (first entry highest).
+        If nothing matches, the server responds with `404` and
+        `error: OBJECT_UNKNOWN`, not `200` with an empty array.
 
         Parameter values are the identifier itself (not a pre-encoded wire form). Clients
         shall apply query-parameter serialization once. Servers shall interpret the value
@@ -1878,7 +1885,13 @@ components:
 
     discovery-info:
       type: object
-      description: Discovery information for a TEI
+      description: |
+        Discovery information for one product release matched by a TEI or PURL lookup.
+        A successful `/discovery` response is a non-empty array of these objects, ordered
+        by priority when more than one release matches (first entry highest).
+        `.well-known/tea` selects where `/discovery` is called; `servers[]` lists API bases
+        that serve this product release (same version and priority selection rules). A
+        `rootUrl` need not appear in the well-known endpoint list.
       additionalProperties: false
       properties:
         productReleaseUuid:
@@ -1886,7 +1899,9 @@ components:
           $ref: "#/components/schemas/uuid"
           example: d4d9f54a-abcf-11ee-ac79-1a52914d44b1
         servers:
-          description: Array of TEA server information
+          description: |
+            Non-empty array of TEA servers that serve this product release. Each entry
+            has `rootUrl` (without trailing slash) and `versions`.
           type: array
           minItems: 1
           items:
@@ -2534,11 +2549,16 @@ components:
             notImplemented:
               value: { error: NOT_IMPLEMENTED }
     discovery-response:
-      description: Discovery information for the requested TEI
+      description: |
+        Non-empty array of discovery results for the requested TEI or PURL. Each element
+        is a `discovery-info` object (`productReleaseUuid` plus `servers`). An empty array
+        is not a valid success response; use `404` with `error: OBJECT_UNKNOWN` when
+        nothing matches.
       content:
         application/json:
           schema:
             type: array
+            minItems: 1
             items:
               $ref: "#/components/schemas/discovery-info"
     paginated-product:

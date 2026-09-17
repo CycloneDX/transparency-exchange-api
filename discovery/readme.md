@@ -8,7 +8,9 @@
   - [TEI types](#tei-types)
   - [TEI resolution using DNS](#tei-resolution-using-dns)
 - [Connecting to the API](#connecting-to-the-api)
-  - [Overview: Finding the Index using DNS result](#overview-finding-the-index-using-dns-result)
+  - [Selecting an API base from `.well-known/tea`](#selecting-an-api-base-from-well-knowntea)
+  - [Discovery response](#discovery-response)
+  - [Discovery by PURL](#discovery-by-purl)
 - [The TEA Version Index](#the-tea-version-index)
 - [References](#references)
 
@@ -81,8 +83,11 @@ to global uniqueness without new registries.
 
 The TEI can be shown in the software itself, in shipping documentation, in web pages and app stores.
 
-A TEI belongs to a single product release. A product release can have multiple TEIs - like one with a EAN/UPC
-barcode and one with the vendor's product number.
+A TEI identifies product release(s) under a vendor domain. Prefer one product release
+per TEI. A TEI may resolve to multiple product releases when the same identifier is
+shared (for example a non-unique EAN/UPC); vendors should minimize that case. A product
+release can have multiple TEIs — for example one with an EAN/UPC barcode and one with
+the vendor's product number.
 
 ### TEI syntax
 
@@ -231,10 +236,12 @@ tei://cyclonedx.org/udi/00123456789012
 
 Note that if the same identifier, like EAN, is used for multiple different product releases
 then this EAN code will not be unique for a given product. While this case is supported
-by TEA, the vendor is recommended to create a separate TEI for each unique product sold,
-like UUID or hash. In any case, the vendor SHOULD minimize the number of distinct product
+by TEA — a successful `/discovery` lookup may return multiple `discovery-info` entries —
+the vendor is recommended to create a separate TEI for each unique product sold,
+like UUID or hash. In any case, the vendor should minimize the number of distinct product
 releases returned per TEI. Preferable situation is to have a single product release
-per TEI.
+per TEI. When multiple releases are returned, clients shall treat array order as
+priority (first entry highest).
 
 ### TEI resolution using DNS
 
@@ -356,12 +363,65 @@ The discovery endpoint is a part of the TEA OpenAPI specification. Unlike `/toke
 `/discovery` is required on a conforming TEA API base: a conforming server that exposes
 a given API version shall implement it.
 
-If the TEI is known to the TEA server, the discovery endpoint shall return at least
-the product release uuid, the root URL of the TEA server, the list of supported
-versions, plus the response may have other fields based on the current version of
-the TEA OpenAPI specification. If `priority` is absent on a discovery `servers[]`
-entry (`tea-server-info`), the client shall treat it as `1` for ordering, the same
-as for well-known endpoints.
+### Discovery response
+
+A successful `/discovery` response is a JSON array of `discovery-info` objects. Each
+element identifies one resolved product release and the TEA servers that serve it:
+
+- `productReleaseUuid` — UUID of the TEA Product Release
+- `servers` — non-empty array of `tea-server-info` objects (`rootUrl`, `versions`, and
+  optional `priority`)
+
+`.well-known/tea` and `servers[]` are related but distinct:
+
+- **Well-known** lists candidate API bases for a domain. That is where the client calls
+  `/discovery` (after appending `/v{version}`).
+- **`servers[]`** in the discovery response lists API bases that serve the resolved
+  product release. The client selects among them with the same version-preference and
+  `priority` rules as for well-known endpoints. A `rootUrl` need not appear in the
+  well-known endpoint list.
+
+When multiple product releases match, the array is ordered by priority (first entry
+highest). Vendors should prefer returning a single release when possible.
+
+A successful lookup shall return a non-empty array. If nothing matches, the server shall
+respond with `404` and a TEA error body with `error: OBJECT_UNKNOWN` — not `200` with an
+empty array. If `priority` is absent on a discovery `servers[]` entry, the client shall
+treat it as `1` for ordering, the same as for well-known endpoints.
+
+Example (one match):
+
+```json
+[
+  {
+    "productReleaseUuid": "d4d9f54a-abcf-11ee-ac79-1a52914d44b1",
+    "servers": [
+      {
+        "rootUrl": "https://api.teaexample.com",
+        "versions": ["1.0.0"]
+      }
+    ]
+  }
+]
+```
+
+### Discovery by PURL
+
+Clients that already know a TEA API base URL (for example from a prior TEI discovery,
+configuration, or cache) may call `/discovery` with the `purl` query parameter instead of
+`tei`. Exactly one of `tei` or `purl` shall be provided; a request with neither or both is
+rejected with `400`.
+
+Discovery by PURL resolves within the inventory of the TEA server that receives the
+request. It does not replace TEI-based DNS / `.well-known` discovery for finding an API
+host from an identifier alone.
+
+Example:
+
+`https://api.teaexample.com/v1.0.0/discovery?purl=pkg%3Amaven%2Forg.apache.logging.log4j%2Flog4j-core%402.24.3`
+
+The response shape, non-empty success array, and `404` with `OBJECT_UNKNOWN` when nothing
+matches are the same as for TEI lookup.
 
 If this server does not resolve the TEI (or PURL, when discovering by PURL), whether
 because it is unknown or because the server withholds it, the discovery endpoint

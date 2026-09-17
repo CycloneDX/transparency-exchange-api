@@ -28,8 +28,7 @@
         "url": {
           "type": "string",
           "format": "uri",
-          "pattern": "^https?://[^/?#@]+(/[^?#\\s]*[^/?#\\s])?$",
-          "description": "Absolute API base URL of the TEA endpoint, without trailing slash. Shall not include userinfo, query, or fragment. The scheme match is lowercase only (normalized form). Conforming deployments use lowercase https; http is allowed only so local-test documents still validate."
+          "description": "Base URL of the TEA API endpoint without trailing slash."
         },
         "versions": {
           "type": "array",
