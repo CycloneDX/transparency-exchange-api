@@ -252,8 +252,9 @@ The name in the DNS name part points to a set of DNS records.
 A TEI with `domain-name` `tea.example.com` queries DNS for `tea.example.com`, considering `A`, `AAAA` and `CNAME` records.
 These point to the hosts available for the Transparency Exchange API.
 
-The TEA client connects to the host using HTTPS and SHALL verify the server
-certificate. The URL is composed of the host name with the `/.well-known/tea` path added.
+The TEA client connects to the host using HTTPS and shall verify the server
+certificate, including the server identity check of [RFC 9525](https://www.rfc-editor.org/rfc/rfc9525).
+The URL is composed of the host name with the `/.well-known/tea` path added.
 
 This results in the base URL such as
 `https://products.example.com/.well-known/tea`
@@ -432,8 +433,10 @@ persistent rejection of a replacement token, and insufficient permissions. A
 token-replacement attempts solely because of that status. Clients SHALL NOT fail over to
 another endpoint solely in response to `401` or `403`.
 
-Clients SHALL verify server certificates for every HTTPS connection used in discovery and
-subsequent API access, and SHALL NOT use connections that fail validation.
+Clients shall verify server certificates for every HTTPS connection used in discovery and
+subsequent API access, including the server identity check of
+[RFC 9525](https://www.rfc-editor.org/rfc/rfc9525), and shall not use connections that
+fail validation.
 
 Clients SHALL NOT automatically forward a TEA access token to a different origin, or
 outside the authorized API base URL of the service that issued it. API-key Basic
@@ -507,8 +510,12 @@ of the TEA discovery document.
 ### TLS Encryption
 
 The `.well-known` endpoint shall only be available via HTTPS. Using unencrypted HTTP is not
-valid. Clients SHALL verify the server certificate for this connection as for any other
-TEA HTTPS request.
+valid. Clients shall verify the server certificate for this connection as for any other
+TEA HTTPS request, including the server identity check of [RFC 9525](https://www.rfc-editor.org/rfc/rfc9525).
+
+Conforming deployments shall advertise only `https` base URLs, in `.well-known/tea`
+`endpoints[].url` and in `/discovery` `servers[].rootUrl` alike. A client shall reject an
+`http` base URL unless it has been explicitly configured to allow it for local testing.
 
 - TEI: `tei://products.example.com/uuid/d4d9f54a-abcf-11ee-ac79-1a52914d44b1`
 - URL: `https://products.example.com/.well-known/tea`

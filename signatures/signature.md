@@ -48,7 +48,8 @@ and authentication, using the `https://` URL scheme.
 
 The TLS server certificate is normally issued by a public Certificate
 Authority that is part of the Web PKI. The client needs to validate
-the TLS server certificate to make sure
+the TLS server certificate, including the server identity check of
+[RFC 9525](https://www.rfc-editor.org/rfc/rfc9525), to make sure
 
 - that the certificate name (CN or Subject Alt Name) matches the
   host part of the URI.
