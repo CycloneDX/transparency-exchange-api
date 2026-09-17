@@ -356,11 +356,25 @@ the TEA OpenAPI specification. If `priority` is absent on a discovery `servers[]
 entry (`tea-server-info`), the client shall treat it as `1` for ordering, the same
 as for well-known endpoints.
 
-If the TEI (or PURL, when discovering by PURL) is not known to the TEA server, the
-discovery endpoint shall return `404` with a TEA error response body (for example
-`error: OBJECT_UNKNOWN`). That status means the identifier is unknown to this server.
+If this server does not resolve the TEI (or PURL, when discovering by PURL), whether
+because it is unknown or because the server withholds it, the discovery endpoint
+shall return `404` with a TEA error response body. A response is a
+TEA error response only when its `Content-Type` is `application/json` (optionally with
+parameters such as `charset`) and the body is a JSON object with a string `error`
+property (typically `OBJECT_UNKNOWN`). Clients shall ignore properties they do not
+recognize and shall not reject the response for an `error` value they do not know, so a
+later TEA version can extend `error-response` without turning its `404`s into failover
+triggers. Other JSON 404 bodies (for example `{"message":"Not Found"}`) are not TEA
+error responses.
+
+That conforming TEA `404` means this server does not resolve the identifier, whether
+because it is unknown or because the server withholds it (see
+`404-object-by-id-not-found`); the client shall not infer which from the status alone.
 The client shall not treat it as “`/discovery` is missing” and shall not fail over to
-another endpoint solely because of that TEA `404`.
+another endpoint solely because of it. The client shall stop discovery for that
+identifier at this authority and report that the identifier could not be resolved
+there, including the `error` value received. That outcome shall not be reported as
+evidence that no updates are available.
 
 ### Failover, invalid documents, and attempt bounds
 
@@ -371,14 +385,14 @@ whether they occur in the well-known stage or the API discovery stage:
 - DNS resolution failure for the host being contacted
 - TLS certificate validation failure
 - HTTP `5xx` from the host being contacted
-- A `404` without a TEA error body (for example a web server answering for an
-  unmounted path)
+- A `404` that is not a TEA error response as defined above (for example a web server
+  answering for an unmounted path, or a JSON body without an `error` property)
 - A response body that is not usable JSON, or that does not conform to the expected
   schema for that stage (malformed or non-conforming `.well-known/tea`, or an invalid
-  `/discovery` response body)
+  `/discovery` success body)
 
-A TEA `/discovery` `404` with an error body (`OBJECT_UNKNOWN`) is not a failover
-trigger; see above.
+A conforming TEA `/discovery` `404` (`error-response`, typically `OBJECT_UNKNOWN`) is
+not a failover trigger; see above.
 
 On such a failure, the client shall select the next untried well-known endpoint that
 supports a compatible API version, if one is available. While doing so the client
@@ -452,12 +466,15 @@ Common errors:
 
 #### 404 Not Found
 
-- On a conforming `/discovery` response: the TEI or PURL is unknown to this server
-  (`OBJECT_UNKNOWN` in a TEA error body). Do not fail over solely because of this.
-- A `404` without a TEA error body may mean the path is not mounted or the host is not
-  a TEA API base; treat that as a failed discovery attempt and failover if another
-  compatible endpoint remains. This is distinct from `/token`, where `404` may mean the
-  token endpoint is not implemented.
+- On `/discovery`, a TEA error response (`application/json` body with a string `error`
+  property, typically `OBJECT_UNKNOWN`): this server does not resolve the TEI or PURL,
+  whether unknown or withheld. Do not fail over. Stop and report that the identifier
+  could not be resolved at this authority, with the `error` value; do not report that
+  as evidence that no updates are available.
+- A `404` that is not a TEA error response may mean the path is not mounted or the host
+  is not a TEA API base; treat that as a failed discovery attempt and failover if another
+  compatible endpoint remains. This is distinct from `/token`, where `404` means only
+  that the token endpoint is not implemented.
 
 #### 503 Service Unavailable
 
