@@ -408,6 +408,8 @@ paths:
       description: |
         Get the latest TEA Collection belonging to the TEA Component Release, that is,
         the collection with the greatest published `version`.
+
+        `404` means the release is unknown; a release always has a latest collection.
       operationId: getLatestCollection
       parameters:
         - name: uuid
@@ -438,6 +440,8 @@ paths:
       description: |
         Get the latest TEA Collection belonging to the TEA Product Release, that is,
         the collection with the greatest published `version`.
+
+        `404` means the release is unknown; a release always has a latest collection.
       operationId: getLatestCollectionForProductRelease
       parameters:
         - name: uuid
@@ -1496,7 +1500,13 @@ components:
     #
     collection:
       type: object
-      description: A collection of security-related documents
+      description: |
+        A collection of security-related documents.
+
+        Every component release and product release has a collection. If no artifacts have
+        been published when the release first becomes retrievable, the server serves version 1
+        with an empty `artifacts` list and `updateReason.type: INITIAL_RELEASE`. That version
+        is immutable like any other; the first artifacts are published as version 2.
       properties:
         uuid:
           description: |
@@ -1520,7 +1530,7 @@ components:
           "$ref": "#/components/schemas/collection-update-reason"
         artifacts:
           type: array
-          description: List of TEA Artifact objects.
+          description: List of TEA Artifact objects (may be empty).
           items:
             "$ref": "#/components/schemas/artifact"
       required:
@@ -1529,6 +1539,7 @@ components:
         - createdDate
         - belongsTo
         - updateReason
+        - artifacts
       examples:
         # Documents in the latest release of Log4j Core
         - uuid: 4c72fe22-9d83-4c2f-8eba-d6db484f32c8
