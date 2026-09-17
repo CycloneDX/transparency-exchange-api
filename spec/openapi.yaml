@@ -405,7 +405,9 @@ paths:
         - CLE
   /componentRelease/{uuid}/collection/latest:
     get:
-      description: Get the latest TEA Collection belonging to the TEA Component Release
+      description: |
+        Get the latest TEA Collection belonging to the TEA Component Release, that is,
+        the collection with the greatest published `version`.
       operationId: getLatestCollection
       parameters:
         - name: uuid
@@ -433,7 +435,9 @@ paths:
         - TEA Component Release
   /productRelease/{uuid}/collection/latest:
     get:
-      description: Get the latest TEA Collection belonging to the TEA Product Release
+      description: |
+        Get the latest TEA Collection belonging to the TEA Product Release, that is,
+        the collection with the greatest published `version`.
       operationId: getLatestCollectionForProductRelease
       parameters:
         - name: uuid
@@ -585,7 +589,9 @@ paths:
         - TEA Component Release
   /artifact/{uuid}/latest:
     get:
-      description: Get metadata for latest revision of a specific TEA Artifact
+      description: |
+        Get metadata for the latest revision of a specific TEA Artifact, that is, the
+        revision with the greatest published `version`.
       operationId: getLatestArtifact
       parameters:
         - name: uuid
@@ -650,8 +656,9 @@ paths:
       description: |
         Download the content of the latest revision of a specific TEA Artifact.
 
-        Equivalent to the versioned download endpoint, resolving to whichever revision
-        `/artifact/{uuid}/latest` currently reports. The content this returns changes
+        Equivalent to the versioned download endpoint, resolving to the revision with
+        the greatest published `version` — the same revision `/artifact/{uuid}/latest`
+        reports. The content this returns changes
         when a new revision is published, so unlike the versioned endpoint the response
         is not immutable: caches shall revalidate it, which the `ETag` of the resolved
         revision makes cheap. The `Content-Location` header names the versioned URL the
@@ -739,8 +746,9 @@ paths:
       description: |
         Download the detached signature for the latest revision of a specific TEA Artifact.
 
-        Equivalent to the versioned signature endpoint, resolving to whichever revision
-        `/artifact/{uuid}/latest` currently reports. As with the latest content endpoint,
+        Equivalent to the versioned signature endpoint, resolving to the revision with
+        the greatest published `version` — the same revision `/artifact/{uuid}/latest`
+        reports. As with the latest content endpoint,
         the response is not immutable and caches shall revalidate it; `Content-Location`
         names the versioned URL the request was resolved to.
       operationId: downloadLatestArtifactSignature
@@ -1710,7 +1718,9 @@ components:
             to an external URL: external locations are either openly accessible,
             pre-signed, or covered by credentials the client arranges separately. When
             the URL is pre-signed it may expire; clients should not retain it beyond the
-            freshness lifetime of the response that carried it.
+            freshness lifetime of the response that carried it. A server may replace an
+            expired or renewed URL in place: that is not a new artifact revision, and the
+            content and checksums it points to are unchanged.
           format: uri
         signatureUrl:
           type: string
