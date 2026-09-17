@@ -798,8 +798,11 @@ paths:
         the signature as published. A client that cannot determine how to verify what it
         receives should treat the signature as unusable rather than as invalid.
 
-        `404` is returned both when the artifact revision does not exist and when the
-        selected format has no signature published.
+        `404` distinguishes the cases by TEA error body: `OBJECT_UNKNOWN` when the
+        artifact revision is unknown (or concealed), and `SIGNATURE_NOT_FOUND` when the
+        revision exists but the selected format has no signature published. A server
+        concealing an artifact from a client shall answer `OBJECT_UNKNOWN` for every
+        sub-resource of it, including signatures.
       operationId: downloadArtifactSignatureByVersion
       parameters:
         - name: uuid
@@ -846,7 +849,8 @@ paths:
         Clients do not probe this endpoint to discover whether authentication is
         required: they issue the resource request, and a `401` response carrying a
         `WWW-Authenticate: Bearer` challenge is the signal to obtain a token here. A
-        `404` from this endpoint means only that it is not implemented.
+        `404` from this endpoint means only that it is not implemented (`error:
+        NOT_IMPLEMENTED` on the shared object-not-found response).
 
         Servers may support additional grant types for federated identity, for example
         SAML 2.0 assertions (RFC 7522) or JWT assertions (RFC 7523), and may authenticate
@@ -889,6 +893,8 @@ paths:
           $ref: "#/components/responses/400-token-error"
         '401':
           $ref: "#/components/responses/401-token-error"
+        '404':
+          $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
         - TEA Authentication
   /discovery:
@@ -1793,6 +1799,10 @@ components:
         - OBJECT_UNKNOWN
         - OBJECT_NOT_SHAREABLE
         - NOT_IMPLEMENTED
+        - NO_ACCEPTABLE_FORMAT
+        - SIGNATURE_NOT_FOUND
+        - INVALID_REQUEST
+        - INVALID_PAGE_TOKEN
     #
     # Types used in API responses
     #
@@ -2282,23 +2292,32 @@ components:
         examples:
           - /artifact/2ff3ae7c-8eab-4e0b-9b8b-1a0c4c4c1c2d/3/signature/download
   responses:
-    204-common-delete:
-      description: Object deleted successfully
-      content:
-        application/json: {}
     400-invalid-request:
       description: |
         Request was invalid. For paginated requests, this includes malformed, invalid,
         expired, or conflicting `pageToken` values, including conflicts with continuation
-        parameters or path parameters.
+        parameters or path parameters (`error: INVALID_PAGE_TOKEN` when a TEA error body
+        is present). Other malformed requests may use `error: INVALID_REQUEST`.
+
+        Any `4xx` from a resource endpoint may carry an `error-response` body; when
+        present, `error` is from `unknown-error-type`. Clients shall not require a body.
       content:
-        application/json: {}
+        application/json:
+          schema:
+            $ref: "#/components/schemas/error-response"
+          examples:
+            invalidRequest:
+              value: { error: INVALID_REQUEST }
+            invalidPageToken:
+              value: { error: INVALID_PAGE_TOKEN }
     401-unauthorized:
       description: |
         Authentication required, or the presented access token is expired, revoked, or
         otherwise invalid. Servers shall include a `WWW-Authenticate` header as defined
         in RFC 6750 section 3. On the `invalid_token` error a client may obtain a fresh
-        token from `/token` and retry the request once (RFC 6750 section 3.1).
+        token from `/token` and retry the request once (RFC 6750 section 3.1). The
+        `WWW-Authenticate` challenge remains the primary signal; an `error-response` body
+        is optional.
 
         Servers that require no authentication on any endpoint shall not return this
         status. On a TEA server where some data is available without authentication, but
@@ -2307,6 +2326,9 @@ components:
         token. A protected object shall not answer `404` solely because the client is
         unauthenticated: absence of a valid token yields `401`, so the client flow can
         discover that authentication is required.
+
+        Any `4xx` from a resource endpoint may carry an `error-response` body; when
+        present, `error` is from `unknown-error-type`. Clients shall not require a body.
       headers:
         WWW-Authenticate:
           description: Bearer challenge, as defined in RFC 6750 section 3.
@@ -2314,7 +2336,9 @@ components:
             type: string
             example: Bearer realm="tea", error="invalid_token", error_description="The access token expired"
       content:
-        application/json: {}
+        application/json:
+          schema:
+            $ref: "#/components/schemas/error-response"
     403-forbidden:
       description: |
         The client is authenticated, but is not authorized to access this resource or
@@ -2325,8 +2349,13 @@ components:
         but unauthorized client by answering `404` (see `404-object-by-id-not-found`).
         Clients shall treat `403` and that concealing `404` as non-access; neither
         implies that retrying with the same token will succeed.
+
+        Any `4xx` from a resource endpoint may carry an `error-response` body; when
+        present, `error` is from `unknown-error-type`. Clients shall not require a body.
       content:
-        application/json: {}
+        application/json:
+          schema:
+            $ref: "#/components/schemas/error-response"
     artifact-content:
       description: |
         The content of the requested TEA Artifact format.
@@ -2432,11 +2461,19 @@ components:
     406-no-acceptable-format:
       description: |
         The artifact revision exists, but has no format matching the requested
-        `mediaType` or `Accept` header.
+        `mediaType` or `Accept` header. Body is a TEA `error-response` with
+        `error: NO_ACCEPTABLE_FORMAT`.
+
+        `NO_ACCEPTABLE_FORMAT` reveals that the artifact revision exists. A server
+        concealing an artifact from a client shall answer `404` with
+        `error: OBJECT_UNKNOWN` for every sub-resource of it, formats included, instead
+        of this status.
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/error-response"
+          example:
+            error: NO_ACCEPTABLE_FORMAT
     token-issued:
       description: Credentials accepted, access token issued
       headers:
@@ -2479,20 +2516,24 @@ components:
     404-object-by-id-not-found:
       description: |
         Either the object is unknown to this server, or — where an endpoint documents it —
-        the server does not provide an optional capability for that object. The cases are
-        told apart by the TEA error body, never by the status alone:
+        the server does not provide an optional capability or sub-resource for that object.
+        The cases are told apart by the TEA error body, never by the status alone:
 
         - `error: OBJECT_UNKNOWN` — no such object (or its existence is concealed from this
           client).
-        - `error: NOT_IMPLEMENTED` — the object exists, but this server does not provide
-          the optional capability for it (for CLE: lifecycle data). CLE is optional in TEA;
-          this is the expected answer from a server that has not implemented it, and
-          clients shall not treat it as a failure.
+        - `error: NOT_IMPLEMENTED` — optional capability or endpoint not provided (for CLE:
+          lifecycle data; for `/token`: the token endpoint is not implemented). CLE is
+          optional in TEA; clients shall not treat this as a failure of the object itself
+          where the capability is optional.
+        - `error: SIGNATURE_NOT_FOUND` — the artifact revision and format exist, but no
+          signature is published for that format. This reveals that the artifact exists; a
+          server concealing an artifact shall answer `OBJECT_UNKNOWN` for every
+          sub-resource of it, signatures included.
 
         Concealment applies only after authentication. A request to a protected object
         with no valid access token shall receive `401` (see `401-unauthorized`), not a
         concealing `404`. Clients shall not infer from `404` alone whether the object is
-        absent, withheld, or lacking an optional capability.
+        absent, withheld, or lacking an optional capability or sub-resource.
       content:
         application/json:
           schema:
@@ -2502,6 +2543,8 @@ components:
               value: { error: OBJECT_UNKNOWN }
             notImplemented:
               value: { error: NOT_IMPLEMENTED }
+            signatureNotFound:
+              value: { error: SIGNATURE_NOT_FOUND }
     discovery-response:
       description: Discovery information for the requested TEI
       content:
