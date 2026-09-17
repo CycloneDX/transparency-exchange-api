@@ -32,17 +32,15 @@
         },
         "versions": {
           "type": "array",
-          "description": "Supported TEA API versions for this endpoint. Use with the /v{version} prefix when constructing requests.",
+          "description": "Supported TEA API versions for this endpoint. Select the highest mutually supported version and append /v followed by that exact string (no leading v in array values).",
           "minItems": 1,
           "items": {
             "type": "string",
-            "pattern": "^\\d+\\.\\d+(?:\\.\\d+)?(?:-[0-9A-Za-z.-]+)?$",
+            "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$",
             "examples": [
-              "0.1.0-beta.1",
-              "0.2.0-beta.2",
               "1.0.0"
             ],
-            "description": "TEA OpenAPI Spec Version identifier, conforms to SemVer 2.0 (https://semver.org/)."
+            "description": "TEA OpenAPI Spec version identifier as full SemVer 2.0.0 (MAJOR.MINOR.PATCH with optional prerelease and build metadata; https://semver.org/)."
           }
         },
         "priority": {
@@ -61,7 +59,7 @@
       "endpoints": [
         {
           "url": "https://api.teaexample.com",
-          "versions": ["0.1.0-beta.1", "0.2.0-beta.2", "1.0"],
+          "versions": ["1.0.0"],
           "priority": 1
         },
         {
