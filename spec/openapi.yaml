@@ -46,6 +46,10 @@ paths:
                 $ref: "#/components/schemas/product"
         '400':
           $ref: "#/components/responses/400-invalid-request"
+        '401':
+          $ref: "#/components/responses/401-unauthorized"
+        '403':
+          $ref: "#/components/responses/403-forbidden"
         '404':
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
@@ -70,6 +74,10 @@ paths:
           $ref: "#/components/responses/paginated-product-release"
         '400':
           $ref: "#/components/responses/400-invalid-request"
+        '401':
+          $ref: "#/components/responses/401-unauthorized"
+        '403':
+          $ref: "#/components/responses/403-forbidden"
         '404':
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
@@ -94,6 +102,10 @@ paths:
                 "$ref": "#/components/schemas/productRelease"
         '400':
           $ref: "#/components/responses/400-invalid-request"
+        '401':
+          $ref: "#/components/responses/401-unauthorized"
+        '403':
+          $ref: "#/components/responses/403-forbidden"
         '404':
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
@@ -118,6 +130,10 @@ paths:
                 "$ref": "#/components/schemas/cle"
         '400':
           $ref: "#/components/responses/400-invalid-request"
+        '401':
+          $ref: "#/components/responses/401-unauthorized"
+        '403':
+          $ref: "#/components/responses/403-forbidden"
         '404':
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
@@ -140,6 +156,10 @@ paths:
           $ref: "#/components/responses/paginated-product-release"
         '400':
           $ref: "#/components/responses/400-invalid-request"
+        '401':
+          $ref: "#/components/responses/401-unauthorized"
+        '403':
+          $ref: "#/components/responses/403-forbidden"
       tags:
         - TEA Product Release
   /product/{uuid}/cle:
@@ -162,6 +182,10 @@ paths:
                 "$ref": "#/components/schemas/cle"
         '400':
           $ref: "#/components/responses/400-invalid-request"
+        '401':
+          $ref: "#/components/responses/401-unauthorized"
+        '403':
+          $ref: "#/components/responses/403-forbidden"
         '404':
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
@@ -185,6 +209,10 @@ paths:
           $ref: "#/components/responses/paginated-product"
         '400':
           $ref: "#/components/responses/400-invalid-request"
+        '401':
+          $ref: "#/components/responses/401-unauthorized"
+        '403':
+          $ref: "#/components/responses/403-forbidden"
       tags:
         - TEA Product
   /component/{uuid}:
@@ -207,6 +235,10 @@ paths:
                 "$ref": "#/components/schemas/component"
         '400':
           $ref: "#/components/responses/400-invalid-request"
+        '401':
+          $ref: "#/components/responses/401-unauthorized"
+        '403':
+          $ref: "#/components/responses/403-forbidden"
         '404':
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
@@ -231,6 +263,10 @@ paths:
           $ref: "#/components/responses/paginated-component-release"
         '400':
           $ref: "#/components/responses/400-invalid-request"
+        '401':
+          $ref: "#/components/responses/401-unauthorized"
+        '403':
+          $ref: "#/components/responses/403-forbidden"
         '404':
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
@@ -255,6 +291,10 @@ paths:
                 "$ref": "#/components/schemas/cle"
         '400':
           $ref: "#/components/responses/400-invalid-request"
+        '401':
+          $ref: "#/components/responses/401-unauthorized"
+        '403':
+          $ref: "#/components/responses/403-forbidden"
         '404':
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
@@ -277,6 +317,10 @@ paths:
           $ref: "#/components/responses/paginated-component"
         '400':
           $ref: "#/components/responses/400-invalid-request"
+        '401':
+          $ref: "#/components/responses/401-unauthorized"
+        '403':
+          $ref: "#/components/responses/403-forbidden"
       tags:
         - TEA Component
   /componentReleases:
@@ -297,6 +341,10 @@ paths:
           $ref: "#/components/responses/paginated-component-release"
         '400':
           $ref: "#/components/responses/400-invalid-request"
+        '401':
+          $ref: "#/components/responses/401-unauthorized"
+        '403':
+          $ref: "#/components/responses/403-forbidden"
       tags:
         - TEA Component Release
   /componentRelease/{uuid}:
@@ -319,6 +367,10 @@ paths:
                 "$ref": "#/components/schemas/component-release-with-collection"
         '400':
           $ref: "#/components/responses/400-invalid-request"
+        '401':
+          $ref: "#/components/responses/401-unauthorized"
+        '403':
+          $ref: "#/components/responses/403-forbidden"
         '404':
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
@@ -343,6 +395,10 @@ paths:
                 "$ref": "#/components/schemas/cle"
         '400':
           $ref: "#/components/responses/400-invalid-request"
+        '401':
+          $ref: "#/components/responses/401-unauthorized"
+        '403':
+          $ref: "#/components/responses/403-forbidden"
         '404':
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
@@ -367,6 +423,10 @@ paths:
                 "$ref": "#/components/schemas/collection"
         '400':
           $ref: "#/components/responses/400-invalid-request"
+        '401':
+          $ref: "#/components/responses/401-unauthorized"
+        '403':
+          $ref: "#/components/responses/403-forbidden"
         '404':
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
@@ -391,6 +451,10 @@ paths:
                 "$ref": "#/components/schemas/collection"
         '400':
           $ref: "#/components/responses/400-invalid-request"
+        '401':
+          $ref: "#/components/responses/401-unauthorized"
+        '403':
+          $ref: "#/components/responses/403-forbidden"
         '404':
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
@@ -415,6 +479,10 @@ paths:
           $ref: "#/components/responses/paginated-collection"
         '400':
           $ref: "#/components/responses/400-invalid-request"
+        '401':
+          $ref: "#/components/responses/401-unauthorized"
+        '403':
+          $ref: "#/components/responses/403-forbidden"
         '404':
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
@@ -439,6 +507,10 @@ paths:
           $ref: "#/components/responses/paginated-collection"
         '400':
           $ref: "#/components/responses/400-invalid-request"
+        '401':
+          $ref: "#/components/responses/401-unauthorized"
+        '403':
+          $ref: "#/components/responses/403-forbidden"
         '404':
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
@@ -469,6 +541,10 @@ paths:
                 "$ref": "#/components/schemas/collection"
         '400':
           $ref: "#/components/responses/400-invalid-request"
+        '401':
+          $ref: "#/components/responses/401-unauthorized"
+        '403':
+          $ref: "#/components/responses/403-forbidden"
         '404':
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
@@ -499,6 +575,10 @@ paths:
                 "$ref": "#/components/schemas/collection"
         '400':
           $ref: "#/components/responses/400-invalid-request"
+        '401':
+          $ref: "#/components/responses/401-unauthorized"
+        '403':
+          $ref: "#/components/responses/403-forbidden"
         '404':
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
@@ -523,6 +603,10 @@ paths:
                 "$ref": "#/components/schemas/artifact"
         '400':
           $ref: "#/components/responses/400-invalid-request"
+        '401':
+          $ref: "#/components/responses/401-unauthorized"
+        '403':
+          $ref: "#/components/responses/403-forbidden"
         '404':
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
@@ -553,6 +637,10 @@ paths:
                 "$ref": "#/components/schemas/artifact"
         '400':
           $ref: "#/components/responses/400-invalid-request"
+        '401':
+          $ref: "#/components/responses/401-unauthorized"
+        '403':
+          $ref: "#/components/responses/403-forbidden"
         '404':
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
@@ -585,6 +673,10 @@ paths:
           $ref: "#/components/responses/artifact-content-redirect"
         '400':
           $ref: "#/components/responses/400-invalid-request"
+        '401':
+          $ref: "#/components/responses/401-unauthorized"
+        '403':
+          $ref: "#/components/responses/403-forbidden"
         '404':
           $ref: "#/components/responses/404-object-by-id-not-found"
         '406':
@@ -632,6 +724,10 @@ paths:
           $ref: "#/components/responses/artifact-content-redirect"
         '400':
           $ref: "#/components/responses/400-invalid-request"
+        '401':
+          $ref: "#/components/responses/401-unauthorized"
+        '403':
+          $ref: "#/components/responses/403-forbidden"
         '404':
           $ref: "#/components/responses/404-object-by-id-not-found"
         '406':
@@ -663,6 +759,10 @@ paths:
           $ref: "#/components/responses/artifact-content-redirect"
         '400':
           $ref: "#/components/responses/400-invalid-request"
+        '401':
+          $ref: "#/components/responses/401-unauthorized"
+        '403':
+          $ref: "#/components/responses/403-forbidden"
         '404':
           $ref: "#/components/responses/404-object-by-id-not-found"
         '406':
@@ -714,6 +814,10 @@ paths:
           $ref: "#/components/responses/artifact-content-redirect"
         '400':
           $ref: "#/components/responses/400-invalid-request"
+        '401':
+          $ref: "#/components/responses/401-unauthorized"
+        '403':
+          $ref: "#/components/responses/403-forbidden"
         '404':
           $ref: "#/components/responses/404-object-by-id-not-found"
         '406':
@@ -752,6 +856,14 @@ paths:
 
         The access token is opaque to the client: clients shall not inspect, parse, or
         depend on its contents.
+
+        The empty security requirement on this operation does not authorize anonymous
+        `client_credentials` issuance. It only allows the alternate client-authentication
+        methods described above (for example, mutual TLS, JWT client assertion
+        (RFC 7523), or credentials in the request body). For the baseline
+        `client_credentials` grant with HTTP Basic, unauthenticated requests shall not be
+        accepted: servers shall respond with `401`, `error: invalid_client`, and a
+        `WWW-Authenticate: Basic` challenge (see `401-token-error`; RFC 6749 section 5.2).
       operationId: requestToken
       security:
         - basicAuth: []
@@ -826,6 +938,10 @@ paths:
           $ref: "#/components/responses/discovery-response"
         '400':
           $ref: "#/components/responses/400-invalid-request"
+        '401':
+          $ref: "#/components/responses/401-unauthorized"
+        '403':
+          $ref: "#/components/responses/403-forbidden"
         '404':
           $ref: "#/components/responses/404-discovery-identifier-not-found"
       tags:
@@ -2125,12 +2241,32 @@ components:
         otherwise invalid. Servers shall include a `WWW-Authenticate` header as defined
         in RFC 6750 section 3. On the `invalid_token` error a client may obtain a fresh
         token from `/token` and retry the request once (RFC 6750 section 3.1).
+
+        Servers that require no authentication on any endpoint shall not return this
+        status. On a TEA server where some data is available without authentication, but
+        not all, protected endpoints return `401` when no valid token is presented;
+        endpoints that do not require authentication answer without requiring a Bearer
+        token. A protected object shall not answer `404` solely because the client is
+        unauthenticated: absence of a valid token yields `401`, so the client flow can
+        discover that authentication is required.
       headers:
         WWW-Authenticate:
           description: Bearer challenge, as defined in RFC 6750 section 3.
           schema:
             type: string
             example: Bearer realm="tea", error="invalid_token", error_description="The access token expired"
+      content:
+        application/json: {}
+    403-forbidden:
+      description: |
+        The client is authenticated, but is not authorized to access this resource or
+        perform this operation. Authorization decisions are server-specific and are not
+        constrained by this specification.
+
+        Servers may instead conceal the existence of a resource from an authenticated
+        but unauthorized client by answering `404` (see `404-object-by-id-not-found`).
+        Clients shall treat `403` and that concealing `404` as non-access; neither
+        implies that retrying with the same token will succeed.
       content:
         application/json: {}
     artifact-content:
@@ -2265,8 +2401,11 @@ components:
             $ref: "#/components/schemas/token-error-response"
     401-token-error:
       description: |
-        Client authentication failed. Returned instead of 400 when the client attempted
-        to authenticate using the `Authorization` header (RFC 6749 section 5.2).
+        Client authentication failed (`error: invalid_client`). Returned instead of 400
+        when the client attempted to authenticate using the `Authorization` header
+        (RFC 6749 section 5.2). For the baseline Basic exchange this includes a missing
+        or invalid `Authorization: Basic` credential. Servers shall include
+        `WWW-Authenticate: Basic`.
       headers:
         WWW-Authenticate:
           description: Challenge indicating the client authentication methods supported by the token endpoint.
@@ -2277,8 +2416,17 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/token-error-response"
+          example:
+            error: invalid_client
     404-object-by-id-not-found:
-      description: Object requested by identifier not found
+      description: |
+        Object requested by identifier not found, or the server intentionally conceals
+        the object's existence from an authenticated but unauthorized client. Clients
+        shall not infer from `404` alone whether the object is absent or withheld.
+
+        Concealment applies only after authentication. A request to a protected object
+        with no valid access token shall receive `401` (see `401-unauthorized`), not a
+        concealing `404`.
       content:
         application/json:
           schema:
@@ -2586,6 +2734,17 @@ components:
         A TEA access token obtained from `/token`, presented as
         `Authorization: Bearer <access_token>` (RFC 6750). This is the only credential
         accepted on TEA endpoints other than `/token`.
+
+        Resource operations declare both this requirement and an empty alternative so
+        that a server can select which objects require authentication: a client may call
+        without a token. Whether a given endpoint actually requires a token is discovered at
+        runtime from a `401` Bearer challenge (see `401-unauthorized`), not from this
+        document alone. A server that requires no authentication shall ignore a presented
+        Bearer token. A server that protects some objects but not all may leave some
+        endpoints without authentication and protect others. Authorization after
+        authentication (filtered views, `403`, or a concealing `404` for an authenticated
+        but unauthorized client) remains server-specific. A protected object with no
+        valid token shall answer `401`, not a concealing `404`.
     basicAuth:
       type: http
       scheme: basic
@@ -2599,7 +2758,10 @@ components:
         interoperate. Servers shall not accept API key credentials directly on other TEA
         endpoints; clients shall exchange them for an access token first.
 security:
+  # Bearer token, or no token (server or endpoint that does not require authentication).
+  # Protected endpoints still answer 401 with a Bearer challenge when a valid token is required.
   - bearerAuth: []
+  - {}
 tags:
   - name: TEA Authentication
   - name: TEA Product

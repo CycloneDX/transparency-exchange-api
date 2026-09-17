@@ -28,11 +28,11 @@ authorization - does not make much sense, since the information is usually in th
 ## Scope of this specification
 
 This specification does not require a TEA service to authenticate its users. A service that
-publishes openly need not implement any of what follows, including the token endpoint; see
-[Servers without authentication](#servers-without-authentication) for what such a server and its
-clients do instead. A service that requires authentication for any of its endpoints is a service
-that requires authentication, and implements the baseline in full; see
-[Mixed servers](#mixed-servers).
+requires no authentication need not implement any of what follows, including the token endpoint;
+see [Servers without authentication](#servers-without-authentication) for what such a server and
+its clients do instead. A service that requires authentication for some or all of its objects
+implements the baseline in full; see
+[Servers that protect some objects](#servers-that-protect-some-objects).
 
 Where a service does authenticate, interoperability requires that every TEA client can
 authenticate against every TEA server without server-specific code. This specification therefore
@@ -211,7 +211,10 @@ certificate. This restates RFC 6749 section 3.2 and RFC 6750 section 5.
 ## Client flow
 
 Whether a server requires authentication is discovered by using it, not by configuration and not by
-probing the token endpoint. The complete flow for a client that does not know in advance:
+probing the token endpoint. In TEA, resource operations may be called with a Bearer token or
+without one; a `401` with a `WWW-Authenticate: Bearer` challenge on a given endpoint is the
+runtime signal that a token is required there. The complete flow for a client that does not know
+in advance:
 
 1. The client sends the resource request it wants, with no credentials.
 2. If the server does not require authentication for that endpoint, it answers `200` with the
@@ -220,7 +223,10 @@ probing the token endpoint. The complete flow for a client that does not know in
    the `Bearer` scheme, as described in RFC 6750 section 3. This challenge is the only signal a
    client needs.
 4. The client calls `POST /token` with its credential - for the baseline, the API key over HTTP
-   Basic - and receives an access token.
+   Basic - and receives an access token. Unauthenticated `client_credentials` requests shall
+   not be accepted; an empty OpenAPI security requirement on `/token` allows alternate client
+   authentication (for example, mutual TLS, JWT client assertion (RFC 7523), or credentials in
+   the request body), not anonymous token issuance.
 5. The client repeats the resource request with `Authorization: Bearer <access_token>`, and presents
    the same token on subsequent requests until it expires or is rejected.
 6. When a later request fails with `401` and `error="invalid_token"`, the client obtains a fresh
@@ -241,35 +247,39 @@ pattern and is preferred over any configuration or discovery step a client would
 
 ### Servers without authentication
 
-A server that requires no authentication on any endpoint:
+A server that requires no authentication on any endpoint (and therefore applies no authorization):
 
 * __need not__ implement the token endpoint. There is nothing to exchange: an OAuth 2.0 token
   response has to carry an access token, and the mandatory grant requires the client to
-  authenticate, so a token endpoint on an open server could only issue a token that means nothing.
+  authenticate, so a token endpoint on such a server could only issue a token that means nothing.
 * __shall not__ answer any resource request with `401`. Its clients complete step 2 of the flow
   above and never look for the token endpoint.
 * __shall__ ignore, rather than reject, an `Authorization: Bearer` header a client presents anyway,
   for example a client that obtained a token elsewhere or applies one by habit. A token has no
-  meaning on an open server, and ignoring it keeps such clients working.
+  meaning on such a server, and ignoring it keeps such clients working.
 
-### Mixed servers
+### Servers that protect some objects
 
-A server may publish some endpoints openly and require authentication for others - for example,
-listing products and releases openly while restricting artifact downloads to customers, as
-described under [Requirements](#requirements). Such a server is a server that requires
-authentication:
+A TEA server may make some data available without authentication while requiring authentication
+and authorization for other objects - for example, listing products and releases without a token
+while restricting artifact downloads to customers, as described under
+[Requirements](#requirements). Such a server requires authentication for the protected objects:
 
-* it __shall__ implement the token endpoint and the baseline exchange, because at least one endpoint
+* it __shall__ implement the token endpoint and the baseline exchange, because at least one object
   needs them;
-* its open endpoints behave as on a server without authentication: they answer without a token and
-  ignore a token that is presented;
-* its protected endpoints answer `401` with the `Bearer` challenge when no valid token is presented,
-  which is how a client learns, per endpoint, that a token is needed. A client __should not__ assume
-  that a server which served one endpoint openly will serve every endpoint openly, nor the reverse.
+* endpoints that do not require authentication answer without a token and ignore a token that is
+  presented;
+* protected endpoints __shall__ answer `401` with the `Bearer` challenge when no valid token is
+  presented, which is how a client learns, per endpoint, that a token is needed. They shall not
+  answer a concealing `404` solely because the client is unauthenticated. A client __should not__
+  assume that a server which served one object without authentication will serve every object
+  without authentication, nor the reverse.
 
 Authorization - which of the protected data an authenticated client may see - is the server's
 decision and is not constrained by this specification; a client with a valid token may still receive
-a filtered view, or `403`/`404` for individual objects.
+a filtered view, `403 Forbidden`, or a concealing `404 Not Found` for individual objects it is
+not authorized to see. Clients shall not infer from `404` alone whether the object is absent or
+withheld.
 
 ### Protected resource metadata
 
