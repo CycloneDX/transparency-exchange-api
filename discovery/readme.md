@@ -356,8 +356,9 @@ the TEA OpenAPI specification. If `priority` is absent on a discovery `servers[]
 entry (`tea-server-info`), the client shall treat it as `1` for ordering, the same
 as for well-known endpoints.
 
-If the TEI (or PURL, when discovering by PURL) is not known to the TEA server, the
-discovery endpoint shall return `404` with a TEA error response body. A response is a
+If this server does not resolve the TEI (or PURL, when discovering by PURL), whether
+because it is unknown or because the server withholds it, the discovery endpoint
+shall return `404` with a TEA error response body. A response is a
 TEA error response only when its `Content-Type` is `application/json` (optionally with
 parameters such as `charset`) and the body is a JSON object with a string `error`
 property (typically `OBJECT_UNKNOWN`). Clients shall ignore properties they do not

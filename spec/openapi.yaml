@@ -2436,8 +2436,7 @@ components:
         with no valid access token shall receive `401` (see `401-unauthorized`), not a
         concealing `404`.
 
-        Body is a TEA `error-response` (for `/discovery`, typically
-        `error: OBJECT_UNKNOWN`).
+        Body is a TEA `error-response`, typically `error: OBJECT_UNKNOWN`.
       content:
         application/json:
           schema:
