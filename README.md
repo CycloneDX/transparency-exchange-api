@@ -87,10 +87,9 @@ This includes product rebranding, repackaging, mergers and acquisitions, and pro
 
 The TEA CLE endpoints return a TEA projection of CLE event content (see the OpenAPI
 `cle` schema), not a full CLE 1.0.0 document. Publishers that need a bit-identical CLE
-document may publish it as a TEA Artifact in a product or component release collection,
-or — when the document is company-wide rather than release-scoped — as a compliance
-document linked from the TEA Product. The same CLE artifact may be referenced from more
-than one collection.
+1.0.0 document publish it as a TEA Artifact in a release collection, as artifact type
+`OTHER` until a dedicated type exists; the same artifact may be referenced from more
+than one collection. The CLE endpoints are not a substitute for that document.
 
 Inclusion of CLE (projection and/or full document) is optional and the projection may be
 introduced on the following levels:
