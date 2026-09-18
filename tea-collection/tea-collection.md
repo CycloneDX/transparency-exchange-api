@@ -288,7 +288,7 @@ collection version 1 with an empty `artifacts` list and
 other; the first artifacts are published as version 2 with
 `ARTIFACT_ADDED`. A publisher that publishes the release and its artifacts
 together never has an empty version and starts at version 1 with content.
-Both are consistent with "version 1 is whatever was first observable".
+In both cases version 1 is the first collection a client could have retrieved.
 A server may also synthesize the collection dynamically (see below).
 
 If there are any updates of artefacts within a collection for the same
@@ -330,7 +330,6 @@ to implement this:
     - __type__: Type of update reason.
       See [reasons for TEA Collection update](#the-reason-for-tco-update-enum) below.
     - __comment__: Free text description.
-  -
   - __artifacts__: List of TEA Artifact objects (required; may be empty).
     See [below](#tea-artifact-object).
 
