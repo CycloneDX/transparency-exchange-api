@@ -691,7 +691,7 @@ paths:
         '302':
           $ref: "#/components/responses/artifact-content-redirect"
         '304':
-          $ref: "#/components/responses/304-artifact-content-not-modified"
+          $ref: "#/components/responses/304-not-modified"
         '400':
           $ref: "#/components/responses/400-invalid-request"
         '401':
@@ -754,7 +754,7 @@ paths:
         '302':
           $ref: "#/components/responses/artifact-content-redirect"
         '304':
-          $ref: "#/components/responses/304-artifact-content-not-modified"
+          $ref: "#/components/responses/304-not-modified"
         '400':
           $ref: "#/components/responses/400-invalid-request"
         '401':
@@ -807,7 +807,7 @@ paths:
         '302':
           $ref: "#/components/responses/artifact-content-redirect"
         '304':
-          $ref: "#/components/responses/304-artifact-signature-not-modified"
+          $ref: "#/components/responses/304-not-modified"
         '400':
           $ref: "#/components/responses/400-invalid-request"
         '401':
@@ -877,7 +877,7 @@ paths:
         '302':
           $ref: "#/components/responses/artifact-content-redirect"
         '304':
-          $ref: "#/components/responses/304-artifact-signature-not-modified"
+          $ref: "#/components/responses/304-not-modified"
         '400':
           $ref: "#/components/responses/400-invalid-request"
         '401':
@@ -2320,13 +2320,6 @@ components:
         the entity tag for a given uuid, version and format never changes.
       schema:
         type: string
-    artifact-etag-required:
-      description: |
-        Strong entity tag for the content. Required on latest-download responses so
-        caches can revalidate the selected representation.
-      required: true
-      schema:
-        type: string
     artifact-repr-digest:
       description: |
         Digest of the content as defined in RFC 9530, allowing a client to verify the
@@ -2402,13 +2395,6 @@ components:
         is published as a new revision.
       schema:
         type: string
-    signature-etag-required:
-      description: |
-        Strong entity tag for the signature. Required on latest signature-download
-        responses so caches can revalidate the selected representation.
-      required: true
-      schema:
-        type: string
     signature-content-location:
       description: |
         Absolute URL of the versioned signature download for the revision and format this
@@ -2480,12 +2466,10 @@ components:
       description: |
         The content of the requested TEA Artifact format.
 
-        The `Content-Type` is the `mediaType` of the format returned. The response
-        content key is `application/octet-stream` as a catch-all for arbitrary artifact
-        bytes; the wire `Content-Type` is still the selected format's `mediaType`.
-        `Content-Location` is always present as an absolute versioned download URL
-        including `mediaType`. `Vary: Accept` is present only when format selection
-        depended on `Accept`.
+        The wire `Content-Type` is the `mediaType` of the format returned. The response
+        content key is `*/*` because that type varies by format. `Content-Location` is
+        always present as an absolute versioned download URL including `mediaType`.
+        `Vary: Accept` is present only when format selection depended on `Accept`.
       headers:
         Content-Disposition:
           $ref: "#/components/headers/artifact-content-disposition"
@@ -2500,7 +2484,7 @@ components:
         Repr-Digest:
           $ref: "#/components/headers/artifact-repr-digest"
       content:
-        application/octet-stream:
+        '*/*':
           schema:
             type: string
             format: binary
@@ -2520,7 +2504,7 @@ components:
         Content-Disposition:
           $ref: "#/components/headers/artifact-content-disposition"
         ETag:
-          $ref: "#/components/headers/artifact-etag-required"
+          $ref: "#/components/headers/artifact-etag"
         Cache-Control:
           $ref: "#/components/headers/artifact-cache-control-latest"
         Content-Location:
@@ -2530,7 +2514,7 @@ components:
         Repr-Digest:
           $ref: "#/components/headers/artifact-repr-digest"
       content:
-        application/octet-stream:
+        '*/*':
           schema:
             type: string
             format: binary
@@ -2538,9 +2522,10 @@ components:
       description: |
         The detached signature for the selected format of the TEA Artifact revision.
 
-        The `Content-Type` is `application/octet-stream` unless the server knows a more
-        specific media type for the signature it holds, in which case it returns that.
-        This specification does not require servers to identify the signature technology.
+        The wire `Content-Type` is `application/octet-stream` unless the server knows a
+        more specific media type for the signature it holds, in which case it returns
+        that. The response content key is `*/*` because that type may vary. This
+        specification does not require servers to identify the signature technology.
         `Content-Location` is always present as an absolute versioned signature download
         URL including `mediaType`.
       headers:
@@ -2553,7 +2538,7 @@ components:
         Content-Location:
           $ref: "#/components/headers/signature-content-location"
       content:
-        application/octet-stream:
+        '*/*':
           schema:
             type: string
             format: binary
@@ -2571,51 +2556,46 @@ components:
         Content-Disposition:
           $ref: "#/components/headers/signature-content-disposition"
         ETag:
-          $ref: "#/components/headers/signature-etag-required"
+          $ref: "#/components/headers/signature-etag"
         Cache-Control:
           $ref: "#/components/headers/artifact-cache-control-latest"
         Content-Location:
           $ref: "#/components/headers/signature-content-location"
       content:
-        application/octet-stream:
+        '*/*':
           schema:
             type: string
             format: binary
-    304-artifact-content-not-modified:
+    304-not-modified:
       description: |
-        The selected artifact content representation has not changed (RFC 9110). The
-        response body is empty. Servers shall repeat `ETag`, `Cache-Control`,
-        `Content-Location`, and `Vary` (when used on the corresponding `200`) from the
-        would-be successful response for this operation.
+        The selected download representation has not changed (RFC 9110). The response
+        body is empty. Servers shall repeat `ETag`, `Cache-Control`, `Content-Location`,
+        and `Vary` (when used on the corresponding `200`) from the would-be successful
+        response for this operation.
       headers:
         ETag:
-          $ref: "#/components/headers/artifact-etag"
+          description: |
+            Same `ETag` the server would have sent on `200` for this operation.
+          schema:
+            type: string
         Cache-Control:
           description: |
-            Same `Cache-Control` the server would have sent on `200` for this operation
-            (`artifact-cache-control-immutable` or `artifact-cache-control-latest`).
+            Same `Cache-Control` the server would have sent on `200` for this operation.
           schema:
             type: string
         Content-Location:
-          $ref: "#/components/headers/artifact-content-location"
+          description: |
+            Same `Content-Location` the server would have sent on `200` for this
+            operation.
+          schema:
+            type: string
+            format: uri
         Vary:
-          $ref: "#/components/headers/artifact-vary-accept"
-    304-artifact-signature-not-modified:
-      description: |
-        The selected artifact signature representation has not changed (RFC 9110). The
-        response body is empty. Servers shall repeat `ETag`, `Cache-Control`, and
-        `Content-Location` from the would-be successful response for this operation.
-      headers:
-        ETag:
-          $ref: "#/components/headers/signature-etag"
-        Cache-Control:
           description: |
-            Same `Cache-Control` the server would have sent on `200` for this operation
-            (`artifact-cache-control-immutable` or `artifact-cache-control-latest`).
+            Same `Vary` the server would have sent on `200` for this operation, when
+            used.
           schema:
             type: string
-        Content-Location:
-          $ref: "#/components/headers/signature-content-location"
     artifact-content-redirect:
       description: |
         The artifact content is available at another location, for example object storage
