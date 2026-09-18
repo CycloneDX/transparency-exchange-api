@@ -912,7 +912,7 @@ paths:
 
         A successful response is a non-empty JSON array of `discovery-info` objects,
         ordered by priority when multiple product releases match (first entry highest).
-        If nothing matches, the server responds with `404` and
+        If the server does not resolve the identifier, it responds with `404` and
         `error: OBJECT_UNKNOWN`, not `200` with an empty array.
 
         Parameter values are the identifier itself (not a pre-encoded wire form). Clients
@@ -2552,8 +2552,8 @@ components:
       description: |
         Non-empty array of discovery results for the requested TEI or PURL. Each element
         is a `discovery-info` object (`productReleaseUuid` plus `servers`). An empty array
-        is not a valid success response; use `404` with `error: OBJECT_UNKNOWN` when
-        nothing matches.
+        is not a valid success response; use `404` with `error: OBJECT_UNKNOWN` when the
+        server does not resolve the identifier.
       content:
         application/json:
           schema:

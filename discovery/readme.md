@@ -11,7 +11,6 @@
   - [Selecting an API base from `.well-known/tea`](#selecting-an-api-base-from-well-knowntea)
   - [Discovery response](#discovery-response)
   - [Discovery by PURL](#discovery-by-purl)
-- [The TEA Version Index](#the-tea-version-index)
 - [References](#references)
 
 ## From product identifier to API endpoint
@@ -379,15 +378,18 @@ element identifies one resolved product release and the TEA servers that serve i
 - **`servers[]`** in the discovery response lists API bases that serve the resolved
   product release. The client selects among them with the same version-preference and
   `priority` rules as for well-known endpoints. A `rootUrl` need not appear in the
-  well-known endpoint list.
+  well-known endpoint list. All further requests for that product release are built as
+  `rootUrl` + `/v` + the selected version + path. The API base used for `/discovery` is
+  not used again for that release unless it is also listed in `servers[]`.
 
 When multiple product releases match, the array is ordered by priority (first entry
 highest). Vendors should prefer returning a single release when possible.
 
-A successful lookup shall return a non-empty array. If nothing matches, the server shall
-respond with `404` and a TEA error body with `error: OBJECT_UNKNOWN` — not `200` with an
-empty array. If `priority` is absent on a discovery `servers[]` entry, the client shall
-treat it as `1` for ordering, the same as for well-known endpoints.
+A successful lookup shall return a non-empty array. If the server does not resolve the
+identifier, the server shall respond with `404` and a TEA error body with
+`error: OBJECT_UNKNOWN` — not `200` with an empty array. If `priority` is absent on a
+discovery `servers[]` entry, the client shall treat it as `1` for ordering, the same as
+for well-known endpoints.
 
 Example (one match):
 
@@ -420,8 +422,8 @@ Example:
 
 `https://api.teaexample.com/v1.0.0/discovery?purl=pkg%3Amaven%2Forg.apache.logging.log4j%2Flog4j-core%402.24.3`
 
-The response shape, non-empty success array, and `404` with `OBJECT_UNKNOWN` when nothing
-matches are the same as for TEI lookup.
+The response shape, non-empty success array, and `404` with `OBJECT_UNKNOWN` when the
+server does not resolve the identifier are the same as for TEI lookup.
 
 If this server does not resolve the TEI (or PURL, when discovering by PURL), whether
 because it is unknown or because the server withholds it, the discovery endpoint
