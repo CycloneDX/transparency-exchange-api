@@ -964,9 +964,12 @@ components:
     #
     date-time:
       type: string
-      description: Timestamp
+      description: |
+        Timestamp, RFC 3339 in UTC with the `Z` designator. Offsets are not accepted;
+        servers shall convert to UTC before emitting. Fractional seconds are optional and
+        preserved as sent. All timestamps in this specification use this schema.
       format: date-time
-      pattern: "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+      pattern: "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
       example: '2024-03-20T15:30:00Z'
     token-request:
       type: object
@@ -1896,7 +1899,13 @@ components:
           description: A version range in vers format (e.g. "vers:npm/>=1.0.0|<2.0.0")
     cle-event:
       type: object
-      description: A discrete lifecycle event from the CLE specification
+      description: |
+        A discrete lifecycle event from the CLE specification (ECMA-428).
+
+        CLE timestamps in TEA responses use the shared `date-time` schema: UTC with the
+        `Z` designator, fractional seconds preserved. A `+00:00` offset in an upstream CLE
+        document denotes the same instant and is re-expressed as `Z`. Any other offset is
+        not UTC and is not valid CLE.
       properties:
         id:
           type: integer
@@ -1905,13 +1914,11 @@ components:
           description: The type of lifecycle event
           $ref: "#/components/schemas/cle-event-type"
         effective:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp (UTC) when the event takes effect
+          description: When the event takes effect.
+          "$ref": "#/components/schemas/date-time"
         published:
-          type: string
-          format: date-time
-          description: ISO 8601 timestamp (UTC) when the event was first published
+          description: When the event was first published.
+          "$ref": "#/components/schemas/date-time"
         version:
           type: string
           description: Version string (used by released event type)
