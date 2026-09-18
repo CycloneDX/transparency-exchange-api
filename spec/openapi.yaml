@@ -2016,7 +2016,10 @@ components:
         response belongs to supplies the identity, and TEA has its own pagination. The event
         vocabulary, ordering and semantics are those of ECMA-428; the field shapes are TEA's.
         A consumer that needs a CLE document applies the mapping rules below and adds the
-        envelope; a producer that holds a CLE document applies them in reverse.
+        envelope; a producer that holds a CLE document applies them in reverse. Publishers
+        that need a bit-identical CLE 1.0.0 document may instead publish it as a TEA
+        Artifact in a release collection, or as a company-wide compliance document on the
+        TEA Product; the CLE endpoints are not a substitute for that document.
 
         Mapping to ECMA-428:
         - `identifiers[]` on `componentRenamed` uses the TEA `identifier` shape (`idType`,
