@@ -751,6 +751,12 @@ paths:
         reports. As with the latest content endpoint,
         the response is not immutable and caches shall revalidate it; `Content-Location`
         names the versioned URL the request was resolved to.
+
+        `404` distinguishes the cases by TEA error body: `OBJECT_UNKNOWN` when the
+        artifact revision is unknown (or concealed), and `SIGNATURE_NOT_FOUND` when the
+        revision exists but the selected format has no signature published. A server
+        concealing an artifact from a client shall answer `OBJECT_UNKNOWN` for every
+        sub-resource of it, including signatures.
       operationId: downloadLatestArtifactSignature
       parameters:
         - name: uuid
@@ -850,7 +856,9 @@ paths:
         required: they issue the resource request, and a `401` response carrying a
         `WWW-Authenticate: Bearer` challenge is the signal to obtain a token here. A
         `404` from this endpoint means only that it is not implemented (`error:
-        NOT_IMPLEMENTED` on the shared object-not-found response).
+        NOT_IMPLEMENTED` on the shared object-not-found response). A server that does not
+        implement the endpoint shall still answer with that TEA error body; a `404`
+        without a TEA error body is not a conforming answer.
 
         Servers may support additional grant types for federated identity, for example
         SAML 2.0 assertions (RFC 7522) or JWT assertions (RFC 7523), and may authenticate
@@ -1814,6 +1822,9 @@ components:
         `error` property; they ignore unrecognized properties and tolerate `error` values
         they do not know, so that later versions can extend this schema. Other JSON 404
         bodies are not TEA error responses.
+
+        Any `4xx` from a resource endpoint may carry an `error-response` body; when
+        present, `error` is from `unknown-error-type`. Clients shall not require a body.
       additionalProperties: false
       properties:
         error:
@@ -2298,9 +2309,6 @@ components:
         expired, or conflicting `pageToken` values, including conflicts with continuation
         parameters or path parameters (`error: INVALID_PAGE_TOKEN` when a TEA error body
         is present). Other malformed requests may use `error: INVALID_REQUEST`.
-
-        Any `4xx` from a resource endpoint may carry an `error-response` body; when
-        present, `error` is from `unknown-error-type`. Clients shall not require a body.
       content:
         application/json:
           schema:
@@ -2326,9 +2334,6 @@ components:
         token. A protected object shall not answer `404` solely because the client is
         unauthenticated: absence of a valid token yields `401`, so the client flow can
         discover that authentication is required.
-
-        Any `4xx` from a resource endpoint may carry an `error-response` body; when
-        present, `error` is from `unknown-error-type`. Clients shall not require a body.
       headers:
         WWW-Authenticate:
           description: Bearer challenge, as defined in RFC 6750 section 3.
@@ -2349,9 +2354,6 @@ components:
         but unauthorized client by answering `404` (see `404-object-by-id-not-found`).
         Clients shall treat `403` and that concealing `404` as non-access; neither
         implies that retrying with the same token will succeed.
-
-        Any `4xx` from a resource endpoint may carry an `error-response` body; when
-        present, `error` is from `unknown-error-type`. Clients shall not require a body.
       content:
         application/json:
           schema:
