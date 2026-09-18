@@ -1826,11 +1826,12 @@ components:
         rootUrl:
           description: |
             Absolute API base URL for this TEA server, without trailing slash. Shall not
-            include userinfo, query, or fragment. Conforming deployments use `https`;
-            `http` is allowed only so local-test documents still validate.
+            include userinfo, query, or fragment. The scheme match is lowercase only
+            (normalized form). Conforming deployments use lowercase `https`; `http` is
+            allowed only so local-test documents still validate.
           type: string
           format: uri
-          pattern: '^https?://[^/?#@]+(/[^?#]*[^/?#])?$'
+          pattern: '^https?://[^/?#@]+(/[^?#\s]*[^/?#\s])?$'
           example: https://api.teaexample.com
         versions:
           description: |

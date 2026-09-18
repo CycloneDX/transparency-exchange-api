@@ -51,7 +51,7 @@ Authority that is part of the Web PKI. The client needs to validate
 the TLS server certificate, including the server identity check of
 [RFC 9525](https://www.rfc-editor.org/rfc/rfc9525), to make sure
 
-- that the certificate name (CN or Subject Alt Name) matches the
+- that the certificate name (Subject Alt Name) matches the
   host part of the URI.
 - that the certificate is valid, i.e. the not-before date and the
   not-after date is not out of range
