@@ -232,7 +232,7 @@ tei://cyclonedx.org/udi/00123456789012
 Note that if the same identifier, like EAN, is used for multiple different product releases
 then this EAN code will not be unique for a given product. While this case is supported
 by TEA, the vendor is recommended to create a separate TEI for each unique product sold,
-like UUID or hash. In any case, the vendor SHOULD minimize the number of distinct product
+like UUID or hash. In any case, the vendor should minimize the number of distinct product
 releases returned per TEI. Preferable situation is to have a single product release
 per TEI.
 
@@ -252,7 +252,7 @@ The name in the DNS name part points to a set of DNS records.
 A TEI with `domain-name` `tea.example.com` queries DNS for `tea.example.com`, considering `A`, `AAAA` and `CNAME` records.
 These point to the hosts available for the Transparency Exchange API.
 
-The TEA client connects to the host using HTTPS and SHALL verify the server
+The TEA client connects to the host using HTTPS and shall verify the server
 certificate. The URL is composed of the host name with the `/.well-known/tea` path added.
 
 This results in the base URL such as
@@ -290,9 +290,9 @@ Example:
 
 ### Discovery data caching and freshness
 
-Discovery documents MAY be cached.
+Discovery documents may be cached.
 
-Implementations SHOULD:
+Implementations should:
 
 - respect HTTP caching headers  
 - periodically refresh discovery data  
@@ -402,10 +402,10 @@ not a failover trigger; see above.
 
 On such a failure, the client shall select the next untried well-known endpoint that
 supports a compatible API version, if one is available. While doing so the client
-SHOULD preserve priority order from highest to lowest (applying the absent-`priority`
+should preserve priority order from highest to lowest (applying the absent-`priority`
 equals `1` rule). Each failover connection is subject to the same TLS verification
-requirement. Clients SHOULD limit the total number of attempts across both stages for
-a discovery operation. Additional attempts SHOULD use exponential backoff. When a retry
+requirement. Clients should limit the total number of attempts across both stages for
+a discovery operation. Additional attempts should use exponential backoff. When a retry
 limit is reached, the client shall report that discovery could not be completed,
 indicating which stage failed when that is known.
 
@@ -413,40 +413,40 @@ indicating which stage failed when that is known.
 
 Where authentication is required, clients use credentials configured for the selected
 TEA service, such as an API key, to obtain a TEA access token from that service’s
-`/token` endpoint. Credentials SHALL NOT be embedded in a TEI. API keys are exchanged
-only at the selected API’s `/token` endpoint; clients SHALL NOT probe `/token` to discover
+`/token` endpoint. Credentials shall not be embedded in a TEI. API keys are exchanged
+only at the selected API’s `/token` endpoint; clients shall not probe `/token` to discover
 whether authentication is required.
 
-A protected TEA resource endpoint (excluding `/token`) SHALL respond to a request without
+A protected TEA resource endpoint (excluding `/token`) shall respond to a request without
 valid authentication with `401 Unauthorized` and a `WWW-Authenticate: Bearer` challenge.
 When that challenge contains `error="invalid_token"` (RFC 6750 section 3.1), the client
-MAY obtain a replacement access token from the same service and retry the original
-request once. Clients SHOULD NOT repeat this recovery attempt for the same request. This
+may obtain a replacement access token from the same service and retry the original
+request once. Clients should not repeat this recovery attempt for the same request. This
 is not OAuth refresh-token use.
 
-If authentication cannot be completed or recovery fails, the client SHALL indicate that
+If authentication cannot be completed or recovery fails, the client shall indicate that
 update status could not be determined. Failures that may require user or administrator
 intervention include rejected or revoked credentials, expired client certificates,
 persistent rejection of a replacement token, and insufficient permissions. A
-`403 Forbidden` response indicates denied authorization and SHALL NOT trigger
-token-replacement attempts solely because of that status. Clients SHALL NOT fail over to
+`403 Forbidden` response indicates denied authorization and shall not trigger
+token-replacement attempts solely because of that status. Clients shall not fail over to
 another endpoint solely in response to `401` or `403`.
 
-Clients SHALL verify server certificates for every HTTPS connection used in discovery and
-subsequent API access, and SHALL NOT use connections that fail validation.
+Clients shall verify server certificates for every HTTPS connection used in discovery and
+subsequent API access, and shall not use connections that fail validation.
 
-Clients SHALL NOT automatically forward a TEA access token to a different origin, or
+Clients shall not automatically forward a TEA access token to a different origin, or
 outside the authorized API base URL of the service that issued it. API-key Basic
-credentials SHALL NOT be forwarded based merely on a discovery redirect; a different
+credentials shall not be forwarded based merely on a discovery redirect; a different
 service requires independently configured credentials. Redirect targets used during
-discovery or API access SHALL use HTTPS and are subject to the same certificate
+discovery or API access shall use HTTPS and are subject to the same certificate
 verification requirement.
 
 The full client authentication flow is described in [Authentication](../auth/readme.md).
 The rules above align discovery with that model and do not replace it.
 
 How authentication or authorization failures are presented to end users is implementation
-specific, but they SHALL NOT be reported as evidence that no updates are available.
+specific, but they shall not be reported as evidence that no updates are available.
 
 ### Common authentication-related responses
 
@@ -454,13 +454,13 @@ specific, but they SHALL NOT be reported as evidence that no updates are availab
 
 - For an initially unauthenticated resource request, a `WWW-Authenticate: Bearer`
   challenge without an `error` parameter indicates that authentication is required.
-  A client with configured credentials MAY obtain an access token from the selected
+  A client with configured credentials may obtain an access token from the selected
   API’s `/token` endpoint and retry the resource request.
-- For a resource request rejected with `error="invalid_token"`, the client MAY obtain
+- For a resource request rejected with `error="invalid_token"`, the client may obtain
   a replacement access token from the same service and retry the original request once.
-  Clients SHOULD NOT repeat this recovery attempt for the same request.
+  Clients should not repeat this recovery attempt for the same request.
 
-Other challenges SHALL NOT be interpreted as instructions to repeatedly obtain
+Other challenges shall not be interpreted as instructions to repeatedly obtain
 replacement tokens.
 
 #### 403 Forbidden
@@ -492,7 +492,7 @@ Common errors:
 
 ### Client behavior
 
-Clients SHOULD:
+Clients should:
 
 - retry with backoff  
 - validate TLS certificates  
@@ -500,14 +500,14 @@ Clients SHOULD:
 
 ## Notes Regarding .well-known
 
-Servers SHALL NOT locate the actual TEA service endpoint at the
+Servers shall not locate the actual TEA service endpoint at the
 `.well-known` URI as per Section 1.1 of [RFC5785]. This endpoint is only for distribution
 of the TEA discovery document.
 
 ### TLS Encryption
 
 The `.well-known` endpoint shall only be available via HTTPS. Using unencrypted HTTP is not
-valid. Clients SHALL verify the server certificate for this connection as for any other
+valid. Clients shall verify the server certificate for this connection as for any other
 TEA HTTPS request.
 
 - TEI: `tei://products.example.com/uuid/d4d9f54a-abcf-11ee-ac79-1a52914d44b1`

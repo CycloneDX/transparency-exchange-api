@@ -1072,7 +1072,7 @@ components:
       type: string
       description: >
         Well-known compliance document types. When idType is COMPLIANCE_DOCUMENT,
-        the idValue SHOULD be one of these values.
+        the idValue should be one of these values.
       enum:
         - SOC_2_TYPE_I
         - SOC_2_TYPE_II
@@ -1113,10 +1113,10 @@ components:
         name:
           type: string
           description: |
-            Product name. Within a TEA server, product names SHOULD be unique among
+            Product name. Within a TEA server, product names should be unique among
             products. Uniqueness is an implementation recommendation, not a hard API
             requirement. Product and component names are separate namespaces; a product
-            and a component MAY share the same name.
+            and a component may share the same name.
         identifiers:
           type: array
           description: |
@@ -1212,10 +1212,10 @@ components:
         name:
           type: string
           description: |
-            Component name. Within a TEA server, component names SHOULD be unique among
+            Component name. Within a TEA server, component names should be unique among
             components. Uniqueness is an implementation recommendation, not a hard API
             requirement. Product and component names are separate namespaces; a product
-            and a component MAY share the same name.
+            and a component may share the same name.
         identifiers:
           type: array
           description: List of identifiers for the component
@@ -2015,7 +2015,7 @@ components:
           type: array
           description: |
             Ordered array of CLE Event objects representing lifecycle events.
-            MUST be ordered by ID in descending order (newest events with highest IDs first).
+            shall be ordered by ID in descending order (newest events with highest IDs first).
           items:
             $ref: "#/components/schemas/cle-event"
         definitions:
@@ -2059,16 +2059,16 @@ components:
           description: |
             A flag indicating whether there is another page of results to fetch.
 
-            When `hasNext` is `true`, `nextPageToken` MUST be present.
-            When `hasNext` is `false`, `nextPageToken` MUST NOT be included.
+            When `hasNext` is `true`, `nextPageToken` shall be present.
+            When `hasNext` is `false`, `nextPageToken` shall not be included.
           default: false
         nextPageToken:
           type: string
           description: |
             An opaque token that can be used in a following request to retrieve the next page of results.
 
-            This field MUST be present when `hasNext` is `true`.
-            This field MUST NOT be included when `hasNext` is `false`.
+            This field shall be present when `hasNext` is `true`.
+            This field shall not be included when `hasNext` is `false`.
       required:
         - hasNext
       examples:
@@ -2566,23 +2566,23 @@ components:
       name: pageToken
       description: |
         An opaque continuation token produced by a previous response.
-        This token MUST be copied verbatim from the `nextPageToken` value returned by the previous response.
-        Clients MUST NOT parse, construct, or modify this token.
+        This token shall be copied verbatim from the `nextPageToken` value returned by the previous response.
+        Clients shall not parse, construct, or modify this token.
 
         The token represents continuation state for the original query, including
         `sortField`, `sortOrder`, result-affecting filters such as `idType` and `idValue`,
         and path parameters such as parent `uuid`.
-        When `pageToken` is supplied, clients MUST NOT change those result-affecting query
-        parameters. Servers MUST return `400 Bad Request` if supplied result-affecting query
+        When `pageToken` is supplied, clients shall not change those result-affecting query
+        parameters. Servers shall return `400 Bad Request` if supplied result-affecting query
         parameters conflict with the token state. To change any result-affecting parameter,
-        clients MUST start a new pagination sequence without `pageToken`.
+        clients shall start a new pagination sequence without `pageToken`.
 
         A `pageToken` is only valid with the same request path and same path parameter values
-        used to obtain it. Clients MUST NOT reuse a `pageToken` across different parent
-        resource paths or different path `uuid` values. Servers MUST return `400 Bad Request`
+        used to obtain it. Clients shall not reuse a `pageToken` across different parent
+        resource paths or different path `uuid` values. Servers shall return `400 Bad Request`
         when a `pageToken` is used with a different path or different path parameter values.
 
-        Servers MUST return `400 Bad Request` for malformed, invalid, expired, or conflicting
+        Servers shall return `400 Bad Request` for malformed, invalid, expired, or conflicting
         `pageToken` values.
       in: query
       required: false
@@ -2614,7 +2614,7 @@ components:
       description: |
         The field by which to sort the results.
 
-        Paginated collection results MUST be ordered first by the selected `sortField`,
+        Paginated collection results shall be ordered first by the selected `sortField`,
         then by `version` as the deterministic secondary key if additional tie-breaking
         is needed. Collection UUIDs are not used as tie-breakers because collection UUIDs
         match the associated release UUID and can be shared across collection revisions.
@@ -2633,7 +2633,7 @@ components:
       description: |
         The field by which to sort the results.
 
-        Paginated results MUST be ordered first by the selected `sortField`, then by `uuid`
+        Paginated results shall be ordered first by the selected `sortField`, then by `uuid`
         as a deterministic secondary tie-breaker.
       in: query
       required: false
@@ -2647,15 +2647,15 @@ components:
       description: |
         The field by which to sort the results.
 
-        Paginated results MUST be ordered first by the selected `sortField`, then by `uuid`
+        Paginated results shall be ordered first by the selected `sortField`, then by `uuid`
         as a deterministic secondary tie-breaker.
 
         When `version` is selected, ordering is by the stored version string according to
         the server's documented string collation; semantic-version precedence is not implied.
-        Servers MUST apply a stable and deterministic string collation for version sorting,
-        and the same collation MUST be used consistently across pages for a pagination sequence.
+        Servers shall apply a stable and deterministic string collation for version sorting,
+        and the same collation shall be used consistently across pages for a pagination sequence.
 
-        When `releaseDate` is selected, releases without a `releaseDate` MUST be ordered
+        When `releaseDate` is selected, releases without a `releaseDate` shall be ordered
         consistently. Missing `releaseDate` values sort after populated `releaseDate` values
         for ascending order and before populated `releaseDate` values for descending order.
       in: query
@@ -2672,7 +2672,7 @@ components:
       description: |
         The field by which to sort the results.
 
-        Paginated results MUST be ordered first by the selected `sortField`, then by `uuid`
+        Paginated results shall be ordered first by the selected `sortField`, then by `uuid`
         as a deterministic secondary tie-breaker.
       in: query
       required: false
@@ -2686,15 +2686,15 @@ components:
       description: |
         The field by which to sort the results.
 
-        Paginated results MUST be ordered first by the selected `sortField`, then by `uuid`
+        Paginated results shall be ordered first by the selected `sortField`, then by `uuid`
         as a deterministic secondary tie-breaker.
 
         When `version` is selected, ordering is by the stored version string according to
         the server's documented string collation; semantic-version precedence is not implied.
-        Servers MUST apply a stable and deterministic string collation for version sorting,
-        and the same collation MUST be used consistently across pages for a pagination sequence.
+        Servers shall apply a stable and deterministic string collation for version sorting,
+        and the same collation shall be used consistently across pages for a pagination sequence.
 
-        When `releaseDate` is selected, releases without a `releaseDate` MUST be ordered
+        When `releaseDate` is selected, releases without a `releaseDate` shall be ordered
         consistently. Missing `releaseDate` values sort after populated `releaseDate` values
         for ascending order and before populated `releaseDate` values for descending order.
       in: query
