@@ -281,6 +281,16 @@ The TEA collection is normally created by the TEA application server at
 publication time of artefacts. The publisher may sign the collection
 object as a JSON file at time of publication.
 
+A release is never served without a collection. If no artifacts have been
+published when the release first becomes retrievable, the server serves
+collection version 1 with an empty `artifacts` list and
+`updateReason.type: INITIAL_RELEASE`. That version is immutable like any
+other; the first artifacts are published as version 2 with
+`ARTIFACT_ADDED`. A publisher that publishes the release and its artifacts
+together never has an empty version and starts at version 1 with content.
+In both cases version 1 is the first collection a client could have retrieved.
+A server may also synthesize the collection dynamically (see below).
+
 If there are any updates of artefacts within a collection for the same
 version of a product, then a new TEA Collection object is created and signed.
 This update will have the same UUID, but a new version number. A reason
@@ -314,14 +324,13 @@ to implement this:
     When updating a collection, only the `version` is changed.
   - __version__: TEA Collection version, incremented each time its content changes.
     Versions start with 1.
-  - __date__: TEA Collection version release date.
-  - __belongsTo__: Scope of the collection; enum values `RELEASE` or `PRODUCT_RELEASE`.
+  - __createdDate__: TEA Collection version release date.
+  - __belongsTo__: Scope of the collection; enum values `COMPONENT_RELEASE` or `PRODUCT_RELEASE`.
   - __updateReason__: Reason for the update/release of the TEA Collection object.
     - __type__: Type of update reason.
       See [reasons for TEA Collection update](#the-reason-for-tco-update-enum) below.
     - __comment__: Free text description.
-  -
-  - __artifacts__: List of TEA Artifact objects.
+  - __artifacts__: List of TEA Artifact objects (required; may be empty).
     See [below](#tea-artifact-object).
 
 ## TEA Artifact object
@@ -420,7 +429,8 @@ producing different alerts than other changes of a collection.
 {
   "uuid": "4c72fe22-9d83-4c2f-8eba-d6db484f32c8",
   "version": 10,
-  "date": "2024-12-13T00:00:00Z",
+  "createdDate": "2024-12-13T00:00:00Z",
+  "belongsTo": "COMPONENT_RELEASE",
   "updateReason": {
     "type": "ARTIFACT_UPDATED",
     "comment": "VDR file updated"

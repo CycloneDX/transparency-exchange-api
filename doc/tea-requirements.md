@@ -26,7 +26,7 @@ This can be handled using the file security.txt (IETF RFC 9116)
 The API MUST provide a way to discover the artefacts that are available for retrieval or further query.
 Discovery SHOULD group artefacts together that represent a **collection**
 that are directly applicable to a given product with a given version.
-Collections are OPTIONAL.
+Every release has a collection, which may be empty.
 
 - SBOM - Software Bill of Material
 - CBOM - Cryptography Bill of Material
