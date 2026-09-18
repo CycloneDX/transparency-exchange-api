@@ -1814,6 +1814,7 @@ components:
       enum:
         - OBJECT_UNKNOWN
         - OBJECT_NOT_SHAREABLE
+        - NOT_IMPLEMENTED
     #
     # Types used in API responses
     #
@@ -1913,7 +1914,11 @@ components:
         - withdrawn
     cle-version-specifier:
       type: object
-      description: A version specifier that can be either a single version or a version range
+      description: |
+        Which versions an event affects. Exactly one of `version` or `range`. `range` is an
+        ECMA-428 version specification (`vers`). `version` names a single version without a
+        `vers` scheme and is a TEA extension: it maps to `vers:<scheme>/<version>` when the
+        ecosystem is known.
       properties:
         version:
           type: string
@@ -1962,7 +1967,9 @@ components:
           description: Version string that supersedes the affected versions (used by supersededBy event type)
         identifiers:
           type: array
-          description: New identifiers for the component (used by componentRenamed event type)
+          description: |
+            New identifiers for the component (`componentRenamed` only), in the TEA
+            `identifier` shape. Corresponds to CLE `identifiers[]` with `type` / `value`.
           items:
             $ref: "#/components/schemas/identifier"
         eventId:
@@ -2032,14 +2039,41 @@ components:
     cle:
       type: object
       description: |
-        Common Lifecycle Enumeration (CLE) object based on ECMA-428 TC54 TG3 CLE Specification v1.0.0.
-        Contains lifecycle events and optional reusable definitions for a component or product.
+        Lifecycle events for the object this endpoint is called on, as a TEA projection of
+        the Common Lifecycle Enumeration (ECMA-428, 1st edition).
+
+        This is not a CLE document. The document envelope (`$schema`, `identifier`,
+        `updatedAt`, and `index` / `next` page chaining) is not carried: the TEA object the
+        response belongs to supplies the identity, and TEA has its own pagination. The event
+        vocabulary, ordering and semantics are those of ECMA-428; the field shapes are TEA's.
+        A consumer that needs a CLE document applies the mapping rules below and adds the
+        envelope; a producer that holds a CLE document applies them in reverse. Publishers
+        that need a bit-identical CLE 1.0.0 document publish it as a TEA Artifact in a
+        release collection, as artifact type `OTHER` until a dedicated type exists; the
+        same artifact may be referenced from more than one collection. The CLE endpoints
+        are not a substitute for that document.
+
+        Mapping to ECMA-428:
+        - `identifiers[]` on `componentRenamed` uses the TEA `identifier` shape (`idType`,
+          `idValue`); CLE uses `type` / `value` with the same meaning.
+        - A version specifier `{ version }` names one version without a `vers` scheme,
+          because a TEA server does not always know the package ecosystem. It corresponds to
+          the CLE range `vers:<scheme>/<version>` once the scheme is known. `{ range }` is a
+          CLE range as-is.
+        - `cle-event` is one flat object. The fields ECMA-428 requires or permits for each
+          event type apply as written there; servers shall populate the required ones and
+          omit fields that do not belong to the type.
+
+        `events` shall be ordered by `id` descending, as in ECMA-428. A server that provides CLE
+        for an object answers `200`, with an empty `events` array when no event has been
+        recorded yet. A server that does not provide CLE for the object answers `404` with
+        `error: NOT_IMPLEMENTED`; `error: OBJECT_UNKNOWN` means the object itself is unknown.
       properties:
         events:
           type: array
           description: |
-            Ordered array of CLE Event objects representing lifecycle events.
-            MUST be ordered by ID in descending order (newest events with highest IDs first).
+            Array of CLE Event objects representing lifecycle events. Events shall be ordered
+            by id descending (newest events with highest IDs first).
           items:
             $ref: "#/components/schemas/cle-event"
         definitions:
@@ -2475,21 +2509,30 @@ components:
             error: invalid_client
     404-object-by-id-not-found:
       description: |
-        Object requested by identifier not found, or the server intentionally conceals
-        the object's existence from an authenticated but unauthorized client. Clients
-        shall not infer from `404` alone whether the object is absent or withheld.
+        Either the object is unknown to this server, or — where an endpoint documents it —
+        the server does not provide an optional capability for that object. The cases are
+        told apart by the TEA error body, never by the status alone:
+
+        - `error: OBJECT_UNKNOWN` — no such object (or its existence is concealed from this
+          client).
+        - `error: NOT_IMPLEMENTED` — the object exists, but this server does not provide
+          the optional capability for it (for CLE: lifecycle data). CLE is optional in TEA;
+          this is the expected answer from a server that has not implemented it, and
+          clients shall not treat it as a failure.
 
         Concealment applies only after authentication. A request to a protected object
         with no valid access token shall receive `401` (see `401-unauthorized`), not a
-        concealing `404`.
-
-        Body is a TEA `error-response`, typically `error: OBJECT_UNKNOWN`.
+        concealing `404`. Clients shall not infer from `404` alone whether the object is
+        absent, withheld, or lacking an optional capability.
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/error-response"
-          example:
-            error: OBJECT_UNKNOWN
+          examples:
+            unknown:
+              value: { error: OBJECT_UNKNOWN }
+            notImplemented:
+              value: { error: NOT_IMPLEMENTED }
     discovery-response:
       description: Discovery information for the requested TEI
       content:
