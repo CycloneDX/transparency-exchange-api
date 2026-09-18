@@ -206,7 +206,8 @@ __should not__ assume that a client certificate for one service is trusted anywh
 
 All of the above assumes TLS. Credentials and bearer tokens are transmitted in the clear at the HTTP
 layer, so a TEA server __shall__ be reachable only over TLS, and clients __shall__ verify the server
-certificate. This restates RFC 6749 section 3.2 and RFC 6750 section 5.
+certificate, including the server identity check of [RFC 9525](https://www.rfc-editor.org/rfc/rfc9525).
+This restates RFC 6749 section 3.2 and RFC 6750 section 5.
 
 ## Client flow
 

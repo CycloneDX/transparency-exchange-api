@@ -24,7 +24,7 @@ info:
   version: 0.5.0
 servers:
   - url: http://localhost/tea/v1.0.0
-    description: Local development
+    description: Local development only; HTTPS is required outside local testing
 paths:
   /product/{uuid}:
     get:
@@ -1387,11 +1387,19 @@ components:
             $ref: "#/components/schemas/identifier"
         url:
           type: string
-          description: Direct download URL for the distribution.
+          description: |
+            Direct download URL for the distribution. This is always a location outside
+            the TEA API. A TEA access token is sent only to the TEA server's own API base
+            URL, never to an external URL: distribution locations are either openly
+            accessible, pre-signed, or covered by credentials the client arranges
+            separately.
           format: uri
         signatureUrl:
           type: string
-          description: Direct download URL for the distribution's external signature.
+          description: |
+            Direct download URL for the distribution's external signature. As with `url`,
+            this is always a location outside the TEA API. A TEA access token is sent only
+            to the TEA server's own API base URL, never to an external URL.
           format: uri
         checksums:
           type: array
@@ -1830,9 +1838,14 @@ components:
       additionalProperties: false
       properties:
         rootUrl:
-          description: Root URL of the TEA server for this TEI without trailing slash
+          description: |
+            Absolute API base URL for this TEA server, without trailing slash. Shall not
+            include userinfo, query, or fragment. The scheme match is lowercase only
+            (normalized form). Conforming deployments use lowercase `https`; `http` is
+            allowed only so local-test documents still validate.
           type: string
           format: uri
+          pattern: '^https?://[^/?#@]+(/[^?#\s]*[^/?#\s])?$'
           example: https://api.teaexample.com
         versions:
           description: |
