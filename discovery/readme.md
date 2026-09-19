@@ -95,16 +95,22 @@ The TEI consists of three core parts
 ```text
 tei://<domain-name>/<type>/<unique-identifier>
 ````
-
+- The **scheme** is a constant value of 'tei'
 - The **`domain-name`** part resolves into a web server, which may not be the API host.
   - The uniqueness of the name is the domain name part that has to be registred at creation of the TEI.
 - The **`type`** which defines the syntax of the unique identifier part. Types are declared in the
-  specification. If there is a need for new types, please inform ECMA TC54.
+  specification. If there is a need for new types, please inform ECMA TC54 TG1. 
+  - The type shall be composed of ASCII letters and numbers, period '.' and dash '-'.
+  - The type shall start with an ASCII letter.
+  - The type shall not be percent-encoded
+  - The type is case insensitive and lowercase
+  - The type shall be followed by a forward slash '/'.
 - The **`unique-identifier`** has to be unique within the `domain-name`.
   Recommendation is to use a UUID but it can be an existing article code too. The
   identifier is in some cases (depending on type) encoded using BASE64URL encoding (RFC 4648 section 5).
 - Port number is not allowed in the `domain-name` part of a TEI URL.
 
+A TEI is a vlid URI scheme that conforms to the URI definitions or specifications in RFC 3986.
 
 ### TEI types
 
