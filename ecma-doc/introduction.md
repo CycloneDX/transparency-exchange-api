@@ -17,6 +17,8 @@ product related artefacts, like BOMs, between systems. The work includes:
 System and tooling implementors are encouraged to adopt this API standard for
 sending/receiving transparency artefacts between systems. 
 This will enable more widespread "out of the box" integration support in the BOM ecosystem.
+In addition, it will support automatic delivery of upstream vulnerability assessments,
+such as VEX files.
 
 ## Data model
 
@@ -60,3 +62,15 @@ Inclusion of CLE is optional and it may be introduced on the following levels:
 
 If CLE is included, it is the responsibility of the TEA implementation to ensure consistency of
 CLE events across the TEA Product and its releases and similarly across the TEA Component and its releases.
+
+# Background
+
+The Transparency Exchange API standard is created by OWASP CycloneDX in ECMA TC54 - Software and system transparency.
+TEA depends on and is developed alongside with related ECMA standards, such as:
+
+- PURL, Package URL ECMA-427
+- CycloneDX ECMA-424
+- Common Lifecycle Enumeration ECMA-428
+- VERS, VErsion Range Specifier
+
+For more information of these and releated standards, visit https://tc54.org
