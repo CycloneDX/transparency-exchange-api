@@ -20,7 +20,8 @@ info:
     url: https://tc54.org/tea/
   license:
     name: Apache 2.0
-    url: https://github.com/CycloneDX/transparency-exchange-api/blob/main/LICENSE
+    identifier: Apache-2.0
+    # https://github.com/CycloneDX/transparency-exchange-api/blob/main/LICENSE
   version: 0.5.0
 servers:
   - url: http://localhost/tea/v1.0.0
