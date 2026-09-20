@@ -1358,6 +1358,13 @@ components:
               idValue: cpe:2.3:a:apache:log4j
             - idType: PURL
               idValue: pkg:maven/org.apache.logging.log4j/log4j-core
+        - uuid: c71b316e-ae77-11f1-aafb-1a52914d44b2
+          name: Apache Tomcat
+          identifiers:
+            - idType: CPE
+              idValue: cpe:2.3:a:apache:tomcat
+            - idType: PURL
+              idValue: pkg:maven/org.apache.tomcat/tomcat
 
 #
     # Reference to a component, in some cases directly to a specific release
@@ -1431,6 +1438,16 @@ components:
         - createdDate
         - component
       examples:
+        # Apache Log4j Core 2.24.3, the release the collection example belongs to
+        - uuid: da89e38e-95e7-44ca-aa7d-f3b6b34c7fab
+          version: "2.24.3"
+          component: b844c9bd-55d6-478c-af59-954a932b6ad3
+          componentName: Apache Log4j Core
+          createdDate: 2024-12-10T10:51:00Z
+          releaseDate: 2024-12-13T12:52:29Z
+          identifiers:
+            - idType: PURL
+              idValue: pkg:maven/org.apache.logging.log4j/log4j-core@2.24.3
         # Apache Tomcat 11.0.7
         - uuid: 605d0ecb-1057-40e4-9abf-c400b10f0345
           version: "11.0.7"
@@ -2640,9 +2657,9 @@ components:
     304-not-modified:
       description: |
         The selected download representation has not changed (RFC 9110). The response
-        body is empty. Servers shall repeat `ETag`, `Cache-Control`, `Content-Location`,
-        and `Vary` (when used on the corresponding `200`) from the would-be successful
-        response for this operation.
+        body is empty. Servers shall repeat `ETag` and `Content-Location` from the
+        would-be successful response for this operation, and shall repeat `Cache-Control`
+        and `Vary` when the corresponding `200` carries them.
       headers:
         ETag:
           description: |
