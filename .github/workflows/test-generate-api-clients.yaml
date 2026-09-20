@@ -10,7 +10,11 @@ concurrency:
     cancel-in-progress: true
 
 env:
-    OPEN_API_GENERATOR_VERSION: 'v7.12.0'
+    # v7.12.0 omits `field_validator` imports when the only patterned fields are
+    # `format: date-time` (shared date-time schema / CLE timestamps after #302).
+    # v7.21+ always imports it; v7.24+ also uses mode="before" so the pattern runs
+    # on the raw string before datetime coercion.
+    OPEN_API_GENERATOR_VERSION: 'v7.24.0'
     PYTHON_VERSION_DEFAULT: '3.12'
     POETRY_VERSION: '1.8.1'
 
