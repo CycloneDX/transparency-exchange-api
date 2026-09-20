@@ -54,11 +54,11 @@ sequenceDiagram
     end
 
     user ->> tea_product_release: Resolve Product Release Details
-    tea_product_release -->> user: List of Component Releases
+    tea_product_release -->> user: Product Release with its latest Collection and the list of Component Releases
 
     loop For each tea_component_release
-        user ->> tea_component_release: Obtain latest collections
-        tea_component_release -->> user: List of TEA Artifacts
+        user ->> tea_component_release: Resolve Component Release Details
+        tea_component_release -->> user: Component Release with its latest Collection (list of TEA Artifacts)
     end
 
 ```
