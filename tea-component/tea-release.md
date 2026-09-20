@@ -14,7 +14,7 @@ which capture variations such as architecture, packaging, or localization.
   (e.g., by platform or packaging type).
 - For hardware components, distributions may reflect differences in packaging, language, or other physical attributes.
 
-Each distribution is assigned a unique `distributionOd`, defined by the producer,
+Each distribution is assigned a unique `distributionId`, defined by the producer,
 which is used to associate relevant TEA Artifacts with that distribution.
 Since TEA Artifacts can be associated with multiple release objects,
 the taxonomy for `distributionId` values should be defined on a TEA service level
@@ -30,14 +30,14 @@ Key attributes:
 - __createdDate__: Timestamp when this Release was created in TEA (for sorting purposes)
 - __releaseDate__: Timestamp of the release
 - __preRelease__: A flag indicating pre-release (or beta) status. May be disabled after the creation of the release object, but can't be enabled after creation of an object.
-- __identifiers__: Array of identifiers for the component
+- __identifiers__: Array of identifiers for the component release
 - __distributions__: List of different formats of this component release
 
 Collections for a release contain artifacts relevant to that specific release.
 
 Required fields:
 
-- uuid, version, createdDate
+- uuid, component, version, createdDate
 
 ## TEA component release distribution object
 
@@ -65,14 +65,16 @@ The following examples are reused from the OpenAPI schema (`components/schemas/r
 
 ```json
 {
-  "uuid": "605d0ecb-1057-40e4-9abf-c400b10f0345",
-  "version": "11.0.6",
-  "createdDate": "2025-04-01T15:43:00Z",
-  "releaseDate": "2025-04-01T15:43:00Z",
+  "uuid": "da89e38e-95e7-44ca-aa7d-f3b6b34c7fab",
+  "version": "2.24.3",
+  "component": "b844c9bd-55d6-478c-af59-954a932b6ad3",
+  "componentName": "Apache Log4j Core",
+  "createdDate": "2024-12-10T10:51:00Z",
+  "releaseDate": "2024-12-13T12:52:29Z",
   "identifiers": [
     {
       "idType": "PURL",
-      "idValue": "pkg:maven/org.apache.tomcat/tomcat@11.0.6"
+      "idValue": "pkg:maven/org.apache.logging.log4j/log4j-core@2.24.3"
     }
   ]
 }
@@ -80,14 +82,15 @@ The following examples are reused from the OpenAPI schema (`components/schemas/r
 
 ```json
 {
-  "uuid": "da89e38e-95e7-44ca-aa7d-f3b6b34c7fab",
-  "version": "10.1.40",
-  "createdDate": "2025-04-01T18:20:00Z",
-  "releaseDate": "2025-04-01T18:20:00Z",
+  "uuid": "605d0ecb-1057-40e4-9abf-c400b10f0345",
+  "version": "11.0.7",
+  "component": "c71b316e-ae77-11f1-aafb-1a52914d44b2",
+  "createdDate": "2025-05-07T18:08:00Z",
+  "releaseDate": "2025-05-12T18:08:00Z",
   "identifiers": [
     {
       "idType": "PURL",
-      "idValue": "pkg:maven/org.apache.tomcat/tomcat@10.1.40"
+      "idValue": "pkg:maven/org.apache.tomcat/tomcat@11.0.7"
     }
   ]
 }
@@ -97,6 +100,7 @@ The following examples are reused from the OpenAPI schema (`components/schemas/r
 {
   "uuid": "95f481df-f760-47f4-b2f2-f8b76d858450",
   "version": "11.0.0-M26",
+  "component": "c71b316e-ae77-11f1-aafb-1a52914d44b2",
   "createdDate": "2024-09-13T17:49:00Z",
   "preRelease": true,
   "identifiers": [
@@ -124,6 +128,7 @@ This structure also allows for future extensibility if additional distributions 
 {
   "uuid": "b1e2c3d4-5678-49ab-9cde-123456789abc",
   "version": "2.24.3",
+  "component": "b844c9bd-55d6-478c-af59-954a932b6ad3",
   "createdDate": "2024-12-10T10:51:00Z",
   "releaseDate": "2024-12-13T12:52:29Z",
   "identifiers": [
@@ -183,6 +188,7 @@ ensuring accurate risk assessment and remediation.
 {
   "uuid": "605d0ecb-1057-40e4-9abf-c400b10f0345",
   "version": "11.0.7",
+  "component": "c71b316e-ae77-11f1-aafb-1a52914d44b2",
   "createdDate": "2025-05-07T18:08:00Z",
   "releaseDate": "2025-05-12T18:08:00Z",
   "identifiers": [
@@ -203,7 +209,7 @@ ensuring accurate risk assessment and remediation.
       ],
       "checksums": [
         {
-          "algType": "SHA_256",
+          "algType": "SHA-256",
           "algValue": "9da736a1cdd27231e70187cbc67398d29ca0b714f885e7032da9f1fb247693c1"
         }
       ],
@@ -221,7 +227,7 @@ ensuring accurate risk assessment and remediation.
       ],
       "checksums": [
         {
-          "algType": "SHA_256",
+          "algType": "SHA-256",
           "algValue": "2fcece641c62ba1f28e1d7b257493151fc44f161fb391015ee6a95fa71632fb9"
         }
       ],
@@ -239,19 +245,19 @@ ensuring accurate risk assessment and remediation.
       ],
       "checksums": [
         {
-          "algType": "SHA_256",
+          "algType": "SHA-256",
           "algValue": "62a5c358d87a8ef21d7ec1b3b63c9bbb577453dda9c00cbb522b16cee6c23fc4"
         }
       ],
       "url": "https://repo.maven.apache.org/maven2/org/apache/tomcat/tomcat/11.0.7/tomcat-11.0.7-windows-x64.zip",
-      "signatureUrl": "https://repo.maven.apache.org/maven2/org/apache/tomcat/tomcat/11.0.7/tomcat-11.0.7.zip.asc"
+      "signatureUrl": "https://repo.maven.apache.org/maven2/org/apache/tomcat/tomcat/11.0.7/tomcat-11.0.7-windows-x64.zip.asc"
     },
     {
       "distributionId": "windows-x64.exe",
       "description": "Core binary distribution, Windows Service Installer (MSI)",
       "checksums": [
         {
-          "algType": "SHA_512",
+          "algType": "SHA-512",
           "algValue": "1d3824e7643c8aba455ab0bd9e67b14a60f2aaa6aa7775116bce40eb0579e8ced162a4f828051d3b867e96ee2858ec5da0cc654e83a83ba30823cbea0df4ff96"
         }
       ],
@@ -291,6 +297,7 @@ There are two main scenarios for using the `preRelease` flag:
   {
     "uuid": "e2a1c7b4-3f2d-4e8a-9c1a-7b2e4d5f6a8b",
     "version": "11.0.0",
+    "component": "c71b316e-ae77-11f1-aafb-1a52914d44b2",
     "createdDate": "2025-09-01T00:00:00Z",
     "preRelease": true,
     "identifiers": [
@@ -306,6 +313,7 @@ There are two main scenarios for using the `preRelease` flag:
   {
     "uuid": "e2a1c7b4-3f2d-4e8a-9c1a-7b2e4d5f6a8b",
     "version": "11.0.0",
+    "component": "c71b316e-ae77-11f1-aafb-1a52914d44b2",
     "createdDate": "2025-09-01T00:00:00Z",
     "releaseDate": "2025-09-10T12:00:00Z",
     "preRelease": false,
@@ -322,6 +330,7 @@ There are two main scenarios for using the `preRelease` flag:
   {
     "uuid": "95f481df-f760-47f4-b2f2-f8b76d858450",
     "version": "11.0.0-M26",
+    "component": "c71b316e-ae77-11f1-aafb-1a52914d44b2",
     "createdDate": "2024-09-13T17:49:00Z",
     "releaseDate": "2024-09-16T17:49:00Z",
     "preRelease": true,
