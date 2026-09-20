@@ -2201,6 +2201,15 @@ components:
           event type apply as written there; servers shall populate the required ones and
           omit fields that do not belong to the type.
 
+        Selection. Servers shall return in `events` a subset of the events of the CLE data
+        they hold for the component or product, and shall not alter an event beyond the
+        mapping above. On a release endpoint, servers may omit events whose `versions` do
+        not cover the release's `version`; servers shall not otherwise reduce the set, and
+        in particular shall not collapse it to the latest event per type. Servers shall
+        not renumber event `id` values. Servers shall include a `withdrawn` event if, and
+        only if, they include the event it withdraws. `definitions.support` shall contain
+        at least the policies referenced by the included events.
+
         `events` shall be ordered by `id` descending, as in ECMA-428. A server that provides CLE
         for an object answers `200`, with an empty `events` array when no event has been
         recorded yet. A server that does not provide CLE for the object answers `404` with
