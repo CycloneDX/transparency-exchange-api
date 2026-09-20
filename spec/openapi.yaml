@@ -1489,7 +1489,7 @@ components:
               url: https://repo.maven.apache.org/maven2/org/apache/tomcat/tomcat/11.0.7/tomcat-11.0.7-windows-x64.zip
               signatureUrl: https://repo.maven.apache.org/maven2/org/apache/tomcat/tomcat/11.0.7/tomcat-11.0.7-windows-x64.zip.asc
             - distributionId: de45ffaf-e4b5-47b5-be28-444a76df098e
-              description: Core binary distribution, Windows Service Installer (MSI)
+              description: Core binary distribution, Windows Service Installer (.exe)
               checksums:
                 - algType: SHA-512
                   algValue: 1d3824e7643c8aba455ab0bd9e67b14a60f2aaa6aa7775116bce40eb0579e8ced162a4f828051d3b867e96ee2858ec5da0cc654e83a83ba30823cbea0df4ff96
@@ -1575,7 +1575,7 @@ components:
           url: https://repo.maven.apache.org/maven2/org/apache/tomcat/tomcat/11.0.7/tomcat-11.0.7-windows-x64.zip
           signatureUrl: https://repo.maven.apache.org/maven2/org/apache/tomcat/tomcat/11.0.7/tomcat-11.0.7-windows-x64.zip.asc
         - distributionId: de45ffaf-e4b5-47b5-be28-444a76df098e
-          description: Core binary distribution, Windows Service Installer (MSI)
+          description: Core binary distribution, Windows Service Installer (.exe)
           checksums:
             - algType: SHA-512
               algValue: 1d3824e7643c8aba455ab0bd9e67b14a60f2aaa6aa7775116bce40eb0579e8ced162a4f828051d3b867e96ee2858ec5da0cc654e83a83ba30823cbea0df4ff96
