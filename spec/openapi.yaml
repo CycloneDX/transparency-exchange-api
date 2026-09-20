@@ -2222,8 +2222,9 @@ components:
         they hold for the component or product, and shall not alter an event beyond the
         mapping above. On a release endpoint, servers may omit events scoped to other
         versions: events whose `versions` do not cover the release's `version`, and
-        `released` events whose `version` differs from it. Events that name no version
-        apply to the component as a whole and are retained. Servers shall not otherwise
+        `released` events whose `version` differs from it. Events that name no version,
+        other than `withdrawn` events, apply to the component as a whole and are retained.
+        Inclusion of `withdrawn` events follows the rule below. Servers shall not otherwise
         reduce the set, and in particular shall not collapse it to the latest event per
         type. Servers shall not renumber event `id` values. Servers shall include a
         `withdrawn` event if, and only if, they include the event it withdraws.
