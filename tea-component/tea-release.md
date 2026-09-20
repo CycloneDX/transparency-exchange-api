@@ -61,7 +61,7 @@ Required fields:
 
 ## JSON examples
 
-The following examples are reused from the OpenAPI schema (`components/schemas/release.examples`), ensuring exact field names and casing.
+The following examples are reused from the OpenAPI schema (`components/schemas/component-release.examples`), ensuring exact field names and casing.
 
 ```json
 {

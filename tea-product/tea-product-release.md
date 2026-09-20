@@ -23,7 +23,7 @@ Collections for a product release contain artefacts relevant to that product rel
 
 ## JSON examples
 
-The following example is reused from the OpenAPI schema (`components/schemas/productRelease.examples`), ensuring exact field names and casing.
+The following example is reused from the OpenAPI schema (`components/schemas/product-release.examples`), ensuring exact field names and casing.
 
 ```json
 {
