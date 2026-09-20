@@ -14,12 +14,12 @@ which capture variations such as architecture, packaging, or localization.
   (e.g., by platform or packaging type).
 - For hardware components, distributions may reflect differences in packaging, language, or other physical attributes.
 
-Each distribution is assigned a `distributionId`, a UUID minted by the producer,
+Each distribution is assigned a `distributionId`, a UUID defined by the producer,
 which is used to associate relevant TEA Artifacts with that distribution.
 Since TEA Artifacts can be associated with multiple release objects, a
-`distributionId` is globally unique and is not reused for a different distribution,
-so the association stays reliable across releases. What a distribution represents
-for the producer is carried by its `description`, not by its identifier.
+`distributionId` is unique within the TEA server and is not reused for a different
+distribution, so the association stays reliable across releases. What a distribution
+represents for the producer is carried by its `description`, not by its identifier.
 
 Key attributes:
 
@@ -255,7 +255,7 @@ The `description` of a distribution carries what it represents; the identifier i
     },
     {
       "distributionId": "de45ffaf-e4b5-47b5-be28-444a76df098e",
-      "description": "Core binary distribution, Windows Service Installer (MSI)",
+      "description": "Core binary distribution, Windows Service Installer (.exe)",
       "checksums": [
         {
           "algType": "SHA-512",
