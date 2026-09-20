@@ -14,12 +14,12 @@ which capture variations such as architecture, packaging, or localization.
   (e.g., by platform or packaging type).
 - For hardware components, distributions may reflect differences in packaging, language, or other physical attributes.
 
-Each distribution is assigned a unique `distributionId`, defined by the producer,
+Each distribution is assigned a `distributionId`, a UUID minted by the producer,
 which is used to associate relevant TEA Artifacts with that distribution.
-Since TEA Artifacts can be associated with multiple release objects,
-the taxonomy for `distributionId` values should be defined on a TEA service level
-and consistently applied to all TEA Artifacts published by that producer.
-This ensures global uniqueness and reliable association across releases.
+Since TEA Artifacts can be associated with multiple release objects, a
+`distributionId` is globally unique and is not reused for a different distribution,
+so the association stays reliable across releases. What a distribution represents
+for the producer is carried by its `description`, not by its identifier.
 
 Key attributes:
 
@@ -139,8 +139,8 @@ This structure also allows for future extensibility if additional distributions 
   ],
   "distributions": [
     {
-      "distributionId": "jar",
-      "description": "Binary distribution",
+      "distributionId": "0f3b9c51-2a4d-4a1e-9f6c-7d8e5b3a2c14",
+      "description": "Binary distribution, JAR",
       "identifiers": [
         {
           "idType": "PURL",
@@ -164,22 +164,23 @@ This structure also allows for future extensibility if additional distributions 
 #### Multiple distributions
 
 This is an example of a TEA Component Release for Apache Tomcat 11.0.7 binary distributions.
-The example defines four distinct `distributionId`s,
+The example defines four distinct distributions,
 which is essential not only for associating the correct SBOMs with each distribution,
 but also for accurately tracking and reporting vulnerabilities that may affect only specific distributions.
 For instance:
 
-- The `zip` and `tar.gz` distributions contain only Java JARs.
-- The `windows-x64.zip` distribution additionally includes the
+- The zip and tar.gz archives contain only Java JARs.
+- The Windows x64 zip archive additionally includes the
   [Apache Procrun](https://commons.apache.org/proper/commons-daemon/procrun.html) binary,
   which is specific to Windows and may introduce unique vulnerabilities.
-- The `windows-x64.exe` distribution contains the same data as `windows-x64.zip`,
+- The Windows Service Installer contains the same data as the Windows x64 zip archive,
   but is packaged as a self-extracting installer
   created by the [Nullsoft Scriptable Install System](https://nsis.sourceforge.io/Main_Page).
 
-By defining separate `distributionId`s,
+By giving each of these its own `distributionId`,
 it becomes possible to precisely associate artefacts and vulnerability disclosures with the affected distributions,
 ensuring accurate risk assessment and remediation.
+The `description` of a distribution carries what it represents; the identifier itself is opaque.
 
 <details>
   <summary>Example of four different binary distributions in the same release</summary>
@@ -199,7 +200,7 @@ ensuring accurate risk assessment and remediation.
   ],
   "distributions": [
     {
-      "distributionId": "zip",
+      "distributionId": "6a0d58e1-4896-4f1e-83f7-5feb6c032537",
       "description": "Core binary distribution, zip archive",
       "identifiers": [
         {
@@ -217,7 +218,7 @@ ensuring accurate risk assessment and remediation.
       "signatureUrl": "https://repo.maven.apache.org/maven2/org/apache/tomcat/tomcat/11.0.7/tomcat-11.0.7.zip.asc"
     },
     {
-      "distributionId": "tar.gz",
+      "distributionId": "dba01c13-dd96-4928-be72-9c87ffa8cab8",
       "description": "Core binary distribution, tar.gz archive",
       "identifiers": [
         {
@@ -235,7 +236,7 @@ ensuring accurate risk assessment and remediation.
       "signatureUrl": "https://repo.maven.apache.org/maven2/org/apache/tomcat/tomcat/11.0.7/tomcat-11.0.7.tar.gz.asc"
     },
     {
-      "distributionId": "windows-x64.zip",
+      "distributionId": "cfe068c2-fae7-43d0-97ec-5ea092454040",
       "description": "Core binary distribution, Windows x64 zip archive",
       "identifiers": [
         {
@@ -253,7 +254,7 @@ ensuring accurate risk assessment and remediation.
       "signatureUrl": "https://repo.maven.apache.org/maven2/org/apache/tomcat/tomcat/11.0.7/tomcat-11.0.7-windows-x64.zip.asc"
     },
     {
-      "distributionId": "windows-x64.exe",
+      "distributionId": "de45ffaf-e4b5-47b5-be28-444a76df098e",
       "description": "Core binary distribution, Windows Service Installer (MSI)",
       "checksums": [
         {
