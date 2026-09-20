@@ -22,7 +22,7 @@ info:
     name: Apache 2.0
     identifier: Apache-2.0
     # https://github.com/CycloneDX/transparency-exchange-api/blob/main/LICENSE
-  version: 0.5.0
+  version: 1.0.0
 servers:
   - url: http://localhost/tea/v1.0.0
     description: Local development only; HTTPS is required outside local testing
@@ -566,7 +566,7 @@ paths:
         - name: uuid
           in: path
           required: true
-          description: UUID of TEA Collection in the TEA server
+          description: UUID of TEA Component Release in the TEA server
           schema:
             "$ref": "#/components/schemas/uuid"
         - name: collectionVersion
@@ -670,12 +670,12 @@ paths:
         `mediaType` query parameter; clients that need a stable, reproducible reference
         use that URL.
 
-        Servers shall return a strong `ETag` for the selected representation and shall
-        honor `If-None-Match` with `304`. `ETag` is the only conditional validator for
-        these downloads. Servers that support `HEAD` for this operation shall return the
-        same headers as `GET` without a response body. `302` redirects are outside
-        conditional semantics: `If-None-Match` applies only to the TEA-hosted download
-        response, not to following an external `Location`.
+        When serving the content itself (`200`), servers shall return a strong `ETag`
+        for the selected representation and shall honor `If-None-Match` with `304`.
+        `ETag` is the only conditional validator for these downloads. Servers that support
+        `HEAD` for this operation shall return the same headers as `GET` without a response
+        body. `302` redirects are outside conditional semantics: `If-None-Match` applies
+        only to the TEA-hosted download response, not to following an external `Location`.
       operationId: downloadLatestArtifact
       parameters:
         - name: uuid
@@ -720,13 +720,12 @@ paths:
         `url` targets are retrieved without it - they are either openly accessible,
         pre-signed, or covered by credentials the client arranges separately.
 
-        Because a TEA Artifact revision is immutable, servers should return a strong
-        `ETag` for the selected representation. When an `ETag` is present, servers shall
-        honor `If-None-Match` with `304`. `ETag` is the only conditional validator for
-        these downloads. Servers that support `HEAD` for this operation shall return the
-        same headers as `GET` without a response body. `302` redirects are outside
-        conditional semantics: `If-None-Match` applies only to the TEA-hosted download
-        response, not to following an external `Location`.
+        When serving the content itself (`200`), servers shall return a strong `ETag`
+        for the selected representation and shall honor `If-None-Match` with `304`.
+        `ETag` is the only conditional validator for these downloads. Servers that support
+        `HEAD` for this operation shall return the same headers as `GET` without a response
+        body. `302` redirects are outside conditional semantics: `If-None-Match` applies
+        only to the TEA-hosted download response, not to following an external `Location`.
 
         How long a cache may retain the response depends on whether the content is
         publicly accessible: see `artifact-cache-control-immutable`. Immutability does
@@ -780,12 +779,12 @@ paths:
         `Content-Location` is an absolute versioned signature URL including the API base,
         version path, and `mediaType` query parameter.
 
-        Servers shall return a strong `ETag` for the selected representation and shall
-        honor `If-None-Match` with `304`. `ETag` is the only conditional validator for
-        these downloads. Servers that support `HEAD` for this operation shall return the
-        same headers as `GET` without a response body. `302` redirects are outside
-        conditional semantics: `If-None-Match` applies only to the TEA-hosted download
-        response, not to following an external `Location`.
+        When serving the signature itself (`200`), servers shall return a strong `ETag`
+        for the selected representation and shall honor `If-None-Match` with `304`.
+        `ETag` is the only conditional validator for these downloads. Servers that support
+        `HEAD` for this operation shall return the same headers as `GET` without a response
+        body. `302` redirects are outside conditional semantics: `If-None-Match` applies
+        only to the TEA-hosted download response, not to following an external `Location`.
 
         `404` distinguishes the cases by TEA error body: `OBJECT_UNKNOWN` when the
         artifact revision is unknown (or concealed), and `SIGNATURE_NOT_FOUND` when the
@@ -848,10 +847,11 @@ paths:
         concealing an artifact from a client shall answer `OBJECT_UNKNOWN` for every
         sub-resource of it, including signatures.
 
-        Servers should return a strong `ETag` for the selected representation. When an
-        `ETag` is present, servers shall honor `If-None-Match` with `304`. `ETag` is the
-        only conditional validator for these downloads. Servers that support `HEAD` for
-        this operation shall return the same headers as `GET` without a response body.
+        When serving the signature itself (`200`), servers shall return a strong `ETag`
+        for the selected representation and shall honor `If-None-Match` with `304`.
+        `ETag` is the only conditional validator for these downloads. Servers that support
+        `HEAD` for this operation shall return the same headers as `GET` without a response
+        body.
         `302` redirects are outside conditional semantics: `If-None-Match` applies only
         to the TEA-hosted download response, not to following an external `Location`.
         Successful responses include `Content-Location` as an absolute URL of this
@@ -905,10 +905,10 @@ paths:
         Clients do not probe this endpoint to discover whether authentication is
         required: they issue the resource request, and a `401` response carrying a
         `WWW-Authenticate: Bearer` challenge is the signal to obtain a token here. A
-        `404` from this endpoint means only that it is not implemented (`error:
-        NOT_IMPLEMENTED` on the shared object-not-found response). A server that does not
-        implement the endpoint shall still answer with that TEA error body; a `404`
-        without a TEA error body is not a conforming answer.
+        `404` from this endpoint, with or without a TEA error body, means only that it is
+        not implemented. A server that mounts the path without implementing the exchange
+        should answer with the shared object-not-found response and `error:
+        NOT_IMPLEMENTED`.
 
         Servers may support additional grant types for federated identity, for example
         SAML 2.0 assertions (RFC 7522) or JWT assertions (RFC 7523), and may authenticate
@@ -1120,7 +1120,9 @@ components:
           description: URI of a human-readable web page with information about the error.
     identifier:
       type: object
-      description: An identifier of a TEA object with a specified type
+      description: |
+        An identifier of a TEA object with a specified type. `COMPLIANCE_DOCUMENT` is
+        valid only on TEA Components and TEA Component Releases (see `identifier-type`).
       properties:
         idType:
           description: Type of identifier, e.g. `TEI`, `PURL`, `CPE`
@@ -1133,7 +1135,14 @@ components:
         - idValue
     identifier-type:
       type: string
-      description: Enumeration of identifiers types
+      description: |
+        Enumeration of identifier types.
+
+        `COMPLIANCE_DOCUMENT` marks a TEA Component or TEA Component Release as carrying a
+        compliance document (for example a SOC 2 report), so that it can be discovered with
+        `idType=COMPLIANCE_DOCUMENT` on `/components` and `/componentReleases`; the
+        document itself is published as a TEA Artifact of the component release. It shall
+        not be used on products, product releases, distributions, or CLE events.
       enum:
         - CPE
         - TEI
@@ -1143,7 +1152,7 @@ components:
       type: string
       description: >
         Well-known compliance document types. When idType is COMPLIANCE_DOCUMENT,
-        the idValue SHOULD be one of these values.
+        the idValue shall be one of these values.
       enum:
         - SOC_2_TYPE_I
         - SOC_2_TYPE_II
@@ -1185,10 +1194,10 @@ components:
         name:
           type: string
           description: |
-            Product name. Within a TEA server, product names SHOULD be unique among
+            Product name. Within a TEA server, product names should be unique among
             products. Uniqueness is an implementation recommendation, not a hard API
             requirement. Product and component names are separate namespaces; a product
-            and a component MAY share the same name.
+            and a component may share the same name.
         identifiers:
           type: array
           description: |
@@ -1242,7 +1251,8 @@ components:
         identifiers:
           type: array
           description: |
-            Array of identifiers for the product release (idType: CPE/TEI/PURL; idValue: string)
+            Array of identifiers for the product release (`idType` is `CPE`, `TEI` or `PURL`;
+            `COMPLIANCE_DOCUMENT` is not valid here)
           items:
             "$ref": "#/components/schemas/identifier"
         components:
@@ -1261,7 +1271,7 @@ components:
       examples:
         - uuid: 123e4567-e89b-12d3-a456-426614174000
           version: "2.24.3"
-          product: c71b316e-ae77-11f1-aafb-1a52914d44b2
+          product: 09e8c73b-ac45-4475-acac-33e6a7314e6d
           createdDate: 2025-04-01T15:43:00Z
           releaseDate: 2025-04-01T15:43:00Z
           identifiers:
@@ -1290,12 +1300,12 @@ components:
       examples:
         - uuid: 123e4567-e89b-12d3-a456-426614174000
           version: "2.24.3"
-          product: c71b316e-ae77-11f1-aafb-1a52914d44b2
+          product: 09e8c73b-ac45-4475-acac-33e6a7314e6d
           createdDate: 2025-04-01T15:43:00Z
           releaseDate: 2025-04-01T15:43:00Z
           identifiers:
             - idType: TEI
-              idValue: tei://vendor.example.com/uuid/c71b316e-ae77-11f1-aafb-1a52914d44b2
+              idValue: tei://vendor.example.com/uuid/47f51950-b0e2-11f1-adc2-1a52914d44b2
           components:
             - uuid: 3910e0fd-aff4-48d6-b75f-8bf6b84687f0
             - uuid: b844c9bd-55d6-478c-af59-954a932b6ad3
@@ -1322,10 +1332,10 @@ components:
         name:
           type: string
           description: |
-            Component name. Within a TEA server, component names SHOULD be unique among
+            Component name. Within a TEA server, component names should be unique among
             components. Uniqueness is an implementation recommendation, not a hard API
             requirement. Product and component names are separate namespaces; a product
-            and a component MAY share the same name.
+            and a component may share the same name.
         identifiers:
           type: array
           description: List of identifiers for the component
@@ -1348,6 +1358,13 @@ components:
               idValue: cpe:2.3:a:apache:log4j
             - idType: PURL
               idValue: pkg:maven/org.apache.logging.log4j/log4j-core
+        - uuid: c71b316e-ae77-11f1-aafb-1a52914d44b2
+          name: Apache Tomcat
+          identifiers:
+            - idType: CPE
+              idValue: cpe:2.3:a:apache:tomcat
+            - idType: PURL
+              idValue: pkg:maven/org.apache.tomcat/tomcat
 
 #
     # Reference to a component, in some cases directly to a specific release
@@ -1407,7 +1424,7 @@ components:
             May be disabled after the creation of the release object, but can't be enabled after creation of an object.
         identifiers:
           type: array
-          description: Array of identifiers for the component
+          description: Array of identifiers for the component release
           items:
             "$ref": "#/components/schemas/identifier"
         distributions:
@@ -1421,6 +1438,16 @@ components:
         - createdDate
         - component
       examples:
+        # Apache Log4j Core 2.24.3, the release the collection example belongs to
+        - uuid: da89e38e-95e7-44ca-aa7d-f3b6b34c7fab
+          version: "2.24.3"
+          component: b844c9bd-55d6-478c-af59-954a932b6ad3
+          componentName: Apache Log4j Core
+          createdDate: 2024-12-10T10:51:00Z
+          releaseDate: 2024-12-13T12:52:29Z
+          identifiers:
+            - idType: PURL
+              idValue: pkg:maven/org.apache.logging.log4j/log4j-core@2.24.3
         # Apache Tomcat 11.0.7
         - uuid: 605d0ecb-1057-40e4-9abf-c400b10f0345
           version: "11.0.7"
@@ -1471,7 +1498,7 @@ components:
         # A pre-release of Apache Tomcat
         - uuid: 95f481df-f760-47f4-b2f2-f8b76d858450
           version: "11.0.0-M26"
-          component: 8738fa52-b0ea-11f1-9e47-1a52914d44b2
+          component: c71b316e-ae77-11f1-aafb-1a52914d44b2
           createdDate: 2024-09-13T17:49:00Z
           preRelease: true
           identifiers:
@@ -1575,7 +1602,7 @@ components:
           version: "11.0.7"
           createdDate: 2025-05-07T18:08:00Z
           releaseDate: 2025-05-12T18:08:00Z
-          component: 7c472640-b1ae-11f1-990c-1a52914d44b2
+          component: c71b316e-ae77-11f1-aafb-1a52914d44b2
           identifiers:
             - idType: PURL
               idValue: pkg:maven/org.apache.tomcat/tomcat@11.0.7
@@ -1588,9 +1615,9 @@ components:
               type: ARTIFACT_ADDED
               comment: First artifacts published for this release
             artifacts:
-              - uuid: 1cb47b95-8bf8-3bad-a5a4-0d54d86e10ce
+              - uuid: 3c8f5d2a-6b1e-4f7a-9c0d-2e5b8a1f4c93
                 name: Build SBOM
-                version: 2
+                version: 1
                 createdDate: 2025-05-07T18:08:00Z
                 type: BOM
                 formats:
@@ -1599,10 +1626,10 @@ components:
                     url: https://repo.maven.apache.org/maven2/org/apache/tomcat/tomcat/11.0.7/tomcat-11.0.7-cyclonedx.xml
                     checksums:
                       - algType: SHA-256
-                        algValue: 9da736a1cdd27231e70187cbc67398d29ca0b714f885e7032da9f1fb247693c1
-              - uuid: dfa35519-9734-4259-bba1-3e825cf4be06
+                        algValue: 66218c5c43e1a62fc2e3904500980241698aeddea4a6c446fda781c900e9d497
+              - uuid: b7e2c4d9-1f3a-4a6e-8d5b-9c0e7f2a3b14
                 name: Vulnerability Disclosure Report
-                version: 4
+                version: 1
                 createdDate: 2025-05-09T18:08:00Z
                 type: VULNERABILITIES
                 formats:
@@ -1611,7 +1638,7 @@ components:
                     url: https://tomcat.apache.org/cyclonedx/vdr.xml
                     checksums:
                       - algType: SHA-256
-                        algValue: 75b81020b3917cb682b1a7605ade431e062f7a4c01a412f0b87543b6e995ad2a
+                        algValue: 3d93f05e799f6897570537313e8217dd67583c3b65f08ff0ebbce455357a6101
 
     #
     # TEA Collection and related objects
@@ -1659,10 +1686,10 @@ components:
         - updateReason
         - artifacts
       examples:
-        # Documents in the latest release of Log4j Core
-        - uuid: 4c72fe22-9d83-4c2f-8eba-d6db484f32c8
+        # Documents in the latest release of Log4j Core (release da89e38e-...)
+        - uuid: da89e38e-95e7-44ca-aa7d-f3b6b34c7fab
           version: 10
-          createdDate: 2024-12-13T00:00:00Z
+          createdDate: 2024-12-15T00:00:00Z
           belongsTo: COMPONENT_RELEASE
           updateReason:
             type: ARTIFACT_UPDATED
@@ -1679,6 +1706,8 @@ components:
                   url: https://repo.maven.apache.org/maven2/org/apache/logging/log4j/log4j-core/2.24.3/log4j-core-2.24.3-cyclonedx.xml
                   signatureUrl: https://repo.maven.apache.org/maven2/org/apache/logging/log4j/log4j-core/2.24.3/log4j-core-2.24.3-cyclonedx.xml.asc
                   checksums:
+                    - algType: SHA-256
+                      algValue: e04c9d55986d7194822eaa4f8115a77f801844d807ad6e0d454ac31dd41861e5
                     - algType: SHA-1
                       algValue: 5a7d4caef63c5c5ccdf07c39337323529eb5a770
             - uuid: dfa35519-9734-4259-bba1-3e825cf4be06
@@ -1735,11 +1764,10 @@ components:
           "$ref": "#/components/schemas/uuid"
         version:
           description: |
-            An integer with default value 1.
+            Revision number, starting at 1.
             Together with *uuid* uniquely identifies the TEA Artifact.
             This field can be used to designate successive, immutable revisions of an artefact content (e.g. an updated VEX file).
           type: integer
-          default: 1
         name:
           type: string
           description: A human-readable name for the artefact
@@ -1777,7 +1805,7 @@ components:
           version: 2
           name: Build SBOM
           type: BOM
-          createdDate: 2026-05-15T00:00:00Z
+          createdDate: 2024-12-13T00:00:00Z
           formats:
             - mediaType: application/vnd.cyclonedx+xml
               description: CycloneDX SBOM (XML)
@@ -1792,7 +1820,7 @@ components:
           version: 7
           name: Vulnerability Disclosure Report
           type: VULNERABILITIES
-          createdDate: 2026-05-15T00:00:00Z
+          createdDate: 2024-12-15T00:00:00Z
           formats:
             - mediaType: application/vnd.cyclonedx+xml
               description: CycloneDX VDR (XML)
@@ -1802,7 +1830,7 @@ components:
                   algValue: 75b81020b3917cb682b1a7605ade431e062f7a4c01a412f0b87543b6e995ad2a
     artifact-type:
       type: string
-      description: Specifies the type of external reference.
+      description: Type of TEA Artifact.
       enum:
         - ATTESTATION
         - BOM
@@ -1920,7 +1948,6 @@ components:
       description: Classification of TEA error response
       enum:
         - OBJECT_UNKNOWN
-        - OBJECT_NOT_SHAREABLE
         - NOT_IMPLEMENTED
         - NO_ACCEPTABLE_FORMAT
         - SIGNATURE_NOT_FOUND
@@ -1932,11 +1959,11 @@ components:
     error-response:
       type: object
       description: |
-        TEA API error body. Servers shall emit exactly this shape. Clients recognize a TEA
-        error by an `application/json` response whose body is a JSON object with a string
-        `error` property; they ignore unrecognized properties and tolerate `error` values
-        they do not know, so that later versions can extend this schema. Other JSON 404
-        bodies are not TEA error responses.
+        TEA API error body. Servers shall emit exactly this shape: `error` is one of the
+        values of `unknown-error-type`, and `message` is the only other property allowed.
+        Clients recognize a TEA error by an `application/json` response whose body is a
+        JSON object with a string `error` property. Other JSON 404 bodies are not TEA error
+        responses.
 
         Any `4xx` from a resource endpoint may carry an `error-response` body; when
         present, `error` is from `unknown-error-type`. Clients shall not require a body.
@@ -1944,6 +1971,11 @@ components:
       properties:
         error:
           $ref: "#/components/schemas/unknown-error-type"
+        message:
+          type: string
+          description: |
+            Optional human-readable explanation for diagnostics. Clients shall not
+            interpret it programmatically.
       required:
         - error
 
@@ -2186,6 +2218,19 @@ components:
           event type apply as written there; servers shall populate the required ones and
           omit fields that do not belong to the type.
 
+        Selection. Servers shall return in `events` a subset of the events of the CLE data
+        they hold for the component or product, and shall not alter an event beyond the
+        mapping above. On a release endpoint, servers may omit events scoped to other
+        versions: events whose `versions` do not cover the release's `version`, and
+        `released` events whose `version` differs from it. Events that name no version,
+        other than `withdrawn` events, apply to the component as a whole and are retained.
+        Inclusion of `withdrawn` events follows the rule below. Servers shall not otherwise
+        reduce the set, and in particular shall not collapse it to the latest event per
+        type. Servers shall not renumber event `id` values. Servers shall include a
+        `withdrawn` event if, and only if, they include the event it withdraws.
+        `definitions.support` shall contain at least the policies referenced by the
+        included events.
+
         `events` shall be ordered by `id` descending, as in ECMA-428. A server that provides CLE
         for an object answers `200`, with an empty `events` array when no event has been
         recorded yet. A server that does not provide CLE for the object answers `404` with
@@ -2239,16 +2284,16 @@ components:
           description: |
             A flag indicating whether there is another page of results to fetch.
 
-            When `hasNext` is `true`, `nextPageToken` MUST be present.
-            When `hasNext` is `false`, `nextPageToken` MUST NOT be included.
+            When `hasNext` is `true`, `nextPageToken` shall be present.
+            When `hasNext` is `false`, `nextPageToken` shall not be included.
           default: false
         nextPageToken:
           type: string
           description: |
             An opaque token that can be used in a following request to retrieve the next page of results.
 
-            This field MUST be present when `hasNext` is `true`.
-            This field MUST NOT be included when `hasNext` is `false`.
+            This field shall be present when `hasNext` is `true`.
+            This field shall not be included when `hasNext` is `false`.
       required:
         - hasNext
       examples:
@@ -2359,6 +2404,7 @@ components:
       description: |
         Strong entity tag for the content. A TEA Artifact revision is immutable, so
         the entity tag for a given uuid, version and format never changes.
+      required: true
       schema:
         type: string
     artifact-repr-digest:
@@ -2394,6 +2440,7 @@ components:
         As with versioned downloads, responses containing access-controlled content
         shall use `private` or `no-store` (for example `private, no-cache`). Servers
         shall use `public` only for content available without authorization.
+      required: true
       schema:
         type: string
         examples:
@@ -2408,6 +2455,7 @@ components:
         follow-up `GET` retrieves the same representation. A client that needs a stable,
         reproducible reference to the bytes it received uses this URL rather than the
         `latest` URL.
+      required: true
       schema:
         type: string
         format: uri
@@ -2434,6 +2482,7 @@ components:
         Strong entity tag for the signature. A signature belongs to one format of one
         immutable revision, so it is fixed with the revision: content that is re-signed
         is published as a new revision.
+      required: true
       schema:
         type: string
     signature-content-location:
@@ -2442,6 +2491,7 @@ components:
         response was resolved to, per RFC 9110 section 8.7. It includes the TEA API base,
         version path, and a `mediaType` query parameter naming the selected content
         format, so a follow-up `GET` retrieves the same signature representation.
+      required: true
       schema:
         type: string
         format: uri
@@ -2482,6 +2532,7 @@ components:
       headers:
         WWW-Authenticate:
           description: Bearer challenge, as defined in RFC 6750 section 3.
+          required: true
           schema:
             type: string
             example: Bearer realm="tea", error="invalid_token", error_description="The access token expired"
@@ -2610,13 +2661,14 @@ components:
     304-not-modified:
       description: |
         The selected download representation has not changed (RFC 9110). The response
-        body is empty. Servers shall repeat `ETag`, `Cache-Control`, `Content-Location`,
-        and `Vary` (when used on the corresponding `200`) from the would-be successful
-        response for this operation.
+        body is empty. Servers shall repeat `ETag` and `Content-Location` from the
+        would-be successful response for this operation, and shall repeat `Cache-Control`
+        and `Vary` when the corresponding `200` carries them.
       headers:
         ETag:
           description: |
             Same `ETag` the server would have sent on `200` for this operation.
+          required: true
           schema:
             type: string
         Cache-Control:
@@ -2628,6 +2680,7 @@ components:
           description: |
             Same `Content-Location` the server would have sent on `200` for this
             operation.
+          required: true
           schema:
             type: string
             format: uri
@@ -2672,6 +2725,7 @@ components:
       headers:
         Cache-Control:
           description: Servers shall set `no-store` on token responses (RFC 6749 section 5.1).
+          required: true
           schema:
             type: string
             example: no-store
@@ -2697,6 +2751,7 @@ components:
       headers:
         WWW-Authenticate:
           description: Challenge indicating the client authentication methods supported by the token endpoint.
+          required: true
           schema:
             type: string
             example: Basic realm="tea"
@@ -2862,23 +2917,23 @@ components:
       name: pageToken
       description: |
         An opaque continuation token produced by a previous response.
-        This token MUST be copied verbatim from the `nextPageToken` value returned by the previous response.
-        Clients MUST NOT parse, construct, or modify this token.
+        This token shall be copied verbatim from the `nextPageToken` value returned by the previous response.
+        Clients shall not parse, construct, or modify this token.
 
         The token represents continuation state for the original query, including
         `sortField`, `sortOrder`, result-affecting filters such as `idType` and `idValue`,
         and path parameters such as parent `uuid`.
-        When `pageToken` is supplied, clients MUST NOT change those result-affecting query
-        parameters. Servers MUST return `400 Bad Request` if supplied result-affecting query
+        When `pageToken` is supplied, clients shall not change those result-affecting query
+        parameters. Servers shall return `400 Bad Request` if supplied result-affecting query
         parameters conflict with the token state. To change any result-affecting parameter,
-        clients MUST start a new pagination sequence without `pageToken`.
+        clients shall start a new pagination sequence without `pageToken`.
 
         A `pageToken` is only valid with the same request path and same path parameter values
-        used to obtain it. Clients MUST NOT reuse a `pageToken` across different parent
-        resource paths or different path `uuid` values. Servers MUST return `400 Bad Request`
+        used to obtain it. Clients shall not reuse a `pageToken` across different parent
+        resource paths or different path `uuid` values. Servers shall return `400 Bad Request`
         when a `pageToken` is used with a different path or different path parameter values.
 
-        Servers MUST return `400 Bad Request` for malformed, invalid, expired, or conflicting
+        Servers shall return `400 Bad Request` for malformed, invalid, expired, or conflicting
         `pageToken` values.
       in: query
       required: false
@@ -2910,7 +2965,7 @@ components:
       description: |
         The field by which to sort the results.
 
-        Paginated collection results MUST be ordered first by the selected `sortField`,
+        Paginated collection results shall be ordered first by the selected `sortField`,
         then by `version` as the deterministic secondary key if additional tie-breaking
         is needed. Collection UUIDs are not used as tie-breakers because collection UUIDs
         match the associated release UUID and can be shared across collection revisions.
@@ -2929,7 +2984,7 @@ components:
       description: |
         The field by which to sort the results.
 
-        Paginated results MUST be ordered first by the selected `sortField`, then by `uuid`
+        Paginated results shall be ordered first by the selected `sortField`, then by `uuid`
         as a deterministic secondary tie-breaker.
       in: query
       required: false
@@ -2943,15 +2998,15 @@ components:
       description: |
         The field by which to sort the results.
 
-        Paginated results MUST be ordered first by the selected `sortField`, then by `uuid`
+        Paginated results shall be ordered first by the selected `sortField`, then by `uuid`
         as a deterministic secondary tie-breaker.
 
         When `version` is selected, ordering is by the stored version string according to
         the server's documented string collation; semantic-version precedence is not implied.
-        Servers MUST apply a stable and deterministic string collation for version sorting,
-        and the same collation MUST be used consistently across pages for a pagination sequence.
+        Servers shall apply a stable and deterministic string collation for version sorting,
+        and the same collation shall be used consistently across pages for a pagination sequence.
 
-        When `releaseDate` is selected, releases without a `releaseDate` MUST be ordered
+        When `releaseDate` is selected, releases without a `releaseDate` shall be ordered
         consistently. Missing `releaseDate` values sort after populated `releaseDate` values
         for ascending order and before populated `releaseDate` values for descending order.
       in: query
@@ -2968,7 +3023,7 @@ components:
       description: |
         The field by which to sort the results.
 
-        Paginated results MUST be ordered first by the selected `sortField`, then by `uuid`
+        Paginated results shall be ordered first by the selected `sortField`, then by `uuid`
         as a deterministic secondary tie-breaker.
       in: query
       required: false
@@ -2982,15 +3037,15 @@ components:
       description: |
         The field by which to sort the results.
 
-        Paginated results MUST be ordered first by the selected `sortField`, then by `uuid`
+        Paginated results shall be ordered first by the selected `sortField`, then by `uuid`
         as a deterministic secondary tie-breaker.
 
         When `version` is selected, ordering is by the stored version string according to
         the server's documented string collation; semantic-version precedence is not implied.
-        Servers MUST apply a stable and deterministic string collation for version sorting,
-        and the same collation MUST be used consistently across pages for a pagination sequence.
+        Servers shall apply a stable and deterministic string collation for version sorting,
+        and the same collation shall be used consistently across pages for a pagination sequence.
 
-        When `releaseDate` is selected, releases without a `releaseDate` MUST be ordered
+        When `releaseDate` is selected, releases without a `releaseDate` shall be ordered
         consistently. Missing `releaseDate` values sort after populated `releaseDate` values
         for ascending order and before populated `releaseDate` values for descending order.
       in: query
