@@ -23,7 +23,7 @@ version of a product, then a new TEA Collection object is created and optionally
 This update will have the same UUID, but a new version number. A reason
 for the update will have to be provided. This shall be used to
 correct mistakes, spelling errors as well as to provide new information
-on dynamic artifact types such as LCE or VEX. If the product
+on dynamic artifact types such as CLE or VEX. If the product
 is modified, that is a new product version and that should generate
 a new collection object with a new UUID and updated metadata.
 
