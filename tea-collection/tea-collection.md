@@ -103,7 +103,7 @@ A TEA Artifact object contains the following fields:
 
 - __uuid__: The UUID of the TEA Artifact object. Together with *version* uniquely identifies the TEA Artifact.
 - __version__:
-  Revision number, starting at 1.
+  Revision number, starting at 1 and incremented by 1.
   Together with *uuid* uniquely identifies the TEA Artifact.
   Successive revisions cover content changes and changes to any published field,
   including external `url` or `signatureUrl` values. Each published revision is immutable.
@@ -112,7 +112,7 @@ A TEA Artifact object contains the following fields:
 - __createdDate__: The date and time the TEA Artifact revision was created.
 - __distributionIds__: (optional): Array of TEA Component Release distributions that this TEA Artifact applies to. If absent or empty, the TEA Artifact applies to all distributions.
 - __formats__:  
-  An array of objects, each representing the same artifact content in a different format.
+  An non-empty array of objects, each representing the same artifact content in a different format.
   The order of the list is not significant.
   Each format object includes:
   - __mediaType__: The media type of the document (e.g., `application/vnd.cyclonedx+xml`).
@@ -138,6 +138,7 @@ A TEA Artifact object contains the following fields:
     If present, clients retrieve the signature from it.
     If absent, clients retrieve it from the artifact signature download endpoint
     (`/artifact/{uuid}/{version}/signature/download`), which answers `404` when no signature is published for the format.
+<<<<<<< HEAD
     Changing `signatureUrl` follows the same revision and collection-adoption rules as `url`.
     Byte stability for signature retrieval through the server's signature download endpoint
     follows the artifact revision rule above.
@@ -145,6 +146,11 @@ A TEA Artifact object contains the following fields:
     When present, the array shall contain at least one entry. When `url` is present, `checksums`
     is required. An array of checksum objects for the artifact format's content bytes, each containing:
     - __algType__: The checksum algorithm used (e.g., `SHA_256`, `SHA3_512`).
+=======
+  - __checksums__:  
+    An array of checksum objects for the artifact, each containing:
+    - __algType__: The checksum algorithm used (e.g., `SHA-256`, `SHA3-512`).
+>>>>>>> 2f3dea2 (Artifact clarifications)
     - __algValue__: The checksum value as a string.
     When `url` is present, these checksums are the integrity statement for the revision.
     Content that does not match them is not the content of that revision.
