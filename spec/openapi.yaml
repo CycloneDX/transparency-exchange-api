@@ -1879,11 +1879,13 @@ components:
     checksum:
       type: object
       description: |
-        Integrity digest for identified content bytes. `algValue` is the lowercase
-        hexadecimal encoding of the digest produced by `algType` over those bytes.
-        The hex length shall match the algorithm's digest size (for example 40 for
-        SHA-1, 64 for SHA-256 / SHA3-256 / BLAKE2b-256 / BLAKE3, 96 for SHA-384 /
-        SHA3-384 / BLAKE2b-384, 128 for SHA-512 / SHA3-512 / BLAKE2b-512).
+        Integrity digest for identified content bytes.
+        `algValue` is the lowercase hexadecimal encoding of the digest produced by `algType` over those bytes.
+        The hex length shall match the algorithm's digest size:
+        - 40 for SHA-1,
+        - 64 for SHA-256 / SHA3-256 / BLAKE2b-256 / BLAKE3 / Streebog-256,
+        - 96 for SHA-384 / SHA3-384 / BLAKE2b-384,
+        - 128 for SHA-512 / SHA3-512 / BLAKE2b-512 / Streebog-512.
       properties:
         algType:
           description: Checksum algorithm
@@ -1915,6 +1917,8 @@ components:
         - BLAKE2b-384
         - BLAKE2b-512
         - BLAKE3
+        - Streebog-256
+        - Streebog-512
     unknown-error-type:
       type: string
       description: Classification of TEA error response
