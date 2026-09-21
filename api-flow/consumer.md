@@ -9,9 +9,11 @@ described in the [discovery document](/discovery/readme.md).
 The standard TEI points to a product release. A product release is something sold, downloaded as an open source project or acquired by other means. It contains one or multiple component releases.
 
 - __List of TEA Component Releases__: Component releases are components of a product release.
-  Each Component release has its own versioning and its own set of artefacts, they have a timestamp and   a lifecycle enumeration. They are normally sorted by timestamps. The TEA API has no requirements of type of version string (semantic or any other scheme) - it's just an identifier set by the manufacturer.
+  Each Component release has its own versioning and its own set of artefacts, they have a timestamp and
+  a lifecycle enumeration. They are normally sorted by timestamps. The TEA API has no requirements of
+  type of version string (semantic or any other scheme) - it's just an identifier set by the manufacturer.
 - __List of TEA Collections__: For each release, there is a list of TEA collections as indicated
-  by release date and a version integer starting with collection version 1. 
+  by release date and a version integer starting with collection version 1.
 - __List of TEA Artifacts__: The collection is unique for a version and contains a list of artefacts.
   This can be SBOM files, VEX, SCITT, IN-TOTO or other documents.  Note that a single artefact
   can belong to multiple Component or Product Releases.
