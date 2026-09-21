@@ -18,12 +18,12 @@ may be implemented in multiple ways - on various levels of the API - depending o
 the user can access.
 
 As an example, one implementation may publish all information about existing artefacts and software
-versions openly, but restrict access to artefacts to those that match the customers installation.
+versions openly, but restrict access to artefacts to those that match the customer's installation.
 Another implementation can implement a filter that does not show products and versions ("components") that
-the customer has not aquired.
+the customer has not acquired.
 
 For most Open Source projects, implementing authentication - setting up accounts and managing
-authorization - does not make much sense, since the information is usually in the open any way.
+authorization - does not make much sense, since the information is usually in the open anyway.
 
 ## Scope of this specification
 
@@ -119,7 +119,7 @@ The access token is presented on every other TEA endpoint as an HTTP bearer toke
 ([RFC 6750](https://www.rfc-editor.org/rfc/rfc6750)):
 
 ```http
-GET /product/d4d9f54a-abcf-11ee-ac79-1a52914d44b HTTP/1.1
+GET /product/d4d9f54a-abcf-11ee-ac79-1a52914d44b1 HTTP/1.1
 Host: tea.example.com
 Authorization: Bearer 2YotnFZFEjr1zCsicMWpAA
 ```
