@@ -1226,8 +1226,7 @@ components:
         uuid:
           description: |
             A unique identifier for the TEA Product Release. Within an authoritative
-            domain it shall not identify any other TEA object except the Collection that
-            belongs to this release; see `doc/tea-uuid-scope.md`.
+            domain it shall not also identify a Component Release; see `doc/tea-uuid-scope.md`.
           "$ref": "#/components/schemas/uuid"
         product:
           description: UUID of the TEA Product this release belongs to
@@ -1403,8 +1402,7 @@ components:
         uuid:
           description: |
             A unique identifier of the TEA Component Release. Within an authoritative
-            domain it shall not identify any other TEA object except the Collection that
-            belongs to this release; see `doc/tea-uuid-scope.md`.
+            domain it shall not also identify a Product Release; see `doc/tea-uuid-scope.md`.
           "$ref": "#/components/schemas/uuid"
         component:
           description: UUID of the TEA Component this release belongs to
@@ -1662,9 +1660,11 @@ components:
         uuid:
           description: |
             UUID of the TEA Collection object.
-            This matches the UUID of the associated TEA Component Release or TEA Product Release object.
-            That reuse is the only permitted cross-type UUID sharing within an authoritative
-            domain (see `doc/tea-uuid-scope.md`).
+            A TEA Collection shall use the same UUID as its parent Product Release or
+            Component Release. Within an authoritative domain, a Product Release and a
+            Component Release shall not share a UUID. Consequently, Collections belonging
+            to different parent releases have different UUIDs. Versions of the same
+            Collection retain the same UUID. See `doc/tea-uuid-scope.md`.
             When updating a collection, only the `version` is changed.
           "$ref": "#/components/schemas/uuid"
         version:
