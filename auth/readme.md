@@ -119,7 +119,7 @@ The access token is presented on every other TEA endpoint as an HTTP bearer toke
 ([RFC 6750](https://www.rfc-editor.org/rfc/rfc6750)):
 
 ```http
-GET /product/d4d9f54a-abcf-11ee-ac79-1a52914d44b HTTP/1.1
+GET /product/d4d9f54a-abcf-11ee-ac79-1a52914d44b1 HTTP/1.1
 Host: tea.example.com
 Authorization: Bearer 2YotnFZFEjr1zCsicMWpAA
 ```
