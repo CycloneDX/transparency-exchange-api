@@ -8,6 +8,7 @@ Key attributes:
 
 - __uuid__: A unique identifier for the TEA Product Release
 - __product__: UUID of the TEA Product this release belongs to
+- __productName__: Optional name of the parent product
 - __version__: Human-readable version string of the product release
 - __createdDate__: Timestamp when the product release was created in TEA (for sorting purposes)
 - __releaseDate__: Timestamp of the product release
@@ -17,7 +18,7 @@ Key attributes:
 
 Required fields:
 
-- uuid, version, createdDate, components
+- uuid, product, version, createdDate, components
 
 Collections for a product release contain artefacts relevant to that product release.
 
