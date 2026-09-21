@@ -368,7 +368,7 @@ A successful `/discovery` response is a JSON array of `discovery-info` objects. 
 element identifies one resolved product release and the TEA servers that serve it:
 
 - `productReleaseUuid` — UUID of the TEA Product Release
-- `servers` — non-empty array of `tea-server-info` objects (`rootUrl`, `versions`, and
+- `servers` — non-empty array of `server-info` objects (`rootUrl`, `versions`, and
   optional `priority`)
 
 `.well-known/tea` and `servers[]` are related but distinct:
