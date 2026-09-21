@@ -126,7 +126,7 @@ A PURL identifier is encoded using BASE64URL.
 Syntax:
 
 ```text
-tei://<domain-name>/purl/<purl>
+tei://<domain-name>/purl/<BASE64URL encoded PURL>
 ````
 
 Example:
@@ -136,6 +136,8 @@ PURL: pkg:pypi/cyclonedx-python-lib@8.4.0?extension=whl&qualifier=py3-none-any
 ```text
 tei://cyclonedx.org/purl/cGtnOnB5cGkvY3ljbG9uZWR4LXB5dGhvbi1saWJAOC40LjA_ZXh0ZW5zaW9uPXdobCZxdWFsaWZpZXI9cHkzLW5vbmUtYW55
 ```
+
+The unique identifier - a base64url encoded PURL in the example can be decoded into the PURL.
 
 #### HASH
 
