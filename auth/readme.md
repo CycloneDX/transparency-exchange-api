@@ -18,12 +18,12 @@ may be implemented in multiple ways - on various levels of the API - depending o
 the user can access.
 
 As an example, one implementation may publish all information about existing artefacts and software
-versions openly, but restrict access to artefacts to those that match the customers installation.
+versions openly, but restrict access to artefacts to those that match the customer's installation.
 Another implementation can implement a filter that does not show products and versions ("components") that
-the customer has not aquired.
+the customer has not acquired.
 
 For most Open Source projects, implementing authentication - setting up accounts and managing
-authorization - does not make much sense, since the information is usually in the open any way.
+authorization - does not make much sense, since the information is usually in the open anyway.
 
 ## Scope of this specification
 
