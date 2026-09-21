@@ -103,8 +103,7 @@ sequenceDiagram
 ## API flow based on cached data - checking for a new release
 
 In this case a TEA client knows the component UUID and wants to check the status of the
-used release and if there's a new release. The client may limit the query with a given date
-for a release.
+used release and if there's a new release.
 
 ```mermaid
 
