@@ -90,7 +90,7 @@ sequenceDiagram
     tea_product_release ->> user: List of TEA Component Releases
 
     user ->> tea_component_release: Finding information of a component release
-    tea_component_release ->> user: List of releases and collection id for each release
+    tea_component_release ->> user: Component release with its latest Collection
 
     user ->> tea_collection: Finding all TEA Artifacts for TEA Component Release
     tea_collection ->> user: List of TEA Artifacts and formats available for each TEA Artifact
