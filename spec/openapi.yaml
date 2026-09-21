@@ -30,7 +30,8 @@ paths:
   /product/{uuid}:
     get:
       description: Get a TEA Product by UUID
-      operationId: getTeaProductByUuid
+      summary: Get a TEA Product
+      operationId: getProduct
       parameters:
         - name: uuid
           in: path
@@ -58,7 +59,8 @@ paths:
   /product/{uuid}/releases:
     get:
       description: Get releases of the product
-      operationId: getReleasesByProductId
+      summary: List the releases of a TEA Product
+      operationId: listProductReleases
       parameters:
         - name: uuid
           in: path
@@ -86,7 +88,8 @@ paths:
   /productRelease/{uuid}:
     get:
       description: Get the TEA Product Release with its latest collection
-      operationId: getTeaProductReleaseByUuid
+      summary: Get a TEA Product Release with its latest collection
+      operationId: getProductRelease
       parameters:
         - name: uuid
           in: path
@@ -114,7 +117,8 @@ paths:
   /productRelease/{uuid}/cle:
     get:
       description: Get the CLE (Common Lifecycle Enumeration) data for a TEA Product Release
-      operationId: getCleByProductReleaseId
+      summary: Get the lifecycle events of a TEA Product Release
+      operationId: getProductReleaseCle
       parameters:
         - name: uuid
           in: path
@@ -142,7 +146,8 @@ paths:
   /productReleases:
     get:
       description: Returns a list of TEA product releases. Note that multiple product releases may match.
-      operationId: queryTeaProductReleases
+      summary: Query TEA Product Releases
+      operationId: queryProductReleases
       parameters:
         # For result filtering
         - $ref: "#/components/parameters/id-type"
@@ -166,7 +171,8 @@ paths:
   /product/{uuid}/cle:
     get:
       description: Get the CLE (Common Lifecycle Enumeration) data for a TEA Product
-      operationId: getCleByProductId
+      summary: Get the lifecycle events of a TEA Product
+      operationId: getProductCle
       parameters:
         - name: uuid
           in: path
@@ -195,7 +201,8 @@ paths:
     get:
       description: Returns a list of TEA products. Note that multiple products may
         match.
-      operationId: queryTeaProducts
+      summary: Query TEA Products
+      operationId: queryProducts
       parameters:
         # For result filtering
         - $ref: "#/components/parameters/id-type"
@@ -219,7 +226,8 @@ paths:
   /component/{uuid}:
     get:
       description: Get a TEA Component
-      operationId: getTeaComponentById
+      summary: Get a TEA Component
+      operationId: getComponent
       parameters:
         - name: uuid
           in: path
@@ -247,7 +255,8 @@ paths:
   /component/{uuid}/releases:
     get:
       description: Get releases of the component
-      operationId: getReleasesByComponentId
+      summary: List the releases of a TEA Component
+      operationId: listComponentReleases
       parameters:
         - name: uuid
           in: path
@@ -275,7 +284,8 @@ paths:
   /component/{uuid}/cle:
     get:
       description: Get the CLE (Common Lifecycle Enumeration) data for a TEA Component
-      operationId: getCleByComponentId
+      summary: Get the lifecycle events of a TEA Component
+      operationId: getComponentCle
       parameters:
         - name: uuid
           in: path
@@ -303,7 +313,8 @@ paths:
   /components:
     get:
       description: Returns a list of TEA components. Note that multiple components may match.
-      operationId: queryTeaComponents
+      summary: Query TEA Components
+      operationId: queryComponents
       parameters:
         # For result filtering
         - $ref: "#/components/parameters/id-type"
@@ -327,7 +338,8 @@ paths:
   /componentReleases:
     get:
       description: Returns a list of TEA component releases. Note that multiple component releases may match.
-      operationId: queryTeaComponentReleases
+      summary: Query TEA Component Releases
+      operationId: queryComponentReleases
       parameters:
         # For result filtering
         - $ref: "#/components/parameters/id-type"
@@ -351,7 +363,8 @@ paths:
   /componentRelease/{uuid}:
     get:
       description: Get the TEA Component Release with its latest collection
-      operationId: getComponentReleaseById
+      summary: Get a TEA Component Release with its latest collection
+      operationId: getComponentRelease
       parameters:
         - name: uuid
           in: path
@@ -379,7 +392,8 @@ paths:
   /componentRelease/{uuid}/cle:
     get:
       description: Get the CLE (Common Lifecycle Enumeration) data for a TEA Component Release
-      operationId: getCleByComponentReleaseId
+      summary: Get the lifecycle events of a TEA Component Release
+      operationId: getComponentReleaseCle
       parameters:
         - name: uuid
           in: path
@@ -411,7 +425,8 @@ paths:
         the collection with the greatest published `version`.
 
         `404` means the release is unknown; a release always has a latest collection.
-      operationId: getLatestCollection
+      summary: Get the latest collection of a TEA Component Release
+      operationId: getLatestComponentReleaseCollection
       parameters:
         - name: uuid
           in: path
@@ -443,7 +458,8 @@ paths:
         the collection with the greatest published `version`.
 
         `404` means the release is unknown; a release always has a latest collection.
-      operationId: getLatestCollectionForProductRelease
+      summary: Get the latest collection of a TEA Product Release
+      operationId: getLatestProductReleaseCollection
       parameters:
         - name: uuid
           in: path
@@ -471,7 +487,8 @@ paths:
   /componentRelease/{uuid}/collections:
     get:
       description: Get the TEA Collections belonging to the TEA Component Release
-      operationId: getCollectionsByReleaseId
+      summary: List the collections of a TEA Component Release
+      operationId: listComponentReleaseCollections
       parameters:
         - name: uuid
           in: path
@@ -499,7 +516,8 @@ paths:
   /productRelease/{uuid}/collections:
     get:
       description: Get the TEA Collections belonging to the TEA Product Release
-      operationId: getCollectionsByProductReleaseId
+      summary: List the collections of a TEA Product Release
+      operationId: listProductReleaseCollections
       parameters:
         - name: uuid
           in: path
@@ -527,7 +545,8 @@ paths:
   /productRelease/{uuid}/collection/{collectionVersion}:
     get:
       description: Get a specific Collection (by version) for a TEA Product Release by its UUID
-      operationId: getCollectionForProductRelease
+      summary: Get one collection version of a TEA Product Release
+      operationId: getProductReleaseCollectionByVersion
       parameters:
         - name: uuid
           in: path
@@ -561,7 +580,8 @@ paths:
   /componentRelease/{uuid}/collection/{collectionVersion}:
     get:
       description: Get a specific Collection (by version) for a TEA Component Release by its UUID
-      operationId: getCollection
+      summary: Get one collection version of a TEA Component Release
+      operationId: getComponentReleaseCollectionByVersion
       parameters:
         - name: uuid
           in: path
@@ -597,6 +617,7 @@ paths:
       description: |
         Get metadata for the latest revision of a specific TEA Artifact, that is, the
         revision with the greatest published `version`.
+      summary: Get the metadata of the latest TEA Artifact revision
       operationId: getLatestArtifact
       parameters:
         - name: uuid
@@ -625,6 +646,7 @@ paths:
   /artifact/{uuid}/{artifactVersion}:
     get:
       description: Get metadata for a specific revision of a specific TEA Artifact
+      summary: Get the metadata of one TEA Artifact revision
       operationId: getArtifactByVersion
       parameters:
         - name: uuid
@@ -676,6 +698,7 @@ paths:
         `HEAD` for this operation shall return the same headers as `GET` without a response
         body. `302` redirects are outside conditional semantics: `If-None-Match` applies
         only to the TEA-hosted download response, not to following an external `Location`.
+      summary: Download the content of the latest TEA Artifact revision
       operationId: downloadLatestArtifact
       parameters:
         - name: uuid
@@ -732,6 +755,7 @@ paths:
         not imply that shared caches may store access-controlled responses. Successful
         responses include `Content-Location` as an absolute URL of this versioned
         download including the `mediaType` query parameter.
+      summary: Download the content of one TEA Artifact revision
       operationId: downloadArtifactByVersion
       parameters:
         - name: uuid
@@ -791,6 +815,7 @@ paths:
         revision exists but the selected format has no signature published. A server
         concealing an artifact from a client shall answer `OBJECT_UNKNOWN` for every
         sub-resource of it, including signatures.
+      summary: Download the signature of the latest TEA Artifact revision
       operationId: downloadLatestArtifactSignature
       parameters:
         - name: uuid
@@ -856,6 +881,7 @@ paths:
         to the TEA-hosted download response, not to following an external `Location`.
         Successful responses include `Content-Location` as an absolute URL of this
         versioned signature download including the `mediaType` query parameter.
+      summary: Download the signature of one TEA Artifact revision
       operationId: downloadArtifactSignatureByVersion
       parameters:
         - name: uuid
@@ -934,6 +960,7 @@ paths:
         `client_credentials` grant with HTTP Basic, unauthenticated requests shall not be
         accepted: servers shall respond with `401`, `error: invalid_client`, and a
         `WWW-Authenticate: Basic` challenge (see `401-token-error`; RFC 6749 section 5.2).
+      summary: Exchange credentials for a TEA access token
       operationId: requestToken
       security:
         - basicAuth: []
@@ -990,7 +1017,8 @@ paths:
         the identifier, not that `/discovery` is optional or unimplemented. Client
         recognition of that body and the terminal outcome are defined in the discovery
         document.
-      operationId: discoveryByTei
+      summary: Resolve an identifier to TEA Product Releases
+      operationId: discover
       parameters:
         - name: tei
           in: query
