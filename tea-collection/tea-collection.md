@@ -68,7 +68,11 @@ The TEA Collection object has the following parts:
 - __artifacts__: Array of TEA Artifact objects.
     See [below](#the-tea-artifact-object).
 
-## The TEA Artifact object
+Required fields:
+
+- `uuid`, `version`, `createdDate`, `belongsTo`, `updateReason`, `artifacts`, `updateReason.type`
+
+## TEA Artifact object
 
 A TEA Artifact object represents a security-related document or file linked to a component release,
 such as an SBOM, VEX, attestation, or license.
