@@ -1882,6 +1882,7 @@ components:
         Integrity digest for identified content bytes.
         `algValue` is the lowercase hexadecimal encoding of the digest produced by `algType` over those bytes.
         The hex length shall match the algorithm's digest size:
+        - 32 for MD5,
         - 40 for SHA-1,
         - 64 for SHA-256 / SHA3-256 / BLAKE2b-256 / BLAKE3 / Streebog-256,
         - 96 for SHA-384 / SHA3-384 / BLAKE2b-384,
@@ -1896,7 +1897,7 @@ components:
             Lowercase hexadecimal digest value for `algType`. Do not use Base64 or
             uppercase hex.
           pattern: '^[0-9a-f]+$'
-          minLength: 40
+          minLength: 32
           maxLength: 128
           example: 9da736a1cdd27231e70187cbc67398d29ca0b714f885e7032da9f1fb247693c1
       required:
@@ -1906,6 +1907,7 @@ components:
       type: string
       description: Checksum algorithm
       enum:
+        - MD5
         - SHA-1
         - SHA-256
         - SHA-384
