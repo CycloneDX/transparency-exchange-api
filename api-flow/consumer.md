@@ -83,7 +83,7 @@ sequenceDiagram
     participant tea_artifact as TEA Artifact
 
 
-    user ->> tea_product_release: Search for product releases based on identifier (CPE, PURL, name)
+    user ->> tea_product_release: Search for product releases based on identifier (CPE, PURL, TEI)
     tea_product_release ->> user: List of product releases
 
     user ->> tea_product_release: Finding all product parts (TEA Component Releases) and facts about chosen product
