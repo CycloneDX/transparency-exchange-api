@@ -46,7 +46,9 @@ The TEA Collection object has the following parts:
 
 - Preamble
 - __uuid__: UUID of the TEA Collection object.
-    This matches the UUID of the associated TEA Component Release object.
+    This matches the UUID of the associated TEA Component Release or TEA Product Release object.
+    Within an authoritative domain, Product Release and Component Release UUIDs are disjoint
+    (see [TEA UUID Scope and Stability](../doc/tea-uuid-scope.md)), so two collections cannot share the same UUID.
     When updating a collection, only the `version` is changed.
 - __version__: TEA Collection version, incremented each time its content changes.
     Versions start with 1.

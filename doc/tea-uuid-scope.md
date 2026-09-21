@@ -11,11 +11,13 @@ authoritative domain  +  object type  +  UUID
 ```
 
 - The **authoritative domain** is supplied by the TEI (`tei://<domain-name>/<type>/<unique-identifier>`); see [discovery](../discovery/readme.md). TEA itself has no centralized authority that can police UUIDs across servers, so cross-server uniqueness is not enforceable and is not claimed.
-- The **object type** scopes uniqueness to a single object class (Product, Product Release, Component, Release, Collection, Artifact). A TEA server MUST guarantee that UUIDs are unique within `(authoritative domain, object type)`. UUIDs are not required to be unique across object types.
+- The **object type** scopes uniqueness to a single object class (Product, Product Release, Component, Release, Collection, Artifact). A TEA server MUST guarantee that UUIDs are unique within `(authoritative domain, object type)`. Except as noted below, UUIDs are not required to be unique across object types.
 
-The per-object-type scoping reflects how TEA servers are typically implemented: each object type lives in its own database table, where uniqueness is trivially enforced by a primary key. Cross-table uniqueness offers no functional benefit - TEA has no operation that resolves a UUID without already knowing its object type.
+**Exception — Product Release and Component Release.** A TEA Collection inherits the UUID of its parent Product Release or Component Release. If the same UUID were used for both a Product Release and a Component Release under one authoritative domain, two distinct Collection objects would share the identity `(authoritative domain, Collection, UUID)`. Therefore, within an authoritative domain, a UUID MUST NOT be used as both a Product Release UUID and a Component Release UUID. Other cross-type reuse remains allowed (for example Product vs Artifact, or Component vs Collection).
 
-Implementations MAY use generators that produce globally unique UUIDs (e.g. RFC 4122). Doing so neither violates nor strengthens this specification.
+The per-object-type scoping reflects how TEA servers are typically implemented: each object type lives in its own database table, where uniqueness is trivially enforced by a primary key. Cross-table uniqueness is not required in general — TEA has no operation that resolves a UUID without already knowing its object type — except that Product Release and Component Release UUIDs MUST be disjoint as above, because those types share the Collection UUID namespace.
+
+Implementations MAY use generators that produce globally unique UUIDs (e.g. RFC 4122). Doing so satisfies the Product Release / Component Release rule in ordinary practice; deliberate reuse across those two types is what this exception forbids.
 
 ## Stability
 
