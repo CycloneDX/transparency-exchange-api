@@ -1164,7 +1164,7 @@ components:
         - ISO_42001
         - PCI_DSS
         - HIPAA
-        - FedRAMP
+        - FEDRAMP
         - GDPR
         - CSA_STAR
         - NIST_800_53
@@ -1219,7 +1219,7 @@ components:
     #
     # TEA Product Release
     #
-    productRelease:
+    product-release:
       type: object
       description: A specific release of a TEA product
       properties:
@@ -1286,10 +1286,10 @@ components:
       description: |
         A TEA Product Release together with its latest collection.
 
-        Extends `productRelease` with a `latestCollection` property; every field of
-        `productRelease` applies unchanged.
+        Extends `product-release` with a `latestCollection` property; every field of
+        `product-release` applies unchanged.
       allOf:
-        - $ref: "#/components/schemas/productRelease"
+        - $ref: "#/components/schemas/product-release"
         - type: object
           properties:
             latestCollection:
@@ -1393,7 +1393,7 @@ components:
     #
     # TEA Component Release and related objects
     #
-    release:
+    component-release:
       type: object
       description: A TEA Component Release
       properties:
@@ -1489,7 +1489,7 @@ components:
               url: https://repo.maven.apache.org/maven2/org/apache/tomcat/tomcat/11.0.7/tomcat-11.0.7-windows-x64.zip
               signatureUrl: https://repo.maven.apache.org/maven2/org/apache/tomcat/tomcat/11.0.7/tomcat-11.0.7-windows-x64.zip.asc
             - distributionId: de45ffaf-e4b5-47b5-be28-444a76df098e
-              description: Core binary distribution, Windows Service Installer (MSI)
+              description: Core binary distribution, Windows Service Installer (.exe)
               checksums:
                 - algType: SHA-512
                   algValue: 1d3824e7643c8aba455ab0bd9e67b14a60f2aaa6aa7775116bce40eb0579e8ced162a4f828051d3b867e96ee2858ec5da0cc654e83a83ba30823cbea0df4ff96
@@ -1575,7 +1575,7 @@ components:
           url: https://repo.maven.apache.org/maven2/org/apache/tomcat/tomcat/11.0.7/tomcat-11.0.7-windows-x64.zip
           signatureUrl: https://repo.maven.apache.org/maven2/org/apache/tomcat/tomcat/11.0.7/tomcat-11.0.7-windows-x64.zip.asc
         - distributionId: de45ffaf-e4b5-47b5-be28-444a76df098e
-          description: Core binary distribution, Windows Service Installer (MSI)
+          description: Core binary distribution, Windows Service Installer (.exe)
           checksums:
             - algType: SHA-512
               algValue: 1d3824e7643c8aba455ab0bd9e67b14a60f2aaa6aa7775116bce40eb0579e8ced162a4f828051d3b867e96ee2858ec5da0cc654e83a83ba30823cbea0df4ff96
@@ -1586,10 +1586,10 @@ components:
       description: |
         A TEA Component Release together with its latest collection.
 
-        Extends `release` with a `latestCollection` property; every field of `release`
-        applies unchanged.
+        Extends `component-release` with a `latestCollection` property; every field of
+        `component-release` applies unchanged.
       allOf:
-        - $ref: "#/components/schemas/release"
+        - $ref: "#/components/schemas/component-release"
         - type: object
           properties:
             latestCollection:
@@ -1979,7 +1979,7 @@ components:
       required:
         - error
 
-    tea-server-info:
+    server-info:
       type: object
       description: TEA server information including URL, versions, and optional priority
       additionalProperties: false
@@ -2044,7 +2044,7 @@ components:
           type: array
           minItems: 1
           items:
-            $ref: "#/components/schemas/tea-server-info"
+            $ref: "#/components/schemas/server-info"
       required:
         - productReleaseUuid
         - servers
@@ -2327,7 +2327,7 @@ components:
             results:
               type: array
               items:
-                $ref: "#/components/schemas/productRelease"
+                $ref: "#/components/schemas/product-release"
           required:
             - results
       examples:
@@ -2363,7 +2363,7 @@ components:
             results:
               type: array
               items:
-                $ref: "#/components/schemas/release"
+                $ref: "#/components/schemas/component-release"
           required:
             - results
       examples:
@@ -3097,6 +3097,9 @@ components:
       schema:
         type: string
 
+  # Component keys in this file are kebab-case. The two security scheme names keep the
+  # camelCase spelling used throughout the OpenAPI ecosystem, because generated clients
+  # surface them as the identifiers a caller configures credentials with.
   securitySchemes:
     bearerAuth:
       type: http

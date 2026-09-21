@@ -23,7 +23,7 @@ Collections for a product release contain artefacts relevant to that product rel
 
 ## JSON examples
 
-The following example is reused from the OpenAPI schema (`components/schemas/productRelease.examples`), ensuring exact field names and casing.
+The following example is reused from the OpenAPI schema (`components/schemas/product-release.examples`), ensuring exact field names and casing.
 
 ```json
 {
@@ -31,11 +31,11 @@ The following example is reused from the OpenAPI schema (`components/schemas/pro
   "version": "2.24.3",
   "createdDate": "2025-04-01T15:43:00Z",
   "releaseDate": "2025-04-01T15:43:00Z",
-  "product": "9c622dd2-b0df-11f1-9796-1a52914d44b2",
+  "product": "09e8c73b-ac45-4475-acac-33e6a7314e6d",
   "identifiers": [
     {
       "idType": "TEI",
-      "idValue": "tei:vendor:product@2.24.3"
+      "idValue": "tei://vendor.example.com/uuid/47f51950-b0e2-11f1-adc2-1a52914d44b2"
     }
   ],
   "components": [

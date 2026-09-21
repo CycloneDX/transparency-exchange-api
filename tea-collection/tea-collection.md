@@ -70,7 +70,7 @@ TEA Artifacts can be reused across multiple TEA Collections,
 allowing the same document to be referenced by different component or product releases.
 This promotes consistency and reduces duplication.
 
-Optionally, each TEA Artifact can specify the `distributionType` identifiers of the distributions it applies to.
+Optionally, each TEA Artifact can specify the `distributionIds` of the distributions it applies to.
 If this field is absent, the TEA Artifact is considered applicable to all distributions of the release.
 
 ### Structure
@@ -79,7 +79,7 @@ A TEA Artifact object contains the following fields:
 
 - __uuid__: The UUID of the TEA Artifact object. Together with *version* uniquely identifies the TEA Artifact.
 - __version__:
-  An integer with default value 1.
+  Revision number, starting at 1.
   Together with *uuid* uniquely identifies the TEA Artifact.
   This field can be used to designate successive, immutable revisions of an artifact content (e.g. an updated VEX file).
 - __name__: A human-readable name for the artifact.
@@ -155,9 +155,9 @@ producing different alerts than other changes of a collection.
 
 ```json
 {
-  "uuid": "4c72fe22-9d83-4c2f-8eba-d6db484f32c8",
+  "uuid": "da89e38e-95e7-44ca-aa7d-f3b6b34c7fab",
   "version": 10,
-  "createdDate": "2024-12-13T00:00:00Z",
+  "createdDate": "2024-12-15T00:00:00Z",
   "belongsTo": "COMPONENT_RELEASE",
   "updateReason": {
     "type": "ARTIFACT_UPDATED",
@@ -166,6 +166,8 @@ producing different alerts than other changes of a collection.
   "artifacts": [
     {
       "uuid": "1cb47b95-8bf8-3bad-a5a4-0d54d86e10ce",
+      "version": 2,
+      "createdDate": "2024-12-13T00:00:00Z",
       "name": "Build SBOM",
       "type": "BOM",
       "formats": [
@@ -176,8 +178,8 @@ producing different alerts than other changes of a collection.
           "signatureUrl": "https://repo.maven.apache.org/maven2/org/apache/logging/log4j/log4j-core/2.24.3/log4j-core-2.24.3-cyclonedx.xml.asc",
           "checksums": [
             {
-              "algType": "MD5",
-              "algValue": "2e1a525afc81b0a8ecff114b8b743de9"
+              "algType": "SHA-256",
+              "algValue": "e04c9d55986d7194822eaa4f8115a77f801844d807ad6e0d454ac31dd41861e5"
             },
             {
               "algType": "SHA-1",
@@ -190,6 +192,7 @@ producing different alerts than other changes of a collection.
     {
       "uuid": "dfa35519-9734-4259-bba1-3e825cf4be06",
       "version": 7,
+      "createdDate": "2024-12-15T00:00:00Z",
       "name": "Vulnerability Disclosure Report",
       "type": "VULNERABILITIES",
       "formats": [

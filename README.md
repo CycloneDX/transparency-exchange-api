@@ -54,7 +54,7 @@ The working group has produced a list of use cases and requirements for the prot
 - [TEA use cases](doc/tea-usecases.md)
 
 ## Data model
-- [TEA Product Release](tea-product/tea-product-release.md): The primary entry point. The [Transparency Exchange Identifier, TEI](/discovery/readme.md) resolves to a specific Product Release. A Product Release belongs to a [TEA Product](tea-product/tea-product.md).
+- [TEA Product Release](tea-product/tea-product-release.md): The primary entry point. The [Transparency Exchange Identifier, TEI](/discovery/readme.md) resolves to one or more Product Releases, normally one. A Product Release belongs to a [TEA Product](tea-product/tea-product.md).
 - [TEA Product](tea-product/tea-product.md): A higher-level object that groups a set of Product Releases for a product line or family. Products can be discovered and browsed; releases are accessed via `/product/{uuid}/releases`.
 - [TEA Component](tea-component/tea-component.md): Represents a component lineage. A Component is a collection of Component Releases (accessible via `/component/{uuid}/releases`).
 - [TEA Release](/tea-component/tea-release.md): A Component Release object. Each Component Release has its own TEA Collection.
