@@ -27,6 +27,106 @@ servers:
   - url: http://localhost/tea/v1.0.0
     description: Local development only; HTTPS is required outside local testing
 paths:
+  /discovery:
+    get:
+      description: |
+        Discovery endpoint which resolves an identifier into one or more product release
+        UUIDs.
+
+        Exactly one of the `tei` and `purl` query parameters shall be provided. A request
+        with neither, or with both, is rejected with `400`. OpenAPI cannot express this
+        constraint on query parameters, so both are declared optional here.
+
+        Discovery by TEI resolves the product across TEA servers, using the domain carried
+        by the TEI (typically after DNS / `.well-known` selection of an API host).
+        Discovery by PURL requires an already-known API base URL and resolves within that
+        server's inventory.
+
+        A successful response is a non-empty JSON array of `discovery-info` objects,
+        ordered by priority when multiple product releases match (first entry highest).
+        If the server does not resolve the identifier, it responds with `404` and
+        `error: OBJECT_UNKNOWN`, not `200` with an empty array.
+
+        Parameter values are the identifier itself (not a pre-encoded wire form). Clients
+        shall apply query-parameter serialization once. Servers shall interpret the value
+        after one query-decoding step. Escapes that are part of a PURL value are preserved
+        by that single decode.
+
+        Example request lines after serialization:
+        - `.../discovery?tei=tei%3A%2F%2Fproducts.example.com%2Fuuid%2F47f51950-b0e2-11f1-adc2-1a52914d44b2`
+        - `.../discovery?purl=pkg%3Amaven%2Forg.apache.logging.log4j%2Flog4j-core%402.24.3`
+
+        Unlike `/token`, this operation is required on a conforming TEA API base for the
+        advertised version. A conforming `404` uses the shared object-not-found response
+        (`error-response`, typically `OBJECT_UNKNOWN`) and means this server does not resolve
+        the identifier, not that `/discovery` is optional or unimplemented. Client
+        recognition of that body and the terminal outcome are defined in the discovery
+        document.
+      summary: Resolve an identifier to TEA Product Releases
+      operationId: discover
+      parameters:
+        - name: tei
+          in: query
+          required: false
+          description: |
+            Transparency Exchange Identifier (TEI) for the product being discovered, as the
+            logical TEI string. Do not pre-encode for the schema example or client model;
+            apply query-parameter encoding once when forming the HTTP request.
+          schema:
+            type: string
+            examples:
+              - tei://products.example.com/uuid/47f51950-b0e2-11f1-adc2-1a52914d44b2
+        - name: purl
+          in: query
+          required: false
+          description: |
+            Package URL (PURL) of the product being discovered, resolved within this TEA
+            server's inventory, as the logical PURL string. Do not pre-encode for the schema
+            example or client model; apply query-parameter encoding once when forming the
+            HTTP request.
+          schema:
+            type: string
+            examples:
+              - pkg:maven/org.apache.logging.log4j/log4j-core@2.24.3
+      responses:
+        '200':
+          $ref: "#/components/responses/discovery-response"
+        '400':
+          $ref: "#/components/responses/400-invalid-request"
+        '401':
+          $ref: "#/components/responses/401-unauthorized"
+        '403':
+          $ref: "#/components/responses/403-forbidden"
+        '404':
+          $ref: "#/components/responses/404-object-by-id-not-found"
+      tags:
+        - TEA Discovery
+  /products:
+    get:
+      description: Returns a list of TEA products. Note that multiple products may
+        match.
+      summary: Query TEA Products
+      operationId: queryProducts
+      parameters:
+        # For result filtering
+        - $ref: "#/components/parameters/id-type"
+        - $ref: "#/components/parameters/id-value"
+        # For pagination
+        - $ref: "#/components/parameters/page-size"
+        - $ref: "#/components/parameters/page-token"
+        - $ref: "#/components/parameters/sort-field-product"
+        - $ref: "#/components/parameters/sort-order"
+      responses:
+        '200':
+          $ref: "#/components/responses/paginated-product"
+        '400':
+          $ref: "#/components/responses/400-invalid-request"
+        '401':
+          $ref: "#/components/responses/401-unauthorized"
+        '403':
+          $ref: "#/components/responses/403-forbidden"
+      tags:
+        - TEA Product
   /product/{uuid}:
     get:
       description: Get a TEA Product by UUID
@@ -83,6 +183,60 @@ paths:
           $ref: "#/components/responses/403-forbidden"
         '404':
           $ref: "#/components/responses/404-object-by-id-not-found"
+      tags:
+        - TEA Product Release
+  /product/{uuid}/cle:
+    get:
+      description: Get the CLE (Common Lifecycle Enumeration) data for a TEA Product
+      summary: Get the lifecycle events of a TEA Product
+      operationId: getProductCle
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          description: UUID of TEA Product in the TEA server
+          schema:
+            "$ref": "#/components/schemas/uuid"
+      responses:
+        '200':
+          description: CLE data for the requested TEA Product found and returned
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/cle"
+        '400':
+          $ref: "#/components/responses/400-invalid-request"
+        '401':
+          $ref: "#/components/responses/401-unauthorized"
+        '403':
+          $ref: "#/components/responses/403-forbidden"
+        '404':
+          $ref: "#/components/responses/404-object-by-id-not-found"
+      tags:
+        - CLE
+  /productReleases:
+    get:
+      description: Returns a list of TEA product releases. Note that multiple product releases may match.
+      summary: Query TEA Product Releases
+      operationId: queryProductReleases
+      parameters:
+        # For result filtering
+        - $ref: "#/components/parameters/id-type"
+        - $ref: "#/components/parameters/id-value"
+        # For pagination
+        - $ref: "#/components/parameters/page-size"
+        - $ref: "#/components/parameters/page-token"
+        - $ref: "#/components/parameters/sort-field-product-release"
+        - $ref: "#/components/parameters/sort-order"
+      responses:
+        '200':
+          $ref: "#/components/responses/paginated-product-release"
+        '400':
+          $ref: "#/components/responses/400-invalid-request"
+        '401':
+          $ref: "#/components/responses/401-unauthorized"
+        '403':
+          $ref: "#/components/responses/403-forbidden"
       tags:
         - TEA Product Release
   /productRelease/{uuid}:
@@ -143,50 +297,25 @@ paths:
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
         - CLE
-  /productReleases:
+  /productRelease/{uuid}/collections:
     get:
-      description: Returns a list of TEA product releases. Note that multiple product releases may match.
-      summary: Query TEA Product Releases
-      operationId: queryProductReleases
-      parameters:
-        # For result filtering
-        - $ref: "#/components/parameters/id-type"
-        - $ref: "#/components/parameters/id-value"
-        # For pagination
-        - $ref: "#/components/parameters/page-size"
-        - $ref: "#/components/parameters/page-token"
-        - $ref: "#/components/parameters/sort-field-product-release"
-        - $ref: "#/components/parameters/sort-order"
-      responses:
-        '200':
-          $ref: "#/components/responses/paginated-product-release"
-        '400':
-          $ref: "#/components/responses/400-invalid-request"
-        '401':
-          $ref: "#/components/responses/401-unauthorized"
-        '403':
-          $ref: "#/components/responses/403-forbidden"
-      tags:
-        - TEA Product Release
-  /product/{uuid}/cle:
-    get:
-      description: Get the CLE (Common Lifecycle Enumeration) data for a TEA Product
-      summary: Get the lifecycle events of a TEA Product
-      operationId: getProductCle
+      description: Get the TEA Collections belonging to the TEA Product Release
+      summary: List the collections of a TEA Product Release
+      operationId: listProductReleaseCollections
       parameters:
         - name: uuid
           in: path
           required: true
-          description: UUID of TEA Product in the TEA server
+          description: UUID of TEA Product Release in the TEA server
           schema:
             "$ref": "#/components/schemas/uuid"
+        - $ref: "#/components/parameters/page-size"
+        - $ref: "#/components/parameters/page-token"
+        - $ref: "#/components/parameters/sort-field-collection"
+        - $ref: "#/components/parameters/sort-order"
       responses:
         '200':
-          description: CLE data for the requested TEA Product found and returned
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/cle"
+          $ref: "#/components/responses/paginated-collection"
         '400':
           $ref: "#/components/responses/400-invalid-request"
         '401':
@@ -196,13 +325,80 @@ paths:
         '404':
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
-        - CLE
-  /products:
+        - TEA Product Release
+  /productRelease/{uuid}/collection/latest:
     get:
-      description: Returns a list of TEA products. Note that multiple products may
-        match.
-      summary: Query TEA Products
-      operationId: queryProducts
+      description: |
+        Get the latest TEA Collection belonging to the TEA Product Release, that is,
+        the collection with the greatest published `version`.
+
+        `404` means the release is unknown; a release always has a latest collection.
+      summary: Get the latest collection of a TEA Product Release
+      operationId: getLatestProductReleaseCollection
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          description: UUID of TEA Product Release in the TEA server
+          schema:
+            "$ref": "#/components/schemas/uuid"
+      responses:
+        '200':
+          description: Requested TEA Collection found and returned
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/collection"
+        '400':
+          $ref: "#/components/responses/400-invalid-request"
+        '401':
+          $ref: "#/components/responses/401-unauthorized"
+        '403':
+          $ref: "#/components/responses/403-forbidden"
+        '404':
+          $ref: "#/components/responses/404-object-by-id-not-found"
+      tags:
+        - TEA Product Release
+  /productRelease/{uuid}/collection/{collectionVersion}:
+    get:
+      description: Get a specific Collection (by version) for a TEA Product Release by its UUID
+      summary: Get one collection version of a TEA Product Release
+      operationId: getProductReleaseCollectionByVersion
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          description: UUID of TEA Product Release in the TEA server
+          schema:
+            "$ref": "#/components/schemas/uuid"
+        - name: collectionVersion
+          in: path
+          required: true
+          description: Version of TEA Collection
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Requested TEA Collection Version found and returned
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/collection"
+        '400':
+          $ref: "#/components/responses/400-invalid-request"
+        '401':
+          $ref: "#/components/responses/401-unauthorized"
+        '403':
+          $ref: "#/components/responses/403-forbidden"
+        '404':
+          $ref: "#/components/responses/404-object-by-id-not-found"
+      tags:
+        - TEA Product Release
+  /components:
+    get:
+      description: Returns a list of TEA components. Note that multiple components may match.
+      summary: Query TEA Components
+      operationId: queryComponents
       parameters:
         # For result filtering
         - $ref: "#/components/parameters/id-type"
@@ -210,11 +406,11 @@ paths:
         # For pagination
         - $ref: "#/components/parameters/page-size"
         - $ref: "#/components/parameters/page-token"
-        - $ref: "#/components/parameters/sort-field-product"
+        - $ref: "#/components/parameters/sort-field-component"
         - $ref: "#/components/parameters/sort-order"
       responses:
         '200':
-          $ref: "#/components/responses/paginated-product"
+          $ref: "#/components/responses/paginated-component"
         '400':
           $ref: "#/components/responses/400-invalid-request"
         '401':
@@ -222,7 +418,7 @@ paths:
         '403':
           $ref: "#/components/responses/403-forbidden"
       tags:
-        - TEA Product
+        - TEA Component
   /component/{uuid}:
     get:
       description: Get a TEA Component
@@ -310,31 +506,6 @@ paths:
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
         - CLE
-  /components:
-    get:
-      description: Returns a list of TEA components. Note that multiple components may match.
-      summary: Query TEA Components
-      operationId: queryComponents
-      parameters:
-        # For result filtering
-        - $ref: "#/components/parameters/id-type"
-        - $ref: "#/components/parameters/id-value"
-        # For pagination
-        - $ref: "#/components/parameters/page-size"
-        - $ref: "#/components/parameters/page-token"
-        - $ref: "#/components/parameters/sort-field-component"
-        - $ref: "#/components/parameters/sort-order"
-      responses:
-        '200':
-          $ref: "#/components/responses/paginated-component"
-        '400':
-          $ref: "#/components/responses/400-invalid-request"
-        '401':
-          $ref: "#/components/responses/401-unauthorized"
-        '403':
-          $ref: "#/components/responses/403-forbidden"
-      tags:
-        - TEA Component
   /componentReleases:
     get:
       description: Returns a list of TEA component releases. Note that multiple component releases may match.
@@ -418,6 +589,35 @@ paths:
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
         - CLE
+  /componentRelease/{uuid}/collections:
+    get:
+      description: Get the TEA Collections belonging to the TEA Component Release
+      summary: List the collections of a TEA Component Release
+      operationId: listComponentReleaseCollections
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          description: UUID of TEA Component Release in the TEA server
+          schema:
+            "$ref": "#/components/schemas/uuid"
+        - $ref: "#/components/parameters/page-size"
+        - $ref: "#/components/parameters/page-token"
+        - $ref: "#/components/parameters/sort-field-collection"
+        - $ref: "#/components/parameters/sort-order"
+      responses:
+        '200':
+          $ref: "#/components/responses/paginated-collection"
+        '400':
+          $ref: "#/components/responses/400-invalid-request"
+        '401':
+          $ref: "#/components/responses/401-unauthorized"
+        '403':
+          $ref: "#/components/responses/403-forbidden"
+        '404':
+          $ref: "#/components/responses/404-object-by-id-not-found"
+      tags:
+        - TEA Component Release
   /componentRelease/{uuid}/collection/latest:
     get:
       description: |
@@ -451,132 +651,6 @@ paths:
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
         - TEA Component Release
-  /productRelease/{uuid}/collection/latest:
-    get:
-      description: |
-        Get the latest TEA Collection belonging to the TEA Product Release, that is,
-        the collection with the greatest published `version`.
-
-        `404` means the release is unknown; a release always has a latest collection.
-      summary: Get the latest collection of a TEA Product Release
-      operationId: getLatestProductReleaseCollection
-      parameters:
-        - name: uuid
-          in: path
-          required: true
-          description: UUID of TEA Product Release in the TEA server
-          schema:
-            "$ref": "#/components/schemas/uuid"
-      responses:
-        '200':
-          description: Requested TEA Collection found and returned
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/collection"
-        '400':
-          $ref: "#/components/responses/400-invalid-request"
-        '401':
-          $ref: "#/components/responses/401-unauthorized"
-        '403':
-          $ref: "#/components/responses/403-forbidden"
-        '404':
-          $ref: "#/components/responses/404-object-by-id-not-found"
-      tags:
-        - TEA Product Release
-  /componentRelease/{uuid}/collections:
-    get:
-      description: Get the TEA Collections belonging to the TEA Component Release
-      summary: List the collections of a TEA Component Release
-      operationId: listComponentReleaseCollections
-      parameters:
-        - name: uuid
-          in: path
-          required: true
-          description: UUID of TEA Component Release in the TEA server
-          schema:
-            "$ref": "#/components/schemas/uuid"
-        - $ref: "#/components/parameters/page-size"
-        - $ref: "#/components/parameters/page-token"
-        - $ref: "#/components/parameters/sort-field-collection"
-        - $ref: "#/components/parameters/sort-order"
-      responses:
-        '200':
-          $ref: "#/components/responses/paginated-collection"
-        '400':
-          $ref: "#/components/responses/400-invalid-request"
-        '401':
-          $ref: "#/components/responses/401-unauthorized"
-        '403':
-          $ref: "#/components/responses/403-forbidden"
-        '404':
-          $ref: "#/components/responses/404-object-by-id-not-found"
-      tags:
-        - TEA Component Release
-  /productRelease/{uuid}/collections:
-    get:
-      description: Get the TEA Collections belonging to the TEA Product Release
-      summary: List the collections of a TEA Product Release
-      operationId: listProductReleaseCollections
-      parameters:
-        - name: uuid
-          in: path
-          required: true
-          description: UUID of TEA Product Release in the TEA server
-          schema:
-            "$ref": "#/components/schemas/uuid"
-        - $ref: "#/components/parameters/page-size"
-        - $ref: "#/components/parameters/page-token"
-        - $ref: "#/components/parameters/sort-field-collection"
-        - $ref: "#/components/parameters/sort-order"
-      responses:
-        '200':
-          $ref: "#/components/responses/paginated-collection"
-        '400':
-          $ref: "#/components/responses/400-invalid-request"
-        '401':
-          $ref: "#/components/responses/401-unauthorized"
-        '403':
-          $ref: "#/components/responses/403-forbidden"
-        '404':
-          $ref: "#/components/responses/404-object-by-id-not-found"
-      tags:
-        - TEA Product Release
-  /productRelease/{uuid}/collection/{collectionVersion}:
-    get:
-      description: Get a specific Collection (by version) for a TEA Product Release by its UUID
-      summary: Get one collection version of a TEA Product Release
-      operationId: getProductReleaseCollectionByVersion
-      parameters:
-        - name: uuid
-          in: path
-          required: true
-          description: UUID of TEA Product Release in the TEA server
-          schema:
-            "$ref": "#/components/schemas/uuid"
-        - name: collectionVersion
-          in: path
-          required: true
-          description: Version of TEA Collection
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: Requested TEA Collection Version found and returned
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/collection"
-        '400':
-          $ref: "#/components/responses/400-invalid-request"
-        '401':
-          $ref: "#/components/responses/401-unauthorized"
-        '403':
-          $ref: "#/components/responses/403-forbidden"
-        '404':
-          $ref: "#/components/responses/404-object-by-id-not-found"
-      tags:
-        - TEA Product Release
   /componentRelease/{uuid}/collection/{collectionVersion}:
     get:
       description: Get a specific Collection (by version) for a TEA Component Release by its UUID
@@ -626,41 +700,6 @@ paths:
           description: UUID of TEA Artifact in the TEA server
           schema:
             "$ref": "#/components/schemas/uuid"
-      responses:
-        '200':
-          description: Requested TEA Artifact metadata found and returned
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/artifact"
-        '400':
-          $ref: "#/components/responses/400-invalid-request"
-        '401':
-          $ref: "#/components/responses/401-unauthorized"
-        '403':
-          $ref: "#/components/responses/403-forbidden"
-        '404':
-          $ref: "#/components/responses/404-object-by-id-not-found"
-      tags:
-        - TEA Artifact
-  /artifact/{uuid}/{artifactVersion}:
-    get:
-      description: Get metadata for a specific revision of a specific TEA Artifact
-      summary: Get the metadata of one TEA Artifact revision
-      operationId: getArtifactByVersion
-      parameters:
-        - name: uuid
-          in: path
-          required: true
-          description: UUID of TEA Artifact in the TEA server
-          schema:
-            "$ref": "#/components/schemas/uuid"
-        - name: artifactVersion
-          in: path
-          required: true
-          description: Version of TEA Artifact
-          schema:
-            type: integer
       responses:
         '200':
           description: Requested TEA Artifact metadata found and returned
@@ -728,6 +767,95 @@ paths:
           $ref: "#/components/responses/406-no-acceptable-format"
       tags:
         - TEA Artifact
+  /artifact/{uuid}/latest/signature/download:
+    get:
+      description: |
+        Download the detached signature for the latest revision of a specific TEA Artifact.
+
+        Equivalent to the versioned signature endpoint, resolving to the revision with
+        the greatest published `version` — the same revision `/artifact/{uuid}/latest`
+        reports. As with the latest content endpoint, the response is not immutable and
+        caches shall revalidate it via `ETag` for the selected representation;
+        `Content-Location` is an absolute versioned signature URL including the API base,
+        version path, and `mediaType` query parameter.
+
+        When serving the signature itself (`200`), servers shall return a strong `ETag`
+        for the selected representation and shall honor `If-None-Match` with `304`.
+        `ETag` is the only conditional validator for these downloads. Servers that support
+        `HEAD` for this operation shall return the same headers as `GET` without a response
+        body. `302` redirects are outside conditional semantics: `If-None-Match` applies
+        only to the TEA-hosted download response, not to following an external `Location`.
+
+        `404` distinguishes the cases by TEA error body: `OBJECT_UNKNOWN` when the
+        artifact revision is unknown (or concealed), and `SIGNATURE_NOT_FOUND` when the
+        revision exists but the selected format has no signature published. A server
+        concealing an artifact from a client shall answer `OBJECT_UNKNOWN` for every
+        sub-resource of it, including signatures.
+      summary: Download the signature of the latest TEA Artifact revision
+      operationId: downloadLatestArtifactSignature
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          description: UUID of TEA Artifact in the TEA server
+          schema:
+            "$ref": "#/components/schemas/uuid"
+        - $ref: "#/components/parameters/artifact-signature-media-type"
+        - $ref: "#/components/parameters/if-none-match"
+      responses:
+        '200':
+          $ref: "#/components/responses/artifact-signature-content-latest"
+        '302':
+          $ref: "#/components/responses/artifact-content-redirect"
+        '304':
+          $ref: "#/components/responses/304-not-modified"
+        '400':
+          $ref: "#/components/responses/400-invalid-request"
+        '401':
+          $ref: "#/components/responses/401-unauthorized"
+        '403':
+          $ref: "#/components/responses/403-forbidden"
+        '404':
+          $ref: "#/components/responses/404-object-by-id-not-found"
+        '406':
+          $ref: "#/components/responses/406-no-acceptable-format"
+      tags:
+        - TEA Artifact
+  /artifact/{uuid}/{artifactVersion}:
+    get:
+      description: Get metadata for a specific revision of a specific TEA Artifact
+      summary: Get the metadata of one TEA Artifact revision
+      operationId: getArtifactByVersion
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          description: UUID of TEA Artifact in the TEA server
+          schema:
+            "$ref": "#/components/schemas/uuid"
+        - name: artifactVersion
+          in: path
+          required: true
+          description: Version of TEA Artifact
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Requested TEA Artifact metadata found and returned
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/artifact"
+        '400':
+          $ref: "#/components/responses/400-invalid-request"
+        '401':
+          $ref: "#/components/responses/401-unauthorized"
+        '403':
+          $ref: "#/components/responses/403-forbidden"
+        '404':
+          $ref: "#/components/responses/404-object-by-id-not-found"
+      tags:
+        - TEA Artifact
   /artifact/{uuid}/{artifactVersion}/download:
     get:
       description: |
@@ -775,60 +903,6 @@ paths:
       responses:
         '200':
           $ref: "#/components/responses/artifact-content"
-        '302':
-          $ref: "#/components/responses/artifact-content-redirect"
-        '304':
-          $ref: "#/components/responses/304-not-modified"
-        '400':
-          $ref: "#/components/responses/400-invalid-request"
-        '401':
-          $ref: "#/components/responses/401-unauthorized"
-        '403':
-          $ref: "#/components/responses/403-forbidden"
-        '404':
-          $ref: "#/components/responses/404-object-by-id-not-found"
-        '406':
-          $ref: "#/components/responses/406-no-acceptable-format"
-      tags:
-        - TEA Artifact
-  /artifact/{uuid}/latest/signature/download:
-    get:
-      description: |
-        Download the detached signature for the latest revision of a specific TEA Artifact.
-
-        Equivalent to the versioned signature endpoint, resolving to the revision with
-        the greatest published `version` — the same revision `/artifact/{uuid}/latest`
-        reports. As with the latest content endpoint, the response is not immutable and
-        caches shall revalidate it via `ETag` for the selected representation;
-        `Content-Location` is an absolute versioned signature URL including the API base,
-        version path, and `mediaType` query parameter.
-
-        When serving the signature itself (`200`), servers shall return a strong `ETag`
-        for the selected representation and shall honor `If-None-Match` with `304`.
-        `ETag` is the only conditional validator for these downloads. Servers that support
-        `HEAD` for this operation shall return the same headers as `GET` without a response
-        body. `302` redirects are outside conditional semantics: `If-None-Match` applies
-        only to the TEA-hosted download response, not to following an external `Location`.
-
-        `404` distinguishes the cases by TEA error body: `OBJECT_UNKNOWN` when the
-        artifact revision is unknown (or concealed), and `SIGNATURE_NOT_FOUND` when the
-        revision exists but the selected format has no signature published. A server
-        concealing an artifact from a client shall answer `OBJECT_UNKNOWN` for every
-        sub-resource of it, including signatures.
-      summary: Download the signature of the latest TEA Artifact revision
-      operationId: downloadLatestArtifactSignature
-      parameters:
-        - name: uuid
-          in: path
-          required: true
-          description: UUID of TEA Artifact in the TEA server
-          schema:
-            "$ref": "#/components/schemas/uuid"
-        - $ref: "#/components/parameters/artifact-signature-media-type"
-        - $ref: "#/components/parameters/if-none-match"
-      responses:
-        '200':
-          $ref: "#/components/responses/artifact-signature-content-latest"
         '302':
           $ref: "#/components/responses/artifact-content-redirect"
         '304':
@@ -982,80 +1056,6 @@ paths:
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
         - TEA Authentication
-  /discovery:
-    get:
-      description: |
-        Discovery endpoint which resolves an identifier into one or more product release
-        UUIDs.
-
-        Exactly one of the `tei` and `purl` query parameters shall be provided. A request
-        with neither, or with both, is rejected with `400`. OpenAPI cannot express this
-        constraint on query parameters, so both are declared optional here.
-
-        Discovery by TEI resolves the product across TEA servers, using the domain carried
-        by the TEI (typically after DNS / `.well-known` selection of an API host).
-        Discovery by PURL requires an already-known API base URL and resolves within that
-        server's inventory.
-
-        A successful response is a non-empty JSON array of `discovery-info` objects,
-        ordered by priority when multiple product releases match (first entry highest).
-        If the server does not resolve the identifier, it responds with `404` and
-        `error: OBJECT_UNKNOWN`, not `200` with an empty array.
-
-        Parameter values are the identifier itself (not a pre-encoded wire form). Clients
-        shall apply query-parameter serialization once. Servers shall interpret the value
-        after one query-decoding step. Escapes that are part of a PURL value are preserved
-        by that single decode.
-
-        Example request lines after serialization:
-        - `.../discovery?tei=tei%3A%2F%2Fproducts.example.com%2Fuuid%2F47f51950-b0e2-11f1-adc2-1a52914d44b2`
-        - `.../discovery?purl=pkg%3Amaven%2Forg.apache.logging.log4j%2Flog4j-core%402.24.3`
-
-        Unlike `/token`, this operation is required on a conforming TEA API base for the
-        advertised version. A conforming `404` uses the shared object-not-found response
-        (`error-response`, typically `OBJECT_UNKNOWN`) and means this server does not resolve
-        the identifier, not that `/discovery` is optional or unimplemented. Client
-        recognition of that body and the terminal outcome are defined in the discovery
-        document.
-      summary: Resolve an identifier to TEA Product Releases
-      operationId: discover
-      parameters:
-        - name: tei
-          in: query
-          required: false
-          description: |
-            Transparency Exchange Identifier (TEI) for the product being discovered, as the
-            logical TEI string. Do not pre-encode for the schema example or client model;
-            apply query-parameter encoding once when forming the HTTP request.
-          schema:
-            type: string
-            examples:
-              - tei://products.example.com/uuid/47f51950-b0e2-11f1-adc2-1a52914d44b2
-        - name: purl
-          in: query
-          required: false
-          description: |
-            Package URL (PURL) of the product being discovered, resolved within this TEA
-            server's inventory, as the logical PURL string. Do not pre-encode for the schema
-            example or client model; apply query-parameter encoding once when forming the
-            HTTP request.
-          schema:
-            type: string
-            examples:
-              - pkg:maven/org.apache.logging.log4j/log4j-core@2.24.3
-      responses:
-        '200':
-          $ref: "#/components/responses/discovery-response"
-        '400':
-          $ref: "#/components/responses/400-invalid-request"
-        '401':
-          $ref: "#/components/responses/401-unauthorized"
-        '403':
-          $ref: "#/components/responses/403-forbidden"
-        '404':
-          $ref: "#/components/responses/404-object-by-id-not-found"
-      tags:
-        - TEA Discovery
 components:
   schemas:
     #
@@ -1070,82 +1070,6 @@ components:
       format: date-time
       pattern: "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$"
       example: '2024-03-20T15:30:00Z'
-    token-request:
-      type: object
-      description: |
-        Token request for the `client_credentials` grant, as defined in RFC 6749 section
-        4.4.2, or an optional assertion grant identified below. The `scope` parameter
-        applies to both. The `assertion` parameter applies only to assertion grants.
-        RFC 8693 token exchange is outside the TEA 1.0 profile (see `/token` description).
-      required:
-        - grant_type
-      properties:
-        grant_type:
-          type: string
-          description: |
-            OAuth 2.0 grant type. Servers shall support `client_credentials`. Servers may
-            support assertion grants (`urn:ietf:params:oauth:grant-type:saml2-bearer`,
-            `urn:ietf:params:oauth:grant-type:jwt-bearer`). Token exchange
-            (`urn:ietf:params:oauth:grant-type:token-exchange`) is outside the TEA 1.0
-            interoperable authentication profile; see `/token`.
-          example: client_credentials
-        scope:
-          type: string
-          description: |
-            Optional space-delimited scope request (RFC 6749 section 3.3). TEA does not
-            define scope values; servers may ignore this parameter.
-        assertion:
-          type: string
-          description: Assertion value, when an assertion grant type is used (RFC 7521 section 4.1).
-    token-response:
-      type: object
-      description: Successful token response, as defined in RFC 6749 section 5.1.
-      required:
-        - access_token
-        - token_type
-      properties:
-        access_token:
-          type: string
-          description: |
-            The issued access token, presented on other TEA endpoints as
-            `Authorization: Bearer <access_token>`. Opaque to the client.
-          example: 2YotnFZFEjr1zCsicMWpAA
-        token_type:
-          type: string
-          description: Token type. Always `Bearer` in TEA.
-          const: Bearer
-        expires_in:
-          type: integer
-          description: |
-            Lifetime of the access token in seconds. Servers should include this so that
-            clients can re-authenticate before expiry rather than on failure.
-          example: 3600
-        scope:
-          type: string
-          description: Granted scope, when it differs from the scope requested.
-    token-error-response:
-      type: object
-      description: Token error response, as defined in RFC 6749 section 5.2.
-      required:
-        - error
-      properties:
-        error:
-          type: string
-          description: Error code as defined in RFC 6749 section 5.2.
-          enum:
-            - invalid_request
-            - invalid_client
-            - invalid_grant
-            - unauthorized_client
-            - unsupported_grant_type
-            - invalid_scope
-        error_description:
-          type: string
-          description: Human-readable text providing additional information about the error.
-        error_uri:
-          type: string
-          format: uri
-          description: URI of a human-readable web page with information about the error.
     identifier:
       type: object
       description: |
@@ -2426,6 +2350,85 @@ components:
           results: []
         - hasNext: false
           results: []
+    #
+    # TEA Authentication
+    #
+    token-request:
+      type: object
+      description: |
+        Token request for the `client_credentials` grant, as defined in RFC 6749 section
+        4.4.2, or an optional assertion grant identified below. The `scope` parameter
+        applies to both. The `assertion` parameter applies only to assertion grants.
+        RFC 8693 token exchange is outside the TEA 1.0 profile (see `/token` description).
+      required:
+        - grant_type
+      properties:
+        grant_type:
+          type: string
+          description: |
+            OAuth 2.0 grant type. Servers shall support `client_credentials`. Servers may
+            support assertion grants (`urn:ietf:params:oauth:grant-type:saml2-bearer`,
+            `urn:ietf:params:oauth:grant-type:jwt-bearer`). Token exchange
+            (`urn:ietf:params:oauth:grant-type:token-exchange`) is outside the TEA 1.0
+            interoperable authentication profile; see `/token`.
+          example: client_credentials
+        scope:
+          type: string
+          description: |
+            Optional space-delimited scope request (RFC 6749 section 3.3). TEA does not
+            define scope values; servers may ignore this parameter.
+        assertion:
+          type: string
+          description: Assertion value, when an assertion grant type is used (RFC 7521 section 4.1).
+    token-response:
+      type: object
+      description: Successful token response, as defined in RFC 6749 section 5.1.
+      required:
+        - access_token
+        - token_type
+      properties:
+        access_token:
+          type: string
+          description: |
+            The issued access token, presented on other TEA endpoints as
+            `Authorization: Bearer <access_token>`. Opaque to the client.
+          example: 2YotnFZFEjr1zCsicMWpAA
+        token_type:
+          type: string
+          description: Token type. Always `Bearer` in TEA.
+          const: Bearer
+        expires_in:
+          type: integer
+          description: |
+            Lifetime of the access token in seconds. Servers should include this so that
+            clients can re-authenticate before expiry rather than on failure.
+          example: 3600
+        scope:
+          type: string
+          description: Granted scope, when it differs from the scope requested.
+    token-error-response:
+      type: object
+      description: Token error response, as defined in RFC 6749 section 5.2.
+      required:
+        - error
+      properties:
+        error:
+          type: string
+          description: Error code as defined in RFC 6749 section 5.2.
+          enum:
+            - invalid_request
+            - invalid_client
+            - invalid_grant
+            - unauthorized_client
+            - unsupported_grant_type
+            - invalid_scope
+        error_description:
+          type: string
+          description: Human-readable text providing additional information about the error.
+        error_uri:
+          type: string
+          format: uri
+          description: URI of a human-readable web page with information about the error.
 
   headers:
     artifact-content-disposition:
@@ -3173,14 +3176,14 @@ security:
   - bearerAuth: []
   - {}
 tags:
-  - name: TEA Authentication
+  - name: TEA Discovery
   - name: TEA Product
   - name: TEA Product Release
   - name: TEA Component
   - name: TEA Component Release
   - name: TEA Artifact
-  - name: TEA Discovery
   - name: CLE
+  - name: TEA Authentication
 externalDocs:
   description: Transparency Exchange API specification
   url: https://github.com/CycloneDX/transparency-exchange-api
