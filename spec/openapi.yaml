@@ -184,7 +184,7 @@ paths:
         '404':
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
-        - TEA Product Release
+        - TEA Product
   /product/{uuid}/cle:
     get:
       description: Get the CLE (Common Lifecycle Enumeration) data for a TEA Product
