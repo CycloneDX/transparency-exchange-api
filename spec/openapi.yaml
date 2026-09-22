@@ -1699,7 +1699,16 @@ components:
           type: integer
           description: |
             TEA Collection version, incremented each time its content changes.
-            Versions start with 1.
+            Versions start with 1. Content changes include replacing an embedded artifact
+            with a newer revision (for example one published because an external `url` or
+            `signatureUrl` changed). If a Collection adopts that new artifact revision, the
+            server shall publish a new Collection version. Previously published Collection
+            versions shall remain unchanged.
+
+            Replacing an embedded artifact revision solely because its published `url` or
+            `signatureUrl` changed shall be classified as an update to an existing artifact.
+            The VEX and non-VEX classifications apply as described for
+            `collection-update-reason-type`.
         createdDate:
           description: The date when the TEA Collection version was created.
           "$ref": "#/components/schemas/date-time"
@@ -1773,7 +1782,16 @@ components:
         - type
     collection-update-reason-type:
       type: string
-      description: Type of TEA collection update
+      description: |
+        Type of TEA collection update.
+
+        `VEX_UPDATED` covers updates to VEX artifact(s), including a new revision whose
+        external `url` or `signatureUrl` changed. `ARTIFACT_UPDATED` covers updates to
+        artifact(s) other than VEX, including a new revision whose external `url` or
+        `signatureUrl` changed. Replacing an embedded artifact revision solely because
+        its published `url` or `signatureUrl` changed shall be classified as an update to
+        an existing artifact under those classifications. Precedence when a single
+        collection version mixes several change kinds is not defined here.
       enum:
         - INITIAL_RELEASE
         - VEX_UPDATED
@@ -1801,8 +1819,12 @@ components:
         version:
           description: |
             Revision number, starting at 1.
-            Together with *uuid* uniquely identifies the TEA Artifact.
-            This field can be used to designate successive, immutable revisions of an artefact content (e.g. an updated VEX file).
+            Together with `uuid` uniquely identifies the TEA Artifact.
+            Successive revisions cover content changes and changes to published
+            metadata such as external `url` or `signatureUrl` values. Each published
+            revision is immutable: successful retrieval for a fixed artifact UUID,
+            version, and format shall return unchanged payload bytes, including when
+            the download endpoint redirects.
           type: integer
         name:
           type: string
@@ -1905,15 +1927,29 @@ components:
             retrieve the content from it. When absent, the TEA server hosts the content
             itself and clients shall retrieve it from the artifact download endpoint,
             `/artifact/{uuid}/{artifactVersion}/download`, selecting this format by its
-            `mediaType`.
+            `mediaType`. Servers that need short-lived or redirected storage links without
+            publishing an external URL shall omit `url` and answer from the download
+            endpoint (including with `302` when the bytes live elsewhere).
 
             A TEA access token is sent only to the TEA server's own API base URL, never
             to an external URL: external locations are either openly accessible,
             pre-signed, or covered by credentials the client arranges separately. When
-            the URL is pre-signed it may expire; clients should not retain it beyond the
-            freshness lifetime of the response that carried it. A server may replace an
-            expired or renewed URL in place: that is not a new artifact revision, and the
-            content and checksums it points to are unchanged.
+            the URL is pre-signed it can expire; clients should not retain it beyond the
+            freshness lifetime of the response that carried it.
+
+            External `url` values are part of the published artifact revision. Changing
+            `url` (including renewing a pre-signed URL) shall create a new artifact
+            revision, even when content bytes and checksums are unchanged. If a Collection
+            replaces an embedded artifact revision with that new revision, the server
+            shall publish a new Collection version. Previously published Collection
+            versions shall remain unchanged. The server shall preserve the URLs published
+            on each historical artifact and collection version.
+
+            Successful retrieval for a fixed artifact UUID, version, and format shall
+            return unchanged payload bytes for as long as the resource remains available,
+            including when clients follow redirects. Changing only a download response's
+            `Location`, while preserving the content bytes, does not require a new
+            artifact or collection version.
           format: uri
         signatureUrl:
           type: string
@@ -1926,8 +1962,11 @@ components:
             retrieve it from the artifact signature download endpoint,
             `/artifact/{uuid}/{artifactVersion}/signature/download`, selecting this
             format by its `mediaType`; that endpoint returns `404` when no signature is
-            published for the format. The same access token and pre-signed URL rules
-            as for `url` apply.
+            published for the format. The same access-token, pre-signed URL, revision,
+            collection-adoption, payload-stability, and redirect rules as for `url`
+            apply to `signatureUrl`, including that changing only a signature download
+            response's `Location` while preserving the signature bytes does not require
+            a new artifact or collection version.
 
             This specification does not define which signature technology is used, nor
             model the signing algorithm, key, or certificate chain.
@@ -2728,14 +2767,20 @@ components:
             type: string
     artifact-content-redirect:
       description: |
-        The artifact content is available at another location, for example object storage
-        addressed by a pre-signed URL. The client follows the `Location` header.
+        The selected representation is available at another location, for example object
+        storage addressed by a pre-signed URL. The client follows the `Location` header.
+
+        Changing only this response's `Location`, while preserving the bytes for the
+        selected artifact UUID, version, and format, does not require a new artifact or
+        collection version. Publishing a different external `url` or `signatureUrl` on
+        the artifact metadata is a separate change and shall follow the
+        `artifact-format` rules for those fields.
 
         A client shall not send its TEA access token when following a redirect to a
         different origin.
       headers:
         Location:
-          description: Location the artifact content can be retrieved from.
+          description: Location the selected representation can be retrieved from.
           required: true
           schema:
             type: string
