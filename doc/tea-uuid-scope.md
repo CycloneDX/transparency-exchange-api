@@ -11,7 +11,7 @@ that share a UUID at the same API base cannot be distinguished.
 A TEA UUID alone is **not** globally unique. Uniqueness for retrieval is the tuple:
 
 ```text
-API base  +  object type  +  UUID
+API base + object type + UUID
 ```
 
 - The **API base** is the base URL of the TEA API the client calls. For each object

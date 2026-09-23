@@ -1178,8 +1178,8 @@ components:
       properties:
         uuid:
           description: |
-            A unique identifier for the TEA Product Release. Within an authoritative
-            domain it shall not also identify a Component Release; see `doc/tea-uuid-scope.md`.
+            A unique identifier for the TEA Product Release. Within an API base it
+            shall not also identify a Component Release; see `doc/tea-uuid-scope.md`.
           "$ref": "#/components/schemas/uuid"
         product:
           description: UUID of the TEA Product this release belongs to
@@ -1354,8 +1354,8 @@ components:
       properties:
         uuid:
           description: |
-            A unique identifier of the TEA Component Release. Within an authoritative
-            domain it shall not also identify a Product Release; see `doc/tea-uuid-scope.md`.
+            A unique identifier of the TEA Component Release. Within an API base it
+            shall not also identify a Product Release; see `doc/tea-uuid-scope.md`.
           "$ref": "#/components/schemas/uuid"
         component:
           description: UUID of the TEA Component this release belongs to
