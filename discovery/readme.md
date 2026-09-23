@@ -134,12 +134,9 @@ tei://cyclonedx.org/purl/cGtnOnB5cGkvY3ljbG9uZWR4LXB5dGhvbi1saWJAOC40LjA_ZXh0ZW5
 
 #### HASH
 
-Where the `unique-identifier` is a Hash. Supports the following hash types:
-
-- SHA256
-- SHA384
-- SHA512
-
+Where the `unique-identifier` is a Hash.
+The `<hashtype>` is one of the values of `checksum-type` in the TEA OpenAPI specification,
+for example `SHA-256`, `SHA-384` or `SHA-512`.
 The hash is written as lowercase hexadecimal,
 separated from the hash type by a colon,
 so that every TEI consists of exactly two segments after the domain name:
@@ -152,7 +149,7 @@ tei://<domain-name>/hash/<hashtype>:<hash>
 Example:
 
 ```text
-tei://cyclonedx.org/hash/SHA256:fd44efd601f651c8865acf0dfeacb0df19a2b50ec69ead0262096fd2f67197b9
+tei://cyclonedx.org/hash/SHA-256:fd44efd601f651c8865acf0dfeacb0df19a2b50ec69ead0262096fd2f67197b9
 ```
 
 The origin of the hash is up to the vendor to define.
