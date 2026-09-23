@@ -7,7 +7,7 @@ A __TEA Component Release__ represents a specific version of a TEA Component lin
 A TEA Component Release object represents a specific version of a component,
 identified by a unique version number and associated metadata.
 Each release may include multiple distributions,
-which capture variations such as architecture, packaging, or localization.
+which capture variations such as architecture, packaging, or localisation.
 
 - For software components,
   each distribution typically corresponds to a different digital file delivered to users
