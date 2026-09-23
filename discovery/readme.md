@@ -140,15 +140,19 @@ Where the `unique-identifier` is a Hash. Supports the following hash types:
 - SHA384
 - SHA512
 
+The hash is written as lowercase hexadecimal,
+separated from the hash type by a colon,
+so that every TEI consists of exactly two segments after the domain name:
+the type and the unique identifier.
+
 ```text
-tei://<domain-name>/hash/<hashtype>/<hash>
-````
+tei://<domain-name>/hash/<hashtype>:<hash>
+```
 
 Example:
 
 ```text
-tei://cyclonedx.org/hash/SHA256/fd44efd601f651c8865acf0dfeacb0df19a2b50ec69ead0262096fd2f67197b9
-
+tei://cyclonedx.org/hash/SHA256:fd44efd601f651c8865acf0dfeacb0df19a2b50ec69ead0262096fd2f67197b9
 ```
 
 The origin of the hash is up to the vendor to define.
