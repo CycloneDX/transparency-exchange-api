@@ -18,17 +18,17 @@
 
 Discovery is the **first step in all TEA interactions**, enabling a consumer to map an identifier to a service endpoint.
 
-This specification defines:
+This Standard defines:
 
-- how discovery is initiated  
-- how discovery documents are retrieved  
-- how API endpoints are obtained
+- how discovery is initiated;
+- how discovery documents are retrieved;
+- how API endpoints are obtained.
 
 TEA separates:
 
-- **identity** → TEI  
-- **location** → discovery  
-- **data retrieval** → API  
+- **location** → discovery
+- **identity** → TEI
+- **data retrieval** → API
 
 Discovery answers the question:
 
