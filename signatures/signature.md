@@ -26,7 +26,8 @@ Digital signatures provide integrity and identity to published data.
 
 In order to sign an object, a pair of asymmetric keys will be
 needed. The public key is used to create a certificate, signed
-by a certificate authority (CA). A publisher that signs an object shall protect the private signing key.
+by a certificate authority (CA). The private key is used for
+signing and is kept protected.
 
 A software publisher may buy CA services from a commercial vendor
 or set up an internal PKI solution. The issue with internal PKIs is that

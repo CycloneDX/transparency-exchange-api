@@ -71,7 +71,7 @@ like EAN/UPC bar code, PURLs or other existing schemes. A given product release 
 as long as they all resolve into the same destination. Some identifier schemes require registration
 with the corresponding standards organisation.
 
-The vendor shall ensure that the TEI is unique within the vendor's namespace. There is no
+The vendor should ensure that the TEI is unique within the vendor's namespace. There is no
 intention to create any TEI registries.
 
 ## The TEI: URL - An extensible identifier
@@ -97,7 +97,8 @@ tei://<domain-name>/<type>/<unique-identifier>
 ````
 
 - The **`domain-name`** part resolves into a web server, which may not be the API host.
-  - The domain-name part identifies the DNS namespace used by the TEI.
+  - The domain-name part is a DNS name under the vendor's control. It identifies the DNS
+    namespace used by the TEI.
 - The **`type`** which defines the syntax of the unique identifier part. Types are declared in the
   specification. If there is a need for new types, please inform ECMA TC54.
 - The **`unique-identifier`** shall be unique within the `domain-name`.

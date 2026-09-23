@@ -1,7 +1,7 @@
 # TEA Requirements
 
 ## Repository discovery
-Based on an identifier, a repository URL shall be found. The identifier can be:
+Based on an identifier a repository URL needs to be found. The identifier can be:
 
 - PURL
 - Product name or Product SKU and vendor name
@@ -10,7 +10,7 @@ Based on an identifier, a repository URL shall be found. The identifier can be:
 - Vendor UUID
 - Hash of object
 
-At the base URL, well-known URLs shall point to
+At the base URL well known URLs (ref) needs to point to
 
 - A lifecycle status document (using OWASP Common Lifecycle Enumeration, CLE)
 - A version list. For each version, a URL will point to where a **collection** can be found
@@ -23,8 +23,8 @@ This can be handled using the file security.txt (IETF RFC 9116)
 
 ## Artefact Discovery based on TEA collections
 
-The API shall provide a way to discover the artefacts that are available for retrieval or further query.
-Discovery should group artefacts together that represent a **collection**
+The API MUST provide a way to discover the artefacts that are available for retrieval or further query.
+Discovery SHOULD group artefacts together that represent a **collection**
 that are directly applicable to a given product with a given version.
 Every release has a collection, which may be empty.
 
@@ -35,18 +35,18 @@ Every release has a collection, which may be empty.
 - VEX - Vulnerability Exploitability eXchange
 - CDXA - Attestation
 
-Authn/Authz shall be supported
+Authn/Authz MUST be supported
 
 ## Collection Management
 
-The API should provide a method to manage collections, such as adding new collections,
+The API SHOULD provide a method to manage collections, such as adding new collections,
 modifying collections, or deleting existing collections.
 
-- Authn/Authz shall be supported
+- Authn/Authz MUST be supported
 
 ## Artefact Retrieval
 
-The API shall provide a method in which to retrieve an artefact based on the identity of the artefact.
+The API MUST provide a method in which to retrieve an artefact based on the identity of the artefact.
 For example, using CycloneDX BOM-Link to retrieve either the
 latest version or specific version of an artefact.
 
@@ -55,19 +55,19 @@ urn:cdx:serialNumber
 urn:cdx:serialNumber/version
 ```
 
-The API shall provide support for update checks, i.e. to check if a document is
+The API needs to provide support for update checks, i.e. to check if a document is
 updated without downloading. (possibly etag or HEAD method or similar)
-Authn/Authz shall be supported
+Authn/Authz MUST be supported
 
 ## Artefact Publishing
 
-The API shall provide a way to publish an artefact, either standalone or to a collection. 
-The detection of duplicate artefacts with the same identity shall be handled and prevented.
-Authn/Authz shall be supported
+The API MUST provide a way to publish an artefact, either standalone or to a collection. 
+The detection of duplicate artefacts with the same identity MUST be handled and prevented.
+Authn/Authz MUST be supported
 
 ## Artefact Versioning
 
-The system and API shall support artefact versioning for formats that support
+The system and API must support artefact versioning for formats that support
 versioning such as CycloneDX. For example:
 
 - The ability to retrieve the latest SBOM vs a previous (uncorrected) version of the same SBOM.
@@ -75,12 +75,12 @@ versioning such as CycloneDX. For example:
 - The ability to retrieve the latest VEX along with previous VEX for the same product so
   that time-series decisions are transparently available.
 
-Authn/Authz shall be supported
+Authn/Authz MUST be supported
 
 ## insights: Search Artefact Inventory
 
-The API shall provide a way to search the inventory of a specific BOM or all available BOMs
-for a given component or service. The API should support multiple identity formats including
+The API MUST provide a way to search the inventory of a specific BOM or all available BOMs
+for a given component or service. The API SHOULD support multiple identity formats including
 PURL, CPE, GAV, GTIN, and GMN.
 
 For example:
@@ -88,10 +88,10 @@ For example:
 - Return the identity of all BOMs that have a vulnerable version of Apache Log4J: 
   `pkg:maven/org.apache.logging.log4j/log4j-core@2.10.0`
 
-The API shall provide a way to search for the metadata component across all available BOMs. 
-The API should support multiple identity formats including PURL, CPE, SWID, GAV, GTIN, and GMN. 
+The API MUST provide a way to search for the metadata component across all available BOMs. 
+The API SHOULD support multiple identity formats including PURL, CPE, SWID, GAV, GTIN, and GMN. 
 For example:
 
 - Return the identity of all artefacts that describe `cpe:/a:acme:commerce_suite:1.0`.
 
-Authn/Authz shall be supported
+Authn/Authz MUST be supported
