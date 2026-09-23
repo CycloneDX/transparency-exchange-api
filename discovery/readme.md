@@ -117,10 +117,6 @@ Reminder: the `unique-identifer` component of the TEI needs only be unique withi
 
 Where the `unique-identifier` is a PURL in its canonical string form.
 A PURL identifier is encoded using Base64URL (RFC 4648 section 5) without padding.
-The encoded form consists only of the characters `A-Z`, `a-z`, `0-9`, `-` and `_`,
-which are unreserved in URIs (RFC 3986),
-so a `purl` TEI never needs percent-encoding.
-Decoders shall accept the unpadded form.
 
 Syntax:
 
