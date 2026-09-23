@@ -168,6 +168,8 @@ additional request.
 The following are the cases we expect to be common. All are existing OAuth 2.0 profiles; TEA adds
 nothing to them.
 
+Table: OAuth 2.0 grant types for optional credentials
+
 | Use case | Grant type | Specification |
 |---|---|---|
 | Enterprise SSO where the customer's identity provider issues SAML assertions | `urn:ietf:params:oauth:grant-type:saml2-bearer` | [RFC 7522](https://www.rfc-editor.org/rfc/rfc7522) |

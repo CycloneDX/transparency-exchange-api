@@ -158,6 +158,8 @@ Required fields:
 
 ## The reason for TCO update enum
 
+Table: TEA Collection update reasons
+
 | ENUM             | Description                            |
 |------------------|----------------------------------------|
 | INITIAL_RELEASE  | Initial release of the collection      |
@@ -185,6 +187,8 @@ Updates of VEX (CSAF) files may be handled in a different way by a TEA client,
 producing different alerts than other changes of a collection.
 
 ## TEA Artifact types
+
+Table: TEA Artifact types
 
 | ENUM            | Description                                                                         |
 |-----------------|-------------------------------------------------------------------------------------|
