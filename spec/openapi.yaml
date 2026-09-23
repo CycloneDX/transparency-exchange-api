@@ -740,7 +740,7 @@ paths:
         required to serve it.
 
         A TEA access token is sent only to the TEA server's own API base URL. External
-        `url` targets are retrieved without it. They are openly accessible or covered by
+        `url` targets are retrieved without it. They are openly accessible or require
         credentials the client arranges separately. Expiring storage links should not
         be published in `url`; the server answers from this endpoint, including with `302`.
 
@@ -1557,7 +1557,7 @@ components:
             Direct download URL for the distribution. This is always a location outside
             the TEA API. A TEA access token is sent only to the TEA server's own API base
             URL, never to an external URL: distribution locations are either openly
-            accessible, pre-signed, or covered by credentials the client arranges
+            accessible, pre-signed, or require credentials the client arranges
             separately.
           format: uri
         signatureUrl:
@@ -1645,7 +1645,7 @@ components:
             createdDate: 2025-05-12T18:08:00Z
             belongsTo: COMPONENT_RELEASE
             updateReason:
-              type: ARTIFACT_ADDED
+              type: VEX_UPDATED
               comment: First artifacts published for this release
             artifacts:
               - uuid: 3c8f5d2a-6b1e-4f7a-9c0d-2e5b8a1f4c93
@@ -1699,7 +1699,7 @@ components:
         version:
           type: integer
           description: |
-            TEA Collection version, incremented each time its content changes.
+            TEA Collection version, incremented by 1 each time its content changes.
             Versions start with 1. Content changes include replacing an embedded artifact
             with a newer revision (for example one published because an external `url` or
             `signatureUrl` changed). If a Collection adopts that new artifact revision, the
@@ -1952,8 +1952,8 @@ components:
             endpoints, with `302` where the bytes live elsewhere.
 
             A TEA access token is sent only to the TEA server's own API base URL, never
-            to an external URL. External locations are either openly accessible or covered
-            by credentials the client arranges separately.
+            to an external URL. External locations are either openly accessible or require
+            credentials the client arranges separately.
 
             External `url` values are part of the published artifact revision. Changing
             `url` shall create a new artifact revision, even when content bytes and

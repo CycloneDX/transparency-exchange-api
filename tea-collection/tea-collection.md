@@ -53,7 +53,7 @@ The TEA Collection object has the following parts:
     Versions of the same Collection retain the same UUID.
     See [TEA UUID Scope and Stability](../doc/tea-uuid-scope.md).
     When updating a collection, only the `version` is changed.
-- __version__: TEA Collection version, incremented each time its content changes.
+- __version__: TEA Collection version, incremented by 1 each time its content changes.
     Versions start with 1. Content changes include replacing an embedded artifact with a
     newer revision (for example one published because an external `url` or `signatureUrl`
     changed). If a Collection adopts that new artifact revision, the server shall publish
