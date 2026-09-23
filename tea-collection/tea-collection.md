@@ -11,9 +11,10 @@ A release is never served without a collection. If no artifacts have been
 published when the release first becomes retrievable, the server serves
 collection version 1 with an empty `artifacts` list and
 `updateReason.type: INITIAL_RELEASE`. That version is immutable like any
-other; the first artifacts are published as version 2 with
-`ARTIFACT_ADDED`. A publisher that publishes the release and its artifacts
-together never has an empty version and starts at version 1 with content.
+other; the first artifacts are published as version 2. Classification follows
+the update-reason rules below. A publisher that
+publishes the release and its artifacts together never has an empty version
+and starts at version 1 with content.
 In both cases version 1 is the first collection a client could have retrieved.
 A server may also synthesize the collection dynamically (see below).
 
@@ -76,8 +77,10 @@ any published field, including external `url` / `signatureUrl` values, changes, 
 TEA Artifact revision shall be created. For a fixed artifact UUID, version, and
 format, the server shall ensure that successful content retrieval through its download
 endpoint, including retrieval after following redirects, yields unchanged artifact bytes
-after HTTP transfer coding and content coding are removed. Successful signature retrieval
-through its signature download endpoint yields unchanged signature bytes on the same terms.
+after HTTP transfer coding and content coding are removed. The server shall ensure that
+successful signature retrieval through its signature download endpoint yields unchanged
+signature bytes on the same terms. Changing only a download response's `Location`, while
+preserving those bytes, does not require a new artifact or collection version.
 For artifact content retrieved from an external `url`, the published checksums are the
 integrity statement for the revision. These checksums do not cover detached signatures.
 
@@ -121,11 +124,8 @@ A TEA Artifact object contains the following fields:
     Changing `url` shall create a new artifact revision, even when content and checksums are unchanged.
     The server shall preserve the URLs published on each historical artifact and collection version.
     Collection adoption follows the collection `version` rules above.
-    The server shall ensure that successful content retrieval through its download endpoint,
-    for a fixed artifact UUID, version, and format, including retrieval after following
-    redirects, yields unchanged artifact bytes after HTTP transfer coding and content coding
-    are removed. Changing only a download response's `Location`, while preserving those
-    artifact bytes, does not require a new artifact or collection version.
+    Byte stability for content retrieved through the server's download endpoint follows
+    the artifact revision rule above.
     Servers shall publish at least one checksum for every format that has a `url`; content that does
     not match them is not the content of that revision. The `latest` download endpoints are mutable
     by design and shall not be used as a format's `url` or `signatureUrl`.
@@ -134,10 +134,8 @@ A TEA Artifact object contains the following fields:
     If absent, clients retrieve it from the artifact signature download endpoint
     (`/artifact/{uuid}/{version}/signature/download`), which answers `404` when no signature is published for the format.
     Changing `signatureUrl` follows the same revision and collection-adoption rules as `url`.
-    Successful signature retrieval through the signature download endpoint, including retrieval
-    after following redirects, shall yield unchanged signature bytes after HTTP transfer coding
-    and content coding are removed. Changing only that response's `Location`, while preserving
-    those signature bytes, does not require a new artifact or collection version.
+    Byte stability for signature retrieval through the server's signature download endpoint
+    follows the artifact revision rule above.
   - __checksums__:
     When present, the array shall contain at least one entry. When `url` is present, `checksums`
     is required. An array of checksum objects for the artifact format's content bytes, each containing:
@@ -163,27 +161,25 @@ Required fields:
 | ENUM             | Description                            |
 |------------------|----------------------------------------|
 | INITIAL_RELEASE  | Initial release of the collection      |
-| VEX_UPDATED      | Updated the VEX artifact(s), including a new revision whose external `url` or `signatureUrl` changed |
-| ARTIFACT_UPDATED | Updated the artifact(s) other than VEX, including a new revision whose external `url` or `signatureUrl` changed |
+| VEX_UPDATED      | Adding or revising an artifact of type `VULNERABILITIES`, including a new revision whose external `url` or `signatureUrl` changed |
+| ARTIFACT_UPDATED | A new revision of an artifact whose type is not `VULNERABILITIES`, including a revision whose external `url` or `signatureUrl` changed |
 | ARTIFACT_REMOVED | Removal of artifact                    |
-| ARTIFACT_ADDED   | Addition of an artifact                |
+| ARTIFACT_ADDED   | Addition of an artifact whose type is not `VULNERABILITIES` |
 
 Replacing an embedded artifact revision solely because its published `url` or `signatureUrl`
-changed is an update to that existing artifact (`VEX_UPDATED` or `ARTIFACT_UPDATED`).
-`VEX_UPDATED` applies to a new revision of an existing VEX. A VEX is carried as artifact
-type `VULNERABILITIES`, which also covers a VDR; `VEX_UPDATED` does not apply to every
-`VULNERABILITIES` artifact. The first Collection version shall use `INITIAL_RELEASE`.
-In subsequent versions, adding a VEX that was absent from the preceding Collection version
-counts as `ARTIFACT_ADDED`. Updating an existing VEX counts as `VEX_UPDATED`. When multiple
-change kinds occur, the server shall select `updateReason.type` using the precedence rule
-below.
+changed is `VEX_UPDATED` when the artifact type is `VULNERABILITIES`, and `ARTIFACT_UPDATED`
+otherwise. `VEX_UPDATED` covers adding or revising an artifact of type `VULNERABILITIES`.
+VEX and VDR share that type. Removing an artifact, including one of type `VULNERABILITIES`,
+counts as `ARTIFACT_REMOVED`. The first Collection version shall use `INITIAL_RELEASE`.
+In subsequent versions, adding or revising an artifact of type `VULNERABILITIES` counts as
+`VEX_UPDATED`. When multiple change kinds occur, the server shall select `updateReason.type`
+using the precedence rule below.
 
 When a collection version other than the first contains changes of more than one kind,
 the server shall set `updateReason.type` to the first applicable value in this order:
 `VEX_UPDATED`, `ARTIFACT_REMOVED`, `ARTIFACT_ADDED`, `ARTIFACT_UPDATED`. `comment` can
 describe the other changes. A client that needs the complete set of changes should compare
-the version with the previous one. Clients monitoring VEX changes should inspect added
-artifacts as well as updates classified as `VEX_UPDATED`.
+the version with the previous one.
 
 Updates of VEX (CSAF) files may be handled in a different way by a TEA client,
 producing different alerts than other changes of a collection.
@@ -213,7 +209,7 @@ producing different alerts than other changes of a collection.
   "createdDate": "2024-12-15T00:00:00Z",
   "belongsTo": "COMPONENT_RELEASE",
   "updateReason": {
-    "type": "ARTIFACT_UPDATED",
+    "type": "VEX_UPDATED",
     "comment": "VDR file updated"
   },
   "artifacts": [
