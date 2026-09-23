@@ -25,8 +25,9 @@ required in general (TEA has no operation that resolves a UUID without already k
 except that Product Release and Component Release UUIDs shall be disjoint as above, because those types
 share the Collection UUID namespace.
 
-Implementations may use generators that produce globally unique UUIDs (e.g. RFC 9562).
-Doing so neither violates nor strengthens this specification.
+Implementations may use any UUID version defined in RFC 9562. However UUIDs are
+produced, the exception above applies: a server shall not assign a UUID that is
+already in use for the other release type.
 
 ## Stability
 
