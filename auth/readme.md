@@ -1,19 +1,19 @@
-# Transparency Exchange API - Authentication and authorization
+# Transparency Exchange API - Authentication and authorisation
 
-This document covers authentication and authorization on the consumer side
+This document covers authentication and authorisation on the consumer side
 of a TEA service - the discovery and download of software transparency artefacts.
 
 ## Requirements
 
-__Authorization__: A user of a TEA service may get access to all objects (components, collections) and
-artefacts or just a subset, depending on the publisher of the data. Authorization is connected
+__Authorisation__: A user of a TEA service may get access to all objects (components, collections) and
+artefacts or just a subset, depending on the publisher of the data. Authorisation is connected
 to __authentication__.
 
-The level of authorization is up to the implementer of the TEA implementation and the publisher,
+The level of authorisation is up to the implementer of the TEA implementation and the publisher,
 whether an identity gets access to all objects in a service or just a subset.
 
 In order to get interoperability between clients and servers implementing the protocol, the
-specification focuses on the authentication. After successful authentication, the authorization
+specification focuses on the authentication. After successful authentication, the authorisation
 may be implemented in multiple ways - on various levels of the API - depending on what information
 the user can access.
 
@@ -23,7 +23,7 @@ Another implementation can implement a filter that does not show products and ve
 the customer has not acquired.
 
 For most Open Source projects, implementing authentication - setting up accounts and managing
-authorization - does not make much sense, since the information is usually in the open anyway.
+authorisation - does not make much sense, since the information is usually in the open anyway.
 
 ## Scope of this specification
 
@@ -63,7 +63,7 @@ which grant types a conforming server has to accept, and adds nothing to the wir
 
 RFC 6749 leaves the location of the token endpoint outside its scope - `/token` appears only in its
 examples - so TEA fixes the path here rather than requiring clients to discover it. TEA defines no
-OAuth 2.0 authorization endpoint (RFC 6749 section 3.1): there is no interactive, browser-based
+OAuth 2.0 authorisation endpoint (RFC 6749 section 3.1): there is no interactive, browser-based
 consent step in TEA, and every grant type described below is one a client can complete on its own.
 
 ### API key exchange (mandatory)
@@ -188,7 +188,7 @@ grants share.
 
 Note that a server which delegates identity to an external provider still issues its own TEA access
 token from its own token endpoint. The external provider authenticates the user; the TEA server
-decides what that user may see. This keeps authorization with the party that owns the data, and
+decides what that user may see. This keeps authorisation with the party that owns the data, and
 keeps the resource endpoints validating exactly one kind of token.
 
 ### Mutual TLS
@@ -248,7 +248,7 @@ pattern and is preferred over any configuration or discovery step a client would
 
 ### Servers without authentication
 
-A server that requires no authentication on any endpoint (and therefore applies no authorization):
+A server that requires no authentication on any endpoint (and therefore applies no authorisation):
 
 * __need not__ implement the token endpoint. There is nothing to exchange: an OAuth 2.0 token
   response has to carry an access token, and the mandatory grant requires the client to
@@ -262,7 +262,7 @@ A server that requires no authentication on any endpoint (and therefore applies 
 ### Servers that protect some objects
 
 A TEA server may make some data available without authentication while requiring authentication
-and authorization for other objects - for example, listing products and releases without a token
+and authorisation for other objects - for example, listing products and releases without a token
 while restricting artifact downloads to customers, as described under
 [Requirements](#requirements). Such a server requires authentication for the protected objects:
 
@@ -276,7 +276,7 @@ while restricting artifact downloads to customers, as described under
   assume that a server which served one object without authentication will serve every object
   without authentication, nor the reverse.
 
-Authorization - which of the protected data an authenticated client may see - is the server's
+Authorisation - which of the protected data an authenticated client may see - is the server's
 decision and is not constrained by this specification; a client with a valid token may still receive
 a filtered view, `403 Forbidden`, or a concealing `404 Not Found` for individual objects it is
 not authorized to see. Clients shall not infer from `404` alone whether the object is absent or
@@ -286,7 +286,7 @@ withheld.
 
 Servers that delegate identity to an external provider __may__ publish OAuth 2.0 protected resource
 metadata ([RFC 9728](https://www.rfc-editor.org/rfc/rfc9728)) and reference it from the
-`WWW-Authenticate` challenge, allowing a client to locate the authorization server automatically.
+`WWW-Authenticate` challenge, allowing a client to locate the authorisation server automatically.
 This is optional; it does not replace the token endpoint, which remains the interoperable baseline,
 and it does not replace the challenge as the way a client discovers that authentication is required.
 
