@@ -184,7 +184,7 @@ paths:
         '404':
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
-        - TEA Product
+        - TEA Product Release
   /product/{uuid}/cle:
     get:
       description: Get the CLE (Common Lifecycle Enumeration) data for a TEA Product
@@ -325,7 +325,7 @@ paths:
         '404':
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
-        - TEA Product Release
+        - TEA Collection
   /productRelease/{uuid}/collection/latest:
     get:
       description: |
@@ -358,7 +358,7 @@ paths:
         '404':
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
-        - TEA Product Release
+        - TEA Collection
   /productRelease/{uuid}/collection/{collectionVersion}:
     get:
       description: Get a specific Collection (by version) for a TEA Product Release by its UUID
@@ -393,7 +393,7 @@ paths:
         '404':
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
-        - TEA Product Release
+        - TEA Collection
   /components:
     get:
       description: Returns a list of TEA components. Note that multiple components may match.
@@ -476,7 +476,7 @@ paths:
         '404':
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
-        - TEA Component
+        - TEA Component Release
   /component/{uuid}/cle:
     get:
       description: Get the CLE (Common Lifecycle Enumeration) data for a TEA Component
@@ -617,7 +617,7 @@ paths:
         '404':
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
-        - TEA Component Release
+        - TEA Collection
   /componentRelease/{uuid}/collection/latest:
     get:
       description: |
@@ -650,7 +650,7 @@ paths:
         '404':
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
-        - TEA Component Release
+        - TEA Collection
   /componentRelease/{uuid}/collection/{collectionVersion}:
     get:
       description: Get a specific Collection (by version) for a TEA Component Release by its UUID
@@ -685,7 +685,7 @@ paths:
         '404':
           $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
-        - TEA Component Release
+        - TEA Collection
   /artifact/{uuid}/latest:
     get:
       description: |
@@ -3181,6 +3181,7 @@ tags:
   - name: TEA Product Release
   - name: TEA Component
   - name: TEA Component Release
+  - name: TEA Collection
   - name: TEA Artifact
   - name: CLE
   - name: TEA Authentication
