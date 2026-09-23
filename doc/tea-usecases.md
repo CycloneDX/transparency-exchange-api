@@ -33,7 +33,7 @@ Alice bought a gadget at the gadget store that contains a full Linux system. Whe
 
 As a consumer, I want to retrieve one or more supply chain artefacts for the products that I have access to, possibly through licensing or other means. As a consumer, I should be able to retrieve all source artefacts such as xBOMs, VDR/VEX, CDXA, and CLE.
 
-### C4: Consumer: Summarized CLE
+### C4: Consumer: Summarised CLE
 
 As a consumer, I want the ability to get the current lifecycle values for a given product.
 A CLE captures all lifecycle events over time, however, there is a need to retrieve only the current values for things like product name, vendor name, and milestone events.
@@ -41,7 +41,7 @@ A CLE captures all lifecycle events over time, however, there is a need to retri
 ### C5: Consumer: Insights
 
 As a consumer, I want the ability to simply ask the API questions rather than having to download,
-process, and analyze raw supply chain artefacts on my own systems. Common questions should be
+process, and analyse raw supply chain artefacts on my own systems. Common questions should be
 provided by the API by default along with the ability to query for more complex answers using 
 the Common Expression Language (CEL). 
 
@@ -63,7 +63,7 @@ How will their systems get continuous access to current and old documents - atte
 ### E1: Third party: Regulators
 
 Alice & Bob Enterprises AB has gotten a EUCC certification to get their Whola Firewall certified
-for CRA-compatible CE labeling. In order to maintain the certification the certifying body needs
+for CRA-compatible CE labelling. In order to maintain the certification the certifying body needs
 access to SBOM and VEX updates from A&BE in an automated way.
 
 ### E2: External potential customer - insights before purchase
