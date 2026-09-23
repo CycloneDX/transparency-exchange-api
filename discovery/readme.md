@@ -13,7 +13,7 @@
   - [Discovery by PURL](#discovery-by-purl)
 - [References](#references)
 
-## From product identifier to API endpoint
+## Discovery: from product identifier to API endpoint
 
 Discovery is the **first step in all TEA interactions**, enabling a consumer to map an identifier to a service endpoint.
 
