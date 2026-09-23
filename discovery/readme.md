@@ -138,9 +138,7 @@ Where the `unique-identifier` is a Hash.
 The `<hashtype>` is one of the values of `checksum-type` in the TEA OpenAPI specification,
 for example `SHA-256`, `SHA-384` or `SHA-512`.
 The hash is written as lowercase hexadecimal,
-separated from the hash type by a colon,
-so that every TEI consists of exactly two segments after the domain name:
-the type and the unique identifier.
+separated from the hash type by a colon.
 
 ```text
 tei://<domain-name>/hash/<hashtype>:<hash>
