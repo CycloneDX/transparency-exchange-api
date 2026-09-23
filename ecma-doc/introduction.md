@@ -33,25 +33,33 @@ The data model is flexible to be able to handle many different use cases, from m
 
 ## Artifacts available using the API
 
-The Transparency Exchange API (TEA) supports retrieval of a set of transparency exchange artifacts. The API itself is not restricting the types of the artifacts published. A few examples:
+The Transparency Exchange API (TEA) supports retrieval of a set of transparency exchange artifacts.
+The API itself is not restricting the types of the artifacts published. A few examples:
 
 ### xBOM
 
-Bill of materials for any type of component and service are supported. This includes, but is not limited to, SBOM, HBOM, AI/ML-BOM, SaaSBOM, and CBOM. The API provides a BOM format agnostic way of publishing, searching, and retrieval of xBOM artifacts.
+Bill of materials for any type of component and service are supported. This includes, but is not limited to,
+SBOM, HBOM, AI/ML-BOM, SaaSBOM, and CBOM. The API provides a BOM format agnostic way of publishing,
+searching, and retrieval of xBOM artifacts.
 
 ### CDXA
 
-Standards and requirements along with attestations to those standards and requirements are captured and supported by CycloneDX Attestations (CDXA). Much like xBOM, these are supply chain artifacts that are captured allowing for consistent publishing, searching, and retrieval.
+Standards and requirements along with attestations to those standards and requirements are captured and supported
+by CycloneDX Attestations (CDXA). Much like xBOM, these are supply chain artifacts that are captured allowing for
+consistent publishing, searching, and retrieval.
 
 ### VDR/VEX
 
-Vulnerability Disclosure Reports (VDR) and Vulnerability Exploitability eXchange (VEX) are supported artifact types. Like the xBOM element, the VDR/VEX support is format agnostic. However, CSAF has its own distribution requirements that may not be compatible with APIs. Therefore, the initial focus will be on CycloneDX (VDR and VEX) and OpenVEX.
+Vulnerability Disclosure Reports (VDR) and Vulnerability Exploitability eXchange (VEX) are supported artifact types.
+Like the xBOM element, the VDR/VEX support is format agnostic. However, CSAF has its own distribution requirements
+that may not be compatible with APIs. Therefore, the initial focus will be on CycloneDX (VDR and VEX) and OpenVEX.
 
 ### CLE
 
 Product lifecycle events are communicated through the
 ECMA-428 Common Lifecycle Enumeration standard.
-This includes product rebranding, repackaging, mergers and acquisitions, and product milestone events such as end-of-life and end-of-support.
+This includes product rebranding, repackaging, mergers and acquisitions, and product milestone events such as end-of-life
+and end-of-support.
 
 Inclusion of CLE is optional and it may be introduced on the following levels:
 
