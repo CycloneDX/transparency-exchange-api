@@ -116,7 +116,7 @@ Reminder: the `unique-identifer` component of the TEI needs only be unique withi
 #### PURL - Package URL
 
 Where the `unique-identifier` is a PURL in it's canonical string form.
-A PURL identifier is encoded using BASE64URL.
+A PURL identifier is encoded using BASE64URL (RFC 4648 section 5), padding omitted.
 
 Syntax:
 
@@ -140,15 +140,17 @@ Where the `unique-identifier` is a Hash. Supports the following hash types:
 - SHA384
 - SHA512
 
+The hash is written as lowercase hexadecimal,
+separated from the hash type by a colon.
+
 ```text
-tei://<domain-name>/hash/<hashtype>/<hash>
-````
+tei://<domain-name>/hash/<hashtype>:<hash>
+```
 
 Example:
 
 ```text
-tei://cyclonedx.org/hash/SHA256/fd44efd601f651c8865acf0dfeacb0df19a2b50ec69ead0262096fd2f67197b9
-
+tei://cyclonedx.org/hash/SHA256:fd44efd601f651c8865acf0dfeacb0df19a2b50ec69ead0262096fd2f67197b9
 ```
 
 The origin of the hash is up to the vendor to define.
@@ -326,8 +328,7 @@ Discovery proceeds in two stages that share the same retry, backoff, and attempt
 rules below:
 
 1. **Well-known stage** — retrieve and use `/.well-known/tea` for the TEI’s domain host
-2. **API discovery stage** — call `/discovery` on a selected API base URL constructed from
-   a well-known endpoint entry
+2. **API discovery stage** — call the discovery endpoint (`/discovery/<domain-name>/<type>/<unique-identifier>`) on a selected API base URL constructed from a well-known endpoint entry
 
 ### Selecting an API base from `.well-known/tea`
 
@@ -348,20 +349,36 @@ the client should pick the endpoint with the highest `priority` value (a float b
 treat it as `1` for ordering (JSON Schema `default` does not populate omitted fields in
 the JSON response).
 
-The client shall then construct the full URL to the API by selecting that highest
-mutually supported version and appending `/v` followed by that exact advertised
-version string (for example `/v1.0.0`), then `/discovery?tei=` plus the TEI,
-url-encoded according to [RFC3986].
+The client then turns the TEI into the discovery URL in three steps:
+
+1. Start from the `url` of the selected endpoint entry, without trailing slash.
+2. Append `/v` followed by the selected version string exactly as advertised
+   (for example `/v1.0.0`), then `/discovery/`.
+3. Append the TEI with its `tei://` scheme removed,
+   that is `<domain-name>/<type>/<unique-identifier>`.
+   The domain name is lowercased.
+   The rest of the TEI is copied byte for byte:
+   no case change, no percent-decoding or re-encoding, no normalization of the identifier.
+
+The result is `<url>/v<version>/discovery/<domain-name>/<type>/<unique-identifier>`.
+Every character a TEI may contain is allowed in a URL path,
+so the copy in step 3 never needs percent-encoding.
 
 Examples:
 1. For TEI `tei://products.example.com/uuid/d4d9f54a-abcf-11ee-ac79-1a52914d44b1`
-`https://api.teaexample.com/v1.0.0/discovery?tei=tei%3A//products.example.com/uuid/d4d9f54a-abcf-11ee-ac79-1a52914d44b1`
+`https://api.teaexample.com/v1.0.0/discovery/products.example.com/uuid/d4d9f54a-abcf-11ee-ac79-1a52914d44b1`
 2. For TEI `tei://products.example.com/purl/cGtnOmRlYi9kZWJpYW4vY3VybEA3LjUwLjMtMT9hcmNoPWkzODYmZGlzdHJvPWplc3NpZQ`
-`https://api2.example.com/mytea/v1.0.0/discovery?tei=tei%3A//products.example.com/purl/cGtnOmRlYi9kZWJpYW4vY3VybEA3LjUwLjMtMT9hcmNoPWkzODYmZGlzdHJvPWplc3NpZQ`
+`https://api2.example.com/mytea/v1.0.0/discovery/products.example.com/purl/cGtnOmRlYi9kZWJpYW4vY3VybEA3LjUwLjMtMT9hcmNoPWkzODYmZGlzdHJvPWplc3NpZQ`
+3. For TEI `tei://cyclonedx.org/hash/SHA256:fd44efd601f651c8865acf0dfeacb0df19a2b50ec69ead0262096fd2f67197b9`
+`https://api.teaexample.com/v1.0.0/discovery/cyclonedx.org/hash/SHA256:fd44efd601f651c8865acf0dfeacb0df19a2b50ec69ead0262096fd2f67197b9`
 
-The discovery endpoint is a part of the TEA OpenAPI specification. Unlike `/token`,
-`/discovery` is required on a conforming TEA API base: a conforming server that exposes
-a given API version shall implement it.
+This layout lets a TEA server be served from pre-generated files behind a plain web server:
+each resolvable TEI is one file, and an unresolved TEI is the web server's own `404`,
+which needs no TEA error body.
+
+The discovery endpoint is a part of the TEA OpenAPI specification.
+Unlike `/token` and the search endpoints, discovery is required on a conforming TEA API base:
+a conforming server that exposes a given API version shall implement it.
 
 ### Discovery response
 
@@ -386,9 +403,10 @@ element identifies one resolved product release and the TEA servers that serve i
 When multiple product releases match, the array is ordered by priority (first entry
 highest). Vendors should prefer returning a single release when possible.
 
-A successful lookup shall return a non-empty array. If the server does not resolve the
-identifier, the server shall respond with `404` and a TEA error body with
-`error: OBJECT_UNKNOWN` — not `200` with an empty array. If `priority` is absent on a
+A successful lookup shall return a non-empty array.
+If the server does not resolve the identifier, it shall respond with `404`, not `200` with an empty array;
+a TEA error body (typically `error: OBJECT_UNKNOWN`) is optional.
+If `priority` is absent on a
 discovery `servers[]` entry, the client shall treat it as `1` for ordering, the same as
 for well-known endpoints.
 
@@ -410,41 +428,44 @@ Example (one match):
 
 ### Discovery by PURL
 
-Clients that already know a TEA API base URL (for example from a prior TEI discovery,
-configuration, or cache) may call `/discovery` with the `purl` query parameter instead of
-`tei`. Exactly one of `tei` or `purl` shall be provided; a request with neither or both is
-rejected with `400`.
+Clients that already know a TEA API base URL
+(for example from a prior TEI discovery, configuration, or cache)
+and hold a bare PURL, but no TEI, use the two-segment form `/discovery/purl/<base64url>`:
+the canonical PURL string is Base64URL-encoded (RFC 4648 section 5, padding omitted),
+the same form a `purl` TEI carries.
+Because the request names no domain, the lookup spans every domain the server serves.
 
 Discovery by PURL resolves within the inventory of the TEA server that receives the
 request. It does not replace TEI-based DNS / `.well-known` discovery for finding an API
 host from an identifier alone.
 
-Example:
+Example, for the PURL `pkg:maven/org.apache.logging.log4j/log4j-core@2.24.3`:
 
-`https://api.teaexample.com/v1.0.0/discovery?purl=pkg%3Amaven%2Forg.apache.logging.log4j%2Flog4j-core%402.24.3`
+`https://api.teaexample.com/v1.0.0/discovery/purl/cGtnOm1hdmVuL29yZy5hcGFjaGUubG9nZ2luZy5sb2c0ai9sb2c0ai1jb3JlQDIuMjQuMw`
 
-The response shape, non-empty success array, and `404` with `OBJECT_UNKNOWN` when the
-server does not resolve the identifier are the same as for TEI lookup.
+The response shape, non-empty success array, and `404` when the server does not
+resolve the identifier are the same as for TEI discovery.
 
-If this server does not resolve the TEI (or PURL, when discovering by PURL), whether
-because it is unknown or because the server withholds it, the discovery endpoint
-shall return `404` with a TEA error response body. A response is a
-TEA error response only when its `Content-Type` is `application/json` (optionally with
-parameters such as `charset`) and the body is a JSON object with a string `error`
-property (typically `OBJECT_UNKNOWN`). Clients shall ignore properties they do not
-recognize and shall not reject the response for an `error` value they do not know, so a
-later TEA version can extend `error-response` without turning its `404`s into failover
-triggers. Other JSON 404 bodies (for example `{"message":"Not Found"}`) are not TEA
-error responses.
+If this server does not resolve the identifier,
+whether because it is unknown or because the server withholds it,
+the discovery endpoint shall return `404`.
+A TEA error response body (`application/json`, a JSON object with a string `error` property, typically `OBJECT_UNKNOWN`) is optional;
+a static file server answers with its own `404` and no such body.
+A server may answer `400` for a `type` it does not define or for a malformed identifier;
+the client treats that like a `404` for this identifier.
+When a body is present, clients shall ignore properties they do not recognize
+and shall not reject the response for an `error` value they do not know,
+so a later TEA version can extend `error-response`.
 
-That conforming TEA `404` means this server does not resolve the identifier, whether
-because it is unknown or because the server withholds it (see
-`404-object-by-id-not-found`); the client shall not infer which from the status alone.
-The client shall not treat it as “`/discovery` is missing” and shall not fail over to
-another endpoint solely because of it. The client shall stop discovery for that
-identifier at this authority and report that the identifier could not be resolved
-there, including the `error` value received. That outcome shall not be reported as
-evidence that no updates are available.
+Any `404` from a discovery URL is terminal for that identifier at this authority,
+with or without a body.
+The client shall not infer from the status alone whether the identifier is unknown or withheld
+(see `404-object-by-id-not-found`),
+shall not treat it as “discovery is missing”,
+and shall not fail over to another endpoint because of it.
+The client shall stop discovery for that identifier at this authority
+and report that it could not be resolved there, including the `error` value if one was received.
+That outcome shall not be reported as evidence that no updates are available.
 
 ### Failover, invalid documents, and attempt bounds
 
@@ -455,14 +476,12 @@ whether they occur in the well-known stage or the API discovery stage:
 - DNS resolution failure for the host being contacted
 - TLS certificate validation failure
 - HTTP `5xx` from the host being contacted
-- A `404` that is not a TEA error response as defined above (for example a web server
-  answering for an unmounted path, or a JSON body without an `error` property)
+- A `404` for the `.well-known/tea` document
 - A response body that is not usable JSON, or that does not conform to the expected
   schema for that stage (malformed or non-conforming `.well-known/tea`, or an invalid
-  `/discovery` success body)
+  discovery success body)
 
-A conforming TEA `/discovery` `404` (`error-response`, typically `OBJECT_UNKNOWN`) is
-not a failover trigger; see above.
+A `404` from a discovery URL is not a failover trigger, with or without a body; see above.
 
 On such a failure, the client shall select the next untried well-known endpoint that
 supports a compatible API version, if one is available. While doing so the client
@@ -538,15 +557,15 @@ Common errors:
 
 #### 404 Not Found
 
-- On `/discovery`, a TEA error response (`application/json` body with a string `error`
-  property, typically `OBJECT_UNKNOWN`): this server does not resolve the TEI or PURL,
-  whether unknown or withheld. Do not fail over. Stop and report that the identifier
-  could not be resolved at this authority, with the `error` value; do not report that
-  as evidence that no updates are available.
-- A `404` that is not a TEA error response may mean the path is not mounted or the host
-  is not a TEA API base; treat that as a failed discovery attempt and failover if another
-  compatible endpoint remains. This is distinct from `/token`, where `404` means only
-  that the token endpoint is not implemented.
+- On a discovery URL, with or without a TEA error body: this server does not resolve the identifier,
+  whether unknown or withheld.
+  Do not fail over.
+  Stop and report that the identifier could not be resolved at this authority,
+  with the `error` value if one was received;
+  do not report that as evidence that no updates are available.
+- On `/.well-known/tea`: the host is not a TEA discovery host;
+  treat that as a failed discovery attempt and fail over if another candidate remains.
+- On `/token` and the search endpoints: the endpoint is not implemented (see the OpenAPI document).
 
 #### 503 Service Unavailable
 

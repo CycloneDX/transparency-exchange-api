@@ -44,7 +44,7 @@ sequenceDiagram
     user ->> discovery: GET https://<domain>/.well-known/tea
     discovery -->> user: TEA discovery document (API servers & endpoints)
 
-    user ->> discovery: Call Discovery endpoint with TEI
+    user ->> discovery: GET /v{version}/discovery/<domain>/<type>/<identifier>
     discovery -->> user: Product Release reference(s)
 
     alt Multiple Product Releases returned
@@ -68,7 +68,10 @@ sequenceDiagram
 
 ## API flow based on direct access to API
 
-In this case, the client wants to search for a specific product release using the API
+In this case, the client wants to search for a specific product release using the API.
+
+The search endpoints (`/products`, `/productReleases`, `/components`, `/componentReleases`) are optional.
+A server that does not implement them answers `404`, with or without a TEA error body.
 
 ```mermaid
 

@@ -27,67 +27,118 @@ servers:
   - url: http://localhost/tea/v1.0.0
     description: Local development only; HTTPS is required outside local testing
 paths:
-  /discovery:
+  /discovery/{domain}/{type}/{identifier}:
     get:
       description: |
-        Discovery endpoint which resolves an identifier into one or more product release
-        UUIDs.
+        Resolves a Transparency Exchange Identifier (TEI) into one or more TEA Product Releases.
 
-        Exactly one of the `tei` and `purl` query parameters shall be provided. A request
-        with neither, or with both, is rejected with `400`. OpenAPI cannot express this
-        constraint on query parameters, so both are declared optional here.
-
-        Discovery by TEI resolves the product across TEA servers, using the domain carried
-        by the TEI (typically after DNS / `.well-known` selection of an API host).
-        Discovery by PURL requires an already-known API base URL and resolves within that
-        server's inventory.
+        The request path is the TEI itself:
+        the client replaces the `tei://` scheme by the API base URL followed by `/v<version>/discovery/`
+        and keeps the rest of the TEI unchanged.
+        `domain` is the domain name of the TEI, in lowercase.
+        `type` and `identifier` are the type and unique identifier of the TEI.
+        The domain is part of the request because identifiers are unique only within their domain,
+        and one API base may serve several domains.
 
         A successful response is a non-empty JSON array of `discovery-info` objects,
-        ordered by priority when multiple product releases match (first entry highest).
-        If the server does not resolve the identifier, it responds with `404` and
-        `error: OBJECT_UNKNOWN`, not `200` with an empty array.
+        ordered by priority when several product releases match (first entry highest).
+        A server that does not resolve the TEI answers `404`, never `200` with an empty array.
+        The `404` may carry the shared object-not-found body (`error-response`, typically `error: OBJECT_UNKNOWN`),
+        but a `404` without a body has the same meaning.
+        A server should answer `400` when `type` is not a TEI type defined in the discovery document
+        or `identifier` is malformed for that type.
 
-        Parameter values are the identifier itself (not a pre-encoded wire form). Clients
-        shall apply query-parameter serialization once. Servers shall interpret the value
-        after one query-decoding step. Escapes that are part of a PURL value are preserved
-        by that single decode.
+        Examples, for an API base `https://api.example.com`:
+        - `tei://products.example.com/uuid/47f51950-b0e2-11f1-adc2-1a52914d44b2`
+          is resolved at `https://api.example.com/v1.0.0/discovery/products.example.com/uuid/47f51950-b0e2-11f1-adc2-1a52914d44b2`
+        - `tei://products.example.com/purl/cGtnOm1hdmVuL29yZy5hcGFjaGUubG9nZ2luZy5sb2c0ai9sb2c0ai1jb3JlQDIuMjQuMw`
+          is resolved at `https://api.example.com/v1.0.0/discovery/products.example.com/purl/cGtnOm1hdmVuL29yZy5hcGFjaGUubG9nZ2luZy5sb2c0ai9sb2c0ai1jb3JlQDIuMjQuMw`
+        - `tei://cyclonedx.org/hash/SHA256:fd44efd601f651c8865acf0dfeacb0df19a2b50ec69ead0262096fd2f67197b9`
+          is resolved at `https://api.example.com/v1.0.0/discovery/cyclonedx.org/hash/SHA256:fd44efd601f651c8865acf0dfeacb0df19a2b50ec69ead0262096fd2f67197b9`
 
-        Example request lines after serialization:
-        - `.../discovery?tei=tei%3A%2F%2Fproducts.example.com%2Fuuid%2F47f51950-b0e2-11f1-adc2-1a52914d44b2`
-        - `.../discovery?purl=pkg%3Amaven%2Forg.apache.logging.log4j%2Flog4j-core%402.24.3`
-
-        Unlike `/token`, this operation is required on a conforming TEA API base for the
-        advertised version. A conforming `404` uses the shared object-not-found response
-        (`error-response`, typically `OBJECT_UNKNOWN`) and means this server does not resolve
-        the identifier, not that `/discovery` is optional or unimplemented. Client
-        recognition of that body and the terminal outcome are defined in the discovery
-        document.
-      summary: Resolve an identifier to TEA Product Releases
-      operationId: discover
+        Unlike `/token` and the search endpoints,
+        this operation is required on a conforming TEA API base for the advertised version.
+        How a client treats the outcome, including the `404`, is defined in the discovery document.
+      summary: Resolve a TEI to a TEA Product Release
+      operationId: discoverByTei
       parameters:
-        - name: tei
-          in: query
-          required: false
+        - name: domain
+          in: path
+          required: true
           description: |
-            Transparency Exchange Identifier (TEI) for the product being discovered, as the
-            logical TEI string. Do not pre-encode for the schema example or client model;
-            apply query-parameter encoding once when forming the HTTP request.
+            The `domain-name` part of the TEI, lowercased
+            (a DNS name without port; internationalised names in their A-label form).
+            The domain name is the only part of a TEI without case-sensitive semantics,
+            so it is normalized when it becomes a path segment.
           schema:
             type: string
+            pattern: "^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$"
             examples:
-              - tei://products.example.com/uuid/47f51950-b0e2-11f1-adc2-1a52914d44b2
-        - name: purl
-          in: query
-          required: false
+              - products.example.com
+        - name: type
+          in: path
+          required: true
           description: |
-            Package URL (PURL) of the product being discovered, resolved within this TEA
-            server's inventory, as the logical PURL string. Do not pre-encode for the schema
-            example or client model; apply query-parameter encoding once when forming the
-            HTTP request.
+            TEI type, the segment after the domain name in the TEI.
+            Types are defined in the discovery document.
           schema:
             type: string
+            pattern: "^[a-z0-9]+$"
             examples:
-              - pkg:maven/org.apache.logging.log4j/log4j-core@2.24.3
+              - uuid
+              - purl
+        - name: identifier
+          in: path
+          required: true
+          description: |
+            The `unique-identifier` part of the TEI, in the form defined for `type`.
+          schema:
+            type: string
+            minLength: 1
+            examples:
+              - 47f51950-b0e2-11f1-adc2-1a52914d44b2
+              - cGtnOm1hdmVuL29yZy5hcGFjaGUubG9nZ2luZy5sb2c0ai9sb2c0ai1jb3JlQDIuMjQuMw
+      responses:
+        '200':
+          $ref: "#/components/responses/discovery-response"
+        '400':
+          $ref: "#/components/responses/400-invalid-request"
+        '401':
+          $ref: "#/components/responses/401-unauthorized"
+        '403':
+          $ref: "#/components/responses/403-forbidden"
+        '404':
+          $ref: "#/components/responses/404-object-by-id-not-found"
+      tags:
+        - TEA Discovery
+  /discovery/purl/{identifier}:
+    get:
+      description: |
+        Looks up a Package URL (PURL) in this server's inventory
+        and resolves it into one or more product release UUIDs.
+
+        This is the discovery endpoint for a client that holds a bare PURL and an API base URL
+        (for example from a prior TEI discovery, configuration, or cache) but no TEI.
+        `identifier` is the Base64URL encoding (RFC 4648 section 5, padding omitted) of the canonical PURL string,
+        the same form a `purl` TEI carries.
+        Because the request names no domain, the lookup spans every domain this server serves.
+
+        Responses and `404` semantics are those of `/discovery/{domain}/{type}/{identifier}`.
+
+        Example: `pkg:maven/org.apache.logging.log4j/log4j-core@2.24.3`
+        is looked up at `.../v1.0.0/discovery/purl/cGtnOm1hdmVuL29yZy5hcGFjaGUubG9nZ2luZy5sb2c0ai9sb2c0ai1jb3JlQDIuMjQuMw`.
+      summary: Look up a PURL in this server's inventory
+      operationId: discoverByPurl
+      parameters:
+        - name: identifier
+          in: path
+          required: true
+          description: Base64URL encoding (RFC 4648 section 5, padding omitted) of the canonical PURL.
+          schema:
+            type: string
+            pattern: "^[A-Za-z0-9_-]+$"
+            examples:
+              - cGtnOm1hdmVuL29yZy5hcGFjaGUubG9nZ2luZy5sb2c0ai9sb2c0ai1jb3JlQDIuMjQuMw
       responses:
         '200':
           $ref: "#/components/responses/discovery-response"
@@ -103,8 +154,13 @@ paths:
         - TEA Discovery
   /products:
     get:
-      description: Returns a list of TEA products. Note that multiple products may
-        match.
+      description: |
+        Returns a list of TEA products.
+        Note that multiple products may match.
+
+        A server that does not implement this endpoint answers `404`, with or without a TEA error body.
+        A server that implements search answers `200`, with an empty result list when nothing matches, never `404`;
+        clients therefore treat any `404` on this endpoint as "not implemented", never as "no match".
       summary: Query TEA Products
       operationId: queryProducts
       parameters:
@@ -125,6 +181,8 @@ paths:
           $ref: "#/components/responses/401-unauthorized"
         '403':
           $ref: "#/components/responses/403-forbidden"
+        '404':
+          $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
         - TEA Product
   /product/{uuid}:
@@ -216,7 +274,13 @@ paths:
         - CLE
   /productReleases:
     get:
-      description: Returns a list of TEA product releases. Note that multiple product releases may match.
+      description: |
+        Returns a list of TEA product releases.
+        Note that multiple product releases may match.
+
+        A server that does not implement this endpoint answers `404`, with or without a TEA error body.
+        A server that implements search answers `200`, with an empty result list when nothing matches, never `404`;
+        clients therefore treat any `404` on this endpoint as "not implemented", never as "no match".
       summary: Query TEA Product Releases
       operationId: queryProductReleases
       parameters:
@@ -237,6 +301,8 @@ paths:
           $ref: "#/components/responses/401-unauthorized"
         '403':
           $ref: "#/components/responses/403-forbidden"
+        '404':
+          $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
         - TEA Product Release
   /productRelease/{uuid}:
@@ -396,7 +462,13 @@ paths:
         - TEA Collection
   /components:
     get:
-      description: Returns a list of TEA components. Note that multiple components may match.
+      description: |
+        Returns a list of TEA components.
+        Note that multiple components may match.
+
+        A server that does not implement this endpoint answers `404`, with or without a TEA error body.
+        A server that implements search answers `200`, with an empty result list when nothing matches, never `404`;
+        clients therefore treat any `404` on this endpoint as "not implemented", never as "no match".
       summary: Query TEA Components
       operationId: queryComponents
       parameters:
@@ -417,6 +489,8 @@ paths:
           $ref: "#/components/responses/401-unauthorized"
         '403':
           $ref: "#/components/responses/403-forbidden"
+        '404':
+          $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
         - TEA Component
   /component/{uuid}:
@@ -508,7 +582,13 @@ paths:
         - CLE
   /componentReleases:
     get:
-      description: Returns a list of TEA component releases. Note that multiple component releases may match.
+      description: |
+        Returns a list of TEA component releases.
+        Note that multiple component releases may match.
+
+        A server that does not implement this endpoint answers `404`, with or without a TEA error body.
+        A server that implements search answers `200`, with an empty result list when nothing matches, never `404`;
+        clients therefore treat any `404` on this endpoint as "not implemented", never as "no match".
       summary: Query TEA Component Releases
       operationId: queryComponentReleases
       parameters:
@@ -529,6 +609,8 @@ paths:
           $ref: "#/components/responses/401-unauthorized"
         '403':
           $ref: "#/components/responses/403-forbidden"
+        '404':
+          $ref: "#/components/responses/404-object-by-id-not-found"
       tags:
         - TEA Component Release
   /componentRelease/{uuid}:
@@ -2059,10 +2141,10 @@ components:
     discovery-info:
       type: object
       description: |
-        Discovery information for one product release matched by a TEI or PURL lookup.
-        A successful `/discovery` response is a non-empty array of these objects, ordered
+        Discovery information for one product release matched by a discovery lookup.
+        A successful discovery response is a non-empty array of these objects, ordered
         by priority when more than one release matches (first entry highest).
-        `.well-known/tea` selects where `/discovery` is called; `servers[]` lists API bases
+        `.well-known/tea` selects where discovery is called; `servers[]` lists API bases
         that serve this product release (same version and priority selection rules). A
         `rootUrl` need not appear in the well-known endpoint list.
       additionalProperties: false
@@ -2941,25 +3023,28 @@ components:
             error: invalid_client
     404-object-by-id-not-found:
       description: |
-        Either the object is unknown to this server, or — where an endpoint documents it —
-        the server does not provide an optional capability or sub-resource for that object.
-        The cases are told apart by the TEA error body, never by the status alone:
+        The object is unknown to this server,
+        or — where an endpoint documents it — the server does not provide an optional capability, endpoint family, or sub-resource.
 
-        - `error: OBJECT_UNKNOWN` — no such object (or its existence is concealed from this
-          client).
-        - `error: NOT_IMPLEMENTED` — optional capability or endpoint not provided (for CLE:
-          lifecycle data; for `/token`: the token endpoint is not implemented). CLE is
-          optional in TEA; clients shall not treat this as a failure of the object itself
-          where the capability is optional.
-        - `error: SIGNATURE_NOT_FOUND` — the artifact revision and format exist, but no
-          signature is published for that format. This reveals that the artifact exists; a
-          server concealing an artifact shall answer `OBJECT_UNKNOWN` for every
-          sub-resource of it, signatures included.
+        A server may add a TEA error body (`error-response`) to say which case applies:
 
-        Concealment applies only after authentication. A request to a protected object
-        with no valid access token shall receive `401` (see `401-unauthorized`), not a
-        concealing `404`. Clients shall not infer from `404` alone whether the object is
-        absent, withheld, or lacking an optional capability or sub-resource.
+        - `error: OBJECT_UNKNOWN` — no such object (or its existence is concealed from this client).
+        - `error: NOT_IMPLEMENTED` — optional capability or endpoint not provided.
+          Clients shall not treat this as a failure of the object or of the server.
+          On the CLE endpoints this body is required,
+          because the same path answers `404` for an unknown object;
+          elsewhere the status alone is sufficient.
+        - `error: SIGNATURE_NOT_FOUND` — the artifact revision and format exist,
+          but no signature is published for that format.
+          This reveals that the artifact exists;
+          a server concealing an artifact shall answer `OBJECT_UNKNOWN`, or no body, for every sub-resource of it, signatures included.
+
+        Clients shall accept a `404` without a body
+        and shall not infer from the status alone whether the object is absent, withheld, or lacking an optional capability or sub-resource.
+
+        Concealment applies only after authentication.
+        A request to a protected object with no valid access token shall receive `401` (see `401-unauthorized`),
+        not a concealing `404`.
       content:
         application/json:
           schema:
@@ -2973,10 +3058,10 @@ components:
               value: { error: SIGNATURE_NOT_FOUND }
     discovery-response:
       description: |
-        Non-empty array of discovery results for the requested TEI or PURL. Each element
-        is a `discovery-info` object (`productReleaseUuid` plus `servers`). An empty array
-        is not a valid success response; use `404` with `error: OBJECT_UNKNOWN` when the
-        server does not resolve the identifier.
+        Non-empty array of discovery results for the requested identifier.
+        Each element is a `discovery-info` object (`productReleaseUuid` plus `servers`).
+        An empty array is not a valid success response;
+        answer `404` when the server does not resolve the identifier, optionally with `error: OBJECT_UNKNOWN`.
       content:
         application/json:
           schema:
