@@ -105,12 +105,17 @@ tei://<domain-name>/<type>/<unique-identifier>
   identifier is in some cases (depending on type) encoded using BASE64URL encoding (RFC 4648 section 5).
 - Port number is not allowed in the `domain-name` part of a TEI URL.
 
+Note: the `unique-identifer` component of the TEI needs only be unique within the `domain-name`.
 
 ### TEI types
 
 The below show examples of TEI where the types are specific known formats or types.
 
-Reminder: the `unique-identifer` component of the TEI needs only be unique within the `domain-name`.
+The TEI type shall be composed only of ASCII letters and numbers, period '.', and dash '-'.
+
+- The type shall start with an ASCII letter.
+- The type shall not be percent-encoded.
+- The type is case insensitive. The canonical form is lowercase.
 
 TEI types are not defined in this standard. They are managed by the TC54 Task group 1 in a separate
 repository. The TEI types here are examples based on the current registry at time of publication.
