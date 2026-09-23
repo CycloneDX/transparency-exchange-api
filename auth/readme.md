@@ -3,10 +3,8 @@
 This document covers authentication and authorization on the consumer side
 of a TEA service - the discovery and download of software transparency artefacts.
 
-## Requirements
-
-__Authorization__: A user of a TEA service may get access to all objects (components, collections) and
-artefacts or just a subset, depending on the publisher of the data. Authorization is connected
+A user of a TEA service may get access to all objects (components, collections) and
+artefacts or just a subset, depending on the publisher of the data. __Authorization__ is connected
 to __authentication__.
 
 The level of authorization is up to the implementer of the TEA implementation and the publisher,
@@ -25,7 +23,7 @@ the customer has not acquired.
 For most Open Source projects, implementing authentication - setting up accounts and managing
 authorization - does not make much sense, since the information is usually in the open anyway.
 
-## Scope of this specification
+## Authentication is not required in this standard
 
 This specification does not require a TEA service to authenticate its users. A service that
 requires no authentication need not implement any of what follows, including the token endpoint;
@@ -33,6 +31,8 @@ see [Servers without authentication](#servers-without-authentication) for what s
 its clients do instead. A service that requires authentication for some or all of its objects
 implements the baseline in full; see
 [Servers that protect some objects](#servers-that-protect-some-objects).
+
+## Authentication baseline
 
 Where a service does authenticate, interoperability requires that every TEA client can
 authenticate against every TEA server without server-specific code. This specification therefore
@@ -54,7 +54,7 @@ Two consequences are worth stating explicitly, because they are what make the ba
   presented as an HTTP bearer token. Clients therefore need one code path for the API itself,
   regardless of how the server manages identity.
 
-## The token endpoint
+### The token endpoint
 
 The token endpoint is `POST /token`, relative to the TEA API base URL, and is defined in the TEA
 OpenAPI specification alongside the resource endpoints. It is an OAuth 2.0 token endpoint as defined
