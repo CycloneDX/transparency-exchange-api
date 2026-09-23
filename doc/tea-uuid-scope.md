@@ -4,17 +4,34 @@ This document defines the scope of uniqueness and the stability guarantees of UU
 
 ## Uniqueness scope
 
-A TEA UUID alone is **not** globally unique. Global uniqueness in TEA is achieved by the tuple:
+Paths such as `/productRelease/{uuid}` name an object by the API base and the UUID.
+The request does not carry the TEI authoritative domain, so two different objects
+that share a UUID at the same API base cannot be distinguished.
+
+A TEA UUID alone is **not** globally unique. Uniqueness for retrieval is the tuple:
 
 ```text
-authoritative domain  +  object type  +  UUID
+API base  +  object type  +  UUID
 ```
 
-- The **authoritative domain** is supplied by the TEI (`tei://<domain-name>/<type>/<unique-identifier>`); see [discovery](../discovery/readme.md). TEA itself has no centralized authority that can police UUIDs across servers, so cross-server uniqueness is not enforceable and is not claimed.
-- The **object type** scopes uniqueness to a single object class (Product, Product Release, Component, Component Release, Collection, Artifact). A TEA server shall guarantee that UUIDs are unique within `(authoritative domain, object type)`. Except as noted below, UUIDs are not required to be unique across object types.
+- The **API base** is the base URL of the TEA API the client calls. For each object
+  type, a TEA server shall ensure that a UUID refers to at most one object served at
+  that API base.
+- The **authoritative domain** is supplied by the TEI
+  (`tei://<domain-name>/<type>/<unique-identifier>`); see [discovery](../discovery/readme.md).
+  It tells a client which API to call. It is not part of a UUID path. TEA has no
+  centralized authority that assigns UUIDs, so uniqueness across different API bases
+  is not enforced by the protocol.
+- The **object type** scopes uniqueness to a single object class (Product, Product
+  Release, Component, Component Release, Collection, Artifact). Except as noted below,
+  UUIDs are not required to be unique across object types.
+
+If two authoritative domains would assign the same UUID to different objects of the
+same type, those domains shall be served from different API bases. One API base shall
+not host both.
 
 **Exception: Product Release and Component Release.** A TEA Collection shall use the same UUID as its parent
-Product Release or Component Release. Within an authoritative domain, a Product Release and a Component Release
+Product Release or Component Release. Within an API base, a Product Release and a Component Release
 shall not share a UUID. Consequently, Collections belonging to different parent releases have different UUIDs.
 Versions of the same Collection retain the same UUID. Except for Product Release and Component Release, objects
 of different types may share a UUID.
@@ -25,9 +42,12 @@ required in general (TEA has no operation that resolves a UUID without already k
 except that Product Release and Component Release UUIDs shall be disjoint as above, because those types
 share the Collection UUID namespace.
 
-Implementations may use any UUID version defined in RFC 9562. However UUIDs are
-produced, the exception above applies: a server shall not assign a UUID that is
-already in use for the other release type.
+Implementations may use any UUID version defined in RFC 9562. Implementations should
+create UUIDs with a cryptographically secure random number generator: UUID version 4,
+or version 7 whose random bits are drawn that way. Independently created UUIDs are
+then unique across TEA servers for practical purposes. This does not replace the rule
+above. A server shall not assign a UUID that is already in use at its API base for
+that object type, including a UUID already used for the other release type.
 
 ## Stability
 

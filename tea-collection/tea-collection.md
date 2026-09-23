@@ -48,7 +48,7 @@ The TEA Collection object has the following parts:
 - Preamble
 - __uuid__: UUID of the TEA Collection object.
     A TEA Collection shall use the same UUID as its parent Product Release or Component Release.
-    Within an authoritative domain, a Product Release and a Component Release shall not share a UUID.
+    Within an API base, a Product Release and a Component Release shall not share a UUID.
     Consequently, Collections belonging to different parent releases have different UUIDs.
     Versions of the same Collection retain the same UUID.
     See [TEA UUID Scope and Stability](../doc/tea-uuid-scope.md).
