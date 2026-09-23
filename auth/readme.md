@@ -168,12 +168,15 @@ additional request.
 The following are the cases we expect to be common. All are existing OAuth 2.0 profiles; TEA adds
 nothing to them.
 
-| Use case | Grant type | Specification |
-|---|---|---|
-| Enterprise SSO where the customer's identity provider issues SAML assertions | `urn:ietf:params:oauth:grant-type:saml2-bearer` | [RFC 7522](https://www.rfc-editor.org/rfc/rfc7522) |
-| OpenID Connect, or any provider issuing signed JWTs, including workload identity in CI systems | `urn:ietf:params:oauth:grant-type:jwt-bearer` | [RFC 7523](https://www.rfc-editor.org/rfc/rfc7523) |
-| A client already holding a token from another security domain, exchanged for a TEA token | `urn:ietf:params:oauth:grant-type:token-exchange` | [RFC 8693](https://www.rfc-editor.org/rfc/rfc8693) |
-| A client authenticated by a TLS client certificate rather than a shared secret | `client_credentials` with mutual TLS client authentication | [RFC 8705](https://www.rfc-editor.org/rfc/rfc8705) |
+* __Enterprise SSO where the customer's identity provider issues SAML assertions__
+  `urn:ietf:params:oauth:grant-type:saml2-bearer`, [RFC 7522](https://www.rfc-editor.org/rfc/rfc7522)
+* __OpenID Connect, or any provider issuing signed JWTs, including workload identity in CI systems__ `urn:ietf:params:oauth:grant-type:jwt-bearer`, [RFC 7523](https://www.rfc-editor.org/rfc/rfc7523)
+* __A client already holding a token from another security domain, exchanged for a TEA token__
+`urn:ietf:params:oauth:grant-type:token-exchange`, [RFC 8693](https://www.rfc-editor.org/rfc/rfc8693)
+* __A client authenticated by a TLS client certificate rather than a shared secret__
+ `client_credentials` with mutual TLS client authentication, [RFC 8705](https://www.rfc-editor.org/rfc/rfc8705)
+
+### Out of scope credential types
 
 [RFC 8693](https://www.rfc-editor.org/rfc/rfc8693) token exchange
 (`urn:ietf:params:oauth:grant-type:token-exchange`) is outside the scope of the TEA 1.0
@@ -263,8 +266,7 @@ A server that requires no authentication on any endpoint (and therefore applies 
 
 A TEA server may make some data available without authentication while requiring authentication
 and authorization for other objects - for example, listing products and releases without a token
-while restricting artifact downloads to customers, as described under
-[Requirements](#requirements). Such a server requires authentication for the protected objects:
+while restricting artifact downloads to customers. Such a server requires authentication for the protected objects:
 
 * it __shall__ implement the token endpoint and the baseline exchange, because at least one object
   needs them;
