@@ -112,6 +112,9 @@ The below show examples of TEI where the types are specific known formats or typ
 
 Reminder: the `unique-identifer` component of the TEI needs only be unique within the `domain-name`.
 
+TEI types are not defined in this standard. They are managed by the TC54 Task group 1 in a separate
+repository. The TEI types here are examples based on the current registry at time of publication.
+
 #### PURL - Package URL
 
 Where the `unique-identifier` is a PURL in it's canonical string form.
