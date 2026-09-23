@@ -1933,9 +1933,9 @@ components:
             before HTTP content coding is applied. Clients verifying them shall first
             remove any HTTP transfer coding and content coding, and shall not otherwise
             transform or canonicalize the artifact bytes. An artifact that is itself
-            compressed, such as a `.gz` file, stays in that form: servers shall not
-            declare the artifact's own compression as HTTP content coding, because
-            clients would then remove it and the checksum would not match.
+            compressed, such as a `.gz` file, stays in that form. The TEA servers
+            shall not declare the artifact's own compression as HTTP content coding,
+            because clients would then remove it and the checksum would not match.
           items:
             "$ref": "#/components/schemas/checksum"
     checksum:
@@ -2868,8 +2868,9 @@ components:
 
         Changing only this response's `Location`, while preserving the artifact or
         signature bytes for the selected UUID, version, and format after HTTP content
-        coding is removed, does not require a new artifact or collection version. Publishing a different external `url` or `signatureUrl` on
-        the artifact metadata is a separate change and shall follow the
+        coding is removed, does not require a new artifact or collection version.
+        Publishing a different external `url` or `signatureUrl` on the artifact
+        metadata is a separate change and shall follow the
         `artifact-format` rules for those fields.
 
         A client shall not send its TEA access token when following a redirect to a

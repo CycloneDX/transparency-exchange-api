@@ -149,8 +149,8 @@ A TEA Artifact object contains the following fields:
     content coding is applied. Clients verifying them shall first remove any HTTP transfer
     coding and content coding, and shall not otherwise transform or canonicalize the
     artifact bytes. An artifact that is itself compressed, such as a `.gz` file, stays in
-    that form: servers shall not declare the artifact's own compression as HTTP content
-    coding, because clients would then remove it and the checksum would not match.
+    that form. The TEA servers shall not declare the artifact's own compression as HTTP
+    content coding, because clients would then remove it and the checksum would not match.
 
 Required fields:
 
