@@ -1,5 +1,7 @@
 # Transparency Exchange API - Trusting digital signatures in TEA
 
+__This is work in progress, not part of the TEA standard__
+
 Software transparency requires a trust platform so that users
 can validate the information and artefacts published. Given
 the situation today any information published is better than
