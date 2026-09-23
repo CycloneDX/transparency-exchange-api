@@ -103,7 +103,7 @@ tei://<domain-name>/<type>/<unique-identifier>
   specification. If there is a need for new types, please inform ECMA TC54.
 - The **`unique-identifier`** shall be unique within the `domain-name`.
   Recommendation is to use a UUID but it can be an existing article code too. The
-  identifier is in some cases (depending on type) encoded using BASE64URL encoding (RFC 4648 section 5).
+  identifier is in some cases (depending on type) encoded using Base64URL encoding (RFC 4648 section 5) without padding.
 - Port number is not allowed in the `domain-name` part of a TEI URL.
 
 
@@ -115,8 +115,12 @@ Reminder: the `unique-identifer` component of the TEI needs only be unique withi
 
 #### PURL - Package URL
 
-Where the `unique-identifier` is a PURL in it's canonical string form.
-A PURL identifier is encoded using BASE64URL.
+Where the `unique-identifier` is a PURL in its canonical string form.
+A PURL identifier is encoded using Base64URL (RFC 4648 section 5) without padding.
+The encoded form consists only of the characters `A-Z`, `a-z`, `0-9`, `-` and `_`,
+which are unreserved in URIs (RFC 3986),
+so a `purl` TEI never needs percent-encoding.
+Decoders shall accept the unpadded form.
 
 Syntax:
 
