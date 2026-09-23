@@ -15,7 +15,7 @@ other; the first artifacts are published as version 2 with
 `ARTIFACT_ADDED`. A publisher that publishes the release and its artifacts
 together never has an empty version and starts at version 1 with content.
 In both cases version 1 is the first collection a client could have retrieved.
-A server may also synthesize the collection dynamically (see below).
+A server may also synthesise the collection dynamically (see below).
 
 If there are any updates of artefacts within a collection for the same
 version of a product, then a new TEA Collection object is created and optionally signed.
@@ -118,7 +118,7 @@ Required fields:
 
 ### Notes
 
-- The `formats` array allows the same artifact to be provided in multiple encodings or serializations (e.g., JSON, XML).
+- The `formats` array allows the same artifact to be provided in multiple encodings or serialisations (e.g., JSON, XML).
 - The `checksums` field provides integrity verification for each artifact format.
 - Detached signatures, whether at `signatureUrl` or served by the TEA server, enable consumers to verify the authenticity of the artifact.
 - `url` and `signatureUrl` are always external locations; a TEA server that hosts content or signatures itself omits them and serves the bytes from its download endpoints.
