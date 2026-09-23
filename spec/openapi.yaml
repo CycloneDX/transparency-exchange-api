@@ -1906,7 +1906,8 @@ components:
     checksum-type:
       description: |
         Checksum algorithm.
-        The allowed values are those of the `hash-alg` definition in the CycloneDX 1.7 schema.
+        The allowed values are those of the `hash-alg` definition of CycloneDX 1.7,
+        published as ECMA-424, 2nd edition, a normative reference of this specification.
       "$ref": "https://cyclonedx.org/schema/bom-1.7.schema.json#/definitions/hash-alg"
     unknown-error-type:
       type: string
