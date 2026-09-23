@@ -10,7 +10,7 @@ A TEA UUID alone is **not** globally unique. Global uniqueness in TEA is achieve
 authoritative domain  +  object type  +  UUID
 ```
 
-- The **authoritative domain** is supplied by the TEI (`tei://<domain-name>/<type>/<unique-identifier>`); see [discovery](../discovery/readme.md). TEA itself has no centralized authority that can police UUIDs across servers, so cross-server uniqueness is not enforceable and is not claimed.
+- The **authoritative domain** is supplied by the TEI (`tei://<domain-name>/<type>/<unique-identifier>`); see [discovery](../discovery/readme.md). TEA itself has no centralised authority that can police UUIDs across servers, so cross-server uniqueness is not enforceable and is not claimed.
 - The **object type** scopes uniqueness to a single object class (Product, Product Release, Component, Component Release, Collection, Artifact). A TEA server shall guarantee that UUIDs are unique within `(authoritative domain, object type)`. Except as noted below, UUIDs are not required to be unique across object types.
 
 **Exception: Product Release and Component Release.** A TEA Collection shall use the same UUID as its parent Product Release or Component Release. Within an authoritative domain, a Product Release and a Component Release shall not share a UUID. Consequently, Collections belonging to different parent releases have different UUIDs. Versions of the same Collection retain the same UUID. Except for Product Release and Component Release, objects of different types may share a UUID.
