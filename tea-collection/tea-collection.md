@@ -79,8 +79,9 @@ format, the server shall ensure that successful content retrieval through its do
 endpoint, including retrieval after following redirects, yields unchanged artifact bytes
 after HTTP transfer coding and content coding are removed. The server shall ensure that
 successful signature retrieval through its signature download endpoint yields unchanged
-signature bytes on the same terms. Changing only a download response's `Location`, while
-preserving those bytes, does not require a new artifact or collection version.
+signature bytes on the same terms. Changing only a download response's `Location`, or
+only its HTTP content coding, while preserving those bytes, does not require a new
+artifact or collection version.
 For artifact content retrieved from an external `url`, the published checksums are the
 integrity statement for the revision. These checksums do not cover detached signatures.
 
@@ -144,6 +145,13 @@ A TEA Artifact object contains the following fields:
     When `url` is present, these checksums are the integrity statement for the revision.
     Content that does not match them is not the content of that revision.
 
+    Published checksums shall be calculated over the artifact format's bytes before HTTP
+    content coding is applied. Clients verifying them shall first remove any HTTP transfer
+    coding and content coding, and shall not otherwise transform or canonicalize the
+    artifact bytes. An artifact that is itself compressed, such as a `.gz` file, stays in
+    that form. The TEA servers shall not declare the artifact's own compression as HTTP
+    content coding, because clients would then remove it and the checksum would not match.
+
 Required fields:
 
 - uuid, type, formats
@@ -151,7 +159,9 @@ Required fields:
 ### Notes
 
 - The `formats` array allows the same artifact to be provided in multiple encodings or serializations (e.g., JSON, XML).
-- The `checksums` field provides integrity verification for each artifact format.
+- The `checksums` field provides integrity verification for each artifact format's
+  bytes before HTTP content coding is applied. It does not cover detached signatures,
+  and it is not a digest of an HTTP-encoded representation; `Repr-Digest` covers that.
 - Detached signatures, whether at `signatureUrl` or served by the TEA server, enable consumers to verify the authenticity of the artifact.
 - `url` and `signatureUrl` are always external locations; a TEA server that hosts content or signatures itself omits them and serves the bytes from its download endpoints.
   A TEA access token is sent only to the TEA server's own API, never to an external URL.
