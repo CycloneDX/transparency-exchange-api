@@ -105,7 +105,7 @@ CLE events across the TEA Product and its releases and similarly across the TEA 
 ## Insights
 
 Much of the focus on Software Transparency from the U.S. Government and others center around the
-concept of “full transparency”. Consumers often need to ingest, process, and analyze SBOMs or
+concept of “full transparency”. Consumers often need to ingest, process, and analyse SBOMs or
 VEXs just to be able to answer simple questions such as:
 
 - Do any of my licensed products from Vendor A use Apache Struts?
@@ -132,8 +132,8 @@ Contributors are listed in the [Contributors](contributors.md) file.
 ## Terminology
 
 - API: Application programming interface
-- Authorization (authz): Which products/components that a user has the right to access
-- Authentication (authn): Credentials to get authorization
+- Authorisation (authz): Which products/components that a user has the right to access
+- Authentication (authn): Credentials to get authorisation
 - Collection: A set of artefacts representing a version of a product
 - Product: An item sold or delivered under one name
 - Product variant: A variant of a product

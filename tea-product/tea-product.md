@@ -11,9 +11,9 @@ In addition, all known TEIs for the product will be returned,
 in order for a TEA client to avoid duplication. This list can
 also include known Package URLs (PURL) and CPEs for the product.
 
-## Authorization
+## Authorisation
 
-Authorization can be done on multiple levels, including
+Authorisation can be done on multiple levels, including
 which products and versions are supported for a specific user.
 
 ## Composite products

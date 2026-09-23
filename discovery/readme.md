@@ -84,7 +84,7 @@ The TEI can be shown in the software itself, in shipping documentation, in web p
 
 A TEI identifies product release(s) under a vendor domain. Prefer one product release
 per TEI. A TEI may resolve to multiple product releases when the same identifier is
-shared (for example a non-unique EAN/UPC); vendors should minimize that case. A product
+shared (for example a non-unique EAN/UPC); vendors should minimise that case. A product
 release can have multiple TEIs — for example one with an EAN/UPC barcode and one with
 the vendor's product number.
 
@@ -237,7 +237,7 @@ Note that if the same identifier, like EAN, is used for multiple different produ
 then this EAN code will not be unique for a given product. While this case is supported
 by TEA — a successful `/discovery` lookup may return multiple `discovery-info` entries —
 the vendor is recommended to create a separate TEI for each unique product sold,
-like UUID or hash. In any case, the vendor should minimize the number of distinct product
+like UUID or hash. In any case, the vendor should minimise the number of distinct product
 releases returned per TEI. Preferable situation is to have a single product release
 per TEI. When multiple releases are returned, clients shall treat array order as
 priority (first entry highest).
@@ -431,7 +431,7 @@ shall return `404` with a TEA error response body. A response is a
 TEA error response only when its `Content-Type` is `application/json` (optionally with
 parameters such as `charset`) and the body is a JSON object with a string `error`
 property (typically `OBJECT_UNKNOWN`). Clients shall ignore properties they do not
-recognize and shall not reject the response for an `error` value they do not know, so a
+recognise and shall not reject the response for an `error` value they do not know, so a
 later TEA version can extend `error-response` without turning its `404`s into failover
 triggers. Other JSON 404 bodies (for example `{"message":"Not Found"}`) are not TEA
 error responses.
@@ -472,7 +472,7 @@ a discovery operation. Additional attempts SHOULD use exponential backoff. When 
 limit is reached, the client shall report that discovery could not be completed,
 indicating which stage failed when that is known.
 
-### Authentication and authorization
+### Authentication and authorisation
 
 Where authentication is required, clients use credentials configured for the selected
 TEA service, such as an API key, to obtain a TEA access token from that service’s
@@ -491,7 +491,7 @@ If authentication cannot be completed or recovery fails, the client shall indica
 update status could not be determined. Failures that may require user or administrator
 intervention include rejected or revoked credentials, expired client certificates,
 persistent rejection of a replacement token, and insufficient permissions. A
-`403 Forbidden` response indicates denied authorization and shall not trigger
+`403 Forbidden` response indicates denied authorisation and shall not trigger
 token-replacement attempts solely because of that status. Clients shall not fail over to
 another endpoint solely in response to `401` or `403`.
 
@@ -501,7 +501,7 @@ subsequent API access, including the server identity check of
 fail validation.
 
 Clients shall not automatically forward a TEA access token to a different origin, or
-outside the authorized API base URL of the service that issued it. API-key Basic
+outside the authorised API base URL of the service that issued it. API-key Basic
 credentials shall not be forwarded based merely on a discovery redirect; a different
 service requires independently configured credentials. Redirect targets used during
 discovery or API access shall use HTTPS and are subject to the same certificate
@@ -510,7 +510,7 @@ verification requirement.
 The full client authentication flow is described in [Authentication](../auth/readme.md).
 The rules above align discovery with that model and do not replace it.
 
-How authentication or authorization failures are presented to end users is implementation
+How authentication or authorisation failures are presented to end users is implementation
 specific, but they shall not be reported as evidence that no updates are available.
 
 ### Common authentication-related responses
@@ -530,7 +530,7 @@ replacement tokens.
 
 #### 403 Forbidden
 
-- Authenticated, but not authorized for this resource. Do not treat as token expiry and do
+- Authenticated, but not authorised for this resource. Do not treat as token expiry and do
   not fail over solely because of this status.
 
 Common errors:
@@ -555,7 +555,7 @@ Common errors:
 
 - certificate validation error
 
-### Client behavior
+### Client behaviour
 
 Clients SHOULD:
 
