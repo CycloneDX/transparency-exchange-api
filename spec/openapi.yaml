@@ -1905,9 +1905,12 @@ components:
         - algValue
     checksum-type:
       description: |
-        Checksum algorithm.
-        The allowed values are those of the `hash-alg` definition of CycloneDX 1.7,
-        published as ECMA-424, 2nd edition, a normative reference of this specification.
+        Checksum algorithm, named as in the `hash-alg` definition of ECMA-424 (CycloneDX).
+        The list of algorithms is maintained there, not in this specification.
+        The enumeration referenced here is the one published with CycloneDX 1.7
+        and is provided as a convenience for generated clients;
+        a later edition of ECMA-424 may add algorithms,
+        and clients shall ignore checksums whose algorithm they do not recognise.
       "$ref": "https://cyclonedx.org/schema/bom-1.7.schema.json#/definitions/hash-alg"
     unknown-error-type:
       type: string
