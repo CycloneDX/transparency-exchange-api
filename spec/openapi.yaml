@@ -740,8 +740,9 @@ paths:
         required to serve it.
 
         A TEA access token is sent only to the TEA server's own API base URL. External
-        `url` targets are retrieved without it - they are either openly accessible,
-        pre-signed, or covered by credentials the client arranges separately.
+        `url` targets are retrieved without it. They are openly accessible or covered by
+        credentials the client arranges separately. Expiring storage links are not
+        published in `url`; the server answers from this endpoint, including with `302`.
 
         When serving the content itself (`200`), servers shall return a strong `ETag`
         for the selected representation and shall honor `If-None-Match` with `304`.
@@ -1703,11 +1704,7 @@ components:
             with a newer revision (for example one published because an external `url` or
             `signatureUrl` changed). If a Collection adopts that new artifact revision, the
             server shall publish a new Collection version. Previously published Collection
-            versions shall remain unchanged.
-
-            Replacing an embedded artifact revision solely because its published `url` or
-            `signatureUrl` changed shall be classified as an update to an existing artifact.
-            The VEX and non-VEX classifications apply as described for
+            versions shall remain unchanged. Classification of that adoption follows
             `collection-update-reason-type`.
         createdDate:
           description: The date when the TEA Collection version was created.
@@ -1785,13 +1782,28 @@ components:
       description: |
         Type of TEA collection update.
 
-        `VEX_UPDATED` covers updates to VEX artifact(s), including a new revision whose
-        external `url` or `signatureUrl` changed. `ARTIFACT_UPDATED` covers updates to
-        artifact(s) other than VEX, including a new revision whose external `url` or
-        `signatureUrl` changed. Replacing an embedded artifact revision solely because
-        its published `url` or `signatureUrl` changed shall be classified as an update to
-        an existing artifact under those classifications. Precedence when a single
-        collection version mixes several change kinds is not defined here.
+        `VEX_UPDATED` covers a new revision of an existing VEX, including a revision whose
+        external `url` or `signatureUrl` changed. A VEX is published with artifact type
+        `VULNERABILITIES`, which also covers a VDR; `VEX_UPDATED` does not apply to every
+        `VULNERABILITIES` artifact. `ARTIFACT_UPDATED` covers a new revision of an artifact
+        that is not a VEX, including a revision whose external `url` or `signatureUrl`
+        changed. Replacing an embedded artifact revision solely because its published `url`
+        or `signatureUrl` changed is an update to that existing artifact (`VEX_UPDATED` or
+        `ARTIFACT_UPDATED`).
+
+        The first Collection version shall use `INITIAL_RELEASE`. In subsequent versions,
+        adding a VEX that was absent from the preceding Collection version counts as
+        `ARTIFACT_ADDED`. Updating an existing VEX counts as `VEX_UPDATED`. When multiple
+        change kinds occur, the server shall select `updateReason.type` using the
+        precedence rule below.
+
+        When a collection version other than the first contains changes of more than one
+        kind, the server shall set `updateReason.type` to the first applicable value in
+        this order: `VEX_UPDATED`, `ARTIFACT_REMOVED`, `ARTIFACT_ADDED`, `ARTIFACT_UPDATED`.
+        `comment` can describe the other changes. A client that needs the complete set of
+        changes should compare the version with the previous one. Clients monitoring VEX
+        changes should inspect added artifacts as well as updates classified as
+        `VEX_UPDATED`.
       enum:
         - INITIAL_RELEASE
         - VEX_UPDATED
@@ -1820,11 +1832,14 @@ components:
           description: |
             Revision number, starting at 1.
             Together with `uuid` uniquely identifies the TEA Artifact.
-            Successive revisions cover content changes and changes to published
-            metadata such as external `url` or `signatureUrl` values. Each published
-            revision is immutable: successful retrieval for a fixed artifact UUID,
-            version, and format shall return unchanged payload bytes, including when
-            the download endpoint redirects.
+            Successive revisions cover content changes and changes to any published
+            field, including external `url` or `signatureUrl` values. Each published
+            revision is immutable. For a fixed artifact UUID, version, and format, the
+            server shall ensure that successful content retrieval through its download
+            endpoint, including retrieval after following redirects, yields unchanged
+            artifact bytes after HTTP transfer coding and content coding are removed.
+            Successful signature retrieval through its signature download endpoint yields
+            unchanged signature bytes on the same terms.
           type: integer
         name:
           type: string
@@ -1906,6 +1921,9 @@ components:
       description: A security-related document in a specific format
       required:
         - mediaType
+      dependentRequired:
+        url:
+          - checksums
       properties:
         mediaType:
           type: string
@@ -1927,29 +1945,34 @@ components:
             retrieve the content from it. When absent, the TEA server hosts the content
             itself and clients shall retrieve it from the artifact download endpoint,
             `/artifact/{uuid}/{artifactVersion}/download`, selecting this format by its
-            `mediaType`. Servers that need short-lived or redirected storage links without
-            publishing an external URL shall omit `url` and answer from the download
-            endpoint (including with `302` when the bytes live elsewhere).
+            `mediaType`.
+
+            `url` and `signatureUrl` should be stable URLs. Servers should not publish
+            pre-signed or otherwise expiring URLs in them. A server that serves content
+            from expiring storage links shall omit them and answer from the download
+            endpoints, with `302` where the bytes live elsewhere.
 
             A TEA access token is sent only to the TEA server's own API base URL, never
-            to an external URL: external locations are either openly accessible,
-            pre-signed, or covered by credentials the client arranges separately. When
-            the URL is pre-signed it can expire; clients should not retain it beyond the
-            freshness lifetime of the response that carried it.
+            to an external URL. External locations are either openly accessible or covered
+            by credentials the client arranges separately.
 
             External `url` values are part of the published artifact revision. Changing
-            `url` (including renewing a pre-signed URL) shall create a new artifact
-            revision, even when content bytes and checksums are unchanged. If a Collection
-            replaces an embedded artifact revision with that new revision, the server
-            shall publish a new Collection version. Previously published Collection
-            versions shall remain unchanged. The server shall preserve the URLs published
-            on each historical artifact and collection version.
+            `url` shall create a new artifact revision, even when content bytes and
+            checksums are unchanged. The server shall preserve the URLs published on each
+            historical artifact revision. If a Collection adopts that new revision,
+            collection versioning follows `collection.version`.
 
-            Successful retrieval for a fixed artifact UUID, version, and format shall
-            return unchanged payload bytes for as long as the resource remains available,
-            including when clients follow redirects. Changing only a download response's
-            `Location`, while preserving the content bytes, does not require a new
+            The server shall ensure that successful content retrieval through its download
+            endpoint, for a fixed artifact UUID, version, and format, including retrieval
+            after following redirects, yields unchanged artifact bytes after HTTP transfer
+            coding and content coding are removed. Changing only a download response's
+            `Location`, while preserving those artifact bytes, does not require a new
             artifact or collection version.
+
+            The TEA server does not control the bytes behind an external `url`, so for
+            every format that has a `url` the server shall publish at least one checksum:
+            the checksums are the integrity statement for the revision. Content retrieved
+            from `url` that does not match them is not the content of that revision.
           format: uri
         signatureUrl:
           type: string
@@ -1962,21 +1985,28 @@ components:
             retrieve it from the artifact signature download endpoint,
             `/artifact/{uuid}/{artifactVersion}/signature/download`, selecting this
             format by its `mediaType`; that endpoint returns `404` when no signature is
-            published for the format. The same access-token, pre-signed URL, revision,
-            collection-adoption, payload-stability, and redirect rules as for `url`
-            apply to `signatureUrl`, including that changing only a signature download
-            response's `Location` while preserving the signature bytes does not require
-            a new artifact or collection version.
+            published for the format. The same access-token, stable-URL, and revision rules
+            as for `url` apply to `signatureUrl`. For a fixed artifact UUID, version, and
+            format, the server shall ensure that successful signature retrieval through its
+            signature download endpoint, including retrieval after following redirects,
+            yields unchanged signature bytes after HTTP transfer coding and content coding
+            are removed. Changing only a signature download response's `Location`, while
+            preserving those signature bytes, does not require a new artifact or collection
+            version.
 
             This specification does not define which signature technology is used, nor
             model the signing algorithm, key, or certificate chain.
           format: uri
         checksums:
           type: array
+          minItems: 1
           description: |
-            Array of checksums for this artifact format's content bytes (the payload
-            retrieved from `url` or from the artifact download endpoint for this
-            `mediaType`), not the detached signature.
+            Checksums for this artifact format's content bytes (the payload retrieved
+            from `url` or from the artifact download endpoint for this `mediaType`),
+            not the detached signature. When present, `checksums` shall contain at least
+            one entry. When `url` is present, `checksums` is required. Those checksums are
+            the integrity statement for that external `url`. Content retrieved from `url`
+            that does not match them is not the content of that revision.
           items:
             "$ref": "#/components/schemas/checksum"
     checksum:
