@@ -1,4 +1,4 @@
-# The TEA product object
+# The TEA Product Object
 
 After TEA discovery, the [Transparency Exchange Identifier (TEI)](/discovery/readme.md) resolves to one or more TEA Product Releases, each a concrete, versioned offering; a TEI normally resolves to exactly one. A TEA Product is a higher-level object that groups multiple Product Releases for a product line or family and can be browsed via `/product/{uuid}/releases`.
 
@@ -26,7 +26,7 @@ always includes a single release of the component.
 
 The __TEA Product__ object groups multiple releases together.
 
-## TEA Product object
+## Structure
 
 Key attributes:
 

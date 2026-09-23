@@ -1,4 +1,4 @@
-# TEA Product Release object
+# The TEA Product Release Object
 
 ## Overview
 
