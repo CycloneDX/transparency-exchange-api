@@ -18,9 +18,9 @@ may be implemented in multiple ways - on various levels of the API - depending o
 the user can access.
 
 As an example, one implementation may publish all information about existing artefacts and software
-versions openly, but restrict access to artefacts to those that match the customer's installation.
+versions openly, but restrict access to artefacts to those that match the user's installation.
 Another implementation can implement a filter that does not show products and versions ("components") that
-the customer has not acquired.
+the user has not acquired.
 
 For most Open Source projects, implementing authentication - setting up accounts and managing
 authorization - does not make much sense, since the information is usually in the open anyway.
@@ -172,7 +172,7 @@ Table: OAuth 2.0 grant types for optional credentials
 
 | Use case | Grant type | Specification |
 |---|---|---|
-| Enterprise SSO where the customer's identity provider issues SAML assertions | `urn:ietf:params:oauth:grant-type:saml2-bearer` | [RFC 7522](https://www.rfc-editor.org/rfc/rfc7522) |
+| Enterprise SSO where the user's identity provider issues SAML assertions | `urn:ietf:params:oauth:grant-type:saml2-bearer` | [RFC 7522](https://www.rfc-editor.org/rfc/rfc7522) |
 | OpenID Connect, or any provider issuing signed JWTs, including workload identity in CI systems | `urn:ietf:params:oauth:grant-type:jwt-bearer` | [RFC 7523](https://www.rfc-editor.org/rfc/rfc7523) |
 | A client already holding a token from another security domain, exchanged for a TEA token | `urn:ietf:params:oauth:grant-type:token-exchange` | [RFC 8693](https://www.rfc-editor.org/rfc/rfc8693) |
 | A client authenticated by a TLS client certificate rather than a shared secret | `client_credentials` with mutual TLS client authentication | [RFC 8705](https://www.rfc-editor.org/rfc/rfc8705) |
@@ -265,7 +265,7 @@ A server that requires no authentication on any endpoint (and therefore applies 
 
 A TEA server may make some data available without authentication while requiring authentication
 and authorization for other objects - for example, listing products and releases without a token
-while restricting artifact downloads to customers, as described under
+while restricting artifact downloads to some users, as described under
 [Requirements](#requirements). Such a server requires authentication for the protected objects:
 
 * it __shall__ implement the token endpoint and the baseline exchange, because at least one object
