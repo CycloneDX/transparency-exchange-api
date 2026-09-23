@@ -55,13 +55,13 @@ urn:cdx:serialNumber
 urn:cdx:serialNumber/version
 ```
 
-The API needs to provide support for update checks, i.e. to check if a document is
+The API need to provide support for update checks, i.e. to check if a document is
 updated without downloading. (possibly etag or HEAD method or similar)
 Authn/Authz MUST be supported
 
 ## Artefact Publishing
 
-The API MUST provide a way to publish an artefact, either standalone or to a collection. 
+The API MUST provide a way to publish an artefact, either standalone or to a collection.
 The detection of duplicate artefacts with the same identity MUST be handled and prevented.
 Authn/Authz MUST be supported
 
@@ -85,11 +85,11 @@ PURL, CPE, GAV, GTIN, and GMN.
 
 For example:
 
-- Return the identity of all BOMs that have a vulnerable version of Apache Log4J: 
+- Return the identity of all BOMs that have a vulnerable version of Apache Log4J:
   `pkg:maven/org.apache.logging.log4j/log4j-core@2.10.0`
 
-The API MUST provide a way to search for the metadata component across all available BOMs. 
-The API SHOULD support multiple identity formats including PURL, CPE, SWID, GAV, GTIN, and GMN. 
+The API MUST provide a way to search for the metadata component across all available BOMs.
+The API SHOULD support multiple identity formats including PURL, CPE, SWID, GAV, GTIN, and GMN.
 For example:
 
 - Return the identity of all artefacts that describe `cpe:/a:acme:commerce_suite:1.0`.
