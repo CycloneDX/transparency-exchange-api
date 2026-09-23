@@ -77,9 +77,8 @@ The user will find this API end point using TEA discovery.
 
 A user will approach the API just to discover data before purchase,
 or with a specific product and product version in scope.
-The format of the version may follow many syntaxes, so maybe
-the API needs to be able to provide some sort of format
-for the version string.
+The format of the version string can follow many syntaxes. This specification
+does not constrain that format.
 
 An automated system may want to provide the user with a GUI,
 listing versions and being able to scroll to the next page

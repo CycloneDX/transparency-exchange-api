@@ -56,7 +56,7 @@ The TEI for a product release can be communicated to the user in many ways.
 - On the invoice or delivery note
 - For software with a GUI, in an "about" box
 
-The user needs to get the TEI from the manufacturer, through a reseller or directly. The TEI
+The user obtains the TEI from the manufacturer, through a reseller, or directly. The TEI
 is defined by the manufacturer and can normally not be derived from known information.
 
 ## TEA Discovery - defining an extensible identifier
@@ -68,10 +68,10 @@ required for a given product release. This identifier is called the Transparency
 The TEI identifier is based on DNS, which assures a uniqueness per vendor (or open source project)
 and gives the vendor a namespace to define product release identifiers based on existing or new identifiers
 like EAN/UPC bar code, PURLs or other existing schemes. A given product release may have multiple identifiers
-as long as they all resolve into the same destination. In some cases, these identifiers has to be applied
-for with the corresponding standards organisation.
+as long as they all resolve into the same destination. Some identifier schemes require registration
+with the corresponding standards organisation.
 
-The vendor needs to make sure that the TEI is unique within the vendor's namespace. There is no
+The vendor should ensure that the TEI is unique within the vendor's namespace. There is no
 intention to create any TEI registries.
 
 ## The TEI: URL - An extensible identifier
@@ -97,10 +97,11 @@ tei://<domain-name>/<type>/<unique-identifier>
 ````
 
 - The **`domain-name`** part resolves into a web server, which may not be the API host.
-  - The uniqueness of the name is the domain name part that has to be registred at creation of the TEI.
+  - The domain-name part is a DNS name under the vendor's control. It identifies the DNS
+    namespace used by the TEI.
 - The **`type`** which defines the syntax of the unique identifier part. Types are declared in the
   specification. If there is a need for new types, please inform ECMA TC54.
-- The **`unique-identifier`** has to be unique within the `domain-name`.
+- The **`unique-identifier`** shall be unique within the `domain-name`.
   Recommendation is to use a UUID but it can be an existing article code too. The
   identifier is in some cases (depending on type) encoded using BASE64URL encoding (RFC 4648 section 5).
 - Port number is not allowed in the `domain-name` part of a TEI URL.
@@ -236,7 +237,7 @@ tei://cyclonedx.org/udi/00123456789012
 Note that if the same identifier, like EAN, is used for multiple different product releases
 then this EAN code will not be unique for a given product. While this case is supported
 by TEA — a successful `/discovery` lookup may return multiple `discovery-info` entries —
-the vendor is recommended to create a separate TEI for each unique product sold,
+the vendor should create a separate TEI for each unique product sold,
 like UUID or hash. In any case, the vendor should minimize the number of distinct product
 releases returned per TEI. Preferable situation is to have a single product release
 per TEI. When multiple releases are returned, clients shall treat array order as
@@ -297,9 +298,9 @@ Example:
 
 ### Discovery data caching and freshness
 
-Discovery documents MAY be cached.
+Discovery documents may be cached.
 
-Implementations SHOULD:
+Implementations should:
 
 - respect HTTP caching headers  
 - periodically refresh discovery data  
@@ -465,10 +466,10 @@ not a failover trigger; see above.
 
 On such a failure, the client shall select the next untried well-known endpoint that
 supports a compatible API version, if one is available. While doing so the client
-SHOULD preserve priority order from highest to lowest (applying the absent-`priority`
+should preserve priority order from highest to lowest (applying the absent-`priority`
 equals `1` rule). Each failover connection is subject to the same TLS verification
-requirement. Clients SHOULD limit the total number of attempts across both stages for
-a discovery operation. Additional attempts SHOULD use exponential backoff. When a retry
+requirement. Clients should limit the total number of attempts across both stages for
+a discovery operation. Additional attempts should use exponential backoff. When a retry
 limit is reached, the client shall report that discovery could not be completed,
 indicating which stage failed when that is known.
 
@@ -557,7 +558,7 @@ Common errors:
 
 ### Client behavior
 
-Clients SHOULD:
+Clients should:
 
 - retry with backoff  
 - validate TLS certificates  

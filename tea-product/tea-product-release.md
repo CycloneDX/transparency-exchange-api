@@ -60,7 +60,7 @@ situations where a object is promoted as is after testing to production version.
 be set after initial creation and publication of the product release.
 
 If the final version is different from the pre-release (bugs fixed, code changed, different binary)
-a new product release with a new UUID and version needs to be created.
+a new product release with a new UUID and version shall be created.
 
 
 ## Notes

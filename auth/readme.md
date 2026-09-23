@@ -59,7 +59,7 @@ Two consequences are worth stating explicitly, because they are what make the ba
 The token endpoint is `POST /token`, relative to the TEA API base URL, and is defined in the TEA
 OpenAPI specification alongside the resource endpoints. It is an OAuth 2.0 token endpoint as defined
 in [RFC 6749](https://www.rfc-editor.org/rfc/rfc6749) section 3.2; this specification constrains
-which grant types a conforming server has to accept, and adds nothing to the wire format.
+which grant types a conforming server shall accept, and adds nothing to the wire format.
 
 RFC 6749 leaves the location of the token endpoint outside its scope - `/token` appears only in its
 examples - so TEA fixes the path here rather than requiring clients to discover it. TEA defines no
@@ -251,7 +251,7 @@ pattern and is preferred over any configuration or discovery step a client would
 A server that requires no authentication on any endpoint (and therefore applies no authorization):
 
 * __need not__ implement the token endpoint. There is nothing to exchange: an OAuth 2.0 token
-  response has to carry an access token, and the mandatory grant requires the client to
+  response carries an access token, and the mandatory grant requires the client to
   authenticate, so a token endpoint on such a server could only issue a token that means nothing.
 * __shall not__ answer any resource request with `401`. Its clients complete step 2 of the flow
   above and never look for the token endpoint.

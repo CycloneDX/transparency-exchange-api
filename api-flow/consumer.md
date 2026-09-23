@@ -19,8 +19,9 @@ The standard TEI points to a product release. A product release is something sol
   can belong to multiple Component or Product Releases.
 - __List of artefact formats__: An artefact can be published in multiple formats.
 
-The user has to know product release TEI and in some cases version of each component (TEA 
-Component Release) to find the list of artefacts for the particular Product Release.
+Finding the list of artefacts for a Product Release starts from the product
+release TEI and, in some cases, the version of each component
+(TEA Component Release).
 
 ## API flow based on TEI discovery
 
