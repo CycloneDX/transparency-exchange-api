@@ -1,4 +1,4 @@
-# The TEA Component Release Object
+# The TEA Component Release object
 
 ## Overview
 
@@ -39,7 +39,7 @@ Required fields:
 
 - uuid, component, version, createdDate
 
-## The TEA Component Release Distribution Object
+## The TEA Component Release Distribution object
 
 Distribution are object to declare different distribution formats of a component,
 like source code or a package for a specific Linux distribution or a CPU type

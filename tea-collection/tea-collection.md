@@ -1,4 +1,4 @@
-# The TEA Collection Object
+# The TEA Collection object
 
 For each product and version there is a Tea Collection object (TCO), which is a list
 of available artifacts for this specific version.
@@ -63,7 +63,7 @@ The TEA Collection object has the following parts:
 - __artifacts__: Array of TEA Artifact objects.
     See [below](#the-tea-artifact-object).
 
-## The TEA Artifact Object
+## The TEA Artifact object
 
 A TEA Artifact object represents a security-related document or file linked to a component release,
 such as an SBOM, VEX, attestation, or license.

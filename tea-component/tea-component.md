@@ -1,4 +1,4 @@
-# The TEA Component Object
+# The TEA Component object
 
 The TEA Component represents a component lineage. A product release may
 be constructed with one or multiple TEA Components, each with their own set of
