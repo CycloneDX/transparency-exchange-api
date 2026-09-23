@@ -726,13 +726,14 @@ paths:
         the greatest published `version` — the same revision `/artifact/{uuid}/latest`
         reports. The content this returns changes when a new revision is published, so
         unlike the versioned endpoint the response is not immutable: caches shall
-        revalidate it via `ETag` for the selected representation. The `Content-Location`
-        header is an absolute versioned URL including the API base, version path, and
-        `mediaType` query parameter; clients that need a stable, reproducible reference
-        use that URL.
+        revalidate it via `ETag` for the HTTP representation selected after negotiation.
+        The `Content-Location` header is an absolute versioned URL including the API
+        base, version path, and `mediaType` query parameter. That URL identifies the
+        revision and format; HTTP content coding can still be negotiated.
 
         When serving the content itself (`200`), servers shall return a strong `ETag`
-        for the selected representation and shall honor `If-None-Match` with `304`.
+        for the HTTP representation selected after negotiation, including content
+        coding, and shall honor `If-None-Match` with `304`.
         `ETag` is the only conditional validator for these downloads. Servers that support
         `HEAD` for this operation shall return the same headers as `GET` without a response
         body. `302` redirects are outside conditional semantics: `If-None-Match` applies
@@ -775,12 +776,14 @@ paths:
         Equivalent to the versioned signature endpoint, resolving to the revision with
         the greatest published `version` — the same revision `/artifact/{uuid}/latest`
         reports. As with the latest content endpoint, the response is not immutable and
-        caches shall revalidate it via `ETag` for the selected representation;
-        `Content-Location` is an absolute versioned signature URL including the API base,
-        version path, and `mediaType` query parameter.
+        caches shall revalidate it via `ETag` for the HTTP representation selected after
+        negotiation. `Content-Location` is an absolute versioned signature URL including
+        the API base, version path, and `mediaType` query parameter. That URL identifies
+        the revision and format; HTTP content coding can still be negotiated.
 
         When serving the signature itself (`200`), servers shall return a strong `ETag`
-        for the selected representation and shall honor `If-None-Match` with `304`.
+        for the HTTP representation selected after negotiation, including content
+        coding, and shall honor `If-None-Match` with `304`.
         `ETag` is the only conditional validator for these downloads. Servers that support
         `HEAD` for this operation shall return the same headers as `GET` without a response
         body. `302` redirects are outside conditional semantics: `If-None-Match` applies
@@ -873,7 +876,8 @@ paths:
         be published in `url`; the server answers from this endpoint, including with `302`.
 
         When serving the content itself (`200`), servers shall return a strong `ETag`
-        for the selected representation and shall honor `If-None-Match` with `304`.
+        for the HTTP representation selected after negotiation, including content
+        coding, and shall honor `If-None-Match` with `304`.
         `ETag` is the only conditional validator for these downloads. Servers that support
         `HEAD` for this operation shall return the same headers as `GET` without a response
         body. `302` redirects are outside conditional semantics: `If-None-Match` applies
@@ -883,7 +887,8 @@ paths:
         publicly accessible: see `artifact-cache-control-immutable`. Immutability does
         not imply that shared caches may store access-controlled responses. Successful
         responses include `Content-Location` as an absolute URL of this versioned
-        download including the `mediaType` query parameter.
+        download including the `mediaType` query parameter. That URL identifies the
+        revision and format; HTTP content coding can still be negotiated.
       summary: Download the content of one TEA Artifact revision
       operationId: downloadArtifactByVersion
       parameters:
@@ -948,14 +953,16 @@ paths:
         sub-resource of it, including signatures.
 
         When serving the signature itself (`200`), servers shall return a strong `ETag`
-        for the selected representation and shall honor `If-None-Match` with `304`.
+        for the HTTP representation selected after negotiation, including content
+        coding, and shall honor `If-None-Match` with `304`.
         `ETag` is the only conditional validator for these downloads. Servers that support
         `HEAD` for this operation shall return the same headers as `GET` without a response
         body.
         `302` redirects are outside conditional semantics: `If-None-Match` applies only
         to the TEA-hosted download response, not to following an external `Location`.
         Successful responses include `Content-Location` as an absolute URL of this
-        versioned signature download including the `mediaType` query parameter.
+        versioned signature download including the `mediaType` query parameter. That URL
+        identifies the revision and format; HTTP content coding can still be negotiated.
       summary: Download the signature of one TEA Artifact revision
       operationId: downloadArtifactSignatureByVersion
       parameters:
@@ -1761,8 +1768,8 @@ components:
             artifact bytes after HTTP transfer coding and content coding are removed,
             and that successful signature retrieval through its signature download
             endpoint yields unchanged signature bytes on the same terms. Changing only
-            a download response's `Location`, while preserving those bytes, does not
-            require a new artifact or collection version.
+            a download response's `Location`, or only its HTTP content coding, while
+            preserving those bytes, does not require a new artifact or collection version.
           type: integer
         name:
           type: string
@@ -1921,6 +1928,14 @@ components:
             one entry. When `url` is present, `checksums` is required. Those checksums are
             the integrity statement for that external `url`. Content retrieved from `url`
             that does not match them is not the content of that revision.
+
+            Published checksums shall be calculated over the artifact format's bytes
+            before HTTP content coding is applied. Clients verifying them shall first
+            remove any HTTP transfer coding and content coding, and shall not otherwise
+            transform or canonicalize the artifact bytes. An artifact that is itself
+            compressed, such as a `.gz` file, stays in that form: servers shall not
+            declare the artifact's own compression as HTTP content coding, because
+            clients would then remove it and the checksum would not match.
           items:
             "$ref": "#/components/schemas/checksum"
     checksum:
@@ -2498,25 +2513,46 @@ components:
         type: string
         examples:
           - attachment; filename="log4j-core-2.24.3-cyclonedx.json"
+    artifact-content-encoding:
+      description: |
+        HTTP content codings applied to the selected representation, listed in the
+        order applied (RFC 9110). When no content coding is applied, the server should
+        omit this header. An artifact's own compression, such as a `.gz` file, is not
+        HTTP content coding and shall not be declared here.
+      schema:
+        type: string
+        examples:
+          - gzip
     artifact-etag:
       description: |
-        Strong entity tag for the content. A TEA Artifact revision is immutable, so
-        the entity tag for a given uuid, version and format never changes.
+        The server shall provide a strong entity tag for the selected HTTP
+        representation. Representations with different bytes shall have different
+        strong entity tags, including representations that differ because of HTTP
+        content coding. Artifact revision immutability does not require all HTTP
+        representations of that revision to share an entity tag.
+
+        Intermediaries that compress on the fly often weaken the entity tag, which does
+        not meet this requirement. Servers that offer content coding can serve
+        precompressed variants, or assign their own strong entity tag to each coded
+        representation.
       required: true
       schema:
         type: string
     artifact-repr-digest:
       description: |
-        Digest of the content as defined in RFC 9530, allowing a client to verify the
-        bytes against the `checksums` published in the artifact metadata.
+        When provided, `Repr-Digest` shall contain a digest of the complete selected
+        HTTP representation data, including any applied content coding and excluding
+        transfer coding, as defined in RFC 9530. It does not replace verification
+        against the published checksums in the artifact metadata.
       schema:
         type: string
     artifact-cache-control-immutable:
       description: |
-        Cache policy for a specific artifact or signature revision. The bytes for a
-        given uuid, version and format never change, so long-lived caching with
-        `immutable` is appropriate when the content is publicly accessible without
-        authorization.
+        Cache policy for a specific artifact or signature revision. Artifact and signature
+        bytes remain unchanged after HTTP decoding. A server may use `immutable` only
+        when the selected HTTP representation, including its content-coded bytes, will
+        remain unchanged throughout the response's freshness lifetime. Otherwise, the
+        server shall omit `immutable`.
 
         Responses containing access-controlled content shall use `Cache-Control`
         `private` or `no-store`. Servers shall use `public` only for content available
@@ -2532,8 +2568,9 @@ components:
       description: |
         The latest revision is a moving target: which revision it resolves to changes
         when a new revision is published. Servers shall not mark it immutable and
-        shall require revalidation, so that a cache reuses stored content only after
-        confirming, through the `ETag`, that the latest revision has not changed.
+        shall require revalidation, so that a cache reuses a stored representation only
+        after confirming, through that representation's `ETag`, that the selected
+        representation has not changed.
 
         As with versioned downloads, responses containing access-controlled content
         shall use `private` or `no-store` (for example `private, no-cache`). Servers
@@ -2549,24 +2586,35 @@ components:
       description: |
         Absolute URL of the versioned content download for the revision and format this
         response was resolved to, per RFC 9110 section 8.7. It includes the TEA API base,
-        version path, and a `mediaType` query parameter naming the selected format, so a
-        follow-up `GET` retrieves the same representation. A client that needs a stable,
-        reproducible reference to the bytes it received uses this URL rather than the
-        `latest` URL.
+        version path, and a `mediaType` query parameter naming the selected format. The
+        URL identifies the revision and format. HTTP content coding can still be
+        negotiated on a follow-up `GET`. A client that needs a stable reference to that
+        revision and format uses this URL rather than the `latest` URL.
       required: true
       schema:
         type: string
         format: uri
         examples:
           - https://api.teaexample.com/v1.0.0/artifact/2ff3ae7c-8eab-4e0b-9b8b-1a0c4c4c1c2d/3/download?mediaType=application%2Fvnd.cyclonedx%2Bjson
-    artifact-vary-accept:
+    artifact-vary:
       description: |
-        Present with the value `Accept` when format selection depended on the request's
-        `Accept` header. Omitted when `mediaType` selected the format, or when `Accept`
-        did not constrain the result.
+        If changing or removing the `Accept` request header could change the selected
+        format for the same target URI, the server shall include `Accept` in `Vary`,
+        including when `Accept` is absent or contains `*/*` (RFC 9110 section 12.5.5).
+        An explicit `mediaType` query parameter can remove variation by `Accept` when
+        it completely determines the format.
+
+        If changing or removing the `Accept-Encoding` request header could change the
+        selected content coding for the same target URI, the server shall include
+        `Accept-Encoding` in `Vary`, including when `Accept-Encoding` is absent or the
+        selected response uses no content coding. A `mediaType` query parameter does
+        not eliminate variation by encoding.
       schema:
         type: string
-        example: Accept
+        examples:
+          - Accept
+          - Accept-Encoding
+          - Accept, Accept-Encoding
     signature-content-disposition:
       description: |
         Suggested filename for the signature, as an `attachment` disposition per
@@ -2577,9 +2625,13 @@ components:
           - attachment; filename="log4j-core-2.24.3-cyclonedx.json.sig"
     signature-etag:
       description: |
-        Strong entity tag for the signature. A signature belongs to one format of one
-        immutable revision, so it is fixed with the revision: content that is re-signed
-        is published as a new revision.
+        The server shall provide a strong entity tag for the selected HTTP
+        representation. Representations with different bytes shall have different
+        strong entity tags, including representations that differ because of HTTP
+        content coding. Artifact revision immutability does not require all HTTP
+        representations of that revision to share an entity tag. Content that is
+        re-signed is published as a new revision. On-the-fly compression follows
+        `artifact-etag`.
       required: true
       schema:
         type: string
@@ -2588,7 +2640,8 @@ components:
         Absolute URL of the versioned signature download for the revision and format this
         response was resolved to, per RFC 9110 section 8.7. It includes the TEA API base,
         version path, and a `mediaType` query parameter naming the selected content
-        format, so a follow-up `GET` retrieves the same signature representation.
+        format. The URL identifies the revision and format. HTTP content coding can
+        still be negotiated on a follow-up `GET`.
       required: true
       schema:
         type: string
@@ -2657,12 +2710,15 @@ components:
         The content of the requested TEA Artifact format.
 
         The wire `Content-Type` is the `mediaType` of the format returned. The response
-        content key is `*/*` because that type varies by format. `Content-Location` is
-        always present as an absolute versioned download URL including `mediaType`.
-        `Vary: Accept` is present only when format selection depended on `Accept`.
+        content key is `*/*` because that type varies by format. `Content-Encoding`,
+        when present, names the HTTP content coding of the selected representation.
+        `Content-Location` identifies the revision and format; HTTP content coding can
+        still be negotiated. `Vary` follows `artifact-vary`.
       headers:
         Content-Disposition:
           $ref: "#/components/headers/artifact-content-disposition"
+        Content-Encoding:
+          $ref: "#/components/headers/artifact-content-encoding"
         ETag:
           $ref: "#/components/headers/artifact-etag"
         Cache-Control:
@@ -2670,7 +2726,7 @@ components:
         Content-Location:
           $ref: "#/components/headers/artifact-content-location"
         Vary:
-          $ref: "#/components/headers/artifact-vary-accept"
+          $ref: "#/components/headers/artifact-vary"
         Repr-Digest:
           $ref: "#/components/headers/artifact-repr-digest"
       content:
@@ -2686,13 +2742,15 @@ components:
         Identical to `artifact-content` except for its cache policy: the latest revision
         changes when a new revision is published, so the response is not immutable and
         a cache shall revalidate it before reuse. Servers shall return a strong `ETag`
-        for the selected representation; revalidation succeeds with `304 Not Modified`
-        until a new revision is published. `Content-Location` is an absolute versioned
-        download URL including `mediaType`. `Vary: Accept` is present only when format
-        selection depended on `Accept`.
+        for the selected HTTP representation. Revalidation returns `304 Not Modified`
+        when `If-None-Match` matches that representation's validator. `Content-Location`
+        identifies the revision and format. `Vary` follows the same rules as
+        `artifact-content`.
       headers:
         Content-Disposition:
           $ref: "#/components/headers/artifact-content-disposition"
+        Content-Encoding:
+          $ref: "#/components/headers/artifact-content-encoding"
         ETag:
           $ref: "#/components/headers/artifact-etag"
         Cache-Control:
@@ -2700,7 +2758,7 @@ components:
         Content-Location:
           $ref: "#/components/headers/artifact-content-location"
         Vary:
-          $ref: "#/components/headers/artifact-vary-accept"
+          $ref: "#/components/headers/artifact-vary"
         Repr-Digest:
           $ref: "#/components/headers/artifact-repr-digest"
       content:
@@ -2716,17 +2774,24 @@ components:
         more specific media type for the signature it holds, in which case it returns
         that. The response content key is `*/*` because that type may vary. This
         specification does not require servers to identify the signature technology.
-        `Content-Location` is always present as an absolute versioned signature download
-        URL including `mediaType`.
+        `Content-Encoding`, when present, names the HTTP content coding of the selected
+        representation. `Content-Location` identifies the revision and format; HTTP
+        content coding can still be negotiated. `Vary` follows `artifact-vary`.
       headers:
         Content-Disposition:
           $ref: "#/components/headers/signature-content-disposition"
+        Content-Encoding:
+          $ref: "#/components/headers/artifact-content-encoding"
         ETag:
           $ref: "#/components/headers/signature-etag"
         Cache-Control:
           $ref: "#/components/headers/artifact-cache-control-immutable"
         Content-Location:
           $ref: "#/components/headers/signature-content-location"
+        Vary:
+          $ref: "#/components/headers/artifact-vary"
+        Repr-Digest:
+          $ref: "#/components/headers/artifact-repr-digest"
       content:
         '*/*':
           schema:
@@ -2740,17 +2805,25 @@ components:
         Identical to `artifact-signature-content` except for its cache policy: the latest
         revision changes when a new revision is published, so the response is not
         immutable and a cache shall revalidate it before reuse. Servers shall return a
-        strong `ETag` for the selected representation. `Content-Location` is an absolute
-        versioned signature download URL including `mediaType`.
+        strong `ETag` for the selected HTTP representation. Revalidation returns
+        `304 Not Modified` when `If-None-Match` matches that representation's validator.
+        `Content-Location` identifies the revision and format. `Vary` follows the same
+        rules as `artifact-signature-content`.
       headers:
         Content-Disposition:
           $ref: "#/components/headers/signature-content-disposition"
+        Content-Encoding:
+          $ref: "#/components/headers/artifact-content-encoding"
         ETag:
           $ref: "#/components/headers/signature-etag"
         Cache-Control:
           $ref: "#/components/headers/artifact-cache-control-latest"
         Content-Location:
           $ref: "#/components/headers/signature-content-location"
+        Vary:
+          $ref: "#/components/headers/artifact-vary"
+        Repr-Digest:
+          $ref: "#/components/headers/artifact-repr-digest"
       content:
         '*/*':
           schema:
@@ -2758,10 +2831,10 @@ components:
             format: binary
     304-not-modified:
       description: |
-        The selected download representation has not changed (RFC 9110). The response
-        body is empty. Servers shall repeat `ETag` and `Content-Location` from the
-        would-be successful response for this operation, and shall repeat `Cache-Control`
-        and `Vary` when the corresponding `200` carries them.
+        The representation selected after negotiation has not changed (RFC 9110). The
+        response body is empty. Servers shall repeat `ETag` and `Content-Location` from
+        the would-be successful response for that representation, and shall repeat
+        `Cache-Control` and `Vary` when the corresponding `200` carries them.
       headers:
         ETag:
           description: |
@@ -2793,9 +2866,9 @@ components:
         The selected representation is available at another location, for example object
         storage addressed by a pre-signed URL. The client follows the `Location` header.
 
-        Changing only this response's `Location`, while preserving the bytes for the
-        selected artifact UUID, version, and format, does not require a new artifact or
-        collection version. Publishing a different external `url` or `signatureUrl` on
+        Changing only this response's `Location`, while preserving the artifact or
+        signature bytes for the selected UUID, version, and format after HTTP content
+        coding is removed, does not require a new artifact or collection version. Publishing a different external `url` or `signatureUrl` on
         the artifact metadata is a separate change and shall follow the
         `artifact-format` rules for those fields.
 
@@ -2957,8 +3030,12 @@ components:
         require exact equality. When omitted, the server selects a format using the
         request's `Accept` header per RFC 9110 section 12, and falls back to a format of
         its choice when `Accept` does not constrain the result. In either case the
-        `Content-Type` of the response states which format was returned. Servers shall
-        include `Vary: Accept` only when format selection depended on `Accept`.
+        `Content-Type` of the response states which format was returned. An explicit
+        `mediaType` can remove variation by `Accept` when it completely determines the
+        format. When it does not, the server shall include `Accept` in `Vary` if
+        changing or removing `Accept` could change the selected format, including when
+        `Accept` is absent or contains `*/*`. A `mediaType` query parameter does not
+        eliminate variation by `Accept-Encoding`; see `artifact-vary`.
 
         Example after serialization:
         `.../download?mediaType=application%2Fvnd.cyclonedx%2Bjson`
@@ -2982,7 +3059,9 @@ components:
         require exact equality. When omitted, the server selects a format of its choice.
         Requests that need a specific format's signature should supply this parameter.
         Successful responses include `Content-Location` with a `mediaType` query
-        parameter naming the selected content format.
+        parameter naming the selected content format. An explicit `mediaType` can
+        remove variation by `Accept` when it completely determines the signed format.
+        It does not eliminate variation by `Accept-Encoding`; see `artifact-vary`.
 
         Example after serialization:
         `.../signature/download?mediaType=application%2Fvnd.cyclonedx%2Bjson`
@@ -2998,9 +3077,11 @@ components:
         Conditional request validator (RFC 9110). For artifact and signature downloads,
         `ETag` is the only defined validator. Servers evaluate `If-None-Match` with the
         weak comparison function (RFC 9110 section 13.1.2) against the `ETag` of the
-        selected representation and answer `304` when it matches. When present, that
-        `ETag` is a strong validator. Other validators are not defined for these
-        operations.
+        representation selected after negotiation, including content-coding negotiation,
+        and answer `304` when it matches. The corresponding `304` shall carry that
+        representation's validator and shall carry `Vary` when the `200` would. When
+        present, that `ETag` is a strong validator. Other validators are not defined for
+        these operations.
       in: header
       required: false
       schema:
