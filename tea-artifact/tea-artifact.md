@@ -29,8 +29,8 @@ meta:enum:
 - release-notes: Reference to release notes
 - security-contact: Specifies a way to contact the maintainer, supplier, or
    provider in the event of a security incident. Common URIs include links
-   to a disclosure procedure, a mailto (RFC-2368) that specifies an email address,
-   a tel (RFC-3966) that specifies a phone number, or dns (RFC-4501) that specifies
+   to a disclosure procedure, a mailto (RFC 2368) that specifies an email address,
+   a tel (RFC 3966) that specifies a phone number, or dns (RFC 4501) that specifies
    the records containing DNS Security TXT.
 - model-card: A model card describes the intended uses of a machine learning
    model, potential limitations, biases, ethical considerations, training parameters,
@@ -89,7 +89,7 @@ meta:enum:
    of a written signature or a stylized script of the person's name.
 - digital-signature: A signature that leverages cryptography, typically public/private
    key pairs, which provides strong authenticity verification.
-- rfc-9116: Document that complies with RFC-9116 (A File Format to Aid in Security
+- RFC 9116: Document that complies with RFC 9116 (A File Format to Aid in Security
    Vulnerability Disclosure)
 - other: Use this if no other types accurately describe the purpose of the external
    reference.
