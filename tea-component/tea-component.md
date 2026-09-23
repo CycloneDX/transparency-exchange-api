@@ -18,7 +18,7 @@ Each product release and product object has one or multiple TEI URLs.
 For the API to be able to present a list of versions in a cronological order,
 a timestamp for a release is required.
 
-## TEA Component Object
+## Structure
 
 A TEA Component object has the following parts:
 
