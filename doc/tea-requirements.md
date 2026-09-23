@@ -19,7 +19,7 @@ Based on an identifier a repository URL needs to be found. The identifier can be
 - Vendor UUID
 - Hash of object
 
-At the base URL well known URLs (ref) needs to point to:
+At the base URL a well known URL needs to point to
 
 - A lifecycle status document (using OWASP Common Lifecycle Enumeration, CLE)
 - A version list. For each version, a URL will point to where a **collection** can be found
