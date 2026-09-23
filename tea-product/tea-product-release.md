@@ -1,26 +1,29 @@
-# TEA Product Release
+# TEA Product Release object
 
 ## Overview
 
 A TEA Product Release represents a specific versioned release of a TEA Product. It is the primary resolvable entity via TEI and the entry point for discovery of included components and related collections of security artefacts.
 
 Key attributes:
-- uuid: Unique identifier of the product release
-- product: UUID of the TEA Product this release belongs to
-- version: Human-readable version string of the product release
-- createdDate: Timestamp when the product release was created in TEA
-- releaseDate: Upstream product release timestamp
-- preRelease: Indicates pre-release/beta status
-- identifiers: Array of identifiers (idType: CPE/TEI/PURL; idValue: string)
-- components: Array of component references included in this product release
-  - uuid: UUID of the TEA Component
-  - release: Optional UUID of a specific component release to pin an exact version
+
+- __uuid__: A unique identifier for the TEA Product Release
+- __product__: UUID of the TEA Product this release belongs to
+- __version__: Human-readable version string of the product release
+- __createdDate__: Timestamp when the product release was created in TEA (for sorting purposes)
+- __releaseDate__: Timestamp of the product release
+- __preRelease__: A flag indicating pre-release (or beta) status. May be disabled after the creation of the release object, but can't be enabled after creation of an object. (boolean)
+- __identifiers__: Array of identifiers for the product release (idType: CPE/TEI/PURL; idValue: string)
+- __components__: Array of component references that compose this product release. A component reference can optionally include the UUID of a specific component release to pin the exact version.
+
+Required fields:
+
+- uuid, version, createdDate, components
 
 Collections for a product release contain artefacts relevant to that product release.
 
 ## JSON examples
 
-The following example is reused from the OpenAPI schema (`components/schemas/productRelease.examples`), ensuring exact field names and casing.
+The following example is reused from the OpenAPI schema (`components/schemas/product-release.examples`), ensuring exact field names and casing.
 
 ```json
 {
@@ -28,11 +31,11 @@ The following example is reused from the OpenAPI schema (`components/schemas/pro
   "version": "2.24.3",
   "createdDate": "2025-04-01T15:43:00Z",
   "releaseDate": "2025-04-01T15:43:00Z",
-  "product": "9c622dd2-b0df-11f1-9796-1a52914d44b2",
+  "product": "09e8c73b-ac45-4475-acac-33e6a7314e6d",
   "identifiers": [
     {
       "idType": "TEI",
-      "idValue": "tei:vendor:product@2.24.3"
+      "idValue": "tei://vendor.example.com/uuid/47f51950-b0e2-11f1-adc2-1a52914d44b2"
     }
   ],
   "components": [
@@ -47,5 +50,20 @@ The following example is reused from the OpenAPI schema (`components/schemas/pro
 }
 ```
 
-Notes:
+## Handling the Pre-Release flag
+
+The "Pre-release" flag is used to indicate that this is not a final release.
+For a given product release with a UUID, the flag can be set to indicate a "test", "beta", "alpha"
+or similar non-deployed release. It can only be set when creating the product release.
+The TEA implementation may allow it to be unset (False) once. This is to support
+situations where a object is promoted as is after testing to production version. The flag can not
+be set after initial creation and publication of the product release.
+
+If the final version is different from the pre-release (bugs fixed, code changed, different binary)
+a new product release with a new UUID and version shall be created.
+
+
+## Notes
+
+- Property `product` exists in the schema and links a product release to its parent product; it may not be present in all examples.
 - Use uppercase idType values exactly as defined by the schema enum: CPE, TEI, PURL.

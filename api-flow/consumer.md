@@ -1,24 +1,25 @@
 # Transparency Exchange API: Consumer access
 
 
-The consumer access starts with a TEI, A transparency Exchange Identifier. This is used to find the API server as
+The consumer access starts with a TEI, A Transparency Exchange Identifier. This is used to find the API server as
 described in the [discovery document](/discovery/readme.md).
 
 ## API usage
 
-The standard TEI points to a product release. A product release is something sold, downloaded as an opensource project or aquired by other means. It contains one or multiple component releases.
+The standard TEI points to a product release. A product release is something sold, downloaded as an open source project or acquired by other means. It contains one or multiple component releases.
 
-- __List of TEA Component Rleases__: Component releases are components of a product release.
-  Each Component release has its own versioning and its own set of artefacts, they have a timestamp and   a lifecycle enumeration. They are normally sorted by timestamps. The TEA API has no requirements of type of version string (semantic or any other scheme) - it's just an identifier set by the manufacturer.
+- __List of TEA Component Releases__: Component releases are components of a product release.
+  Each Component release has its own versioning and its own set of artefacts, they have a timestamp and
+  a lifecycle enumeration. They are normally sorted by timestamps. The TEA API has no requirements of
+  type of version string (semantic or any other scheme) - it's just an identifier set by the manufacturer.
 - __List of TEA Collections__: For each release, there is a list of TEA collections as indicated
-  by release date and a version integer starting with collection version 1. 
+  by release date and a version integer starting with collection version 1.
 - __List of TEA Artifacts__: The collection is unique for a version and contains a list of artefacts.
   This can be SBOM files, VEX, SCITT, IN-TOTO or other documents.  Note that a single artefact
   can belong to multiple Component or Product Releases.
 - __List of artefact formats__: An artefact can be published in multiple formats.
 
-The user has to know product release TEI and in some cases version of each component (TEA 
-Component Release) to find the list of artefacts for the particular Product Release.
+Finding the list of artefacts for a Product Release starts from the product release TEI and, in some cases, the version of each component (TEA Component Release).
 
 ## API flow based on TEI discovery
 
@@ -54,11 +55,11 @@ sequenceDiagram
     end
 
     user ->> tea_product_release: Resolve Product Release Details
-    tea_product_release -->> user: List of Component Releases
+    tea_product_release -->> user: Product Release with its latest Collection and the list of Component Releases
 
     loop For each tea_component_release
-        user ->> tea_component_release: Obtain latest collections
-        tea_component_release -->> user: List of TEA Artifacts
+        user ->> tea_component_release: Resolve Component Release Details
+        tea_component_release -->> user: Component Release with its latest Collection (list of TEA Artifacts)
     end
 
 ```
@@ -83,14 +84,14 @@ sequenceDiagram
     participant tea_artifact as TEA Artifact
 
 
-    user ->> tea_product_release: Search for product releases based on identifier (CPE, PURL, name)
+    user ->> tea_product_release: Search for product releases based on identifier (CPE, PURL, TEI)
     tea_product_release ->> user: List of product releases
 
-    user ->> tea_product_release: Finding all product parts (TEA Component Releases) and facts about choosen product
+    user ->> tea_product_release: Finding all product parts (TEA Component Releases) and facts about chosen product
     tea_product_release ->> user: List of TEA Component Releases
 
     user ->> tea_component_release: Finding information of a component release
-    tea_component_release ->> user: List of releases and collection id for each release
+    tea_component_release ->> user: Component release with its latest Collection
 
     user ->> tea_collection: Finding all TEA Artifacts for TEA Component Release
     tea_collection ->> user: List of TEA Artifacts and formats available for each TEA Artifact
@@ -103,8 +104,7 @@ sequenceDiagram
 ## API flow based on cached data - checking for a new release
 
 In this case a TEA client knows the component UUID and wants to check the status of the
-used release and if there's a new release. The client may limit the query with a given date
-for a release.
+used release and if there's a new release.
 
 ```mermaid
 

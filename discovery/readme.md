@@ -8,8 +8,9 @@
   - [TEI types](#tei-types)
   - [TEI resolution using DNS](#tei-resolution-using-dns)
 - [Connecting to the API](#connecting-to-the-api)
-  - [Overview: Finding the Index using DNS result](#overview-finding-the-index-using-dns-result)
-- [The TEA Version Index](#the-tea-version-index)
+  - [Selecting an API base from `.well-known/tea`](#selecting-an-api-base-from-well-knowntea)
+  - [Discovery response](#discovery-response)
+  - [Discovery by PURL](#discovery-by-purl)
 - [References](#references)
 
 ## From product identifier to API endpoint
@@ -55,7 +56,7 @@ The TEI for a product release can be communicated to the user in many ways.
 - On the invoice or delivery note
 - For software with a GUI, in an "about" box
 
-The user needs to get the TEI from the manufacturer, through a reseller or directly. The TEI
+The user obtains the TEI from the manufacturer, through a reseller, or directly. The TEI
 is defined by the manufacturer and can normally not be derived from known information.
 
 ## TEA Discovery - defining an extensible identifier
@@ -67,10 +68,10 @@ required for a given product release. This identifier is called the Transparency
 The TEI identifier is based on DNS, which assures a uniqueness per vendor (or open source project)
 and gives the vendor a namespace to define product release identifiers based on existing or new identifiers
 like EAN/UPC bar code, PURLs or other existing schemes. A given product release may have multiple identifiers
-as long as they all resolve into the same destination. In some cases, these identifiers has to be applied
-for with the corresponding standards organisation.
+as long as they all resolve into the same destination. Some identifier schemes require registration
+with the corresponding standards organisation.
 
-The vendor needs to make sure that the TEI is unique within the vendor's namespace. There is no
+The vendor shall ensure that the TEI is unique within the vendor's namespace. There is no
 intention to create any TEI registries.
 
 ## The TEI: URL - An extensible identifier
@@ -81,8 +82,11 @@ to global uniqueness without new registries.
 
 The TEI can be shown in the software itself, in shipping documentation, in web pages and app stores.
 
-A TEI belongs to a single product release. A product release can have multiple TEIs - like one with a EAN/UPC
-barcode and one with the vendor's product number.
+A TEI identifies product release(s) under a vendor domain. Prefer one product release
+per TEI. A TEI may resolve to multiple product releases when the same identifier is
+shared (for example a non-unique EAN/UPC); vendors should minimize that case. A product
+release can have multiple TEIs — for example one with an EAN/UPC barcode and one with
+the vendor's product number.
 
 ### TEI syntax
 
@@ -93,10 +97,10 @@ tei://<domain-name>/<type>/<unique-identifier>
 ````
 
 - The **`domain-name`** part resolves into a web server, which may not be the API host.
-  - The uniqueness of the name is the domain name part that has to be registred at creation of the TEI.
+  - The domain-name part identifies the DNS namespace used by the TEI.
 - The **`type`** which defines the syntax of the unique identifier part. Types are declared in the
   specification. If there is a need for new types, please inform ECMA TC54.
-- The **`unique-identifier`** has to be unique within the `domain-name`.
+- The **`unique-identifier`** shall be unique within the `domain-name`.
   Recommendation is to use a UUID but it can be an existing article code too. The
   identifier is in some cases (depending on type) encoded using BASE64URL encoding (RFC 4648 section 5).
 - Port number is not allowed in the `domain-name` part of a TEI URL.
@@ -231,10 +235,12 @@ tei://cyclonedx.org/udi/00123456789012
 
 Note that if the same identifier, like EAN, is used for multiple different product releases
 then this EAN code will not be unique for a given product. While this case is supported
-by TEA, the vendor is recommended to create a separate TEI for each unique product sold,
+by TEA — a successful `/discovery` lookup may return multiple `discovery-info` entries —
+the vendor should create a separate TEI for each unique product sold,
 like UUID or hash. In any case, the vendor should minimize the number of distinct product
 releases returned per TEI. Preferable situation is to have a single product release
-per TEI.
+per TEI. When multiple releases are returned, clients shall treat array order as
+priority (first entry highest).
 
 ### TEI resolution using DNS
 
@@ -253,7 +259,8 @@ A TEI with `domain-name` `tea.example.com` queries DNS for `tea.example.com`, co
 These point to the hosts available for the Transparency Exchange API.
 
 The TEA client connects to the host using HTTPS and shall verify the server
-certificate. The URL is composed of the host name with the `/.well-known/tea` path added.
+certificate, including the server identity check of [RFC 9525](https://www.rfc-editor.org/rfc/rfc9525).
+The URL is composed of the host name with the `/.well-known/tea` path added.
 
 This results in the base URL such as
 `https://products.example.com/.well-known/tea`
@@ -355,12 +362,68 @@ The discovery endpoint is a part of the TEA OpenAPI specification. Unlike `/toke
 `/discovery` is required on a conforming TEA API base: a conforming server that exposes
 a given API version shall implement it.
 
-If the TEI is known to the TEA server, the discovery endpoint shall return at least
-the product release uuid, the root URL of the TEA server, the list of supported
-versions, plus the response may have other fields based on the current version of
-the TEA OpenAPI specification. If `priority` is absent on a discovery `servers[]`
-entry (`tea-server-info`), the client shall treat it as `1` for ordering, the same
-as for well-known endpoints.
+### Discovery response
+
+A successful `/discovery` response is a JSON array of `discovery-info` objects. Each
+element identifies one resolved product release and the TEA servers that serve it:
+
+- `productReleaseUuid` — UUID of the TEA Product Release
+- `servers` — non-empty array of `server-info` objects (`rootUrl`, `versions`, and
+  optional `priority`)
+
+`.well-known/tea` and `servers[]` are related but distinct:
+
+- **Well-known** lists candidate API bases for a domain. That is where the client calls
+  `/discovery` (after appending `/v{version}`).
+- **`servers[]`** in the discovery response lists API bases that serve the resolved
+  product release. The client selects among them with the same version-preference and
+  `priority` rules as for well-known endpoints. A `rootUrl` need not appear in the
+  well-known endpoint list. All further requests for that product release are built as
+  `rootUrl` + `/v` + the selected version + path. The API base used for `/discovery` is
+  not used again for that release unless it is also listed in `servers[]`.
+
+When multiple product releases match, the array is ordered by priority (first entry
+highest). Vendors should prefer returning a single release when possible.
+
+A successful lookup shall return a non-empty array. If the server does not resolve the
+identifier, the server shall respond with `404` and a TEA error body with
+`error: OBJECT_UNKNOWN` — not `200` with an empty array. If `priority` is absent on a
+discovery `servers[]` entry, the client shall treat it as `1` for ordering, the same as
+for well-known endpoints.
+
+Example (one match):
+
+```json
+[
+  {
+    "productReleaseUuid": "d4d9f54a-abcf-11ee-ac79-1a52914d44b1",
+    "servers": [
+      {
+        "rootUrl": "https://api.teaexample.com",
+        "versions": ["1.0.0"]
+      }
+    ]
+  }
+]
+```
+
+### Discovery by PURL
+
+Clients that already know a TEA API base URL (for example from a prior TEI discovery,
+configuration, or cache) may call `/discovery` with the `purl` query parameter instead of
+`tei`. Exactly one of `tei` or `purl` shall be provided; a request with neither or both is
+rejected with `400`.
+
+Discovery by PURL resolves within the inventory of the TEA server that receives the
+request. It does not replace TEI-based DNS / `.well-known` discovery for finding an API
+host from an identifier alone.
+
+Example:
+
+`https://api.teaexample.com/v1.0.0/discovery?purl=pkg%3Amaven%2Forg.apache.logging.log4j%2Flog4j-core%402.24.3`
+
+The response shape, non-empty success array, and `404` with `OBJECT_UNKNOWN` when the
+server does not resolve the identifier are the same as for TEI lookup.
 
 If this server does not resolve the TEI (or PURL, when discovering by PURL), whether
 because it is unknown or because the server withholds it, the discovery endpoint
@@ -433,7 +496,9 @@ token-replacement attempts solely because of that status. Clients shall not fail
 another endpoint solely in response to `401` or `403`.
 
 Clients shall verify server certificates for every HTTPS connection used in discovery and
-subsequent API access, and shall not use connections that fail validation.
+subsequent API access, including the server identity check of
+[RFC 9525](https://www.rfc-editor.org/rfc/rfc9525), and shall not use connections that
+fail validation.
 
 Clients shall not automatically forward a TEA access token to a different origin, or
 outside the authorized API base URL of the service that issued it. API-key Basic
@@ -508,7 +573,15 @@ of the TEA discovery document.
 
 The `.well-known` endpoint shall only be available via HTTPS. Using unencrypted HTTP is not
 valid. Clients shall verify the server certificate for this connection as for any other
-TEA HTTPS request.
+TEA HTTPS request, including the server identity check of [RFC 9525](https://www.rfc-editor.org/rfc/rfc9525).
+
+Conforming deployments shall advertise only lowercase `https` base URLs, in
+`.well-known/tea` `endpoints[].url` and in `/discovery` `servers[].rootUrl` alike. A
+client shall reject an `http` base URL unless it has been explicitly configured to
+allow that specific base for local testing. The allowance is per configured base URL,
+never a global setting, so it cannot apply to a base the client learned from discovery.
+Credentials may be sent to a base allowed this way; a deployment that relies on it is
+not conforming.
 
 - TEI: `tei://products.example.com/uuid/d4d9f54a-abcf-11ee-ac79-1a52914d44b1`
 - URL: `https://products.example.com/.well-known/tea`

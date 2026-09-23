@@ -54,10 +54,10 @@ The working group has produced a list of use cases and requirements for the prot
 - [TEA use cases](doc/tea-usecases.md)
 
 ## Data model
-- [TEA Product Release](tea-product/tea-product-release.md): The primary entry point. The [Transparency Exchange Identifier, TEI](/discovery/readme.md) resolves to a specific Product Release. A Product Release belongs to a [TEA Product](tea-product/tea-product.md).
+- [TEA Product Release](tea-product/tea-product-release.md): The primary entry point. The [Transparency Exchange Identifier, TEI](/discovery/readme.md) resolves to one or more Product Releases, normally one. A Product Release belongs to a [TEA Product](tea-product/tea-product.md).
 - [TEA Product](tea-product/tea-product.md): A higher-level object that groups a set of Product Releases for a product line or family. Products can be discovered and browsed; releases are accessed via `/product/{uuid}/releases`.
 - [TEA Component](tea-component/tea-component.md): Represents a component lineage. A Component is a collection of Component Releases (accessible via `/component/{uuid}/releases`).
-- [TEA Release](/tea-component/tea-release.md): A Component Release object. Each Component Release may have its own TEA Collection.
+- [TEA Release](/tea-component/tea-release.md): A Component Release object. Each Component Release has its own TEA Collection.
 - [TEA Collection](tea-collection/tea-collection.md): A versioned list of artefacts for a specific Release (Component Release) or Product Release. Collections are versioned to indicate changes, e.g., an updated VEX or corrected SBOM.
 - [TEA Artifacts](tea-artifact/tea-artifact.md): Files associated with a Collection. A single TEA Artifact can appear in multiple Collections. Note that a TEA Artifact is a named term introduced by the TEA standard.
 
@@ -85,7 +85,14 @@ Product lifecycle events are communicated through the
 [ECMA-428 Common Lifecycle Enumeration standard](https://ecma-international.org/publications-and-standards/standards/ecma-428/).
 This includes product rebranding, repackaging, mergers and acquisitions, and product milestone events such as end-of-life and end-of-support.
 
-Inclusion of CLE is optional and it may be introduced on the following levels:
+The TEA CLE endpoints return a TEA projection of CLE event content (see the OpenAPI
+`cle` schema), not a full CLE 1.0.0 document. Publishers that need a bit-identical CLE
+1.0.0 document publish it as a TEA Artifact in a release collection, as artifact type
+`OTHER` until a dedicated type exists; the same artifact may be referenced from more
+than one collection. The CLE endpoints are not a substitute for that document.
+
+Inclusion of CLE (projection and/or full document) is optional and the projection may be
+introduced on the following levels:
 
 - TEA Product
 - TEA Component

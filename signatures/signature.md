@@ -18,19 +18,15 @@ signature files, a detached signature.
 
 Digital signatures provide integrity and identity to published data.
 
-- __Integrity__: Documents dowloaded must be the same
-  as documents published
-- __Identity__: Customers need to be able to verify the
-  publisher of the documents and verify that it is
-  the expected publisher.
+- __Integrity__: Signature verification enables detection of changes to signed documents.
+- __Identity__: Signature verification, together with an appropriate trust mechanism, enables verification of the signer's identity.
   A TEA server may want to verify that published
   documents are signed by the expected publisher
   and that signatures are valid.
 
 In order to sign an object, a pair of asymmetric keys will be
 needed. The public key is used to create a certificate, signed
-by a certificate authority (CA). The private key is used for
-signing and needs to be protected.
+by a certificate authority (CA). A publisher that signs an object shall protect the private signing key.
 
 A software publisher may buy CA services from a commercial vendor
 or set up an internal PKI solution. The issue with internal PKIs is that
@@ -47,10 +43,11 @@ The TEA API is built on the HTTP protocol with TLS encryption
 and authentication, using the `https://` URL scheme.
 
 The TLS server certificate is normally issued by a public Certificate
-Authority that is part of the Web PKI. The client needs to validate
-the TLS server certificate to make sure
+Authority that is part of the Web PKI. The client shall validate
+the TLS server certificate, including the server identity check of
+[RFC 9525](https://www.rfc-editor.org/rfc/rfc9525), to make sure
 
-- that the certificate name (CN or Subject Alt Name) matches the
+- that the certificate name (Subject Alt Name) matches the
   host part of the URI.
 - that the certificate is valid, i.e. the not-before date and the
   not-after date is not out of range

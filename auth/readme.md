@@ -18,12 +18,12 @@ may be implemented in multiple ways - on various levels of the API - depending o
 the user can access.
 
 As an example, one implementation may publish all information about existing artefacts and software
-versions openly, but restrict access to artefacts to those that match the customers installation.
+versions openly, but restrict access to artefacts to those that match the customer's installation.
 Another implementation can implement a filter that does not show products and versions ("components") that
-the customer has not aquired.
+the customer has not acquired.
 
 For most Open Source projects, implementing authentication - setting up accounts and managing
-authorization - does not make much sense, since the information is usually in the open any way.
+authorization - does not make much sense, since the information is usually in the open anyway.
 
 ## Scope of this specification
 
@@ -59,7 +59,7 @@ Two consequences are worth stating explicitly, because they are what make the ba
 The token endpoint is `POST /token`, relative to the TEA API base URL, and is defined in the TEA
 OpenAPI specification alongside the resource endpoints. It is an OAuth 2.0 token endpoint as defined
 in [RFC 6749](https://www.rfc-editor.org/rfc/rfc6749) section 3.2; this specification constrains
-which grant types a conforming server has to accept, and adds nothing to the wire format.
+which grant types a conforming server shall accept, and adds nothing to the wire format.
 
 RFC 6749 leaves the location of the token endpoint outside its scope - `/token` appears only in its
 examples - so TEA fixes the path here rather than requiring clients to discover it. TEA defines no
@@ -119,7 +119,7 @@ The access token is presented on every other TEA endpoint as an HTTP bearer toke
 ([RFC 6750](https://www.rfc-editor.org/rfc/rfc6750)):
 
 ```http
-GET /product/d4d9f54a-abcf-11ee-ac79-1a52914d44b HTTP/1.1
+GET /product/d4d9f54a-abcf-11ee-ac79-1a52914d44b1 HTTP/1.1
 Host: tea.example.com
 Authorization: Bearer 2YotnFZFEjr1zCsicMWpAA
 ```
@@ -206,7 +206,8 @@ __should not__ assume that a client certificate for one service is trusted anywh
 
 All of the above assumes TLS. Credentials and bearer tokens are transmitted in the clear at the HTTP
 layer, so a TEA server __shall__ be reachable only over TLS, and clients __shall__ verify the server
-certificate. This restates RFC 6749 section 3.2 and RFC 6750 section 5.
+certificate, including the server identity check of [RFC 9525](https://www.rfc-editor.org/rfc/rfc9525).
+This restates RFC 6749 section 3.2 and RFC 6750 section 5.
 
 ## Client flow
 
@@ -250,7 +251,7 @@ pattern and is preferred over any configuration or discovery step a client would
 A server that requires no authentication on any endpoint (and therefore applies no authorization):
 
 * __need not__ implement the token endpoint. There is nothing to exchange: an OAuth 2.0 token
-  response has to carry an access token, and the mandatory grant requires the client to
+  response carries an access token, and the mandatory grant requires the client to
   authenticate, so a token endpoint on such a server could only issue a token that means nothing.
 * __shall not__ answer any resource request with `401`. Its clients complete step 2 of the flow
   above and never look for the token endpoint.

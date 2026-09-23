@@ -1,7 +1,7 @@
 # TEA Requirements
 
 ## Repository discovery
-Based on an identifier a repository URL needs to be found. The identifier can be:
+Based on an identifier, a repository URL shall be found. The identifier can be:
 
 - PURL
 - Product name or Product SKU and vendor name
@@ -10,7 +10,7 @@ Based on an identifier a repository URL needs to be found. The identifier can be
 - Vendor UUID
 - Hash of object
 
-At the base URL well known URLs (ref) needs to point to
+At the base URL, well-known URLs shall point to
 
 - A lifecycle status document (using OWASP Common Lifecycle Enumeration, CLE)
 - A version list. For each version, a URL will point to where a **collection** can be found
@@ -26,7 +26,7 @@ This can be handled using the file security.txt (IETF RFC 9116)
 The API shall provide a way to discover the artefacts that are available for retrieval or further query.
 Discovery should group artefacts together that represent a **collection**
 that are directly applicable to a given product with a given version.
-Collections are optional.
+Every release has a collection, which may be empty.
 
 - SBOM - Software Bill of Material
 - CBOM - Cryptography Bill of Material
@@ -55,7 +55,7 @@ urn:cdx:serialNumber
 urn:cdx:serialNumber/version
 ```
 
-The API needs to provide support for update checks, i.e. to check if a document is
+The API shall provide support for update checks, i.e. to check if a document is
 updated without downloading. (possibly etag or HEAD method or similar)
 Authn/Authz shall be supported
 
@@ -67,7 +67,7 @@ Authn/Authz shall be supported
 
 ## Artefact Versioning
 
-The system and API must support artefact versioning for formats that support
+The system and API shall support artefact versioning for formats that support
 versioning such as CycloneDX. For example:
 
 - The ability to retrieve the latest SBOM vs a previous (uncorrected) version of the same SBOM.
