@@ -3,7 +3,7 @@
 ## Introduction
 
 The TEA API is created to support automation of the software supply chain. Upstream
-vendors and open source projects can use this standard to keep downstream consumers
+vendors and open source projects can use this standard to keep downstream users
 up to date with transparency artifacts such as, but not limited to, bill of materials,
 VEX files, attestations and much more.
 
@@ -15,7 +15,7 @@ product related artifacts, like BOMs, between systems. The work includes:
 - __CLE__ - common lifecycle events delivering the status of a product or a release
 
 System and tooling implementors are encouraged to adopt this API standard for
-sending/receiving transparency artifacts between systems. 
+sending and receiving transparency artifacts between systems. 
 This will enable more widespread "out of the box" integration support in the BOM ecosystem.
 In addition, it will support automatic delivery of upstream vulnerability assessments,
 such as VEX files.
@@ -33,7 +33,7 @@ The data model is flexible to be able to handle many different use cases, from m
 
 ## Artifacts available using the API
 
-The Transparency Exchange API (TEA) supports publication and retrieval of a set of transparency exchange artifacts. The API itself is not restricting the types of the artifacts published. A few examples:
+The Transparency Exchange API (TEA) supports retrieval of a set of transparency exchange artifacts. The API itself is not restricting the types of the artifacts published. A few examples:
 
 ### xBOM
 
