@@ -44,14 +44,14 @@ Every release has a collection, which may be empty.
 - VEX - Vulnerability Exploitability eXchange
 - CDXA - Attestation
 
-Authn/Authz MUST be supported.
+Authn/Authz is optional, but supported by the API.
 
 ## Collection management
 
 The API SHOULD provide a method to manage collections, such as adding new collections,
 modifying collections, or deleting existing collections.
 
-Authn/Authz MUST be supported.
+Authn/Authz is optional, but supported by the API.
 
 ## Artefact retrieval
 
@@ -67,9 +67,9 @@ urn:cdx:serialNumber/version
 The API needs to provide support for update checks, i.e. to check if a document is
 updated without downloading.
 
-> Note: Possible approaches include etag or HEAD method.
+> Note: Possible approaches include ETag or HEAD method.
 
-Authn/Authz MUST be supported.
+Authn/Authz is optional, but supported by the API.
 
 ## Artefact versioning
 
@@ -81,7 +81,7 @@ versioning such as CycloneDX. For example:
 - The ability to retrieve the latest VEX along with previous VEX for the same product so
   that time-series decisions are transparently available.
 
-Authn/Authz MUST be supported.
+Authn/Authz is optional, but supported by the API.
 
 ## Artefact inventory search
 
@@ -100,4 +100,4 @@ For example:
 
 - Return the identity of all artefacts that describe `cpe:/a:acme:commerce_suite:1.0`.
 
-Authn/Authz MUST be supported.
+Authn/Authz is optional, but supported by the API.

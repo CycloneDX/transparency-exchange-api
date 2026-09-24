@@ -26,8 +26,8 @@ This Standard defines:
 
 TEA separates:
 
-- **location** → discovery
 - **identity** → TEI
+- **location** → discovery
 - **data retrieval** → API
 
 Discovery answers the question:
