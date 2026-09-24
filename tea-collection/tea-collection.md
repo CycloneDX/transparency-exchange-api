@@ -103,7 +103,7 @@ A TEA Artifact object contains the following fields:
 
 - __uuid__: The UUID of the TEA Artifact object. Together with *version* uniquely identifies the TEA Artifact.
 - __version__:
-  Revision number, starting at 1 and incremented by 1.
+  Revision number, starting at 1 and incremented by 1 for each new revision of the same artifact UUID.
   Together with *uuid* uniquely identifies the TEA Artifact.
   Successive revisions cover content changes and changes to any published field,
   including external `url` or `signatureUrl` values. Each published revision is immutable.
