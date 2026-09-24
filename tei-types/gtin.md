@@ -38,7 +38,7 @@ TEA project (Ecma TC54 TG1)
 
 ## Status
 
-`permanent`
+`provisional`
 
 ## Interoperability considerations
 

@@ -16,11 +16,11 @@ this registry is the authoritative list.
 
 | Type | Unique identifier | Status | Definition |
 |---|---|---|---|
-| `purl` | Package URL, Base64URL-encoded without padding | permanent | [purl.md](purl.md) |
-| `hash` | Hash of an object, `<hashtype>:<hex>` | permanent | [hash.md](hash.md) |
-| `uuid` | UUID | permanent | [uuid.md](uuid.md) |
-| `eanupc` | EAN or UPC number | permanent | [eanupc.md](eanupc.md) |
-| `gtin` | GTIN | permanent | [gtin.md](gtin.md) |
+| `purl` | Package URL, Base64URL-encoded without padding | provisional | [purl.md](purl.md) |
+| `hash` | Hash of an object, `<hashtype>:<hex>` | provisional | [hash.md](hash.md) |
+| `uuid` | UUID | provisional | [uuid.md](uuid.md) |
+| `eanupc` | EAN or UPC number | provisional | [eanupc.md](eanupc.md) |
+| `gtin` | GTIN | provisional | [gtin.md](gtin.md) |
 | `asin` | Amazon Standard Identification Number | provisional | [asin.md](asin.md) |
 | `udi` | Unique Device Identifier (device identifier part) | provisional | [udi.md](udi.md) |
 
