@@ -154,7 +154,7 @@ A TEA Artifact object contains the following fields:
 
 Required fields:
 
-- uuid, type, formats
+- `uuid`, `type`, `formats`, `createdDate`, `version`
 
 ### Notes
 
