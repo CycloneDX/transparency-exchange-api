@@ -29,7 +29,7 @@ Not used: uppercase hexadecimal, Base64 or other digest encodings, or a `<hashty
 ## Example
 
 ```text
-tei://cyclonedx.org/hash/SHA-256:fd44efd601f651c8865acf0dfeacb0df19a2b50ec69ead0262096fd2f67197b9
+tei://example.com/hash/SHA-256:fd44efd601f651c8865acf0dfeacb0df19a2b50ec69ead0262096fd2f67197b9
 ```
 
 ## Specification
