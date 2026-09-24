@@ -1,4 +1,12 @@
-# TEA Requirements
+# TEA design requirements
+
+This document records design goals considered during the development of TEA.
+It is informative and does not define conformance requirements for TEA 1.0.
+Some goals concern capabilities outside the scope of that release.
+
+For current API behaviour, see the [OpenAPI specification](../spec/openapi.yaml),
+[discovery specification](../discovery/readme.md), and
+[authentication specification](../auth/readme.md).
 
 ## Repository discovery
 Based on an identifier a repository URL needs to be found. The identifier can be:

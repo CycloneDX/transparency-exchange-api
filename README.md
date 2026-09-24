@@ -50,7 +50,7 @@ This will enable more widespread
 
 The working group has produced a list of use cases and requirements for the protocol.
 
-- [TEA requirements](doc/tea-requirements.md)
+- [Design requirements (informative)](doc/tea-requirements.md)
 - [TEA use cases](doc/tea-usecases.md)
 
 ## Data model
