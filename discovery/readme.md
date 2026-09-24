@@ -261,6 +261,7 @@ These point to the hosts available for the Transparency Exchange API.
 The TEA client connects to the host using HTTPS and shall verify the server
 certificate, including the server identity check of [RFC 9525](https://www.rfc-editor.org/rfc/rfc9525).
 The URL is composed of the host name with the `/.well-known/tea` path added.
+The "tea" well-known URI is registred with IANA.
 
 This results in the base URL such as
 `https://products.example.com/.well-known/tea`
