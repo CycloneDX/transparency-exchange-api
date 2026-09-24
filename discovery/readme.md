@@ -34,7 +34,7 @@ Discovery answers the question:
 > “Where can I retrieve authoritative TEA data for this identifier?”
 
 TEA Discovery is the connection between a product release identifier and the API endpoint.
-A "product release" is something that the customer aquires or downloads - hardware and/or software.
+A "product release" is something that the user aquires or downloads - hardware and/or software.
 
 It can be a bundle of many digital devices or software applications.
 A "product release" normally also has an entry in a large corporation's asset inventory system.
