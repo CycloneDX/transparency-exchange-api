@@ -52,7 +52,6 @@ The TEA Collection object has the following parts:
     Consequently, Collections belonging to different parent releases have different UUIDs.
     Versions of the same Collection retain the same UUID.
     See [TEA UUID Scope and Stability](../doc/tea-uuid-scope.md).
-    When updating a collection, only the `version` is changed.
 - __version__: TEA Collection version, incremented by 1 each time its content changes.
     Versions start with 1. Content changes include replacing an embedded artifact with a
     newer revision (for example one published because an external `url` or `signatureUrl`
@@ -72,7 +71,7 @@ Required fields:
 
 - `uuid`, `version`, `createdDate`, `belongsTo`, `updateReason`, `artifacts`, `updateReason.type`
 
-## TEA Artifact object
+## The TEA Artifact object
 
 A TEA Artifact object represents a security-related document or file linked to a component release,
 such as an SBOM, VEX, attestation, or license.
