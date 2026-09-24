@@ -29,9 +29,9 @@ Not used: a padded Base64URL string, standard Base64 (`+`, `/`), or a percent-en
 ## Example
 
 ```text
-tei://cyclonedx.org/purl/cGtnOnB5cGkvY3ljbG9uZWR4LXB5dGhvbi1saWJAOC40LjA_ZXh0ZW5zaW9uPXdobCZxdWFsaWZpZXI9cHkzLW5vbmUtYW55
+tei://cyclonedx.org/purl/cGtnOm1hdmVuL2NvbW1vbnMtaW8vY29tbW9ucy1pb0AyLjIyLjA
 
-(the PURL `pkg:pypi/cyclonedx-python-lib@8.4.0?extension=whl&qualifier=py3-none-any`)
+(the PURL `pkg:maven/commons-io/commons-io@2.22.0`)
 ```
 
 ## Specification
