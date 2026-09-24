@@ -566,7 +566,7 @@ Clients should:
 ## Notes Regarding .well-known
 
 Servers shall not locate the actual TEA service endpoint at the
-`.well-known` URI as per Section 1.1 of [RFC5785]. This endpoint is only for distribution
+`.well-known` URI as per Section 1.1 of [RFC 8615]. This endpoint is only for distribution
 of the TEA discovery document.
 
 ### TLS Encryption
