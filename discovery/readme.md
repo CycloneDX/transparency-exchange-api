@@ -72,8 +72,7 @@ like EAN/UPC bar code, PURLs or other existing schemes. A given product release 
 as long as they all resolve into the same destination. Some identifier schemes require registration
 with the corresponding standards organisation.
 
-The vendor should ensure that the TEI is unique within the vendor's namespace. There is no
-intention to create any TEI registries.
+There is no registry of TEIs; only TEI types are registered.
 
 ## The TEI: URL - An extensible identifier
 
@@ -83,165 +82,57 @@ to global uniqueness without new registries.
 
 The TEI can be shown in the software itself, in shipping documentation, in web pages and app stores.
 
-A TEI identifies product release(s) under a vendor domain. Prefer one product release
-per TEI. A TEI may resolve to multiple product releases when the same identifier is
-shared (for example a non-unique EAN/UPC); vendors should minimize that case. A product
-release can have multiple TEIs — for example one with an EAN/UPC barcode and one with
+A product release can have multiple TEIs — for example one with an EAN/UPC barcode and one with
 the vendor's product number.
 
 ### TEI syntax
 
-The TEI consists of three core parts
+A TEI is a URI as defined in RFC 3986, of the form:
 
 ```text
 tei://<domain-name>/<type>/<unique-identifier>
-````
+```
 
-- The **`domain-name`** part resolves into a web server, which may not be the API host.
-  - The domain-name part is a DNS name under the vendor's control. It identifies the DNS
-    namespace used by the TEI.
-- The **`type`** which defines the syntax of the unique identifier part. Types are declared in the
-  specification. If there is a need for new types, please inform ECMA TC54.
-- The **`unique-identifier`** shall be unique within the `domain-name`.
-  Recommendation is to use a UUID but it can be an existing article code too. The
-  identifier is in some cases (depending on type) encoded using Base64URL encoding (RFC 4648 section 5) without padding.
-- Port number is not allowed in the `domain-name` part of a TEI URL.
+- The scheme is `tei`.
+- The **`domain-name`** is a DNS name under the vendor's control.
+  It is the namespace of the TEI and resolves to a web server,
+  which may not be the API host.
+  A port number is not allowed.
+- The **`type`** consists of lowercase ASCII letters and digits and starts with a letter.
+  It names the identifier scheme of the `unique-identifier`
+  and is registered as described in the next section.
+- The **`unique-identifier`** is a single path segment in the syntax its type defines
+  and identifies one or more product releases within the `domain-name`.
+  It shall not contain `/`, neither literally nor percent-encoded as `%2F`.
+  Other characters that are not allowed in a path segment
+  are percent-encoded with uppercase hexadecimal digits.
 
+A TEI may identify several product releases,
+for example when a boxed product keeps its EAN across firmware versions.
+A discovery lookup therefore returns a list,
+and clients shall treat its order as priority (first entry highest).
+A vendor should make each TEI identify a single product release;
+a type such as `uuid` or `hash` always allows this.
 
 ### TEI types
 
-The below show examples of TEI where the types are specific known formats or types.
+TEI types are defined in the TEI type registry at
+https://github.com/CycloneDX/transparency-exchange-api/tree/main/tei-types.
+Registration refers to the TEA community process for adding a type, described in the registry.
 
-Reminder: the `unique-identifer` component of the TEI needs only be unique within the `domain-name`.
+The following table is **informative**.
+It illustrates the types registered at the time of writing;
+the registry is the authoritative list.
 
-#### PURL - Package URL
-
-Where the `unique-identifier` is a PURL in its canonical string form.
-A PURL identifier is encoded using Base64URL (RFC 4648 section 5) without padding.
-
-Syntax:
-
-```text
-tei://<domain-name>/purl/<purl>
-````
-
-Example:
-
-PURL: pkg:pypi/cyclonedx-python-lib@8.4.0?extension=whl&qualifier=py3-none-any
-
-```text
-tei://cyclonedx.org/purl/cGtnOnB5cGkvY3ljbG9uZWR4LXB5dGhvbi1saWJAOC40LjA_ZXh0ZW5zaW9uPXdobCZxdWFsaWZpZXI9cHkzLW5vbmUtYW55
-```
-
-#### HASH
-
-Where the `unique-identifier` is a Hash.
-The `<hashtype>` is one of the values of `checksum-type` in the TEA OpenAPI specification,
-for example `SHA-256`, `SHA-384` or `SHA-512`.
-The hash is written as lowercase hexadecimal,
-separated from the hash type by a colon.
-
-```text
-tei://<domain-name>/hash/<hashtype>:<hash>
-```
-
-Example:
-
-```text
-tei://cyclonedx.org/hash/SHA-256:fd44efd601f651c8865acf0dfeacb0df19a2b50ec69ead0262096fd2f67197b9
-```
-
-The origin of the hash is up to the vendor to define.
-
-#### UUID
-
-Where the `unique-identifier` is a UUID, written in lowercase as specified by RFC 9562.
-
-Syntax:
-
-```text
-tei://<domain-name>/uuid/<uuid>
-````
-
-Example:
-
-```text
-tei://cyclonedx.org/uuid/d4d9f54a-abcf-11ee-ac79-1a52914d44b1
-```
-
-#### EAN/UPC
-
-Where the `unique-identifier` is a EAN/UPC.
-
-Syntax:
-
-```text
-tei://<domain-name>/eanupc/<ean/upc-number>
-````
-
-Example:
-
-```text
-tei://example.com/eanupc/1234567890123
-```
-
-#### GTIN
-
-Where the `unique-identifier` is a [GTIN](https://www.gs1.org/standards/id-keys/gtin).
-
-Syntax:
-
-```text
-tei://<domain-name>/gtin/<gtin-number>
-````
-
-Example:
-
-```text
-tei://example.org/gtin/0234567890123
-```
-
-#### ASIN
-
-Where the `unique-identifier` is a [ASIN](https://sell.amazon.com/blog/what-is-an-asin).
-
-Syntax:
-
-```text
-tei://<domain-name>/asin/<asin-identifier>
-````
-
-Example:
-
-```text
-tei://example.com/asin/B07FZ8S74R
-```
-
-
-#### UDI
-
-Where the `unique-identifier` is a [UDI](https://www.gs1.org/industries/healthcare/udi).
-
-Syntax:
-
-```text
-tei://<domain-name>/udi/<udi-identifier>
-````
-
-Example:
-
-```text
-tei://cyclonedx.org/udi/00123456789012
-```
-
-Note that if the same identifier, like EAN, is used for multiple different product releases
-then this EAN code will not be unique for a given product. While this case is supported
-by TEA — a successful `/discovery` lookup may return multiple `discovery-info` entries —
-the vendor should create a separate TEI for each unique product sold,
-like UUID or hash. In any case, the vendor should minimize the number of distinct product
-releases returned per TEI. Preferable situation is to have a single product release
-per TEI. When multiple releases are returned, clients shall treat array order as
-priority (first entry highest).
+| Type     | Unique identifier                              | Example                                                                                             |
+|----------|------------------------------------------------|-----------------------------------------------------------------------------------------------------|
+| `purl`   | Package URL, Base64URL-encoded without padding | `tei://cyclonedx.org/purl/cGtnOm1hdmVuL2NvbW1vbnMtaW8vY29tbW9ucy1pb0AyLjIyLjA`                      |
+| `hash`   | Hash of an object, `<hashtype>:<hex>`          | `tei://cyclonedx.org/hash/SHA-256:fd44efd601f651c8865acf0dfeacb0df19a2b50ec69ead0262096fd2f67197b9` |
+| `uuid`   | UUID                                           | `tei://cyclonedx.org/uuid/d4d9f54a-abcf-11ee-ac79-1a52914d44b1`                                     |
+| `eanupc` | EAN or UPC number                              | `tei://example.com/eanupc/1234567890123`                                                            |
+| `gtin`   | GTIN                                           | `tei://example.org/gtin/0234567890123`                                                              |
+| `asin`   | Amazon Standard Identification Number          | `tei://example.com/asin/B07FZ8S74R`                                                                 |
+| `udi`    | Unique Device Identifier                       | `tei://cyclonedx.org/udi/00123456789012`                                                            |
 
 ### Comparing TEIs
 
@@ -269,7 +160,7 @@ a vendor shall publish a TEI in its canonical form:
 - the scheme `tei` in lowercase,
 - the domain name in lowercase ASCII, using A-labels for internationalised names,
 - the type in lowercase,
-- the unique identifier exactly as its TEI type defines it
+- the unique identifier exactly as its registry entry defines it
   (for example lowercase for a UUID, lowercase hexadecimal for a hash, unpadded Base64URL for a PURL),
 - and no percent-escaping of characters that do not require it.
 
