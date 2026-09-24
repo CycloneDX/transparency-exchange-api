@@ -249,9 +249,10 @@ priority (first entry highest).
 A TEI is an identifier, not a locator.
 Two TEIs are equal if and only if they are the same sequence of characters.
 The comparison is case-sensitive and applies to the TEI as written:
-percent-escapes are neither added nor removed,
-Base64URL-encoded identifiers are not decoded,
-and the domain name is neither resolved nor normalized.
+
+- percent-escapes are neither added nor removed,
+- Base64URL-encoded identifiers are not decoded,
+- and the domain name is neither resolved nor normalized.
 
 The following TEIs are therefore all distinct:
 
@@ -265,10 +266,12 @@ tei://example.com/purl/cGtnOnB5cGkvY3ljbG9uZWR4LXB5dGhvbi1saWI=
 
 So that one identifier has one spelling,
 a vendor shall publish a TEI in its canonical form:
-the domain name in lowercase,
-the unique identifier exactly as its TEI type defines it
-(for example lowercase hexadecimal for a hash, unpadded Base64URL for a PURL),
-and no percent-escaping of characters that do not require it.
+
+- the domain name in lowercase,
+- the unique identifier exactly as its TEI type defines it
+  (for example, lowercase hexadecimal for a hash, unpadded Base64URL for a PURL),
+- and no percent-escaping of characters that do not require it.
+
 A client shall use a TEI exactly as received and shall not rewrite it.
 
 This rule defines identity only.
