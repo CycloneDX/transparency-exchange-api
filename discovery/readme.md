@@ -6,6 +6,7 @@
 - [The TEI URL: An extensible identifier](#the-tei-url---an-extensible-identifier)
   - [TEI syntax](#tei-syntax)
   - [TEI types](#tei-types)
+  - [Comparing TEIs](#comparing-teis)
   - [TEI resolution using DNS](#tei-resolution-using-dns)
 - [Connecting to the API](#connecting-to-the-api)
   - [Selecting an API base from `.well-known/tea`](#selecting-an-api-base-from-well-knowntea)
@@ -154,7 +155,7 @@ The origin of the hash is up to the vendor to define.
 
 #### UUID
 
-Where the `unique-identifier` is a UUID.
+Where the `unique-identifier` is a UUID, written in lowercase as specified by RFC 9562.
 
 Syntax:
 
@@ -241,6 +242,48 @@ like UUID or hash. In any case, the vendor should minimize the number of distinc
 releases returned per TEI. Preferable situation is to have a single product release
 per TEI. When multiple releases are returned, clients shall treat array order as
 priority (first entry highest).
+
+### Comparing TEIs
+
+For comparison, a TEI is an opaque identifier, not a locator.
+Two TEIs are equal if and only if they are the same sequence of characters.
+The comparison is case-sensitive and applies to the TEI as written:
+
+- percent-escapes are neither added nor removed,
+- Base64URL-encoded identifiers are not decoded,
+- and the domain name is neither resolved nor normalized.
+
+The following TEIs are therefore all distinct:
+
+```text
+tei://example.com/uuid/62f2cf92-ae88-11f1-a698-1a52914d44b2
+tei://Example.com/uuid/62f2cf92-ae88-11f1-a698-1a52914d44b2
+tei://example.com/uuid/62F2CF92-AE88-11F1-A698-1A52914D44B2
+tei://example.com/purl/cGtnOnB5cGkvY3ljbG9uZWR4LXB5dGhvbi1saWI
+tei://example.com/purl/cGtnOnB5cGkvY3ljbG9uZWR4LXB5dGhvbi1saWI=
+```
+
+So that one identifier has one spelling,
+a vendor shall publish a TEI in its canonical form:
+
+- the scheme `tei` in lowercase,
+- the domain name in lowercase ASCII, using A-labels for internationalised names,
+- the type in lowercase,
+- the unique identifier exactly as its TEI type defines it
+  (for example lowercase for a UUID, lowercase hexadecimal for a hash, unpadded Base64URL for a PURL),
+- and no percent-escaping of characters that do not require it.
+
+A client shall use a TEI exactly as received and shall not rewrite it.
+
+When a TEI is carried inside another URL,
+for example as the `tei` query parameter of the discovery endpoint,
+it is percent-encoded for transport.
+The comparison applies to the TEI after that transport encoding is removed,
+and a server matching a received TEI against the TEIs it publishes applies this rule.
+
+This rule defines identity only.
+Resolving a TEI to an API endpoint follows the rules below,
+where the domain name is used as a DNS name and is therefore case-insensitive.
 
 ### TEI resolution using DNS
 
