@@ -23,7 +23,7 @@ version of a product, then a new TEA Collection object is created and optionally
 This update will have the same UUID, but a new version number. A reason
 for the update will have to be provided. This shall be used to
 correct mistakes, spelling errors as well as to provide new information
-on dynamic artifact types such as LCE or VEX. If the product
+on dynamic artifact types such as CLE or VEX. If the product
 is modified, that is a new product version and that should generate
 a new collection object with a new UUID and updated metadata.
 
@@ -52,7 +52,6 @@ The TEA Collection object has the following parts:
     Consequently, Collections belonging to different parent releases have different UUIDs.
     Versions of the same Collection retain the same UUID.
     See [TEA UUID Scope and Stability](../doc/tea-uuid-scope.md).
-    When updating a collection, only the `version` is changed.
 - __version__: TEA Collection version, incremented by 1 each time its content changes.
     Versions start with 1. Content changes include replacing an embedded artifact with a
     newer revision (for example one published because an external `url` or `signatureUrl`
@@ -67,6 +66,10 @@ The TEA Collection object has the following parts:
   - __comment__: Free text description.
 - __artifacts__: Array of TEA Artifact objects.
     See [below](#the-tea-artifact-object).
+
+Required fields:
+
+- `uuid`, `version`, `createdDate`, `belongsTo`, `updateReason`, `artifacts`, `updateReason.type`
 
 ## The TEA Artifact object
 
@@ -99,7 +102,7 @@ A TEA Artifact object contains the following fields:
 
 - __uuid__: The UUID of the TEA Artifact object. Together with *version* uniquely identifies the TEA Artifact.
 - __version__:
-  Revision number, starting at 1.
+  Revision number, starting at 1 and incremented by 1 for each new revision of the same artifact UUID.
   Together with *uuid* uniquely identifies the TEA Artifact.
   Successive revisions cover content changes and changes to any published field,
   including external `url` or `signatureUrl` values. Each published revision is immutable.
@@ -108,7 +111,7 @@ A TEA Artifact object contains the following fields:
 - __createdDate__: The date and time the TEA Artifact revision was created.
 - __distributionIds__: (optional): Array of TEA Component Release distributions that this TEA Artifact applies to. If absent or empty, the TEA Artifact applies to all distributions.
 - __formats__:  
-  An array of objects, each representing the same artifact content in a different format.
+  A non-empty array of objects, each representing the same artifact content in a different format.
   The order of the list is not significant.
   Each format object includes:
   - __mediaType__: The media type of the document (e.g., `application/vnd.cyclonedx+xml`).
@@ -140,7 +143,7 @@ A TEA Artifact object contains the following fields:
   - __checksums__:
     When present, the array shall contain at least one entry. When `url` is present, `checksums`
     is required. An array of checksum objects for the artifact format's content bytes, each containing:
-    - __algType__: The checksum algorithm used (e.g., `SHA_256`, `SHA3_512`).
+    - __algType__: The checksum algorithm used (e.g., `SHA-256`, `SHA3-512`).
     - __algValue__: The checksum value as a string.
     When `url` is present, these checksums are the integrity statement for the revision.
     Content that does not match them is not the content of that revision.

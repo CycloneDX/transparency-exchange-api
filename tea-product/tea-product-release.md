@@ -8,6 +8,7 @@ Key attributes:
 
 - __uuid__: A unique identifier for the TEA Product Release
 - __product__: UUID of the TEA Product this release belongs to
+- __productName__: Optional name of the parent product
 - __version__: Human-readable version string of the product release
 - __createdDate__: Timestamp when the product release was created in TEA (for sorting purposes)
 - __releaseDate__: Timestamp of the product release
@@ -17,7 +18,7 @@ Key attributes:
 
 Required fields:
 
-- uuid, version, createdDate, components
+- uuid, product, version, createdDate, components
 
 Collections for a product release contain artefacts relevant to that product release.
 
@@ -65,5 +66,4 @@ a new product release with a new UUID and version shall be created.
 
 ## Notes
 
-- Property `product` exists in the schema and links a product release to its parent product; it may not be present in all examples.
 - Use uppercase idType values exactly as defined by the schema enum: CPE, TEI, PURL.
