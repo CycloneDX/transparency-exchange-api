@@ -3,10 +3,8 @@
 This document covers authentication and authorization on the consumer side
 of a TEA service - the discovery and download of software transparency artefacts.
 
-## Requirements
-
-__Authorization__: A user of a TEA service may get access to all objects (components, collections) and
-artefacts or just a subset, depending on the publisher of the data. Authorization is connected
+A user of a TEA service may get access to all objects (components, collections) and
+artefacts or just a subset, depending on the publisher of the data. __Authorization__ is connected
 to __authentication__.
 
 The level of authorization is up to the implementer of the TEA implementation and the publisher,
@@ -25,14 +23,21 @@ the user has not acquired.
 For most Open Source projects, implementing authentication - setting up accounts and managing
 authorization - does not make much sense, since the information is usually in the open anyway.
 
-## Scope of this specification
+## Authentication is not required in this standard
 
-This specification does not require a TEA service to authenticate its users. A service that
-requires no authentication need not implement any of what follows, including the token endpoint;
-see [Servers without authentication](#servers-without-authentication) for what such a server and
-its clients do instead. A service that requires authentication for some or all of its objects
-implements the baseline in full; see
+This specification does not require a TEA server to authenticate its users.
+
+The requirements of this chapter apply to a TEA server that requires authentication for some or all
+of its objects, and therefore implements the token endpoint, and to a TEA client that accesses such
+a server. Such a server implements the baseline below in full; see
 [Servers that protect some objects](#servers-that-protect-some-objects).
+
+A TEA server that requires no authentication need not implement anything in this chapter,
+including the token endpoint. The rules such a server follows are in the "Authentication and
+authorization" section of [Discovery](../discovery/readme.md); see also
+[Servers without authentication](#servers-without-authentication).
+
+## Authentication baseline
 
 Where a service does authenticate, interoperability requires that every TEA client can
 authenticate against every TEA server without server-specific code. This specification therefore
@@ -54,7 +59,7 @@ Two consequences are worth stating explicitly, because they are what make the ba
   presented as an HTTP bearer token. Clients therefore need one code path for the API itself,
   regardless of how the server manages identity.
 
-## The token endpoint
+### The token endpoint
 
 The token endpoint is `POST /token`, relative to the TEA API base URL, and is defined in the TEA
 OpenAPI specification alongside the resource endpoints. It is an OAuth 2.0 token endpoint as defined
@@ -250,23 +255,24 @@ pattern and is preferred over any configuration or discovery step a client would
 
 ### Servers without authentication
 
-A server that requires no authentication on any endpoint (and therefore applies no authorization):
+A server that requires no authentication on any endpoint (and therefore applies no authorization)
+follows the rules in the "Authentication and authorization" section of
+[Discovery](../discovery/readme.md): it need not implement the token endpoint, it does not answer
+resource requests with `401`, and it ignores an `Authorization: Bearer` header a client presents
+anyway.
 
-* __need not__ implement the token endpoint. There is nothing to exchange: an OAuth 2.0 token
-  response carries an access token, and the mandatory grant requires the client to
-  authenticate, so a token endpoint on such a server could only issue a token that means nothing.
-* __shall not__ answer any resource request with `401`. Its clients complete step 2 of the flow
-  above and never look for the token endpoint.
-* __shall__ ignore, rather than reject, an `Authorization: Bearer` header a client presents anyway,
-  for example a client that obtained a token elsewhere or applies one by habit. A token has no
-  meaning on such a server, and ignoring it keeps such clients working.
+There is nothing to exchange on such a server: an OAuth 2.0 token response carries an access token,
+and the mandatory grant requires the client to authenticate, so a token endpoint could only issue a
+token that means nothing. Its clients complete step 2 of the flow above and never look for the
+token endpoint. A client that presents a token anyway, for example one obtained elsewhere or applied
+by habit, keeps working, because the token is ignored.
 
 ### Servers that protect some objects
 
 A TEA server may make some data available without authentication while requiring authentication
 and authorization for other objects - for example, listing products and releases without a token
-while restricting artifact downloads to some users, as described under
-[Requirements](#requirements). Such a server requires authentication for the protected objects:
+while restricting artifact downloads to some users. Such a server requires authentication for the
+protected objects:
 
 * it __shall__ implement the token endpoint and the baseline exchange, because at least one object
   needs them;

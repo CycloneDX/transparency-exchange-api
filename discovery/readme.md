@@ -421,6 +421,10 @@ may obtain a replacement access token from the same service and retry the origin
 request once. Clients should not repeat this recovery attempt for the same request. This
 is not OAuth refresh-token use.
 
+A TEA server that requires no authentication on any endpoint need not implement the
+`/token` endpoint, shall not answer any resource request with `401`, and shall ignore,
+rather than reject, an `Authorization: Bearer` header a client presents anyway.
+
 If authentication cannot be completed or recovery fails, the client shall indicate that
 update status could not be determined. Failures that may require user or administrator
 intervention include rejected or revoked credentials, expired client certificates,
