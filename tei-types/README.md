@@ -40,5 +40,5 @@ Each registration carries a status:
 `permanent` (stable; changes require a new type)
 or `deprecated` (not for new TEIs; the entry stays for existing ones).
 
-A `<type>` value consists of lowercase ASCII letters and digits only.
+A `<type>` value consists of lowercase ASCII letters and digits and starts with a letter.
 Within a `domain-name`, a unique identifier needs to be unique only for its type.

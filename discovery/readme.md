@@ -91,21 +91,25 @@ the vendor's product number.
 
 ### TEI syntax
 
-A TEI consists of three parts:
+A TEI is a URI as defined in RFC 3986, of the form:
 
 ```text
 tei://<domain-name>/<type>/<unique-identifier>
 ```
 
+- The scheme is `tei`.
 - The **`domain-name`** is a DNS name under the vendor's control.
   It is the namespace of the TEI and resolves to a web server,
   which may not be the API host.
   A port number is not allowed.
-- The **`type`** names the identifier scheme of the `unique-identifier`
-  and thereby defines its syntax.
-  Types are registered as described in the next section.
-- The **`unique-identifier`** identifies one or more product releases within the `domain-name`,
-  in the syntax defined by the type.
+- The **`type`** consists of lowercase ASCII letters and digits and starts with a letter.
+  It names the identifier scheme of the `unique-identifier`
+  and is registered as described in the next section.
+- The **`unique-identifier`** is a single path segment in the syntax its type defines
+  and identifies one or more product releases within the `domain-name`.
+  It shall not contain `/`, neither literally nor percent-encoded as `%2F`.
+  Other characters that are not allowed in a path segment
+  are percent-encoded with uppercase hexadecimal digits.
 
 A `unique-identifier` is not required to be unique:
 several product releases may share one TEI,

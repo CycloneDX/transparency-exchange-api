@@ -5,7 +5,7 @@ Fields follow the shape of registration templates used by IETF registries.
 
 ## Type name
 
-The `<type>` value: lowercase ASCII letters and digits only.
+The `<type>` value: lowercase ASCII letters and digits, starting with a letter.
 
 ## Description
 
@@ -17,7 +17,8 @@ and what kind of object it identifies (a product release, a package, a device, .
 How the identifier is written inside a TEI:
 allowed characters, encoding (for example Base64URL without padding),
 case, separators, and anything a publisher must do to obtain the canonical spelling.
-The result shall be a single path segment.
+The result shall be a single path segment
+and shall not contain `/`, neither literally nor percent-encoded as `%2F`.
 
 ## Canonical form
 
