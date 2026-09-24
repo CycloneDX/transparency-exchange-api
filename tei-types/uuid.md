@@ -25,7 +25,7 @@ Not used: uppercase hexadecimal, the form without hyphens, braces, or a `urn:uui
 ## Example
 
 ```text
-tei://cyclonedx.org/uuid/d4d9f54a-abcf-11ee-ac79-1a52914d44b1
+tei://example.com/uuid/d4d9f54a-abcf-11ee-ac79-1a52914d44b1
 ```
 
 ## Specification

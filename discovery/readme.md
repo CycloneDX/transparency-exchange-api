@@ -126,13 +126,13 @@ the registry is the authoritative list.
 
 | Type     | Unique identifier                              | Example                                                                                             |
 |----------|------------------------------------------------|-----------------------------------------------------------------------------------------------------|
-| `purl`   | Package URL, Base64URL-encoded without padding | `tei://cyclonedx.org/purl/cGtnOm1hdmVuL2NvbW1vbnMtaW8vY29tbW9ucy1pb0AyLjIyLjA`                      |
-| `hash`   | Hash of an object, `<hashtype>:<hex>`          | `tei://cyclonedx.org/hash/SHA-256:fd44efd601f651c8865acf0dfeacb0df19a2b50ec69ead0262096fd2f67197b9` |
-| `uuid`   | UUID                                           | `tei://cyclonedx.org/uuid/d4d9f54a-abcf-11ee-ac79-1a52914d44b1`                                     |
+| `purl`   | Package URL, Base64URL-encoded without padding | `tei://example.com/purl/cGtnOm1hdmVuL2NvbW1vbnMtaW8vY29tbW9ucy1pb0AyLjIyLjA`                        |
+| `hash`   | Hash of an object, `<hashtype>:<hex>`          | `tei://example.com/hash/SHA-256:fd44efd601f651c8865acf0dfeacb0df19a2b50ec69ead0262096fd2f67197b9`   |
+| `uuid`   | UUID                                           | `tei://example.com/uuid/d4d9f54a-abcf-11ee-ac79-1a52914d44b1`                                       |
 | `eanupc` | EAN or UPC number                              | `tei://example.com/eanupc/1234567890123`                                                            |
-| `gtin`   | GTIN                                           | `tei://example.org/gtin/0234567890123`                                                              |
+| `gtin`   | GTIN                                           | `tei://example.com/gtin/0234567890123`                                                              |
 | `asin`   | Amazon Standard Identification Number          | `tei://example.com/asin/B07FZ8S74R`                                                                 |
-| `udi`    | Unique Device Identifier                       | `tei://cyclonedx.org/udi/00123456789012`                                                            |
+| `udi`    | Unique Device Identifier                       | `tei://example.com/udi/00123456789012`                                                              |
 
 ### Comparing TEIs
 

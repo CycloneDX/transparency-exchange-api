@@ -27,7 +27,7 @@ Not used: the full UDI including production identifiers, or a GTIN shortened by 
 ## Example
 
 ```text
-tei://cyclonedx.org/udi/00123456789012
+tei://example.com/udi/00123456789012
 ```
 
 ## Specification

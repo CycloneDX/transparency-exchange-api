@@ -29,7 +29,7 @@ Not used: a padded Base64URL string, standard Base64 (`+`, `/`), or a percent-en
 ## Example
 
 ```text
-tei://cyclonedx.org/purl/cGtnOm1hdmVuL2NvbW1vbnMtaW8vY29tbW9ucy1pb0AyLjIyLjA
+tei://example.com/purl/cGtnOm1hdmVuL2NvbW1vbnMtaW8vY29tbW9ucy1pb0AyLjIyLjA
 
 (the PURL `pkg:maven/commons-io/commons-io@2.22.0`)
 ```
