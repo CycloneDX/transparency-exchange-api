@@ -1625,7 +1625,6 @@ components:
             Component Release shall not share a UUID. Consequently, Collections belonging
             to different parent releases have different UUIDs. Versions of the same
             Collection retain the same UUID. See `doc/tea-uuid-scope.md`.
-            When updating a collection, only the `version` is changed.
           "$ref": "#/components/schemas/uuid"
         version:
           type: integer
