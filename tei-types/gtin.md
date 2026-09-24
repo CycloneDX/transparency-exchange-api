@@ -25,7 +25,7 @@ Not used: zero-padding a shorter GTIN to 14 digits, or an application identifier
 ## Example
 
 ```text
-tei://example.org/gtin/0234567890123
+tei://example.com/gtin/0234567890123
 ```
 
 ## Specification
