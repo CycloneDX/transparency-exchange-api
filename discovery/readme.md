@@ -72,8 +72,7 @@ like EAN/UPC bar code, PURLs or other existing schemes. A given product release 
 as long as they all resolve into the same destination. Some identifier schemes require registration
 with the corresponding standards organisation.
 
-The vendor should ensure that the TEI is unique within the vendor's namespace. There is no
-intention to create any TEI registries.
+There is no registry of TEIs; only TEI types are registered.
 
 ## The TEI: URL - An extensible identifier
 
@@ -83,10 +82,7 @@ to global uniqueness without new registries.
 
 The TEI can be shown in the software itself, in shipping documentation, in web pages and app stores.
 
-A TEI identifies product release(s) under a vendor domain. Prefer one product release
-per TEI. A TEI may resolve to multiple product releases when the same identifier is
-shared (for example a non-unique EAN/UPC); vendors should minimize that case. A product
-release can have multiple TEIs — for example one with an EAN/UPC barcode and one with
+A product release can have multiple TEIs — for example one with an EAN/UPC barcode and one with
 the vendor's product number.
 
 ### TEI syntax
@@ -111,13 +107,12 @@ tei://<domain-name>/<type>/<unique-identifier>
   Other characters that are not allowed in a path segment
   are percent-encoded with uppercase hexadecimal digits.
 
-A `unique-identifier` is not required to be unique:
-several product releases may share one TEI,
-for example, when a boxed product keeps its EAN across firmware versions,
-and a discovery lookup therefore returns a list of product releases rather than a single one.
-It is nevertheless highly recommended that a TEI identifies a single product release,
-since a client can then use it without further disambiguation;
-a vendor can always achieve this with a type such as `uuid` or `hash`.
+A TEI may identify several product releases,
+for example when a boxed product keeps its EAN across firmware versions.
+A discovery lookup therefore returns a list,
+and clients shall treat its order as priority (first entry highest).
+A vendor should make each TEI identify a single product release;
+a type such as `uuid` or `hash` always allows this.
 
 ### TEI types
 
