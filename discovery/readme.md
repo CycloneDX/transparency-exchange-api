@@ -589,3 +589,4 @@ not conforming.
 ## References
 
 - [IANA .well-known registry](https://www.iana.org/assignments/well-known-uris/well-known-uris.xhtml)
+- [RFC 8615 - Well-known Uniform Resource Identifiers](https://www.rfc-editor.org/info/rfc8615/)
