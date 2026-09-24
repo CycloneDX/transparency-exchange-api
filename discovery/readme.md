@@ -160,7 +160,7 @@ a vendor shall publish a TEI in its canonical form:
 - the scheme `tei` in lowercase,
 - the domain name in lowercase ASCII, using A-labels for internationalised names,
 - the type in lowercase,
-- the unique identifier exactly as its TEI type defines it
+- the unique identifier exactly as its registry entry defines it
   (for example lowercase for a UUID, lowercase hexadecimal for a hash, unpadded Base64URL for a PURL),
 - and no percent-escaping of characters that do not require it.
 
