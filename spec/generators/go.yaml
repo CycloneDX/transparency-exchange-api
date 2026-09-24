@@ -3,5 +3,7 @@ outputDir: /local/out/go
 generatorName: go
 gitRepoId: transparency-exchange-api-go
 additionalProperties:
+  # Generated enums accept values added later, e.g. new ECMA-424 hash algorithms
+  enumUnknownDefaultCase: true
   goImportAlias: tea_client
   packageName: tea_client

@@ -2,6 +2,8 @@
 outputDir: /local/out/typescript
 generatorName: typescript-fetch
 additionalProperties:
+  # Generated enums accept values added later, e.g. new ECMA-424 hash algorithms
+  enumUnknownDefaultCase: true
   npmName: "@cyclonedx/tea-api-client"
   supportsES6: true
   withInterfaces: true

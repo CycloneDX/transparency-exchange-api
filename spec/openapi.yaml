@@ -1941,11 +1941,14 @@ components:
     checksum:
       type: object
       description: |
-        Integrity digest for identified content bytes. `algValue` is the lowercase
-        hexadecimal encoding of the digest produced by `algType` over those bytes.
-        The hex length shall match the algorithm's digest size (for example 40 for
-        SHA-1, 64 for SHA-256 / SHA3-256 / BLAKE2b-256 / BLAKE3, 96 for SHA-384 /
-        SHA3-384 / BLAKE2b-384, 128 for SHA-512 / SHA3-512 / BLAKE2b-512).
+        Integrity digest for identified content bytes.
+        `algValue` is the lowercase hexadecimal encoding of the digest produced by `algType` over those bytes.
+        The hex length shall match the algorithm's digest size:
+        - 32 for MD5,
+        - 40 for SHA-1,
+        - 64 for SHA-256 / SHA3-256 / BLAKE2b-256 / BLAKE3 / Streebog-256,
+        - 96 for SHA-384 / SHA3-384 / BLAKE2b-384,
+        - 128 for SHA-512 / SHA3-512 / BLAKE2b-512 / Streebog-512.
       properties:
         algType:
           description: Checksum algorithm
@@ -1956,27 +1959,21 @@ components:
             Lowercase hexadecimal digest value for `algType`. Do not use Base64 or
             uppercase hex.
           pattern: '^[0-9a-f]+$'
-          minLength: 40
+          minLength: 32
           maxLength: 128
           example: 9da736a1cdd27231e70187cbc67398d29ca0b714f885e7032da9f1fb247693c1
       required:
         - algType
         - algValue
     checksum-type:
-      type: string
-      description: Checksum algorithm
-      enum:
-        - SHA-1
-        - SHA-256
-        - SHA-384
-        - SHA-512
-        - SHA3-256
-        - SHA3-384
-        - SHA3-512
-        - BLAKE2b-256
-        - BLAKE2b-384
-        - BLAKE2b-512
-        - BLAKE3
+      description: |
+        Checksum algorithm, named as in the `hash-alg` definition of ECMA-424 (CycloneDX).
+        The list of algorithms is maintained there, not in this specification.
+        The enumeration referenced here is the one published with CycloneDX 1.7
+        and is provided as a convenience for generated clients;
+        a later edition of ECMA-424 may add algorithms,
+        and clients shall ignore checksums whose algorithm they do not recognise.
+      "$ref": "https://cyclonedx.org/schema/bom-1.7.schema.json#/definitions/hash-alg"
     unknown-error-type:
       type: string
       description: Classification of TEA error response
