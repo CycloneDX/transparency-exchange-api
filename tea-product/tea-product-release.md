@@ -66,5 +66,4 @@ a new product release with a new UUID and version shall be created.
 
 ## Notes
 
-- Property `product` exists in the schema and links a product release to its parent product; it may not be present in all examples.
 - Use uppercase idType values exactly as defined by the schema enum: CPE, TEI, PURL.
