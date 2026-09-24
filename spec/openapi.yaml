@@ -3331,6 +3331,10 @@ tags:
   - name: TEA Artifact
   - name: CLE
   - name: TEA Authentication
+    description: |
+      Obtaining a TEA access token. Only a TEA server that requires authentication for
+      some or all of its objects implements these operations; a server that requires no
+      authentication need not. See `auth/readme.md`.
 externalDocs:
   description: Transparency Exchange API specification
   url: https://github.com/CycloneDX/transparency-exchange-api
