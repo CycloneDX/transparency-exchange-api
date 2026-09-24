@@ -275,11 +275,32 @@ a vendor shall publish a TEI in its canonical form:
 
 A client shall use a TEI exactly as received and shall not rewrite it.
 
+A TEI that is not in canonical form is noncanonical input.
+A client that holds a noncanonical spelling shall reject it
+and shall not lowercase, decode, re-encode or otherwise rewrite it into a different TEI
+before using it in discovery.
+A server shall not resolve a noncanonical TEI as if it were the canonical spelling;
+it should answer `400` for a discovery request whose TEI has an uppercase scheme,
+domain name or type, or whose unique identifier is not in the canonical form of its type.
+A server that does not validate canonical form answers `404`, since the noncanonical
+spelling matches none of the TEIs it publishes.
+The client treats either answer as terminal for that identifier
+and shall not retry with a rewritten TEI.
+
 When a TEI is carried inside another URL,
 for example as the `tei` query parameter of the discovery endpoint,
 it is percent-encoded for transport.
-The comparison applies to the TEI after that transport encoding is removed,
-and a server matching a received TEI against the TEIs it publishes applies this rule.
+The server removes that transport encoding exactly once,
+before validating the TEI and comparing it against the TEIs it publishes;
+no further decoding, encoding or normalization is applied.
+
+| Case                                  | Expected outcome                                    |
+| ------------------------------------- | --------------------------------------------------- |
+| Canonical TEI                         | Accepted and mapped without changing its identity   |
+| Uppercase domain name or type         | Rejected as noncanonical                            |
+| Padded Base64URL PURL identifier      | Rejected as noncanonical                            |
+| Two different canonical identifiers   | Remain distinct                                     |
+| Percent-encoding added for transport  | Removed once before TEI validation and comparison   |
 
 This rule defines identity only.
 Resolving a TEI to an API endpoint follows the rules below,
@@ -393,7 +414,11 @@ the JSON response).
 The client shall then construct the full URL to the API by selecting that highest
 mutually supported version and appending `/v` followed by that exact advertised
 version string (for example `/v1.0.0`), then `/discovery?tei=` plus the TEI,
-url-encoded according to [RFC3986].
+url-encoded according to [RFC3986]. The TEI is encoded exactly as received: the client
+shall not lowercase the domain name or otherwise normalize any part of it, and a
+noncanonical TEI is rejected rather than rewritten (see [Comparing TEIs](#comparing-teis)).
+The case-insensitivity of the domain name applies only to its use as a DNS name in the
+well-known stage; it does not make two spellings of a TEI the same discovery request.
 
 Examples:
 1. For TEI `tei://products.example.com/uuid/d4d9f54a-abcf-11ee-ac79-1a52914d44b1`
