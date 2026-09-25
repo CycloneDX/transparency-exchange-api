@@ -511,15 +511,8 @@ document and uses the well-known URI mechanism defined in
 ### TLS Encryption
 
 The following note is **informative**.
-In this document, "HTTP" names the protocol defined in
-[RFC 9110](https://www.rfc-editor.org/rfc/rfc9110), and "HTTPS" means HTTP carried over a
-TLS-protected connection. `http` and `https` are URI schemes: the part of a URL before the
-colon, as in `https://products.example.com/.well-known/tea`. A URL with the `https` scheme
-tells the client to access the resource using HTTPS. Scheme names are case-insensitive in
-[RFC 3986](https://www.rfc-editor.org/rfc/rfc3986), but TEA writes them in lowercase.
-`tei` is also a URI scheme. It identifies a product release or releases; clients resolve
-it using the discovery procedure described in this document, which uses HTTPS rather than a
-separate TEI transport protocol.
+HTTP and HTTPS are protocols. `http` and `https` are URI schemes, the part of a URL before
+the colon, as in `https://`.
 
 The `.well-known` endpoint shall only be available via HTTPS. Using unencrypted HTTP is not
 valid. Clients shall verify the server certificate for this connection as for any other
