@@ -510,6 +510,10 @@ document and uses the well-known URI mechanism defined in
 
 ### TLS Encryption
 
+The following note is **informative**.
+HTTP and HTTPS are protocols. `http` and `https` are URI schemes, the part of a URL before
+the colon, as in `https://`.
+
 The `.well-known` endpoint shall only be available via HTTPS. Using unencrypted HTTP is not
 valid. Clients shall verify the server certificate for this connection as for any other
 TEA HTTPS request, including the server identity check of [RFC 9525](https://www.rfc-editor.org/rfc/rfc9525).
