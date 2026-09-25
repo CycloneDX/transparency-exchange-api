@@ -1,4 +1,4 @@
-# Transparency Exchange API - Discovery
+# Discovery
 
 - [From product identifier to API endpoint](#from-product-identifier-to-api-endpoint)
 - [Advertising the TEI](#advertising-the-tei)
@@ -14,76 +14,53 @@
   - [Discovery by PURL](#discovery-by-purl)
 - [References](#references)
 
-## From product identifier to API endpoint
-
-Discovery is the **first step in all TEA interactions**, enabling a consumer to map an identifier to a service endpoint.
-
-This Standard defines:
-
-- how discovery is initiated;
-- how discovery documents are retrieved;
-- how API endpoints are obtained.
-
-TEA separates:
-
-- **identity** → TEI
-- **location** → discovery
-- **data retrieval** → API
+## Overview
 
 Discovery answers the question:
 
 > “Where can I retrieve authoritative TEA data for this identifier?”
 
-TEA Discovery is the connection between a product release identifier and the API endpoint.
-A "product release" is something that the user aquires or downloads - hardware and/or software.
+TEA discovery is the process by which a user utilizes a product release identifier in
+order to obtain information about the TEA server, then download artefacts relating to a
+specific product release or releases automatically with or without authentication.
 
-It can be a bundle of many digital devices or software applications.
-A "product release" normally also has an entry in a large corporation's asset inventory system.
+A "product release" is something the user acquires or downloads in the form of a digital
+device or software application. It can be a single item or a bundle of many items.
+A product release normally also has an entry in a large corporation's asset inventory system.
 
-A product release identifier is embedded in a URL where the identifier is one of many existing
-identifiers or a random string - like an EAN or UPC bar code, UUID, product
+A "product release identifier" is a string embedded in a URL which represents the product
+release, such as an EAN or UPC bar code, UUID, product
 number or PURL.
 
-The goal is for a user to add this URL to the transparency platform (sometimes with
-credentials for the selected TEA service, such as an API key) and have the platform
-access the required artefacts in a highly automated fashion. Those credentials are
-provisioned separately and are not embedded in the TEI.
+## TEI extensible URL schema
 
-## Advertising the TEI
+TEI, <dfn>Transparency Exchange Identifier</dfn>, is a URL schema that is extensible
+by taking advantage of existing identifiers like EAN codes, PURLs, UUIDs, and others.
+It is based on a DNS name, which enables global uniqueness across vendors and projects
+without the need for new registries.
 
-The TEI for a product release can be communicated to the user in many ways.
+This URL is intended to then be added to a transparency platform for the purpose of
+accessing the relevant artefacts in an automated fashion. Any necessary credentials
+are to be provisioned separately and are not embedded in a TEI (Transparency Exchange Identifier).
 
-- A QR code on a box
-- On the invoice or delivery note
-- For software with a GUI, in an "about" box
+A product release can have multiple TEIs—for example one with an EAN/UPC barcode and one with
+the vendor's product number. TEIs can be communicated to the user in many ways, such as:
 
-The user obtains the TEI from the manufacturer, through a reseller, or directly. The TEI
-is defined by the manufacturer and can normally not be derived from known information.
+- a QR code on a box;
+- on the invoice or delivery note;
+- for software with a GUI, in an "about" box.
 
-## TEA Discovery - defining an extensible identifier
+A user might obtain a TEI from the manufacturer, through a reseller, or directly. The TEI
+is defined by the manufacturer and would not be expected to be derived from known information.
 
-TEA discovery is the process where a user with a product release identifier can discover and download
-artefacts automatically, with or without authentication. A globally unique identifier is
-required for a given product release. This identifier is called the Transparency Exchange Identifier (TEI).
-
-The TEI identifier is based on DNS, which assures a uniqueness per vendor (or open source project)
-and gives the vendor a namespace to define product release identifiers based on existing or new identifiers
-like EAN/UPC bar code, PURLs or other existing schemes. A given product release may have multiple identifiers
+Since TEIs are based on DNS, manufacturers are provided a namespace to define product release
+identifiers based on existing or new identifiers (see
+<emu-xref href="#sec-discovery-5-tei-types"></emu-xref>). A given product release may
+have multiple identifiers
 as long as they all resolve into the same destination. Some identifier schemes require registration
-with the corresponding standards organisation.
+with corresponding standards organizations.
 
-There is no registry of TEIs; only TEI types are registered.
-
-## The TEI: URL - An extensible identifier
-
-The TEI, __Transparency Exchange Identifier__, is a URL schema that is extensible based on existing
-identifiers like EAN codes, PURL and other identifiers. It is based on a DNS name, which leads
-to global uniqueness without new registries.
-
-The TEI can be shown in the software itself, in shipping documentation, in web pages and app stores.
-
-A product release can have multiple TEIs — for example one with an EAN/UPC barcode and one with
-the vendor's product number.
+There is no registry of TEIs; only TEI _types_ are registered.
 
 ### TEI syntax
 
@@ -93,26 +70,24 @@ A TEI is a URI as defined in RFC 3986, of the form:
 tei://<domain-name>/<type>/<unique-identifier>
 ```
 
-- The scheme is `tei`.
-- The **`domain-name`** is a DNS name under the vendor's control.
-  It is the namespace of the TEI and resolves to a web server,
-  which may not be the API host.
-  A port number is not allowed.
-- The **`type`** consists of lowercase ASCII letters and digits and starts with a letter.
-  It names the identifier scheme of the `unique-identifier`
-  and is registered as described in the next section.
-- The **`unique-identifier`** is a single path segment in the syntax its type defines
-  and identifies one or more product releases within the `domain-name`.
-  It shall not contain `/`, neither literally nor percent-encoded as `%2F`.
-  Other characters that are not allowed in a path segment
-  are percent-encoded with uppercase hexadecimal digits.
+- The scheme shall be `tei`.
+- The `domain-name` shall be a DNS name under the vendor's control and resolve to a web
+  server which need not be the API host. The domain name shall not include a port number.
+- The `type` shall consist of lowercase ASCII letters and digits, and start with a letter.
+  The type names the identifier scheme of the `unique-identifier`
+  and shall be registered as described in
+  <emu-xref href="#sec-discovery-5-tei-types"></emu-xref>.
+- The `unique-identifier` shall be a single path segment in the syntax its type defines.
+  The `unique-identifier` shall identify one or more product releases within the `domain-name`.
+  It shall not contain `/`, either literally or percent-encoded as `%2F`.
+  Any other characters that are not permitted in a path segment by RFC 3986 shall be percent-encoded with uppercase hexadecimal digits.
 
 A TEI may identify several product releases,
 for example when a boxed product keeps its EAN across firmware versions.
 A discovery lookup therefore returns a list,
 and clients shall treat its order as priority (first entry highest).
-A vendor should make each TEI identify a single product release;
-a type such as `uuid` or `hash` always allows this.
+Manufacturers should strive for each TEI to identify a single product release;
+types such as `uuid` or `hash` allows for this level of specificity.
 
 ### TEI types
 
@@ -121,8 +96,10 @@ https://github.com/CycloneDX/transparency-exchange-api/tree/main/tei-types.
 Registration refers to the TEA community process for adding a type, described in the registry.
 
 The following table is **informative**.
-It illustrates the types registered at the time of writing;
+It illustrates the types registered at the time of publication of this edition of the Standard;
 the registry is the authoritative list.
+
+Table: Informative: registered TEI types
 
 | Type     | Unique identifier                              | Example                                                                                             |
 |----------|------------------------------------------------|-----------------------------------------------------------------------------------------------------|
@@ -136,13 +113,13 @@ the registry is the authoritative list.
 
 ### Comparing TEIs
 
-For comparison, a TEI is an opaque identifier, not a locator.
+For the purpose of comparison, a TEI is an opaque identifier, not a locator.
 Two TEIs are equal if and only if they are the same sequence of characters.
 The comparison is case-sensitive and applies to the TEI as written:
 
 - percent-escapes are neither added nor removed,
-- Base64URL-encoded identifiers are not decoded,
-- and the domain name is neither resolved nor normalized.
+- Base64URL-encoded identifiers are not decoded, and
+- the domain name is neither resolved nor normalized.
 
 The following TEIs are therefore all distinct:
 
@@ -154,54 +131,45 @@ tei://example.com/purl/cGtnOnB5cGkvY3ljbG9uZWR4LXB5dGhvbi1saWI
 tei://example.com/purl/cGtnOnB5cGkvY3ljbG9uZWR4LXB5dGhvbi1saWI=
 ```
 
-So that one identifier has one spelling,
-a vendor shall publish a TEI in its canonical form:
+A TEI shall be published in its "canonical" form, constrained by the following requirements:
 
-- the scheme `tei` in lowercase,
-- the domain name in lowercase ASCII, using A-labels for internationalised names,
-- the type in lowercase,
-- the unique identifier exactly as its registry entry defines it
-  (for example lowercase for a UUID, lowercase hexadecimal for a hash, unpadded Base64URL for a PURL),
-- and no percent-escaping of characters that do not require it.
+- the scheme `tei` shall be lowercase,
+- the domain name shall be lowercase ASCII, using A-labels for internationalized names,
+- the type shall be lowercase,
+- the unique identifier shall be formatted exactly as its registry entry defines it
+  (for example lowercase for a UUID, lowercase hexadecimal for a hash, unpadded Base64URL for a PURL), and
+- characters that do not require percent-escaping shall not be escaped.
 
 A client shall use a TEI exactly as received and shall not rewrite it.
 
 When a TEI is carried inside another URL,
 for example as the `tei` query parameter of the discovery endpoint,
-it is percent-encoded for transport.
-The comparison applies to the TEI after that transport encoding is removed,
-and a server matching a received TEI against the TEIs it publishes applies this rule.
+it shall be percent-encoded for transport.
+Servers comparing received TEIs against their own data shall only do so after decoding an
+encoded TEI.
 
-This rule defines identity only.
-Resolving a TEI to an API endpoint follows the rules below,
-where the domain name is used as a DNS name and is therefore case-insensitive.
+Strict lowercase interpretation of the domain name is limited to comparison for identity.
 
 ### TEI resolution using DNS
 
 The `domain-name` part of the TEI is used in a DNS query to find one or multiple locations for
 product transparency exchange information.
-
-At the URL a well-known name space is used to find out where the API endpoint is hosted.
-This is solved by using the ".well-known" name space as defined by the IETF.
-
-- `tei://<domain-name>/uuid/62f2cf92-ae88-11f1-a698-1a52914d44b2`
-- Syntax: `tei://<domain-name>/uuid/<unique identifier>`
-
 The name in the DNS name part points to a set of DNS records.
 
-A TEI with `domain-name` `tea.example.com` queries DNS for `tea.example.com`, considering `A`, `AAAA` and `CNAME` records.
-These point to the hosts available for the Transparency Exchange API.
+For a TEI with `domain-name` `tea.example.com`, a client shall query DNS for `tea.example.com`, considering `A`, `AAAA` and `CNAME` records.
 
-The TEA client connects to the host using HTTPS and shall verify the server
-certificate, including the server identity check of [RFC 9525](https://www.rfc-editor.org/rfc/rfc9525).
-The URL is composed of the host name with the `/.well-known/tea` path added.
+The `.well-known` endpoint shall only be available via HTTPS.
+Upon connecting to the host using HTTPS, the TEA client shall verify the server
+certificate, including the server identity check as described in RFC 9525.
+The TEA client shall request the URL composed of the host name with the `/.well-known/tea` path added.
 
 This results in the base URL such as
 `https://products.example.com/.well-known/tea`
 
 ### TEA Discovery document
 
-This response shall contain a JSON object that lists the available TEA server endpoints and supported versions.
+The TEA server shall respond to this request to the well-known tea path with a JSON
+object that lists the available TEA server endpoints and supported versions.
 The JSON shall conform to the [TEA Well-Known Schema](tea-well-known.schema.json).
 
 Example:
@@ -210,16 +178,16 @@ Example:
   "schemaVersion": 1,
   "endpoints": [
     {
-      "url": "https://api.teaexample.com",
-      "versions": 
+      "url": "https://api.example.com",
+      "versions":
         [
           "1.0.0"
         ],
       "priority": 1
     },
     {
-      "url": "https://api2.teaexample.com/mytea",
-      "versions": 
+      "url": "https://api2.example.com/mytea",
+      "versions":
         [
           "1.0.0"
         ],
@@ -229,29 +197,30 @@ Example:
 }
 ```
 
+Servers shall not locate the actual TEA service endpoint at the
+`/.well-known/tea` URI. This URI is reserved for the TEA discovery
+document and uses the well-known URI mechanism defined in RFC 8615.
+
 ### Discovery data caching and freshness
 
 Discovery documents may be cached.
 
 Implementations should:
 
-- respect HTTP caching headers  
-- periodically refresh discovery data  
-- handle endpoint changes gracefully  
+- respect HTTP caching headers;
+- periodically refresh discovery data;
+- handle endpoint changes gracefully.
 
 ## Port resolution
 
-Currently, the port number is not part of the TEI but it is needed to connect to the API.
+Currently, the port number is not part of the TEI, but it is needed to connect to the API.
 
-The TEA API server may be hosted on any port, but the server that is part of the
-first step of discovery will by default be running on the default HTTPS port 443.
-In the JSON file found there, the server URLs may contain port numbers.
+The TEA API server may be hosted on any port, but the server hosting the well-known
+discovery document shall by default be running on the default HTTPS port 443.
+Server URLs described in the discovery document may contain port numbers.
 
-If the clients are known to support HTTPS/SVCB DNS records for failover and
-load balancing, these may be used to redirect to other ports and servers.
-
-Public servers are recommended to have the server hosting the DNS name used
-in the TEI URI running on the default port to enable discovery of the API servers.
+HTTPS/SVCB DNS records for failover and load balancing may be used to redirect to
+other ports and servers for supported clients.
 
 ## Connecting to the API
 
@@ -264,18 +233,19 @@ rules below:
 
 ### Selecting an API base from `.well-known/tea`
 
-Clients shall pick an endpoint from the `.well-known/tea` JSON response that lists
+Clients shall choose an endpoint from the `.well-known/tea` JSON response which lists
 at least one API version supported by the client. The client shall prefer endpoints
-whose highest mutually supported version is greatest, based on SemVer 2.0.0
-specification comparison [rules](https://semver.org/#spec-item-11).
-Advertised API versions are full SemVer 2.0.0 (`MAJOR.MINOR.PATCH` with optional
-prerelease and build metadata). Build metadata is ignored when comparing versions
-([SemVer 2.0.0 §10](https://semver.org/#spec-item-10)), both for precedence and for
-determining whether the client supports a version. If the highest mutually supported
+with the highest mutually supported version, based on the SemVer [comparison clause](https://semver.org/#spec-item-11).
+Advertised API versions shall fully conform to SemVer 2.0.0 (`MAJOR.MINOR.PATCH` with optional
+prerelease and build metadata). Build metadata shall be ignored when comparing versions.
+
+If the highest mutually supported
 version is advertised with more than one build-metadata spelling, the client may select
 any of them, and shall use the selected string exactly as advertised when constructing
-the path (for example `/v1.0.0+build.5`; `+` is a valid path character per [RFC3986]
-and shall not be percent-encoded). If several endpoints remain after that preference,
+the path (for example `/v1.0.0+build.5`). `+` is a valid path character per RFC 3986
+and shall not be percent-encoded.
+
+If several endpoints remain after that preference,
 the client should pick the endpoint with the highest `priority` value (a float between
 0 and 1). If `priority` is absent on a well-known endpoint object, the client shall
 treat it as `1` for ordering (JSON Schema `default` does not populate omitted fields in
@@ -284,22 +254,30 @@ the JSON response).
 The client shall then construct the full URL to the API by selecting that highest
 mutually supported version and appending `/v` followed by that exact advertised
 version string (for example `/v1.0.0`), then `/discovery?tei=` plus the TEI,
-url-encoded according to [RFC3986].
+url-encoded according to RFC 3986.
 
-Examples:
-1. For TEI `tei://products.example.com/uuid/d4d9f54a-abcf-11ee-ac79-1a52914d44b1`
-`https://api.teaexample.com/v1.0.0/discovery?tei=tei%3A//products.example.com/uuid/d4d9f54a-abcf-11ee-ac79-1a52914d44b1`
-2. For TEI `tei://products.example.com/purl/cGtnOmRlYi9kZWJpYW4vY3VybEA3LjUwLjMtMT9hcmNoPWkzODYmZGlzdHJvPWplc3NpZQ`
-`https://api2.example.com/mytea/v1.0.0/discovery?tei=tei%3A//products.example.com/purl/cGtnOmRlYi9kZWJpYW4vY3VybEA3LjUwLjMtMT9hcmNoPWkzODYmZGlzdHJvPWplc3NpZQ`
+<emu-example>
 
-The discovery endpoint is a part of the TEA OpenAPI specification. Unlike `/token`,
-`/discovery` is required on a conforming TEA API base: a conforming server that exposes
-a given API version shall implement it.
+tei://products.example.com/uuid/d4d9f54a-abcf-11ee-ac79-1a52914d44b1  
+https://api.example.com/v1.0.0/discovery?tei=tei%3A//products.example.com/uuid/d4d9f54a-abcf-11ee-ac79-1a52914d44b1
+
+</emu-example>
+
+<emu-example>
+
+tei://products.example.com/purl/cGtnOmRlYi9kZWJpYW4vY3VybEA3LjUwLjMtMT9hcmNoPWkzODYmZGlzdHJvPWplc3NpZQ  
+https://api2.example.com/mytea/v1.0.0/discovery?tei=tei%3A//products.example.com/purl/cGtnOmRlYi9kZWJpYW4vY3VybEA3LjUwLjMtMT9hcmNoPWkzODYmZGlzdHJvPWplc3NpZQ
+
+</emu-example>
+
+The discovery endpoint is a part of the TEA OpenAPI specification.
+
+A conforming TEA API base shall implement `/discovery` for any exposed API version.
 
 ### Discovery response
 
-A successful `/discovery` response is a JSON array of `discovery-info` objects. Each
-element identifies one resolved product release and the TEA servers that serve it:
+A successful `/discovery` response shall consist of a JSON array of `discovery-info` objects. Each
+element in the array shall identify one resolved product release and the TEA servers that serve it:
 
 - `productReleaseUuid` — UUID of the TEA Product Release
 - `servers` — non-empty array of `server-info` objects (`rootUrl`, `versions`, and
@@ -308,7 +286,7 @@ element identifies one resolved product release and the TEA servers that serve i
 `.well-known/tea` and `servers[]` are related but distinct:
 
 - **Well-known** lists candidate API bases for a domain. That is where the client calls
-  `/discovery` (after appending `/v{version}`).
+  `/v{version}/discovery`.
 - **`servers[]`** in the discovery response lists API bases that serve the resolved
   product release. The client selects among them with the same version-preference and
   `priority` rules as for well-known endpoints. A `rootUrl` need not appear in the
@@ -333,7 +311,7 @@ Example (one match):
     "productReleaseUuid": "d4d9f54a-abcf-11ee-ac79-1a52914d44b1",
     "servers": [
       {
-        "rootUrl": "https://api.teaexample.com",
+        "rootUrl": "https://api.example.com",
         "versions": ["1.0.0"]
       }
     ]
@@ -341,26 +319,34 @@ Example (one match):
 ]
 ```
 
+Conforming deployments shall advertise only lowercase `https` base URLs, in
+`.well-known/tea` `endpoints[].url` and in `/discovery` `servers[].rootUrl` alike. A
+client shall reject an `http` base URL unless it has been explicitly configured to
+allow that specific base URL for local testing. The allowance is per configured base URL,
+never a global setting, so it cannot apply to a base URL the client learned from discovery.
+
 ### Discovery by PURL
 
 Clients that already know a TEA API base URL (for example from a prior TEI discovery,
 configuration, or cache) may call `/discovery` with the `purl` query parameter instead of
-`tei`. Exactly one of `tei` or `purl` shall be provided; a request with neither or both is
-rejected with `400`.
+`tei`. Exactly one of either `tei` or `purl` shall be provided; a request with neither `tei` nor
+`purl`, or both `tei` and `purl`, is rejected with `400`.
 
 Discovery by PURL resolves within the inventory of the TEA server that receives the
 request. It does not replace TEI-based DNS / `.well-known` discovery for finding an API
 host from an identifier alone.
 
-Example:
+<emu-example>
 
-`https://api.teaexample.com/v1.0.0/discovery?purl=pkg%3Amaven%2Forg.apache.logging.log4j%2Flog4j-core%402.24.3`
+https://api.example.com/v1.0.0/discovery?purl=pkg%3Amaven%2Forg.apache.logging.log4j%2Flog4j-core%402.24.3
+
+</emu-example>
 
 The response shape, non-empty success array, and `404` with `OBJECT_UNKNOWN` when the
 server does not resolve the identifier are the same as for TEI lookup.
 
-If this server does not resolve the TEI (or PURL, when discovering by PURL), whether
-because it is unknown or because the server withholds it, the discovery endpoint
+If this server does not resolve the TEI (or PURL, when discovering by PURL)—whether
+because it is unknown or because the server withholds it—the discovery endpoint
 shall return `404` with a TEA error response body. A response is a
 TEA error response only when its `Content-Type` is `application/json` (optionally with
 parameters such as `charset`) and the body is a JSON object with a string `error`
@@ -435,7 +421,7 @@ another endpoint solely in response to `401` or `403`.
 
 Clients shall verify server certificates for every HTTPS connection used in discovery and
 subsequent API access, including the server identity check of
-[RFC 9525](https://www.rfc-editor.org/rfc/rfc9525), and shall not use connections that
+RFC 9525, and shall not use connections that
 fail validation.
 
 Clients shall not automatically forward a TEA access token to a different origin, or
@@ -487,45 +473,16 @@ Common errors:
 
 #### 503 Service Unavailable
 
-- temporary failure  
+- temporary failure
 
 #### TLS failure
 
 - certificate validation error
 
-### Client behavior
+### Client behaviour
 
 Clients should:
 
-- retry with backoff  
-- validate TLS certificates  
+- retry with backoff
+- validate TLS certificates
 - fail closed if discovery cannot be validated
-
-## Notes Regarding .well-known
-
-Servers shall not locate the actual TEA service endpoint at the
-`/.well-known/tea` URI. This URI is reserved for the TEA discovery
-document and uses the well-known URI mechanism defined in
-[RFC 8615](https://www.rfc-editor.org/rfc/rfc8615).
-
-### TLS Encryption
-
-The `.well-known` endpoint shall only be available via HTTPS. Using unencrypted HTTP is not
-valid. Clients shall verify the server certificate for this connection as for any other
-TEA HTTPS request, including the server identity check of [RFC 9525](https://www.rfc-editor.org/rfc/rfc9525).
-
-Conforming deployments shall advertise only lowercase `https` base URLs, in
-`.well-known/tea` `endpoints[].url` and in `/discovery` `servers[].rootUrl` alike. A
-client shall reject an `http` base URL unless it has been explicitly configured to
-allow that specific base for local testing. The allowance is per configured base URL,
-never a global setting, so it cannot apply to a base the client learned from discovery.
-Credentials may be sent to a base allowed this way; a deployment that relies on it is
-not conforming.
-
-- TEI: `tei://products.example.com/uuid/d4d9f54a-abcf-11ee-ac79-1a52914d44b1`
-- URL: `https://products.example.com/.well-known/tea`
-
-## References
-
-- [IANA .well-known registry](https://www.iana.org/assignments/well-known-uris/well-known-uris.xhtml)
-- [RFC 8615 - Well-known Uniform Resource Identifiers](https://www.rfc-editor.org/info/rfc8615/)

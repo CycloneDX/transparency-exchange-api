@@ -1,19 +1,16 @@
-# Transparency Exchange API - Authentication and authorization
+# Authentication and authorization
 
-This document covers authentication and authorization on the consumer side
-of a TEA service - the discovery and download of software transparency artefacts.
+TEA servers need not support authentication to conform to this Standard, however TEA
+servers which do support authentication shall conform to this clause fully.
 
-A user of a TEA service may get access to all objects (components, collections) and
-artefacts or just a subset, depending on the publisher of the data. __Authorization__ is connected
+A user of a TEA service may be authorized to access all objects (components, collections) and
+artefacts or only a subset, depending on the publisher of the data. __Authorization__ is connected
 to __authentication__.
 
-The level of authorization is up to the implementer of the TEA implementation and the publisher,
-whether an identity gets access to all objects in a service or just a subset.
-
-In order to get interoperability between clients and servers implementing the protocol, the
-specification focuses on the authentication. After successful authentication, the authorization
-may be implemented in multiple ways - on various levels of the API - depending on what information
-the user can access.
+In order to support interoperability between clients and servers implementing this Standard, this
+Clause focuses on authentication. After successful authentication, the authorization
+may be implemented in multiple ways and at various levels of the API based on what information
+the user is authorized to access.
 
 As an example, one implementation may publish all information about existing artefacts and software
 versions openly, but restrict access to artefacts to those that match the user's installation.
@@ -23,9 +20,6 @@ the user has not acquired.
 For most Open Source projects, implementing authentication - setting up accounts and managing
 authorization - does not make much sense, since the information is usually in the open anyway.
 
-## Authentication is not required in this standard
-
-This specification does not require a TEA server to authenticate its users.
 
 The requirements of this chapter apply to a TEA server that requires authentication for some or all
 of its objects, and therefore implements the token endpoint, and to a TEA client that accesses such
@@ -297,19 +291,6 @@ metadata ([RFC 9728](https://www.rfc-editor.org/rfc/rfc9728)) and reference it f
 `WWW-Authenticate` challenge, allowing a client to locate the authorization server automatically.
 This is optional; it does not replace the token endpoint, which remains the interoperable baseline,
 and it does not replace the challenge as the way a client discovers that authentication is required.
-
-## References
-
-* RFC 6749: The OAuth 2.0 Authorization Framework (https://www.rfc-editor.org/rfc/rfc6749)
-* RFC 6750: The OAuth 2.0 Authorization Framework: Bearer Token Usage (https://www.rfc-editor.org/rfc/rfc6750)
-* RFC 7617: The 'Basic' HTTP Authentication Scheme (https://www.rfc-editor.org/rfc/rfc7617)
-* RFC 7521: Assertion Framework for OAuth 2.0 Client Authentication and Authorization Grants (https://www.rfc-editor.org/rfc/rfc7521)
-* RFC 7522: SAML 2.0 Profile for OAuth 2.0 Client Authentication and Authorization Grants (https://www.rfc-editor.org/rfc/rfc7522)
-* RFC 7523: JWT Profile for OAuth 2.0 Client Authentication and Authorization Grants (https://www.rfc-editor.org/rfc/rfc7523)
-* RFC 8693: OAuth 2.0 Token Exchange (https://www.rfc-editor.org/rfc/rfc8693) — outside the TEA 1.0 interoperable authentication profile
-* RFC 8705: OAuth 2.0 Mutual-TLS Client Authentication and Certificate-Bound Access Tokens (https://www.rfc-editor.org/rfc/rfc8705)
-* RFC 9068: JSON Web Token (JWT) Profile for OAuth 2.0 Access Tokens (https://www.rfc-editor.org/rfc/rfc9068)
-* RFC 9728: OAuth 2.0 Protected Resource Metadata (https://www.rfc-editor.org/rfc/rfc9728)
 
 ### A note on API keys and `X-API-Key`
 

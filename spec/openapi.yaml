@@ -277,7 +277,7 @@ paths:
         - name: uuid
           in: path
           required: true
-          description: Unique UUID of TEA Product Release in the TEA server
+          description: UUID of TEA Product Release in the TEA server
           schema:
             "$ref": "#/components/schemas/uuid"
       responses:
@@ -2696,9 +2696,9 @@ components:
         perform this operation. Authorization decisions are server-specific and are not
         constrained by this specification.
 
-        Servers may instead conceal the existence of a resource from an authenticated
+        Servers may choose to conceal the existence of a resource from an authenticated
         but unauthorized client by answering `404` (see `404-object-by-id-not-found`).
-        Clients shall treat `403` and that concealing `404` as non-access; neither
+        Clients shall treat `403` and a concealing `404` as non-access; neither
         implies that retrying with the same token will succeed.
       content:
         application/json:
