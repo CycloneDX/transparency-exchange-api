@@ -1,6 +1,11 @@
 name: Build & Test Generated API Clients
 
 on:
+    pull_request:
+        paths:
+            - 'spec/openapi.yaml'
+            - 'spec/generators/**'
+            - '.github/workflows/test-generate-api-clients.yaml'
     push:
         branches: ['main']
     workflow_dispatch:

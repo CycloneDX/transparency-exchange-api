@@ -1,0 +1,14 @@
+{
+  "private": true,
+  "name": "tea-spec-checks",
+  "description": "CI checks for the TEA OpenAPI document and discovery schema",
+  "type": "module",
+  "scripts": {
+    "validate-examples": "node validate-examples.mjs"
+  },
+  "dependencies": {
+    "ajv": "8.20.0",
+    "ajv-formats": "3.0.1",
+    "yaml": "2.9.1"
+  }
+}

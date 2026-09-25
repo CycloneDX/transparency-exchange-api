@@ -1,0 +1,65 @@
+name: Validate Specification
+
+on:
+    pull_request:
+        paths:
+            - 'spec/openapi.yaml'
+            - 'discovery/tea-well-known.schema.json'
+            - '.github/scripts/**'
+            - '.github/workflows/validate-spec.yaml'
+    push:
+        branches: ['main']
+    workflow_dispatch:
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+env:
+    NODE_VERSION: '22'
+    REDOCLY_CLI_VERSION: '2.54.3'
+
+# see https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/controlling-permissions-for-github_token
+permissions:
+    contents: read
+
+jobs:
+    lint-openapi:
+        name: Lint OpenAPI
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              # see https://github.com/actions/checkout
+              uses: actions/checkout@v4
+
+            - name: Setup Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+
+            # Fails on errors only; the recommended ruleset's warnings are reported
+            # but do not fail the build.
+            - name: Lint spec/openapi.yaml
+              run: npx --yes @redocly/cli@${{ env.REDOCLY_CLI_VERSION }} lint spec/openapi.yaml
+
+    validate-examples:
+        name: Validate Examples
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Setup Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+                  cache: npm
+                  cache-dependency-path: .github/scripts/package-lock.json
+
+            - name: Install dependencies
+              run: npm ci
+              working-directory: .github/scripts
+
+            - name: Validate OpenAPI and discovery schema examples
+              run: npm run validate-examples
+              working-directory: .github/scripts
