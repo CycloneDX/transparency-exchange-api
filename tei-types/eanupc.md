@@ -26,7 +26,7 @@ those spellings are different TEIs.
 ## Example
 
 ```text
-tei://example.com/eanupc/1234567890123
+tei://example.com/eanupc/1234567890128
 ```
 
 ## Specification
