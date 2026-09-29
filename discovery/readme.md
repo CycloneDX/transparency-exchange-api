@@ -511,8 +511,8 @@ document and uses the well-known URI mechanism defined in
 ### TLS Encryption
 
 The following note is **informative**.
-HTTP and HTTPS are protocols. `http` and `https` are URI schemes, the part of a URL before
-the colon, as in `https://`.
+HTTP is the protocol. `http` and `https` are URI schemes, the part of a URL before the colon,
+as in `https://`. The `https` scheme identifies HTTP over TLS, which this document calls HTTPS.
 
 The `.well-known` endpoint shall only be available via HTTPS. Using unencrypted HTTP is not
 valid. Clients shall verify the server certificate for this connection as for any other
