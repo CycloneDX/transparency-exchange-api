@@ -210,7 +210,7 @@ Example:
   "schemaVersion": 1,
   "endpoints": [
     {
-      "url": "https://api.teaexample.com",
+      "url": "https://api.example.com",
       "versions": 
         [
           "1.0.0"
@@ -218,7 +218,7 @@ Example:
       "priority": 1
     },
     {
-      "url": "https://api2.teaexample.com/mytea",
+      "url": "https://api2.example.com/mytea",
       "versions": 
         [
           "1.0.0"
@@ -288,7 +288,7 @@ url-encoded according to [RFC3986].
 
 Examples:
 1. For TEI `tei://products.example.com/uuid/d4d9f54a-abcf-11ee-ac79-1a52914d44b1`
-`https://api.teaexample.com/v1.0.0/discovery?tei=tei%3A//products.example.com/uuid/d4d9f54a-abcf-11ee-ac79-1a52914d44b1`
+`https://api.example.com/v1.0.0/discovery?tei=tei%3A//products.example.com/uuid/d4d9f54a-abcf-11ee-ac79-1a52914d44b1`
 2. For TEI `tei://products.example.com/purl/cGtnOmRlYi9kZWJpYW4vY3VybEA3LjUwLjMtMT9hcmNoPWkzODYmZGlzdHJvPWplc3NpZQ`
 `https://api2.example.com/mytea/v1.0.0/discovery?tei=tei%3A//products.example.com/purl/cGtnOmRlYi9kZWJpYW4vY3VybEA3LjUwLjMtMT9hcmNoPWkzODYmZGlzdHJvPWplc3NpZQ`
 
@@ -333,7 +333,7 @@ Example (one match):
     "productReleaseUuid": "d4d9f54a-abcf-11ee-ac79-1a52914d44b1",
     "servers": [
       {
-        "rootUrl": "https://api.teaexample.com",
+        "rootUrl": "https://api.example.com",
         "versions": ["1.0.0"]
       }
     ]
@@ -354,7 +354,7 @@ host from an identifier alone.
 
 Example:
 
-`https://api.teaexample.com/v1.0.0/discovery?purl=pkg%3Amaven%2Forg.apache.logging.log4j%2Flog4j-core%402.24.3`
+`https://api.example.com/v1.0.0/discovery?purl=pkg%3Amaven%2Forg.apache.logging.log4j%2Flog4j-core%402.24.3`
 
 The response shape, non-empty success array, and `404` with `OBJECT_UNKNOWN` when the
 server does not resolve the identifier are the same as for TEI lookup.

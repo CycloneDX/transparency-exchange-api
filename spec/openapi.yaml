@@ -2026,7 +2026,7 @@ components:
           type: string
           format: uri
           pattern: '^https?://[^/?#@]+(/[^?#\s]*[^/?#\s])?$'
-          example: https://api.teaexample.com
+          example: https://api.example.com
         versions:
           description: |
             Supported TEA API versions at this server, without a leading `v`. Each value
@@ -2594,7 +2594,7 @@ components:
         type: string
         format: uri
         examples:
-          - https://api.teaexample.com/v1.0.0/artifact/2ff3ae7c-8eab-4e0b-9b8b-1a0c4c4c1c2d/3/download?mediaType=application%2Fvnd.cyclonedx%2Bjson
+          - https://api.example.com/v1.0.0/artifact/2ff3ae7c-8eab-4e0b-9b8b-1a0c4c4c1c2d/3/download?mediaType=application%2Fvnd.cyclonedx%2Bjson
     artifact-vary:
       description: |
         If changing or removing the `Accept` request header could change the selected
@@ -2646,7 +2646,7 @@ components:
         type: string
         format: uri
         examples:
-          - https://api.teaexample.com/v1.0.0/artifact/2ff3ae7c-8eab-4e0b-9b8b-1a0c4c4c1c2d/3/signature/download?mediaType=application%2Fvnd.cyclonedx%2Bjson
+          - https://api.example.com/v1.0.0/artifact/2ff3ae7c-8eab-4e0b-9b8b-1a0c4c4c1c2d/3/signature/download?mediaType=application%2Fvnd.cyclonedx%2Bjson
   responses:
     400-invalid-request:
       description: |
