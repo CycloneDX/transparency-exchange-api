@@ -59,12 +59,12 @@
       "schemaVersion": 1,
       "endpoints": [
         {
-          "url": "https://api.teaexample.com",
+          "url": "https://api.example.com",
           "versions": ["1.0.0"],
           "priority": 1
         },
         {
-          "url": "https://api2.teaexample.com/mytea",
+          "url": "https://api2.example.com/mytea",
           "versions": ["1.0.0"],
           "priority": 0.5
         }
