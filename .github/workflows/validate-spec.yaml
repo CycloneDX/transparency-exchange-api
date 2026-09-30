@@ -17,7 +17,6 @@ concurrency:
 
 env:
     NODE_VERSION: '22'
-    REDOCLY_CLI_VERSION: '2.54.3'
 
 # see https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/controlling-permissions-for-github_token
 permissions:
@@ -36,11 +35,18 @@ jobs:
               uses: actions/setup-node@v4
               with:
                   node-version: ${{ env.NODE_VERSION }}
+                  cache: npm
+                  cache-dependency-path: .github/scripts/package-lock.json
+
+            - name: Install dependencies
+              run: npm ci
+              working-directory: .github/scripts
 
             # Fails on errors only; the recommended ruleset's warnings are reported
             # but do not fail the build.
             - name: Lint spec/openapi.yaml
-              run: npx --yes @redocly/cli@${{ env.REDOCLY_CLI_VERSION }} lint spec/openapi.yaml
+              run: npm run lint-openapi
+              working-directory: .github/scripts
 
     validate-examples:
         name: Validate Examples
@@ -57,7 +63,7 @@ jobs:
                   cache-dependency-path: .github/scripts/package-lock.json
 
             - name: Install dependencies
-              run: npm ci
+              run: npm ci --omit=dev
               working-directory: .github/scripts
 
             - name: Validate OpenAPI and discovery schema examples
