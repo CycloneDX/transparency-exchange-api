@@ -57,9 +57,8 @@ The TEI for a product release can be communicated to the user in many ways.
 - On the invoice or delivery note
 - For software with a GUI, in an "about" box
 
-The user obtains the TEI from the manufacturer or open source project, through a reseller,
-or directly. The TEI is defined by the manufacturer or open source project and cannot
-normally be derived from known information.
+The user obtains the TEI from the vendor, through a reseller, or directly. The TEI is
+defined by the vendor and cannot normally be derived from known information.
 
 ## TEA Discovery - defining an extensible identifier
 
@@ -67,8 +66,8 @@ TEA discovery is the process where a user with a product release identifier can 
 artefacts automatically, with or without authentication. A globally unique identifier is
 required for a given product release. This identifier is called the Transparency Exchange Identifier (TEI).
 
-In this document, "vendor" means the party that publishes TEIs for its product releases,
-whether a commercial vendor or an open source project.
+"Vendor" means the party that publishes TEIs for its product releases, whether a commercial
+company or an open source project.
 
 The TEI is based on DNS. The domain name provides a namespace in which the vendor defines
 product release identifiers using existing or new identifier schemes, such as EAN/UPC bar codes
