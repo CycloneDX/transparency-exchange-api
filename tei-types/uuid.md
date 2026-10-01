@@ -18,8 +18,8 @@ tei://<domain-name>/uuid/<uuid>
 
 ## Canonical form
 
-The 36-character hyphenated form in lowercase, as RFC 9562 specifies for output
-(`xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`).
+The 36-character hyphenated textual representation defined in RFC 9562, with
+lowercase hexadecimal letters (`xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`).
 Not used: uppercase hexadecimal, the form without hyphens, braces, or a `urn:uuid:` prefix.
 
 ## Example

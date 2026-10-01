@@ -48,9 +48,9 @@ TEA project (Ecma TC54 TG1)
 
 ## Interoperability considerations
 
-The PURL is encoded, not percent-escaped, so a TEI comparison never decodes it;
-two PURLs that differ only in canonicalisation produce different TEIs.
-Publishers shall canonicalise the PURL before encoding.
+Publishers shall canonicalize the PURL before Base64URL encoding. PURLs with the same
+canonical form produce the same identifier segment. TEI comparison operates on the
+encoded identifier and does not decode the PURL.
 
 ## Security and privacy considerations
 
