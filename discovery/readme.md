@@ -517,7 +517,15 @@ as in `https://`. The `https` scheme identifies HTTP over TLS, which this docume
 
 </emu-note>
 
-The `.well-known` endpoint shall only be available via HTTPS.
+The `.well-known` endpoint shall only be available via HTTPS. The client shall verify
+the server certificate for that connection against the TEI `domain-name`, using the
+server identity check of [RFC 9525](https://www.rfc-editor.org/rfc/rfc9525), so that the
+host is the one named in the TEI.
+
+Example of resolving a TEI to the well-known URL:
+
+- TEI: `tei://products.example.com/uuid/d4d9f54a-abcf-11ee-ac79-1a52914d44b1`
+- URL: `https://products.example.com/.well-known/tea`
 
 Conforming deployments shall advertise only lowercase `https` base URLs, in
 `.well-known/tea` `endpoints[].url` and in `/discovery` `servers[].rootUrl` alike. A
