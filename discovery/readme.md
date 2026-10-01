@@ -510,13 +510,22 @@ document and uses the well-known URI mechanism defined in
 
 ### TLS Encryption
 
-The following note is **informative**.
+<emu-note>
+
 HTTP is the protocol. `http` and `https` are URI schemes, the part of a URL before the colon,
 as in `https://`. The `https` scheme identifies HTTP over TLS, which this document calls HTTPS.
 
-The `.well-known` endpoint shall only be available via HTTPS. Using unencrypted HTTP is not
-valid. Clients shall verify the server certificate for this connection as for any other
-TEA HTTPS request, including the server identity check of [RFC 9525](https://www.rfc-editor.org/rfc/rfc9525).
+</emu-note>
+
+The `.well-known` endpoint shall only be available via HTTPS. The client shall verify
+the server certificate for that connection against the TEI `domain-name`, using the
+server identity check of [RFC 9525](https://www.rfc-editor.org/rfc/rfc9525), so that the
+host is the one named in the TEI.
+
+Example of resolving a TEI to the well-known URL:
+
+- TEI: `tei://products.example.com/uuid/d4d9f54a-abcf-11ee-ac79-1a52914d44b1`
+- URL: `https://products.example.com/.well-known/tea`
 
 Conforming deployments shall advertise only lowercase `https` base URLs, in
 `.well-known/tea` `endpoints[].url` and in `/discovery` `servers[].rootUrl` alike. A
@@ -525,9 +534,6 @@ allow that specific base for local testing. The allowance is per configured base
 never a global setting, so it cannot apply to a base the client learned from discovery.
 Credentials may be sent to a base allowed this way; a deployment that relies on it is
 not conforming.
-
-- TEI: `tei://products.example.com/uuid/d4d9f54a-abcf-11ee-ac79-1a52914d44b1`
-- URL: `https://products.example.com/.well-known/tea`
 
 ## References
 
