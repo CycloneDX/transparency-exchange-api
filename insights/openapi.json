@@ -1,0 +1,178 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Insights API",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.example.com",
+      "description": "Production server"
+    }
+  ],
+  "paths": {
+    "/insights/static": {
+      "post": {
+        "summary": "Static Insights Query (CEL)",
+        "description": "Use a CEL (Common Expression Language) expression to query internal data and return a CycloneDX fragment. Server-side validation ensures the expression is valid CEL. If the expression fails validation, a 400 error is returned. Implementations may also limit or omit data if the query requests restricted information.",
+        "operationId": "postStaticInsights",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "expression"
+                ],
+                "properties": {
+                  "expression": {
+                    "type": "string",
+                    "description": "A valid CEL expression. The server will return 400 if invalid. If the expression requests restricted data, a 403 may be returned or the data may be omitted."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "A CycloneDX fragment based on the static (CEL) query. Sensitive data may be omitted if the client is not authorized to view it.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CycloneDXBom"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid CEL expression or request error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "example": {
+                    "error": "Invalid CEL expression syntax"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - the requested data is restricted for this client",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "A message indicating that this query is not allowed or contains restricted data."
+                    }
+                  },
+                  "example": {
+                    "error": "You are not permitted to access this information."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/insights/dynamic": {
+      "post": {
+        "summary": "Dynamic Insights Query (AI)",
+        "description": "Accept a natural-language prompt to be used by an AI system for querying or generating insights, returning a CycloneDX fragment. Implementations may also limit or omit data if the query requests restricted information.",
+        "operationId": "postDynamicInsights",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "prompt"
+                ],
+                "properties": {
+                  "prompt": {
+                    "type": "string",
+                    "description": "The user-provided natural-language prompt or question."
+                  },
+                  "systemPrompt": {
+                    "type": "string",
+                    "description": "An optional higher-level instruction (e.g., a system persona)."
+                  },
+                  "modelSettings": {
+                    "type": "object",
+                    "description": "Optional model tuning parameters or flags. Implementation specific.",
+                    "additionalProperties": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "A CycloneDX fragment derived from the AI interpretation of the prompt. Sensitive data may be omitted if the client is not authorized to view it.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CycloneDXBom"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - the requested data is restricted for this client",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "A message indicating that this query is not allowed or contains restricted data."
+                    }
+                  },
+                  "example": {
+                    "error": "You are not permitted to access this information."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CycloneDXBom": {
+        "$ref": "https://raw.githubusercontent.com/CycloneDX/specification/master/schema/bom-1.6.schema.json"
+      }
+    }
+  }
+}
