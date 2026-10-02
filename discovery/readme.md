@@ -156,7 +156,7 @@ tei://example.com/purl/cGtnOnB5cGkvY3ljbG9uZWR4LXB5dGhvbi1saWI=
 ```
 
 So that one identifier has one spelling,
-a vendor shall publish a TEI in its canonical form:
+a vendor shall publish a TEI in the following form:
 
 - the scheme `tei` in lowercase,
 - the domain name in lowercase ASCII, using A-labels for internationalised names,
