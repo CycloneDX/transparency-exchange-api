@@ -12,6 +12,7 @@
   - [Selecting an API base from `.well-known/tea`](#selecting-an-api-base-from-well-knowntea)
   - [Discovery response](#discovery-response)
   - [Discovery by PURL](#discovery-by-purl)
+  - [Unresolved identifiers](#unresolved-identifiers)
 - [References](#references)
 
 ## From product identifier to API endpoint
@@ -359,25 +360,32 @@ Example:
 The response shape, non-empty success array, and `404` with `OBJECT_UNKNOWN` when the
 server does not resolve the identifier are the same as for TEI lookup.
 
-If this server does not resolve the TEI (or PURL, when discovering by PURL), whether
-because it is unknown or because the server withholds it, the discovery endpoint
-shall return `404` with a TEA error response body. A response is a
-TEA error response only when its `Content-Type` is `application/json` (optionally with
-parameters such as `charset`) and the body is a JSON object with a string `error`
-property (typically `OBJECT_UNKNOWN`). Clients shall ignore properties they do not
-recognize and shall not reject the response for an `error` value they do not know, so a
-later TEA version can extend `error-response` without turning its `404`s into failover
-triggers. Other JSON 404 bodies (for example `{"message":"Not Found"}`) are not TEA
+### Unresolved identifiers
+
+If the server does not resolve the requested TEI or PURL, either because the identifier is
+unknown or because the server withholds the resolution result, the `/discovery` endpoint
+shall return `404` with a TEA error response (see the `404-object-by-id-not-found` response).
+
+A response is a TEA error response only when its `Content-Type` is `application/json`
+(optionally with parameters such as `charset`) and its body is a JSON object with a string
+`error` property, typically `OBJECT_UNKNOWN`. Clients shall ignore properties they do not
+recognize and shall not reject the response for an `error` value they do not know, so that a
+later TEA version can extend `error-response` without turning its `404` responses into
+failover triggers. Other JSON `404` bodies, such as `{"message":"Not Found"}`, are not TEA
 error responses.
 
-That conforming TEA `404` means this server does not resolve the identifier, whether
-because it is unknown or because the server withholds it (see
-`404-object-by-id-not-found`); the client shall not infer which from the status alone.
-The client shall not treat it as “`/discovery` is missing” and shall not fail over to
-another endpoint solely because of it. The client shall stop discovery for that
-identifier at this authority and report that the identifier could not be resolved
-there, including the `error` value received. That outcome shall not be reported as
-evidence that no updates are available.
+On a `404` TEA error response from `/discovery`, the client:
+
+- shall not infer from the status alone whether the identifier is unknown or the resolution
+  result is withheld;
+- shall not treat the response as meaning that `/discovery` is missing, and shall not fail
+  over to another endpoint solely because of the response;
+- shall stop discovery for that identifier at this authority and report that the identifier
+  could not be resolved there, including the `error` value received; and
+- shall not report that outcome as evidence that no updates are available.
+
+A `404` that is not a TEA error response is a failed attempt; see
+[Failover, invalid documents, and attempt bounds](#failover-invalid-documents-and-attempt-bounds).
 
 ### Failover, invalid documents, and attempt bounds
 
@@ -388,14 +396,15 @@ whether they occur in the well-known stage or the API discovery stage:
 - DNS resolution failure for the host being contacted
 - TLS certificate validation failure
 - HTTP `5xx` from the host being contacted
-- A `404` that is not a TEA error response as defined above (for example a web server
+- A `404` that is not a TEA error response as defined in
+  [Unresolved identifiers](#unresolved-identifiers) (for example a web server
   answering for an unmounted path, or a JSON body without an `error` property)
 - A response body that is not usable JSON, or that does not conform to the expected
   schema for that stage (malformed or non-conforming `.well-known/tea`, or an invalid
   `/discovery` success body)
 
 A conforming TEA `/discovery` `404` (`error-response`, typically `OBJECT_UNKNOWN`) is
-not a failover trigger; see above.
+not a failover trigger; see [Unresolved identifiers](#unresolved-identifiers).
 
 On such a failure, the client shall select the next untried well-known endpoint that
 supports a compatible API version, if one is available. While doing so the client
