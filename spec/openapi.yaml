@@ -52,6 +52,15 @@ paths:
         after one query-decoding step. Escapes that are part of a PURL value are preserved
         by that single decode.
 
+        A TEI is compared as a sequence of characters and is published in canonical form
+        (lowercase scheme, domain name and type; identifier in the canonical form of its
+        type), as defined in the discovery document. The client passes it exactly as
+        received and shall not lowercase the domain name or otherwise normalize it. A
+        server shall not resolve a noncanonical TEI as if it were the canonical spelling;
+        it should answer `400` for a `tei` value that is not in canonical form, and a
+        server that does not validate canonical form answers `404` because the value
+        matches none of its published TEIs.
+
         Example request lines after serialization:
         - `.../discovery?tei=tei%3A%2F%2Fproducts.example.com%2Fuuid%2F47f51950-b0e2-11f1-adc2-1a52914d44b2`
         - `.../discovery?purl=pkg%3Amaven%2Forg.apache.logging.log4j%2Flog4j-core%402.24.3`
@@ -70,8 +79,11 @@ paths:
           required: false
           description: |
             Transparency Exchange Identifier (TEI) for the product being discovered, as the
-            logical TEI string. Do not pre-encode for the schema example or client model;
-            apply query-parameter encoding once when forming the HTTP request.
+            logical TEI string in its canonical form, exactly as received. Do not lowercase,
+            decode, re-encode or otherwise normalize any part of it. Do not pre-encode for
+            the schema example or client model; apply query-parameter encoding once when
+            forming the HTTP request. The server removes that encoding once before
+            validating and comparing the TEI.
           schema:
             type: string
             examples:
