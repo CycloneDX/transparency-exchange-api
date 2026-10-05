@@ -110,8 +110,10 @@ tei://<domain-name>/<type>/<unique-identifier>
 
 A TEI may identify several product releases,
 for example when a boxed product keeps its EAN across firmware versions.
-A discovery lookup therefore returns a list,
-and clients shall treat its order as priority (first entry highest).
+A successful `/discovery` response is always a non-empty JSON array,
+including when it contains only one result.
+Clients shall treat the array order as priority (first entry highest).
+See [Discovery response](#discovery-response).
 A vendor should make each TEI identify a single product release;
 a type such as `uuid` or `hash` always allows this.
 
@@ -299,8 +301,9 @@ a given API version shall implement it.
 
 ### Discovery response
 
-A successful `/discovery` response is a JSON array of `discovery-info` objects. Each
-element identifies one resolved product release and the TEA servers that serve it:
+A successful `/discovery` response is a non-empty JSON array of `discovery-info`
+objects, including when it contains only one result. Each element identifies one
+resolved product release and the TEA servers that serve it:
 
 - `productReleaseUuid` — UUID of the TEA Product Release
 - `servers` — non-empty array of `server-info` objects (`rootUrl`, `versions`, and
