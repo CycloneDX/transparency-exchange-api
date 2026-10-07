@@ -6,12 +6,18 @@ described in the [discovery document](/discovery/readme.md).
 
 ## API usage
 
-The standard TEI points to a product release. A product release is something sold, downloaded as an open source project or acquired by other means. It contains one or multiple component releases.
+The standard TEI points to a product release. A product release is something sold,
+downloaded as an open source project or acquired by other means. A Product Release
+contains component references. Each reference identifies a Component and can also
+identify a particular Component Release.
 
-- __List of TEA Component Releases__: Component releases are components of a product release.
-  Each Component release has its own versioning and its own set of artefacts, they have a timestamp and
-  a lifecycle enumeration. They are normally sorted by timestamps. The TEA API has no requirements of
-  type of version string (semantic or any other scheme) - it's just an identifier set by the manufacturer.
+- __List of component references__: each entry identifies a Component by UUID. Some
+  entries also identify a particular Component Release by UUID; those without a
+  release UUID do not select a release.
+- Where a Component Release is retrieved, it has its own versioning and artefacts,
+  a timestamp and a lifecycle enumeration. Component Releases are normally sorted
+  by timestamps. The TEA API has no requirements of type of version string
+  (semantic or any other scheme) - it's just an identifier set by the manufacturer.
 - __List of TEA Collections__: For each release, there is a list of TEA collections as indicated
   by release date and a version integer starting with collection version 1.
 - __List of TEA Artifacts__: The collection is unique for a version and contains a list of artefacts.
@@ -20,8 +26,8 @@ The standard TEI points to a product release. A product release is something sol
 - __List of artefact formats__: An artefact can be published in multiple formats.
 
 Finding the list of artefacts for a Product Release starts from the product
-release TEI and, in some cases, the version of each component
-(TEA Component Release).
+release TEI. When a component reference includes a Component Release UUID, the
+client can use it to retrieve that release directly.
 
 ## API flow based on TEI discovery
 
@@ -49,18 +55,19 @@ sequenceDiagram
 
     alt Multiple Product Releases returned
         user ->> tea_product_release: Resolve Product Release(s)
-        tea_product_release -->> user: List of Component Releases
-        user ->> user: Identify Discriminating Component Releases
-        user ->> tea_component_release: Resolve Discriminating Component Releases
-        tea_component_release -->> user: Discriminating Component Release Details
-        user ->> user: Converge on a Single Product Release
+        tea_product_release -->> user: Product Releases with component references
+        opt Additional details needed for a referenced Component Release
+            user ->> tea_component_release: Resolve the referenced Component Release
+            tea_component_release -->> user: Component Release details
+        end
+        user ->> user: Identify the relevant Product Release
     end
 
     user ->> tea_product_release: Resolve Product Release Details
-    tea_product_release -->> user: Product Release with its latest Collection and the list of Component Releases
+    tea_product_release -->> user: Product Release with its latest Collection and component references
 
-    loop For each tea_component_release
-        user ->> tea_component_release: Resolve Component Release Details
+    loop For each component reference that includes a Component Release UUID
+        user ->> tea_component_release: Resolve that Component Release
         tea_component_release -->> user: Component Release with its latest Collection (list of TEA Artifacts)
     end
 
@@ -89,17 +96,17 @@ sequenceDiagram
     user ->> tea_product_release: Search for product releases based on identifier (CPE, PURL, TEI)
     tea_product_release ->> user: List of product releases
 
-    user ->> tea_product_release: Finding all product parts (TEA Component Releases) and facts about chosen product
-    tea_product_release ->> user: List of TEA Component Releases
+    user ->> tea_product_release: Finding component references and facts about chosen product
+    tea_product_release ->> user: Product Release with component references
 
-    user ->> tea_component_release: Finding information of a component release
-    tea_component_release ->> user: Component release with its latest Collection
-
-    user ->> tea_collection: Finding all TEA Artifacts for TEA Component Release
-    tea_collection ->> user: List of TEA Artifacts and formats available for each TEA Artifact
-
-    user ->> tea_artifact: Request to download TEA artifact
-    tea_artifact ->> user: TEA Artifact
+    opt Component reference includes a Component Release UUID
+        user ->> tea_component_release: Retrieve the referenced Component Release
+        tea_component_release ->> user: Component Release with its latest Collection
+        user ->> tea_collection: Retrieve artefacts for that Component Release
+        tea_collection ->> user: Artefacts and their available formats
+        user ->> tea_artifact: Request to download TEA artifact
+        tea_artifact ->> user: TEA Artifact
+    end
 
 ```
 
