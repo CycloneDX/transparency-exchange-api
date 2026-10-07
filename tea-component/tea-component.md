@@ -13,9 +13,9 @@ name, hash or anything else.
 
 ## Versions and TEIs
 
-Each product release and product object has one or multiple TEI URLs.
+A TEI resolves to one or more Product Releases. A Product groups related Product Releases.
 
-For the API to be able to present a list of versions in a cronological order,
+For the API to be able to present a list of versions in a chronological order,
 a timestamp for a release is required.
 
 ## Structure
