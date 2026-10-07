@@ -25,7 +25,7 @@ The data model is flexible to be able to handle many different use cases, from m
 - __TEA Product Release__: The primary entry point. The __Transparency Exchange Identifier, TEI__ resolves to a specific Product Release. A Product Release belongs to a __TEA Product__.
 - __TEA Product__: A higher-level object that groups a set of Product Releases for a product line or family. Products can be discovered and browsed.
 - __TEA Component__: Represents a component lineage. A Component is a collection of Component Releases.
-- __TEA Release__: A Component Release object. Each Component Release have its own TEA Collection.
+- __TEA Component Release__: A Component Release object. Each Component Release has its own TEA Collection.
 - __TEA Collection__: A versioned list of artifacts for a specific Component Release or Product Release. Collections are versioned to indicate changes, e.g., an updated VEX or corrected SBOM.
 - __TEA artifacts__: Files associated with a Collection. A single TEA artifact can appear in multiple Collections.
 
@@ -44,7 +44,7 @@ searching, and retrieval of xBOM artifacts.
 
 Standards and requirements along with attestations to those standards and requirements are captured and supported
 by CycloneDX Attestations (CDXA). Much like xBOM, these are supply chain artifacts that are captured allowing for
-consistent publishing, searching, and retrieval.
+consistent searching, and retrieval.
 
 ### VDR/VEX
 
@@ -66,14 +66,11 @@ Inclusion of CLE is optional and it may be introduced on the following levels:
 - TEA Product Release
 - TEA Component Release
 
-If CLE is included, it is the responsibility of the TEA implementation to ensure consistency of
-CLE events across the TEA Product and its releases and similarly across the TEA Component and its releases.
-
 ## Background
 
-The Transparency Exchange API standard is created by OWASP CycloneDX in ECMA TC54 - Software and system transparency.
-TEA is managed by ECMA TC54 TG1.
-TEA depends on and is developed alongside with related ECMA standards, such as:
+The Transparency Exchange API standard is created by OWASP CycloneDX in Ecma TC54 - Software and system transparency.
+TEA is managed by Ecma TC54 TG1.
+TEA depends on and is developed alongside with related Ecma standards, such as:
 
 - PURL, Package URL ECMA-427
 - CycloneDX ECMA-424
