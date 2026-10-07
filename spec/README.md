@@ -11,7 +11,7 @@ We use the OpenAPI Generator with configuration per language/framework in the `g
 ```bash
 docker run \
     --rm \
-    -v "$(PWD):/local" \
+    -v "$(pwd):/local" \
     openapitools/openapi-generator-cli \
     batch --clean /local/spec/generators/typescript.yaml
 ```
