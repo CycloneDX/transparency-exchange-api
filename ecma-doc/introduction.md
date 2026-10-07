@@ -1,6 +1,4 @@
-# OWASP Transparency Exchange API Standard
-
-## Introduction
+# Introduction
 
 The TEA API is created to support automation of the software supply chain. Upstream
 vendors and open source projects can use this standard to keep downstream users
