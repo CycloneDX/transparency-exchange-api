@@ -2,10 +2,7 @@
 
 After TEA discovery, the [Transparency Exchange Identifier (TEI)](/discovery/readme.md) resolves to one or more TEA Product Releases, each a concrete, versioned offering; a TEI normally resolves to exactly one. A TEA Product is a higher-level object that groups multiple Product Releases for a product line or family and can be browsed via `/product/{uuid}/releases`.
 
-- A product release may consist of a single component, the output will be metadata about the
-  product and the TEA COMPONENT object.
-- For a composed product release consisting of a bundle of components or component releases, the response
-  will be multiple TEA COMPONENT objects.
+A Product Release contains component references. Each reference identifies a Component and can also identify a particular Component Release.
 
 In addition, all known TEIs for the product will be returned,
 in order for a TEA client to avoid duplication. This list can
@@ -18,11 +15,10 @@ which products and versions are supported for a specific user.
 
 ## Composite products
 
-A TEA Product Release will be the starting
-point of discovery. The TEA product release will list all included components
-with the UUID of the TEA component. The reference list may also include
-a UUID of a specific release of a component in the case where a product
-always includes a single release of the component.
+A TEA Product Release is the starting point of discovery. It contains
+component references: each identifies a Component by UUID, and can also
+identify a particular Component Release by UUID. A reference without a
+release UUID does not select a Component Release.
 
 The __TEA Product__ object groups multiple releases together.
 
