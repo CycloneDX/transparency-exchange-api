@@ -22,10 +22,10 @@ such as VEX files.
 
 The data model is flexible to be able to handle many different use cases, from mobile applications and Open Source software to complex bundles of hardware sold in stores.
 
-- __TEA Product Release__: The primary entry point. The __Transparency Exchange Identifier, TEI__ resolves to a specific Product Release. A Product Release belongs to a __TEA Product__.
+- __TEA Product Release__: The primary entry point. The Transparency Exchange Identifier (TEI) resolves to one or more Product Releases, normally one. A Product Release belongs to a __TEA Product__.
 - __TEA Product__: A higher-level object that groups a set of Product Releases for a product line or family. Products can be discovered and browsed.
 - __TEA Component__: Represents a component lineage. A Component is a collection of Component Releases.
-- __TEA Release__: A Component Release object. Each Component Release have its own TEA Collection.
+- __TEA Release__: A Component Release object. Each Component Release has its own TEA Collection.
 - __TEA Collection__: A versioned list of artifacts for a specific Component Release or Product Release. Collections are versioned to indicate changes, e.g., an updated VEX or corrected SBOM.
 - __TEA artifacts__: Files associated with a Collection. A single TEA artifact can appear in multiple Collections.
 
