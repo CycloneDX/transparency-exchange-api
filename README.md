@@ -137,6 +137,7 @@ Contributors are listed in the [Contributors](contributors.md) file.
 - Collection: A set of artefacts representing a version of a product
 - Product: An item sold or delivered under one name
 - Product variant: A variant of a product
+- Vendor: The party that publishes TEIs for its product releases; a commercial company or an open source project
 - Version:
 
 ![](images/Project-Koala.svg)
