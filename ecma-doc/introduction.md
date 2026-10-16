@@ -11,6 +11,7 @@ product related artifacts, like BOMs, between systems. The work includes:
 - __Discovery__ using the Transparency Exchange Identifier (TEI)
 - __Retrieval__ of artifacts - from compliance documents to bill of materials and other artifacts
 - __CLE__ - common lifecycle events delivering the status of a product or a release
+- __Authentication and authorization__ - optional support for access control to the API
 
 System and tooling implementors are encouraged to adopt this API standard for
 sending and receiving transparency artifacts between systems. 
@@ -37,14 +38,14 @@ The API itself is not restricting the types of the artifacts published. A few ex
 ### xBOM
 
 Bill of materials for any type of component and service are supported. This includes, but is not limited to,
-SBOM, HBOM, AI/ML-BOM, SaaSBOM, and CBOM. The API provides a BOM format agnostic way of publishing,
+SBOM, HBOM, AI/ML-BOM, SaaSBOM, and CBOM. The API provides a BOM format agnostic way of
 searching, and retrieval of xBOM artifacts.
 
 ### CDXA
 
 Standards and requirements along with attestations to those standards and requirements are captured and supported
 by CycloneDX Attestations (CDXA). Much like xBOM, these are supply chain artifacts that are captured allowing for
-consistent searching, and retrieval.
+consistent searching and retrieval.
 
 ### VDR/VEX
 
@@ -77,4 +78,4 @@ TEA depends on and is developed alongside with related Ecma standards, such as:
 - Common Lifecycle Enumeration ECMA-428
 - VERS, VErsion Range Specifier
 
-For more information of these and releated standards, visit https://tc54.org
+For more information on these and releated standards, visit https://tc54.org
