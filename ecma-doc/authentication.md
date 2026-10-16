@@ -1,0 +1,326 @@
+# Authentication and authorization
+
+This document covers authentication and authorization on the consumer side
+of a TEA service - the discovery and download of software transparency artefacts.
+
+A user of a TEA service may get access to all objects (components, collections) and
+artefacts or just a subset, depending on the publisher of the data. __Authorization__ is connected
+to __authentication__.
+
+The level of authorization is up to the implementer of the TEA implementation and the publisher,
+whether an identity gets access to all objects in a service or just a subset.
+
+In order to get interoperability between clients and servers implementing the protocol, the
+specification focuses on the authentication. After successful authentication, the authorization
+may be implemented in multiple ways - on various levels of the API - depending on what information
+the user can access.
+
+As an example, one implementation may publish all information about existing artefacts and software
+versions openly, but restrict access to artefacts to those that match the user's installation.
+Another implementation can implement a filter that does not show products and versions ("components") that
+the user has not acquired.
+
+For most Open Source projects, implementing authentication - setting up accounts and managing
+authorization - does not make much sense, since the information is usually in the open anyway.
+
+## Authentication is not required in this standard
+
+This specification does not require a TEA server to authenticate its users.
+
+The requirements of this chapter apply to a TEA server that requires authentication for some or all
+of its objects, and therefore implements the token endpoint, and to a TEA client that accesses such
+a server. Such a server implements the baseline below in full; see
+[Servers that protect some objects](#servers-that-protect-some-objects).
+
+A TEA server that requires no authentication need not implement anything in this chapter,
+including the token endpoint. The rules such a server follows are in the "Authentication and
+authorization" section of [Discovery](../discovery/readme.md); see also
+[Servers without authentication](#servers-without-authentication).
+
+## Authentication baseline
+
+Where a service does authenticate, interoperability requires that every TEA client can
+authenticate against every TEA server without server-specific code. This specification therefore
+defines a single mandatory baseline and leaves everything above it optional:
+
+* A TEA server that requires authentication __shall__ implement the token endpoint (`POST /token`)
+  described below, and __shall__ support the API key credential exchange on it.
+* A TEA server __may__ support additional credential types on the same endpoint - federated
+  identity from an external OpenID Connect or SAML provider, mutual TLS, or others.
+* A client that holds an API key for a TEA service __shall__ be able to reach every endpoint it
+  is authorized for using only the baseline exchange.
+
+Two consequences are worth stating explicitly, because they are what make the baseline useful:
+
+* All authenticated access goes through the token endpoint. A server __shall not__ accept an API
+  key directly on the resource endpoints, and a client __shall not__ present one there. The API key
+  is exchanged for an access token, and the access token is what the resource endpoints see.
+* Whatever credential a client starts with, it ends up holding the same thing: a TEA access token
+  presented as an HTTP bearer token. Clients therefore need one code path for the API itself,
+  regardless of how the server manages identity.
+
+### The token endpoint
+
+The token endpoint is `POST /token`, relative to the TEA API base URL, and is defined in the TEA
+OpenAPI specification alongside the resource endpoints. It is an OAuth 2.0 token endpoint as defined
+in [RFC 6749](https://www.rfc-editor.org/rfc/rfc6749) section 3.2; this specification constrains
+which grant types a conforming server shall accept, and adds nothing to the wire format.
+
+RFC 6749 leaves the location of the token endpoint outside its scope - `/token` appears only in its
+examples - so TEA fixes the path here rather than requiring clients to discover it. TEA defines no
+OAuth 2.0 authorization endpoint (RFC 6749 section 3.1): there is no interactive, browser-based
+consent step in TEA, and every grant type described below is one a client can complete on its own.
+
+### API key exchange (mandatory)
+
+An API key consists of two parts issued together by the service: an __identifier__ and a
+__secret__. The identifier need not be confidential; the secret is.
+
+The client presents them using the HTTP Basic authentication scheme
+([RFC 7617](https://www.rfc-editor.org/rfc/rfc7617)) - the identifier as the user-id and the secret
+as the password - with the `client_credentials` grant type. This is OAuth 2.0 client
+authentication as described in RFC 6749 section 2.3.1, which requires a token endpoint to support
+Basic for clients that were issued a secret.
+
+```http
+POST /token HTTP/1.1
+Host: tea.example.com
+Authorization: Basic <base64 of "key-id:key-secret">
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=client_credentials
+```
+
+Per RFC 6749 section 2.3.1 the identifier and secret are each `application/x-www-form-urlencoded`
+encoded before being joined with a colon and Base64 encoded. This only matters when a credential
+contains a colon or characters outside US-ASCII, but clients and servers __shall__ apply it so that
+such credentials interoperate.
+
+Servers __may__ additionally accept the credentials as `client_id` and `client_secret` form
+parameters in the request body. RFC 6749 section 2.3.1 marks this as NOT RECOMMENDED and limits it
+to clients that cannot use Basic, so clients __should__ use Basic where they can.
+
+A successful response is the standard OAuth 2.0 token response (RFC 6749 section 5.1):
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json;charset=UTF-8
+Cache-Control: no-store
+
+{
+  "access_token": "2YotnFZFEjr1zCsicMWpAA",
+  "token_type": "Bearer",
+  "expires_in": 3600
+}
+```
+
+Errors are the standard OAuth 2.0 token error response (RFC 6749 section 5.2), for example
+`invalid_client` for a bad API key or `unsupported_grant_type` for a grant the server does not
+implement.
+
+### Using the access token
+
+The access token is presented on every other TEA endpoint as an HTTP bearer token
+([RFC 6750](https://www.rfc-editor.org/rfc/rfc6750)):
+
+```http
+GET /product/d4d9f54a-abcf-11ee-ac79-1a52914d44b1 HTTP/1.1
+Host: tea.example.com
+Authorization: Bearer 2YotnFZFEjr1zCsicMWpAA
+```
+
+__The access token is opaque to the client.__ Clients __shall not__ inspect, parse, or depend on the
+contents of the token, and __shall not__ assume any particular format. Servers are free to issue a
+random handle, a signed token such as a JWT access token
+([RFC 9068](https://www.rfc-editor.org/rfc/rfc9068)), or anything else, and to change that choice
+without notice; only the issuing server interprets it.
+
+Token lifetime, storage, rotation, and revocation are implementation matters and are deliberately
+not specified. Two rules keep clients simple in spite of that:
+
+* Servers __should__ return `expires_in`, so that a client can obtain a new token before the current
+  one expires rather than discovering expiry through a failed request.
+* If a request to a resource endpoint fails with `401` and the `WWW-Authenticate` challenge header
+  carries `error="invalid_token"`, the client __may__ obtain a new token from the token endpoint and
+  retry the request once, as described in RFC 6750 section 3.1. A client __should not__ retry more
+  than once for a single request. The error code is an attribute of the challenge header; it is not
+  carried in the token, which remains opaque:
+
+  ```http
+  HTTP/1.1 401 Unauthorized
+  WWW-Authenticate: Bearer realm="tea", error="invalid_token", error_description="The access token expired"
+  ```
+
+Between them these cover server-side revocation without the client having to know it happened:
+RFC 6750 defines `invalid_token` as covering tokens that are "expired, revoked, malformed, or invalid
+for other reasons". This specification defines no revocation endpoint, and clients need not
+implement one.
+
+__No refresh tokens.__ Servers __should not__ issue refresh tokens with the `client_credentials`
+grant, following RFC 6749 section 4.4.3. A refresh token exists so that a client can obtain a new
+access token without re-presenting a credential, which matters when the credential belongs to a user
+who is no longer present. A TEA client holds its own API key permanently and can simply call the
+token endpoint again, so a refresh token would be a second long-lived secret to store and protect for
+no benefit.
+
+## Optional credential types
+
+A server __may__ accept credentials other than an API key at the same token endpoint, selected by the
+`grant_type` parameter. In every case the response is the same token response, and the resulting
+access token is used the same way, so clients that already implement the baseline need only the
+additional request.
+
+The following are the cases we expect to be common. All are existing OAuth 2.0 profiles; TEA adds
+nothing to them.
+
+Table: OAuth 2.0 grant types for optional credentials
+
+| Use case | Grant type | Specification |
+|---|---|---|
+| Enterprise SSO where the user's identity provider issues SAML assertions | `urn:ietf:params:oauth:grant-type:saml2-bearer` | [RFC 7522](https://www.rfc-editor.org/rfc/rfc7522) |
+| OpenID Connect, or any provider issuing signed JWTs, including workload identity in CI systems | `urn:ietf:params:oauth:grant-type:jwt-bearer` | [RFC 7523](https://www.rfc-editor.org/rfc/rfc7523) |
+| A client already holding a token from another security domain, exchanged for a TEA token | `urn:ietf:params:oauth:grant-type:token-exchange` | [RFC 8693](https://www.rfc-editor.org/rfc/rfc8693) |
+| A client authenticated by a TLS client certificate rather than a shared secret | `client_credentials` with mutual TLS client authentication | [RFC 8705](https://www.rfc-editor.org/rfc/rfc8705) |
+
+[RFC 8693](https://www.rfc-editor.org/rfc/rfc8693) token exchange
+(`urn:ietf:params:oauth:grant-type:token-exchange`) is outside the scope of the TEA 1.0
+interoperable authentication profile. TEA 1.0 does not specify the request or response
+contract for this grant. Implementations __may__ support it as an extension by separate
+agreement, but clients __shall not__ assume its availability based solely on TEA 1.0
+conformance. Such extensions do not remove the requirement for servers requiring
+authentication to support the `client_credentials` baseline.
+
+[RFC 7521](https://www.rfc-editor.org/rfc/rfc7521) defines the common framework the two assertion
+grants share.
+
+Note that a server which delegates identity to an external provider still issues its own TEA access
+token from its own token endpoint. The external provider authenticates the user; the TEA server
+decides what that user may see. This keeps authorization with the party that owns the data, and
+keeps the resource endpoints validating exactly one kind of token.
+
+### Mutual TLS
+
+Mutual TLS is a client authentication method at the token endpoint, not a separate way in. A client
+authenticated by a certificate presents no `Authorization` header on its token request; the
+certificate identifies it. RFC 8705 additionally allows the issued access token to be bound to the
+certificate, so that a stolen token is useless without the corresponding private key.
+
+Client certificates are managed by the service and provided in a service-specific way. Clients
+__should__ be able to configure a separate client certificate and private key per TEA service, and
+__should not__ assume that a client certificate for one service is trusted anywhere else.
+
+## Transport security
+
+All of the above assumes TLS. Credentials and bearer tokens are transmitted in the clear at the HTTP
+layer, so a TEA server __shall__ be reachable only over TLS, and clients __shall__ verify the server
+certificate, including the server identity check of [RFC 9525](https://www.rfc-editor.org/rfc/rfc9525).
+This restates RFC 6749 section 3.2 and RFC 6750 section 5.
+
+## Client flow
+
+Whether a server requires authentication is discovered by using it, not by configuration and not by
+probing the token endpoint. In TEA, resource operations may be called with a Bearer token or
+without one; a `401` with a `WWW-Authenticate: Bearer` challenge on a given endpoint is the
+runtime signal that a token is required there. The complete flow for a client that does not know
+in advance:
+
+1. The client sends the resource request it wants, with no credentials.
+2. If the server does not require authentication for that endpoint, it answers `200` with the
+   resource. The client is done.
+3. If the server requires authentication, it answers `401` with a `WWW-Authenticate` header naming
+   the `Bearer` scheme, as described in RFC 6750 section 3. This challenge is the only signal a
+   client needs.
+4. The client calls `POST /token` with its credential - for the baseline, the API key over HTTP
+   Basic - and receives an access token. Unauthenticated `client_credentials` requests shall
+   not be accepted; an empty OpenAPI security requirement on `/token` allows alternate client
+   authentication (for example, mutual TLS, JWT client assertion (RFC 7523), or credentials in
+   the request body), not anonymous token issuance.
+5. The client repeats the resource request with `Authorization: Bearer <access_token>`, and presents
+   the same token on subsequent requests until it expires or is rejected.
+6. When a later request fails with `401` and `error="invalid_token"`, the client obtains a fresh
+   token and retries that request once, as described above.
+
+A client that already holds an API key for a service __may__ skip steps 1 to 3 and call the token
+endpoint first: being issued a key is itself the signal that the service requires authentication.
+Trying the resource first is for the case where the client does not know.
+
+Two things the flow deliberately avoids. A client __shall not__ probe `/token` to find out whether
+authentication exists; the challenge on the resource is the discovery mechanism, and a `404` from
+`/token` means only that the endpoint is not implemented. And a client __shall not__ send its API key
+to a resource endpoint; the key goes to the token endpoint only, and resource endpoints see bearer
+tokens only.
+
+The cost of the unknown case is one wasted request per server, once. This is the standard HTTP
+pattern and is preferred over any configuration or discovery step a client would otherwise need.
+
+### Servers without authentication
+
+A server that requires no authentication on any endpoint (and therefore applies no authorization)
+follows the rules in the "Authentication and authorization" section of
+[Discovery](../discovery/readme.md): it need not implement the token endpoint, it does not answer
+resource requests with `401`, and it ignores an `Authorization: Bearer` header a client presents
+anyway.
+
+There is nothing to exchange on such a server: an OAuth 2.0 token response carries an access token,
+and the mandatory grant requires the client to authenticate, so a token endpoint could only issue a
+token that means nothing. Its clients complete step 2 of the flow above and never look for the
+token endpoint. A client that presents a token anyway, for example one obtained elsewhere or applied
+by habit, keeps working, because the token is ignored.
+
+### Servers that protect some objects
+
+A TEA server may make some data available without authentication while requiring authentication
+and authorization for other objects - for example, listing products and releases without a token
+while restricting artifact downloads to some users. Such a server requires authentication for the
+protected objects:
+
+* it __shall__ implement the token endpoint and the baseline exchange, because at least one object
+  needs them;
+* endpoints that do not require authentication answer without a token and ignore a token that is
+  presented;
+* protected endpoints __shall__ answer `401` with the `Bearer` challenge when no valid token is
+  presented, which is how a client learns, per endpoint, that a token is needed. They shall not
+  answer a concealing `404` solely because the client is unauthenticated. A client __should not__
+  assume that a server which served one object without authentication will serve every object
+  without authentication, nor the reverse.
+
+Authorization - which of the protected data an authenticated client may see - is the server's
+decision and is not constrained by this specification; a client with a valid token may still receive
+a filtered view, `403 Forbidden`, or a concealing `404 Not Found` for individual objects it is
+not authorized to see. Clients shall not infer from `404` alone whether the object is absent or
+withheld.
+
+### Protected resource metadata
+
+Servers that delegate identity to an external provider __may__ publish OAuth 2.0 protected resource
+metadata ([RFC 9728](https://www.rfc-editor.org/rfc/rfc9728)) and reference it from the
+`WWW-Authenticate` challenge, allowing a client to locate the authorization server automatically.
+This is optional; it does not replace the token endpoint, which remains the interoperable baseline,
+and it does not replace the challenge as the way a client discovers that authentication is required.
+
+## References
+
+* RFC 6749: The OAuth 2.0 Authorization Framework (https://www.rfc-editor.org/rfc/rfc6749)
+* RFC 6750: The OAuth 2.0 Authorization Framework: Bearer Token Usage (https://www.rfc-editor.org/rfc/rfc6750)
+* RFC 7617: The 'Basic' HTTP Authentication Scheme (https://www.rfc-editor.org/rfc/rfc7617)
+* RFC 7521: Assertion Framework for OAuth 2.0 Client Authentication and Authorization Grants (https://www.rfc-editor.org/rfc/rfc7521)
+* RFC 7522: SAML 2.0 Profile for OAuth 2.0 Client Authentication and Authorization Grants (https://www.rfc-editor.org/rfc/rfc7522)
+* RFC 7523: JWT Profile for OAuth 2.0 Client Authentication and Authorization Grants (https://www.rfc-editor.org/rfc/rfc7523)
+* RFC 8693: OAuth 2.0 Token Exchange (https://www.rfc-editor.org/rfc/rfc8693) — outside the TEA 1.0 interoperable authentication profile
+* RFC 8705: OAuth 2.0 Mutual-TLS Client Authentication and Certificate-Bound Access Tokens (https://www.rfc-editor.org/rfc/rfc8705)
+* RFC 9068: JSON Web Token (JWT) Profile for OAuth 2.0 Access Tokens (https://www.rfc-editor.org/rfc/rfc9068)
+* RFC 9728: OAuth 2.0 Protected Resource Metadata (https://www.rfc-editor.org/rfc/rfc9728)
+
+### A note on API keys and `X-API-Key`
+
+There is no IETF specification for API keys, and no registered HTTP authentication scheme for them.
+A survey of the IETF datatracker finds only working-group discussion material and an early
+individual draft, nothing normative. The widespread `X-API-Key` header is additionally at odds with
+[RFC 6648](https://www.rfc-editor.org/rfc/rfc6648), a Best Current Practice that deprecates the `X-`
+prefix for new header fields.
+
+This specification therefore carries the API key in the standard `Authorization` header using the
+Basic scheme, which is registered, specified, supported directly by essentially every HTTP client
+library, and already the mandatory-to-implement client authentication method for OAuth 2.0 token
+endpoints. The result is no harder for a client than a custom header - it is one line in any HTTP
+library - and it avoids inventing a TEA-specific credential format.
