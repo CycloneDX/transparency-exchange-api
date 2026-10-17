@@ -2,6 +2,8 @@
 outputDir: /local/out/python
 generatorName: python
 additionalProperties:
+  # Generated enums accept values added later, e.g. new ECMA-424 hash algorithms
+  enumUnknownDefaultCase: true
   library: urllib3
   licenseInfo: "Apache-2.0"
   packageName: "tea_api_client"
