@@ -1,0 +1,428 @@
+<emu-clause id="sec-tei">
+  <h1>Transparency Exchange Identifier (TEI)</h1>
+
+  <p>
+    The TEI, Transparency Exchange Identifier, is a globally unique release
+    identifier based on DNS coupled with new or existing identifiers like EAN
+    codes, PURL and others.
+  </p>
+
+  <emu-clause id="sec-tei-syntax">
+    <h1>Syntax</h1>
+
+    <p>A TEI is a URI as defined in RFC 3986, of the form:</p>
+
+    <pre><code class="text">tei://&lt;domain-name&gt;/&lt;type&gt;/&lt;unique-identifier&gt;</code></pre>
+
+    <ul>
+      <li>The scheme shall be <code>tei</code>.</li>
+      <li>The <code>domain-name</code> shall be a DNS name under the vendor's control and resolve to a web
+        server. The domain name shall not include a port number.</li>
+      <li>The <code>type</code> shall consist of lowercase ASCII letters and digits, and start with a letter.
+        The type names the identifier scheme of the <code>unique-identifier</code>
+        and shall be registered as described in
+        <emu-xref href="#sec-tei-types"></emu-xref>.</li>
+      <li>The <code>unique-identifier</code> shall be a single path segment in the syntax its <emu-xref href="#sec-tei-types">type</emu-xref> defines.
+        The <code>unique-identifier</code> shall identify one or more product releases within the <code>domain-name</code>.
+        It shall not contain <code>/</code>, either literally or percent-encoded as <code>%2F</code>.
+        Any other characters that are not permitted in a URL path segment by RFC 3986 shall be percent-encoded with uppercase hexadecimal digits.</li>
+    </ul>
+  </emu-clause>
+
+  <emu-clause id="sec-tei-types">
+    <h1>Types</h1>
+
+    <p>TEI types are defined in the TEI type registry at <a href="https://github.com/CycloneDX/transparency-exchange-api/tree/main/tei-types">https://github.com/CycloneDX/transparency-exchange-api/tree/main/tei-types</a>.</p>
+    <p>Registration refers to the TEA community process for adding a type, described in the registry.</p>
+
+    <p>The following table illustrates the types registered at the time of publication of this edition of the Standard;
+      the registry is the authoritative list.</p>
+
+    <emu-table id="tei-types-table" informative>
+      <emu-caption>
+        <p>Registered TEI types</p>
+      </emu-caption>
+      <table>
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Unique identifier</th>
+            <th>Example</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr>
+            <td><code>purl</code></td>
+            <td>Package URL, Base64URL-encoded without padding</td>
+            <td><code>tei://cyclonedx.org/purl/cGtnOm1hdmVuL2NvbW1vbnMtaW8vY29tbW9ucy1pb0AyLjIyLjA</code></td>
+          </tr>
+          <tr>
+            <td><code>hash</code></td>
+            <td>Hash of an object, <code>&lt;hashtype&gt;:&lt;hex&gt;</code></td>
+            <td>
+              <code>tei://cyclonedx.org/hash/SHA-256:fd44efd601f651c8865acf0dfeacb0df19a2b50ec69ead0262096fd2f67197b9</code>
+            </td>
+          </tr>
+          <tr>
+            <td><code>uuid</code></td>
+            <td>UUID</td>
+            <td><code>tei://cyclonedx.org/uuid/d4d9f54a-abcf-11ee-ac79-1a52914d44b1</code></td>
+          </tr>
+          <tr>
+            <td><code>eanupc</code></td>
+            <td>EAN or UPC number</td>
+            <td><code>tei://example.com/eanupc/1234567890123</code></td>
+          </tr>
+          <tr>
+            <td><code>gtin</code></td>
+            <td>GTIN</td>
+            <td><code>tei://example.org/gtin/0234567890123</code></td>
+          </tr>
+          <tr>
+            <td><code>asin</code></td>
+            <td>Amazon Standard Identification Number</td>
+            <td><code>tei://example.com/asin/B07FZ8S74R</code></td>
+          </tr>
+          <tr>
+            <td><code>udi</code></td>
+            <td>Unique Device Identifier</td>
+            <td><code>tei://cyclonedx.org/udi/00123456789012</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </emu-table>
+  </emu-clause>
+
+  <emu-clause id="sec-tei-comparison">
+    <h1>Identity and comparison</h1>
+
+    <p>A valid TEI conforms to the following requirements when being treated as
+      an identifier:</p>
+
+    <ul>
+      <li><p>The scheme <code>tei</code> shall be lowercase;</p></li>
+      <li><p>the domain name shall be lowercase ASCII, using A-labels for internationalized names;</p></li>
+      <li><p>the TEI type shall be lowercase;</p></li>
+      <li>
+        <p>the unique identifier shall be formatted exactly as its registry entry defines it;</p>
+        <emu-note>
+          <p>
+            For example, formatting for a UUID would constrain it to all lowercase, a hash would be constrained to hexadecimal characters, and a PURL would be represented as unpadded Base64URL.
+          </p>
+        </emu-note>
+      </li>
+      <li>characters that do not require percent-encoding shall not be encoded.</li>
+    </ul>
+
+    <emu-example>
+      <p>The following TEIs are therefore all distinct:</p>
+
+      <pre><code class="text">tei://example.com/uuid/62f2cf92-ae88-11f1-a698-1a52914d44b2
+tei://Example.com/uuid/62f2cf92-ae88-11f1-a698-1a52914d44b2
+tei://example.com/uuid/62F2CF92-AE88-11F1-A698-1A52914D44B2
+tei://example.com/purl/cGtnOnB5cGkvY3ljbG9uZWR4LXB5dGhvbi1saWI
+tei://example.com/purl/cGtnOnB5cGkvY3ljbG9uZWR4LXB5dGhvbi1saWI=
+</code></pre>
+    </emu-example>
+
+    <p>A TEI carried inside another URL shall be encoded per RFC 3986 for transport.</p>
+
+    <p>
+      A TEA server receiving a TEI as a percent-encoded query parameter shall
+      decode it exactly once. The resulting TEI shall be used to compare
+      against TEIs published by that server. The resulting TEI shall not be
+      decoded in any additional or different manner.
+    </p>
+
+    <p>
+      Two TEIs shall be considered equal if and only if they are the same
+      sequence of characters.
+    </p>
+
+    <emu-note type="editor">
+      <p>
+        I think the distinction between identity and resolution needs to be
+        communicated in a clearer manner. Maybe by editing the paragraph below,
+        maybe something completely new. The below paragraph is not clear enough
+        on its own to be used.
+      </p>
+      <hr />
+      <p>This rule defines identity only.
+        Resolving a TEI to an API endpoint follows the rules below,
+        where the domain name is used as a DNS name and is therefore case-insensitive.</p>
+    </emu-note>
+  </emu-clause>
+</emu-clause>
+
+<emu-clause id="sec-client-requirements">
+  <h1>TEA client requirements</h1>
+
+  <emu-note type="editor">
+<!--    TODO new title-->
+    This might need a new title?
+  </emu-note>
+
+  <p>A client shall use a TEI exactly as received and shall not rewrite it.</p>
+
+  <emu-note type="editor">The above paragraph doesn't have a sensible place</emu-note>
+
+  <emu-clause id="sec-tei-resolution">
+    <h1>TEI resolution</h1>
+
+    <p>
+      A TEA client can initiate discovery of product transparency exchange
+      information by resolving the <code>&lt;domain-name&gt;</code> component
+      of a TEI to a DNS query and subsequent HTTP request. A client shall
+      consider <code>A</code>, <code>AAAA</code> and <code>CNAME</code>
+      records.
+    </p>
+
+    <emu-note type="editor">
+      In the above paragraph, having the specific records as a requirement
+      (the sentence with "shall") seems out of place without specifying
+      further details. In the original text it's in the passive voice, so it
+      needs to be rewritten regardless. I recommend removing it altogether.
+    </emu-note>
+
+    <emu-note type="editor">
+      I modified the examples in this clause so they would match an earlier
+      example as well as each other.
+    </emu-note>
+
+    <emu-example>
+      <p>
+        For a TEI matching<br />
+        <code>tei://example.com/uuid/62F2CF92-AE88-11F1-A698-1A52914D44B2</code>,
+        <br/>
+        a client would query DNS for <code>example.com</code>.
+      </p>
+    </emu-example>
+
+    <p>
+      The TEA client shall connect to the host using HTTPS and verify the
+      server certificate, including the server identity check as described
+      in RFC 9525. The TEA client shall then request the URL composed of
+      the domain name with the path of <code>/.well-known/tea</code>
+      appended.
+    </p>
+
+    <emu-example>
+      <p>
+        For a TEI matching<br />
+        <code>tei://example.com/uuid/62F2CF92-AE88-11F1-A698-1A52914D44B2</code>,
+        <br/>
+        the initial request URL would be <code>https://example.com/.well-known/tea</code>
+      </p>
+    </emu-example>
+
+    <emu-note>
+      <p>
+        The webserver providing a discovery document as a response to
+        <code>/.well-known/tea</code> may or may not be the same server
+        providing product release information. See the
+        <emu-xref href="#example-discovery-document">example document</emu-xref>.
+      </p>
+    </emu-note>
+  </emu-clause>
+
+  <emu-clause id="sec-client-discovery-endpoint">
+    <h1>Discovery document consumption</h1>
+
+    <emu-note type="editor">
+      i'm concerned the regular references to "discovery document" regarding a
+      document that is not a response from /discovery will lead to confusion
+    </emu-note>
+
+    <p>
+      A client shall choose an endpoint from the discovery document which lists
+      at least one API version supported by the client. The client shall prefer
+      endpoints with the highest mutually supported version, based on the
+      SemVer <a href="https://semver.org/#spec-item-11">comparison clause</a>.
+      <a href="https://semver.org/#spec-item-10">Build metadata</a> shall be
+      ignored when comparing versions, both for precedence and for determining
+      whether the client supports a version. If the highest mutually supported
+      version is advertised with more than one build-metadata description, the
+      client may select any.</p>
+
+    <p>
+      If there is more than one valid endpoint option after versions have been
+      compared, the client shall choose the endpoint with the highest
+      <code>priority</code> value (a float between 0 and 1). If
+      <code>priority</code> is absent on a well-known endpoint object, the
+      client shall treat the value as <code>1</code>.
+    </p>
+
+    <p>
+      If a client continues to have multiple valid endpoint options, it shall
+      treat the array order as priority, with the first entry placing highest.
+    </p>
+
+    <p>
+      The client shall use the highest mutually supported version to construct
+      the full URL to the API endpoint using one of the two following syntax
+      options:
+    </p>
+
+    <pre><code>https://&lt;url&gt;/v&lt;version&gt;/discovery?tei=&lt;tei&gt;</code></pre>
+    <pre><code>https://&lt;url&gt;/v&lt;version&gt;/discovery?purl=&lt;purl&gt;</code></pre>
+
+    <p>
+      Where:
+    </p>
+
+    <ul>
+      <li><code>&lt;url&gt;</code> is the URL associated with the selected version in the discovery document,</li>
+      <li><code>&lt;version&gt;</code> is the exact version string as advertised, including any build metadata, and</li>
+      <li><code>&lt;tei&gt;</code> is the TEI, percent-encoded according to RFC 3986.</li>
+      <li><code>&lt;purl&gt;</code> is a conformant PURL, percent-encoded according to RFC 3986.</li>
+    </ul>
+
+    <p>
+      Exactly one of <code>tei</code> or <code>purl</code> shall be provided; a
+      request which includes neither <code>tei</code> nor <code>purl</code>, or
+      a request which includes both <code>tei</code> and <code>purl</code>, is
+      rejected with <code>400</code>.
+    </p>
+
+    <emu-example>
+      <p>Using TEI <code>tei://products.example.com/uuid/d4d9f54a-abcf-11ee-ac79-1a52914d44b1</code></p>
+      <p>to construct the API endpoint <code>https://api.example.com/v1.0.0/discovery?tei=tei%3A//products.example.com/uuid/d4d9f54a-abcf-11ee-ac79-1a52914d44b1</code></p>
+    </emu-example>
+
+    <emu-example>
+      <p>Using TEI <code>tei://products.example.com/purl/cGtnOmRlYi9kZWJpYW4vY3VybEA3LjUwLjMtMT9hcmNoPWkzODYmZGlzdHJvPWplc3NpZQ</code></p>
+      <p>to construct the API endpoint <code>https://api2.example.com/mytea/v1.0.0/discovery?tei=tei%3A//products.example.com/purl/cGtnOmRlYi9kZWJpYW4vY3VybEA3LjUwLjMtMT9hcmNoPWkzODYmZGlzdHJvPWplc3NpZQ</code></p>
+    </emu-example>
+
+    <emu-example>
+      <p>Using TEI <code>tei://products.example.com/purl/cGtnOmRlYi9kZWJpYW4vY3VybEA3LjUwLjMtMT9hcmNoPWkzODYmZGlzdHJvPWplc3NpZQ</code></p>
+      <p>to construct the API endpoint <code>https://products.example.com/v1.0.0/discovery?purl=pkg%3Amaven%2Forg.apache.logging.log4j%2Flog4j-core%402.24.3</code></p>
+    </emu-example>
+  </emu-clause>
+
+  <emu-clause id="sec-client-error-handling">
+    <h1>Client error handling</h1>
+
+    <emu-note type="editor">
+      This will include some text from "### Unresolved identifiers", avoiding
+      duplicate or conflicting requirements.
+    </emu-note>
+  </emu-clause>
+</emu-clause>
+
+<emu-clause id="sec-server-requirements">
+  <h1>TEA server requirements</h1>
+
+  <emu-clause id="sec-well-known-response">
+    <h1>well-known response</h1>
+
+    <emu-note type="editor">
+      <p>The following sentence belongs… somewhere for sure. but probably not here?</p>
+
+      <p>The "tea" well-known URI is registered with IANA.</p>
+    </emu-note>
+
+    <p>
+      Servers shall not locate the actual TEA service endpoint at the
+      <code>/.well-known/tea</code> URI. This URI is reserved for the TEA
+      discovery document and uses the well-known URI mechanism defined in
+      RFC 8615. A TEA discovery document is a JSON object that provides the
+      available TEA server endpoints and supported versions.
+    </p>
+
+    <p>
+      The discovery document's JSON shall conform to the
+      <emu-xref href="#sec-tea-well-known-schema" title></emu-xref>. A
+      successful response shall be a JSON object containing an
+      <code>endpoints</code> array of one or more
+      <emu-xref href="#sec-tea-well-known-endpoint"><code>endpoint</code></emu-xref>
+      objects.
+    </p>
+
+    <emu-example id="example-discovery-document">
+        <pre><code class="json">{
+  "schemaVersion": 1,
+  "endpoints": [
+    {
+      "url": "https://api.example.com",
+      "versions":
+        [
+          "1.0.0"
+        ],
+      "priority": 1
+    },
+    {
+      "url": "https://api2.example.com/mytea",
+      "versions":
+        [
+          "1.0.0"
+        ],
+      "priority": 0.5
+    }
+  ]
+}</code></pre>
+    </emu-example>
+
+    <p>
+      The <code>.well-known</code> endpoint shall only be available via HTTPS.
+    </p>
+
+    <p>
+      Discovery documents may be cached. When caching, implementations
+      should:
+    </p>
+
+    <ul>
+      <li>respect HTTP caching headers;</li>
+      <li>periodically refresh discovery data;</li>
+      <li>handle endpoint changes gracefully.</li>
+    </ul>
+
+    <p>
+      While port numbers are not permitted in the TEI syntax or resolution,
+      TEA server URLs listed in the discovery document may contain port
+      numbers as part of the URL string.
+    </p>
+
+    <p>
+      Advertised API versions in the discovery document shall fully conform to
+      SemVer 2.0.0 (<code>MAJOR.MINOR.PATCH</code>) with optional prerelease
+      and build metadata.
+    </p>
+
+    <emu-note>
+      <p>
+        While clients will request a discovery endpoint matching the exact
+        version string as published in a discovery document, they ignore build
+        metadata when comparing versions.
+      </p>
+    </emu-note>
+  </emu-clause>
+
+  <emu-clause id="sec-discovery-info">
+    <h1><code>/discovery</code> response</h1>
+
+    <emu-note type="editor">
+      I do not believe there is any text in discovery.md about the server
+      /discovery response that is not covered by the API documentation. I think
+      this entire clause should be deleted or extremely carefully written to
+      reference <emu-xref href="#sec-tea-api-tea-discovery" title></emu-xref>
+      and no substantive text.
+    </emu-note>
+    <emu-note type="editor">
+      <p>
+        I'm not entirely convinced this paragraph improves clarity, especially
+        coming before the auth clause.
+      </p>
+      <hr>
+      <p>The discovery endpoint is a part of the TEA OpenAPI specification. Unlike <code>/token</code>,
+        <code>/discovery</code> is required on a conforming TEA API base: a conforming server that exposes
+        a given API version shall implement it.</p>
+    </emu-note>
+
+    <p>
+      A TEA server shall provide a non-empty JSON array containing one or more <emu-xref href="#sec-tea-schema-discovery-info" title></emu-xref> objects in response to a valid request to the <code>/discovery</code> endpoint.
+    </p>
+  </emu-clause>
+</emu-clause>

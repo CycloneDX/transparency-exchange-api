@@ -1,0 +1,60 @@
+<emu-clause id="sec-uuid-scope">
+  <h1>UUID Scope and Stability</h1>
+
+  <p>A TEA UUID alone is <strong>not</strong> globally unique. Uniqueness for retrieval is the tuple:</p>
+
+  <pre><code class="text">API base + object type + UUID</code></pre>
+
+  <ul>
+    <li>The <strong>API base</strong> is the base URL of the TEA API the client calls. For each object
+      type, a TEA server shall ensure that a UUID refers to at most one object served at
+      that API base.</li>
+    <li>The <strong>authoritative domain</strong> is supplied by the TEI
+      (<code>tei://&lt;domain-name&gt;/&lt;type&gt;/&lt;unique-identifier&gt;</code>); see Clause <emu-xref href="#sec-tei"></emu-xref>.
+      It tells a client which API to call. It is not part of a UUID path. TEA has no
+      centralized authority that assigns UUIDs, so uniqueness across different API bases
+      is not enforced by the protocol.</li>
+    <li>The <strong>object type</strong> scopes uniqueness to a single object class (Product, Product
+      Release, Component, Component Release, Collection, Artifact). Except as noted below,
+      UUIDs need not be unique across object types.</li>
+  </ul>
+
+  <p>If two authoritative domains would assign the same UUID to different objects of the
+    same type, those domains shall be served from different API bases. One API base shall
+    not host both.</p>
+
+  <p><strong>Exception: Product Release and Component Release.</strong> A TEA Collection shall use the same UUID as its parent
+    Product Release or Component Release. Within an API base, a Product Release and a Component Release
+    shall not share a UUID. Consequently, Collections belonging to different parent releases have different UUIDs.
+    Versions of the same Collection retain the same UUID. Except for Product Release and Component Release, objects
+    of different types may share a UUID.</p>
+
+  <p>The per-object-type scoping reflects how TEA servers are typically implemented: each object type lives in its
+    own database table, where uniqueness is trivially enforced by a primary key. Cross-table uniqueness is not
+    required in general (TEA has no operation that resolves a UUID without already knowing its object type),
+    except that Product Release and Component Release UUIDs shall be disjoint as above, because those types
+    share the Collection UUID namespace.</p>
+
+  <p>Implementations may use any UUID version defined in RFC 9562. Implementations should
+    create UUIDs with a cryptographically secure random number generator: UUID version 4,
+    or version 7 whose random bits are drawn that way. Independently created UUIDs are
+    then unique across TEA servers for practical purposes. This does not replace the rule
+    above. A server shall not assign a UUID that is already in use at its API base for
+    that object type, including a UUID already used for the other release type.</p>
+
+  <emu-clause id="sec-uuid-stability">
+    <h1>Stability</h1>
+
+    <p>All TEA UUIDs shall be stable for the lifetime of the resource they identify, within a given TEA server. Specifically:</p>
+
+    <ul>
+      <li>A UUID shall not be reassigned to a different resource.</li>
+      <li>A UUID shall not change across backup/restore or re-hosting of the same TEA service instance.</li>
+    </ul>
+
+    <p>Stability is required for
+      <strong>all</strong> TEA object types, not only TEA Product Release. While TEI resolution targets only Product Release UUIDs, clients routinely bookmark and cache sub-resource URLs (e.g.
+      <code>/component/{uuid}</code>, <code>/componentRelease/{uuid}</code>,
+      <code>/productRelease/{uuid}</code>); changing those UUIDs would silently break those clients.</p>
+  </emu-clause>
+</emu-clause>

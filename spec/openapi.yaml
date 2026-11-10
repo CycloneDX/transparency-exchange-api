@@ -13,10 +13,10 @@ info:
     supply chain by providing a standardized method to share and access critical
     security and compliance information. This automation benefits release management
     and optimizes procurement processes, ensuring timely updates and improving risk management.
-    TEA is developed within the OWASP CycloneDX project and standardised in ECMA International
-    technical Committee 54, task group 1.
+    TEA is developed within the OWASP CycloneDX project and standardised in Ecma International
+    Technical Committee 54, Task Group 1.
   contact:
-    name: ECMA International, TC54 tg1
+    name: Ecma International, TC54-TG1
     url: https://tc54.org/tea/
   license:
     name: Apache 2.0
@@ -33,7 +33,7 @@ paths:
         Discovery endpoint which resolves an identifier into one or more product release
         UUIDs.
 
-        Exactly one of the `tei` and `purl` query parameters shall be provided. A request
+        Exactly one of the `tei` or `purl` query parameters shall be provided. A request
         with neither, or with both, is rejected with `400`. OpenAPI cannot express this
         constraint on query parameters, so both are declared optional here.
 

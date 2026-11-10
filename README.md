@@ -3,14 +3,12 @@
 [![Slack Invite](https://img.shields.io/badge/Slack-Join-blue?logo=slack&labelColor=393939)](https://cyclonedx.org/slack/invite)
 [![Group Discussion](https://img.shields.io/badge/discussion-groups.io-blue.svg)](https://groups.io/g/CycloneDX)
 [![Twitter](https://img.shields.io/twitter/url/http/shields.io.svg?style=social&label=Follow)](https://twitter.com/CycloneDX_Spec)
-[![ECMA TC54](https://img.shields.io/badge/ECMA-TC54-FC7C00?labelColor=404040)](https://tc54.org)
-[![ECMA TC54](https://img.shields.io/badge/ECMA-TC54--TG1-FC7C00?labelColor=404040)](https://ecma-international.org/task-groups/tc54-tg1/)
+[![Ecma TC54](https://img.shields.io/badge/Ecma-TC54-FC7C00?labelColor=404040)](https://tc54.org)
+[![Ecma TC54-TG1](https://img.shields.io/badge/Ecma-TC54--TG1-FC7C00?labelColor=404040)](https://ecma-international.org/task-groups/tc54-tg1/)
 
 # OWASP Transparency Exchange API Standard
 
-The Transparency Exchange API (TEA) is being worked on within the ECMA TC54 tg 1
-with the goal to standardise the API in ECMA. 
-The working group has a slack channel in the CycloneDX slack space.
+The Transparency Exchange API (TEA) is developed by Ecma TC54-TG1 with the goal of publishing a standard at Ecma International. The working group has a Slack channel in the CycloneDX Slack space.
 
 ![](images/tealogo.png)
 
@@ -54,6 +52,7 @@ The working group has produced a list of use cases and requirements for the prot
 - [TEA use cases](doc/tea-usecases.md)
 
 ## Data model
+
 - [TEA Product Release](tea-product/tea-product-release.md): The primary entry point. The [Transparency Exchange Identifier, TEI](/discovery/readme.md) resolves to one or more Product Releases, normally one. A Product Release belongs to a [TEA Product](tea-product/tea-product.md).
 - [TEA Product](tea-product/tea-product.md): A higher-level object that groups a set of Product Releases for a product line or family. Products can be discovered and browsed; releases are accessed via `/product/{uuid}/releases`.
 - [TEA Component](tea-component/tea-component.md): Represents a component lineage. A Component is a collection of Component Releases (accessible via `/component/{uuid}/releases`).
