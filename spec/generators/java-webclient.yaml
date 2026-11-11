@@ -2,6 +2,8 @@
 outputDir: /local/out/java-webclient
 generatorName: java
 additionalProperties:
+  # Generated enums accept values added later, e.g. new ECMA-424 hash algorithms
+  enumUnknownDefaultCase: true
   library: webclient
   artifactDescription: Transparency Exchange API Java Webclient
   artifactId: tea-api-webclient
