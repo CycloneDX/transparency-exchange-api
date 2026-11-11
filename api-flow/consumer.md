@@ -8,11 +8,11 @@ described in the [discovery document](/discovery/readme.md).
 
 The standard TEI points to a TEA Product Release. A TEA Product Release represents something sold,
 downloaded as an open source project or acquired by other means. It contains component
-references. Each reference identifies a TEA Component and can also identify a particular
+references. Each reference identifies a TEA Component and should also identify a particular
 TEA Component Release.
 
 - __List of component references__: each entry identifies a TEA Component by UUID.
-  Some entries also identify a particular TEA Component Release by UUID. A reference
+  Each reference should also identify a TEA Component Release by UUID. A reference
   without a release UUID does not select a TEA Component Release.
 - Where a TEA Component Release is retrieved, it has its own versioning and artefacts,
   a timestamp and a lifecycle enumeration. TEA Component Releases are normally sorted
