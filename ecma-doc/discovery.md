@@ -1,21 +1,6 @@
-# Transparency Exchange API - Discovery
+# Discovery
 
-- [From product identifier to API endpoint](#from-product-identifier-to-api-endpoint)
-- [Advertising the TEI](#advertising-the-tei)
-- [TEA Discovery - defining an extensible identifier](#tea-discovery---defining-an-extensible-identifier)
-- [The TEI URL: An extensible identifier](#the-tei-url---an-extensible-identifier)
-  - [TEI syntax](#tei-syntax)
-  - [TEI types](#tei-types)
-  - [Comparing TEIs](#comparing-teis)
-  - [TEI resolution using DNS](#tei-resolution-using-dns)
-- [Connecting to the API](#connecting-to-the-api)
-  - [Selecting an API base from `.well-known/tea`](#selecting-an-api-base-from-well-knowntea)
-  - [Discovery response](#discovery-response)
-  - [Discovery by PURL](#discovery-by-purl)
-  - [Unresolved identifiers](#unresolved-identifiers)
-- [References](#references)
-
-## From product identifier to API endpoint
+## Overview
 
 Discovery is the **first step in all TEA interactions**, enabling a consumer to map an identifier to a service endpoint.
 
@@ -31,24 +16,9 @@ TEA separates:
 - **location** → discovery
 - **data retrieval** → API
 
-Discovery answers the question:
-
-> “Where can I retrieve authoritative TEA data for this identifier?”
-
-TEA Discovery is the connection between a product release identifier and the API endpoint.
-A "product release" is something that the user aquires or downloads - hardware and/or software.
-
-It can be a bundle of many digital devices or software applications.
-A "product release" normally also has an entry in a large corporation's asset inventory system.
-
-A product release identifier is embedded in a URL where the identifier is one of many existing
+A product release identifier is embedded in a URL of type 'TEI:' where the identifier is one of many existing
 identifiers or a random string - like an EAN or UPC bar code, UUID, product
 number or PURL.
-
-The goal is for a user to add this URL to the transparency platform (sometimes with
-credentials for the selected TEA service, such as an API key) and have the platform
-access the required artefacts in a highly automated fashion. Those credentials are
-provisioned separately and are not embedded in the TEI.
 
 ## Advertising the TEI
 
@@ -58,38 +28,20 @@ The TEI for a product release can be communicated to the user in many ways.
 - On the invoice or delivery note
 - For software with a GUI, in an "about" box
 
-The user obtains the TEI from the vendor, through a reseller, or directly. The TEI is
-defined by the vendor and cannot normally be derived from known information.
+The TEI is defined by the producer and cannot normally be derived from known information.
 
-## TEA Discovery - defining an extensible identifier
+## TEI is an extensible identifier
 
-TEA discovery is the process where a user with a product release identifier can discover and download
-artefacts automatically, with or without authentication. A globally unique identifier is
+The Transparency Exchange Identifier (TEI) is a globally unique identifier is
 required for a given product release. This identifier is called the Transparency Exchange Identifier (TEI).
 
-"Vendor" means the party that publishes TEIs for its product releases, whether a commercial
-company or an open source project.
-
-The TEI is based on DNS. The domain name provides a namespace in which the vendor defines
+TEI is based on DNS. The domain name provides a namespace in which the vendor defines
 product release identifiers using existing or new identifier schemes, such as EAN/UPC bar codes
 or PURLs. A given product release may have multiple identifiers
 as long as they all resolve into the same destination. Some identifier schemes require registration
 with the corresponding standards organisation.
 
-There is no registry of TEIs; only TEI types are registered.
-
-## The TEI: URL - An extensible identifier
-
-The TEI, __Transparency Exchange Identifier__, is a URL schema that is extensible based on existing
-identifiers like EAN codes, PURL and other identifiers. It is based on a DNS name, which leads
-to global uniqueness without new registries.
-
-The TEI can be shown in the software itself, in shipping documentation, in web pages and app stores.
-
-A product release can have multiple TEIs — for example one with an EAN/UPC barcode and one with
-the vendor's product number.
-
-### TEI syntax
+### Syntax
 
 A TEI is a URI as defined in RFC 3986, of the form:
 
@@ -100,27 +52,18 @@ tei://<domain-name>/<type>/<unique-identifier>
 - The scheme is `tei`.
 - The **`domain-name`** is a DNS name under the vendor's control.
   It is the namespace of the TEI and resolves to a web server,
-  which may not be the API host.
-  A port number is not allowed.
+  which may not be the API host. A port number is not allowed.
 - The **`type`** consists of lowercase ASCII letters and digits and starts with a letter.
-  It names the identifier scheme of the `unique-identifier`
-  and is registered as described in the next section.
 - The **`unique-identifier`** is a single path segment in the syntax its type defines
   and identifies one or more product releases within the `domain-name`.
   It shall not contain `/`, neither literally nor percent-encoded as `%2F`.
-  Other characters that are not allowed in a path segment
+  Other characters that are not allowed in a URL path segment
   are percent-encoded with uppercase hexadecimal digits.
 
-A TEI may identify several product releases,
-for example when a boxed product keeps its EAN across firmware versions.
-A successful `/discovery` response is always a non-empty JSON array,
-including when it contains only one result.
-Clients shall treat the array order as priority (first entry highest).
-See [Discovery response](#discovery-response).
 A vendor should make each TEI identify a single product release;
 a type such as `uuid` or `hash` always allows this.
 
-### TEI types
+### Types
 
 TEI types are defined in the TEI type registry at
 https://github.com/CycloneDX/transparency-exchange-api/tree/main/tei-types.
@@ -178,24 +121,20 @@ it is percent-encoded for transport.
 The comparison applies to the TEI after that transport encoding is removed,
 and a server matching a received TEI against the TEIs it publishes applies this rule.
 
-This rule defines identity only.
-Resolving a TEI to an API endpoint follows the rules below,
-where the domain name is used as a DNS name and is therefore case-insensitive.
-
 ### TEI resolution using DNS
 
 The `domain-name` part of the TEI is used in a DNS query to find one or multiple locations for
 product transparency exchange information.
 
 At the URL a well-known name space is used to find out where the API endpoint is hosted.
-This is solved by using the ".well-known" name space as defined by the IETF.
 
+Example:
 - `tei://<domain-name>/uuid/62f2cf92-ae88-11f1-a698-1a52914d44b2`
 - Syntax: `tei://<domain-name>/uuid/<unique identifier>`
 
-The name in the DNS name part points to a set of DNS records.
+The name in the "domain-name" part points to a set of DNS records.
 
-A TEI with `domain-name` `tea.example.com` queries DNS for `tea.example.com`, considering `A`, `AAAA` and `CNAME` records.
+A TEI with `domain-name` set to `tea.example.com` queries DNS for `tea.example.com`, considering `A`, `AAAA` and `CNAME` records.
 These point to the hosts available for the Transparency Exchange API.
 
 The TEA client connects to the host using HTTPS and shall verify the server
@@ -206,7 +145,7 @@ The "tea" well-known URI is registred with IANA.
 This results in the base URL such as
 `https://products.example.com/.well-known/tea`
 
-### TEA Discovery document
+### Discovery document
 
 This response shall contain a JSON object that lists the available TEA server endpoints and supported versions.
 The JSON shall conform to the [TEA Well-Known Schema](tea-well-known.schema.json).
