@@ -377,6 +377,7 @@ paths:
           description: Version of TEA Collection
           schema:
             type: integer
+            minimum: 1
       responses:
         '200':
           description: Requested TEA Collection Version found and returned
@@ -669,6 +670,7 @@ paths:
           description: Version of TEA Collection
           schema:
             type: integer
+            minimum: 1
       responses:
         '200':
           description: Requested TEA Collection Version found and returned
@@ -842,6 +844,7 @@ paths:
           description: Version of TEA Artifact
           schema:
             type: integer
+            minimum: 1
       responses:
         '200':
           description: Requested TEA Artifact metadata found and returned
@@ -904,6 +907,7 @@ paths:
           description: Version of TEA Artifact
           schema:
             type: integer
+            minimum: 1
         - $ref: "#/components/parameters/artifact-media-type"
         - $ref: "#/components/parameters/if-none-match"
       responses:
@@ -978,6 +982,7 @@ paths:
           description: Version of TEA Artifact
           schema:
             type: integer
+            minimum: 1
         - $ref: "#/components/parameters/artifact-signature-media-type"
         - $ref: "#/components/parameters/if-none-match"
       responses:
@@ -1628,6 +1633,7 @@ components:
           "$ref": "#/components/schemas/uuid"
         version:
           type: integer
+          minimum: 1
           description: |
             TEA Collection version, incremented by 1 each time its content changes.
             Versions start with 1. Content changes include replacing an embedded artifact
@@ -1770,6 +1776,7 @@ components:
             a download response's `Location`, or only its HTTP content coding, while
             preserving those bytes, does not require a new artifact or collection version.
           type: integer
+          minimum: 1
         name:
           type: string
           description: A human-readable name for the artefact
