@@ -1093,6 +1093,13 @@ components:
       required:
         - idType
         - idValue
+      examples:
+        - idType: PURL
+          idValue: pkg:maven/org.apache.logging.log4j/log4j-core@2.24.3
+        - idType: TEI
+          idValue: tei://vendor.example.com/uuid/47f51950-b0e2-11f1-adc2-1a52914d44b2
+        - idType: COMPLIANCE_DOCUMENT
+          idValue: SOC_2_TYPE_II
     identifier-type:
       type: string
       description: |
@@ -1108,6 +1115,8 @@ components:
         - TEI
         - PURL
         - COMPLIANCE_DOCUMENT
+      examples:
+        - PURL
     compliance-document-type:
       type: string
       description: >
@@ -1135,11 +1144,15 @@ components:
         - CYBER_ESSENTIALS
         - CYBER_ESSENTIALS_PLUS
         - EU_DECLARATION_OF_CONFORMITY
+      examples:
+        - SOC_2_TYPE_II
     uuid:
       type: string
       description: A UUID in lower case (RFC 9562)
       format: uuid
       pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+      examples:
+        - 09e8c73b-ac45-4475-acac-33e6a7314e6d
 
     #
     # TEA Product
@@ -1349,6 +1362,12 @@ components:
           "$ref": "#/components/schemas/uuid"
       required:
         - uuid
+      examples:
+        # any release of Apache Log4j API
+        - uuid: 3910e0fd-aff4-48d6-b75f-8bf6b84687f0
+        # Apache Log4j Core 2.24.3 only
+        - uuid: b844c9bd-55d6-478c-af59-954a932b6ad3
+          release: da89e38e-95e7-44ca-aa7d-f3b6b34c7fab
 
 
 
@@ -1707,6 +1726,9 @@ components:
           description: Free text description
       required:
         - type
+      examples:
+        - type: VEX_UPDATED
+          comment: VDR file updated
     collection-update-reason-type:
       type: string
       description: |
@@ -1737,6 +1759,8 @@ components:
         - ARTIFACT_UPDATED
         - ARTIFACT_ADDED
         - ARTIFACT_REMOVED
+      examples:
+        - VEX_UPDATED
 
     collection-belongs-to-type:
       type: string
@@ -1744,6 +1768,8 @@ components:
       enum:
         - COMPONENT_RELEASE
         - PRODUCT_RELEASE
+      examples:
+        - COMPONENT_RELEASE
 
     #
     # TEA Artifact and related objects
@@ -1845,6 +1871,8 @@ components:
         - THREAT_MODEL
         - VULNERABILITIES
         - OTHER
+      examples:
+        - BOM
     artifact-format:
       type: object
       description: A security-related document in a specific format
@@ -1937,6 +1965,14 @@ components:
             because clients would then remove it and the checksum would not match.
           items:
             "$ref": "#/components/schemas/checksum"
+      examples:
+        - mediaType: application/vnd.cyclonedx+xml
+          description: CycloneDX SBOM (XML)
+          url: https://repo.maven.apache.org/maven2/org/apache/logging/log4j/log4j-core/2.24.3/log4j-core-2.24.3-cyclonedx.xml
+          signatureUrl: https://repo.maven.apache.org/maven2/org/apache/logging/log4j/log4j-core/2.24.3/log4j-core-2.24.3-cyclonedx.xml.asc
+          checksums:
+            - algType: SHA-256
+              algValue: e04c9d55986d7194822eaa4f8115a77f801844d807ad6e0d454ac31dd41861e5
     checksum:
       type: object
       description: |
@@ -1961,6 +1997,9 @@ components:
       required:
         - algType
         - algValue
+      examples:
+        - algType: SHA-256
+          algValue: e04c9d55986d7194822eaa4f8115a77f801844d807ad6e0d454ac31dd41861e5
     checksum-type:
       type: string
       description: Checksum algorithm
@@ -1976,6 +2015,8 @@ components:
         - BLAKE2b-384
         - BLAKE2b-512
         - BLAKE3
+      examples:
+        - SHA-256
     unknown-error-type:
       type: string
       description: Classification of TEA error response
@@ -1986,6 +2027,8 @@ components:
         - SIGNATURE_NOT_FOUND
         - INVALID_REQUEST
         - INVALID_PAGE_TOKEN
+      examples:
+        - OBJECT_UNKNOWN
     #
     # Types used in API responses
     #
@@ -2011,6 +2054,9 @@ components:
             interpret it programmatically.
       required:
         - error
+      examples:
+        - error: OBJECT_UNKNOWN
+          message: No TEA Product with UUID 09e8c73b-ac45-4475-acac-33e6a7314e6d
 
     server-info:
       type: object
@@ -2054,6 +2100,10 @@ components:
       required:
         - rootUrl
         - versions
+      examples:
+        - rootUrl: https://api.example.com
+          versions: ["1.0.0"]
+          priority: 0.8
 
     discovery-info:
       type: object
@@ -2081,6 +2131,14 @@ components:
       required:
         - productReleaseUuid
         - servers
+      examples:
+        - productReleaseUuid: d4d9f54a-abcf-11ee-ac79-1a52914d44b1
+          servers:
+            - rootUrl: https://api.example.com
+              versions: ["1.0.0"]
+            - rootUrl: https://mirror.example.org/tea
+              versions: ["1.0.0"]
+              priority: 0.5
 
     #
     # CLE (Common Lifecycle Enumeration) objects
@@ -2099,6 +2157,8 @@ components:
         - supersededBy
         - componentRenamed
         - withdrawn
+      examples:
+        - endOfSupport
     cle-version-specifier:
       type: object
       description: |
@@ -2113,6 +2173,9 @@ components:
         range:
           type: string
           description: A version range in vers format (e.g. "vers:npm/>=1.0.0|<2.0.0")
+      examples:
+        - version: "1.0.0"
+        - range: "vers:npm/>=1.0.0|<2.0.0"
     cle-event:
       type: object
       description: |
@@ -2223,6 +2286,11 @@ components:
           description: List of support policies
           items:
             $ref: "#/components/schemas/cle-support-definition"
+      examples:
+        - support:
+            - id: standard
+              description: Standard product support policy
+              url: https://example.com/support/standard
     cle:
       type: object
       description: |
@@ -2453,6 +2521,10 @@ components:
         assertion:
           type: string
           description: Assertion value, when an assertion grant type is used (RFC 7521 section 4.1).
+      examples:
+        - grant_type: client_credentials
+        - grant_type: urn:ietf:params:oauth:grant-type:jwt-bearer
+          assertion: <signed-jwt-assertion>
     token-response:
       type: object
       description: Successful token response, as defined in RFC 6749 section 5.1.
@@ -2479,6 +2551,10 @@ components:
         scope:
           type: string
           description: Granted scope, when it differs from the scope requested.
+      examples:
+        - access_token: 2YotnFZFEjr1zCsicMWpAA
+          token_type: Bearer
+          expires_in: 3600
     token-error-response:
       type: object
       description: Token error response, as defined in RFC 6749 section 5.2.
@@ -2502,6 +2578,9 @@ components:
           type: string
           format: uri
           description: URI of a human-readable web page with information about the error.
+      examples:
+        - error: invalid_client
+          error_description: Client authentication failed
 
   headers:
     artifact-content-disposition:
