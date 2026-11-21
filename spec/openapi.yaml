@@ -2106,6 +2106,11 @@ components:
         ECMA-428 version specification (`vers`). `version` names a single version without a
         `vers` scheme and is a TEA extension: it maps to `vers:<scheme>/<version>` when the
         ecosystem is known.
+      oneOf:
+        - required:
+            - version
+        - required:
+            - range
       properties:
         version:
           type: string
